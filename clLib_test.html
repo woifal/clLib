@@ -1,0 +1,79 @@
+<html>
+<head>
+		<script type="text/javascript" src="js/clLib.js"></script>
+		<script type="text/javascript" src="js/clLib.gradeConfig.js"></script>
+		<script type="text/javascript" src="js/clLib.localStorage.js"></script>
+		<script type="text/javascript" src="js/clLib.localStorage.indexes.js"></script>
+		
+		<script type="text/javascript" src="sampledata/routeLogSample.js"></script>
+		<script type="text/javascript" src="sampledata/routeSample_big.js"></script>
+		
+		<script type="text/javascript" src="http://codeorigin.jquery.com/jquery-1.8.2.js"></script>
+<!--        <script type="text/javascript" src="http://codeorigin.jquery.com/mobile/1.3.0/jquery.mobile-1.3.0.js"></script>
+-->
+</head>
+    
+<body>
+	<input id="whereClauseStr" value=""/><input id="testQuery" type="button">
+	<div id="foo">xx</div>
+	<script>
+	"use strict";
+	
+	
+	
+//$( document ).live("pagecreate", function() {
+(function(){
+   console.log("start");
+	
+	
+	var profiledFnCall = function(aFunc) {
+		var startDate = +new Date();
+		aFunc();
+		var endDate = +new Date();
+		alert("Duration: " + (endDate - startDate));
+	};
+	
+	//alert(JSON.stringify(routeLogSample));
+	//clLib.calculateScore(routeLogSample);
+	
+	//clLib.localStorage.initStorage("routeLogStorage", routeLogSample);
+	//console.profile();
+	console.log("init storage start");
+	profiledFnCall(function() { clLib.localStorage.initStorage("routeStorage", routeSample); });
+	console.log("init storage end");
+	//console.profileEnd();
+	
+	var whereStr = 
+			clLib.getRoutesWhere("French", "6a+", "Climb on Marswiese", "Turm-C");
+	$("#whereClauseStr").val(whereStr);
+	//alert("built where clause " + tojson(JSON.parse(whereStr)));
+	$("#testQuery").click(function() {
+		whereStr = JSON.parse($("#whereClauseStr").val());
+		profiledFnCall(function() { 
+			//console.profile();
+//			var startDate = +new Date();
+//			$("<p>").html("Start: " + startDate).appendTo("#foo");
+			// TEST with routelogs instead of routes
+			//var results = clLib.localStorage.getEntities("routeLogs", JSON.parse(whereStr), "routeLogStorage");
+			var results = clLib.localStorage.getEntities("routes", whereStr, "routeStorage");
+			
+			//console.log("got results:" + tojson(results));
+			//$("<p>").html("got no of results:" + Object.keys(results).length).appendTo("#foo");
+			
+//			var endDate = +new Date();
+//			$("<p>").html("End: " + endDate).appendTo("#foo");
+//			$("<p>").html("Duration: " + (endDate - startDate)).appendTo("#foo");
+			//console.profileEnd();
+			$("<p>").html("got no of results:" + Object.keys(results).length).appendTo("#foo");
+			//alert(Object.keys(results).length);
+		});
+	});
+	
+	console.log("end");
+})(jQuery);
+//   });		
+
+   </script>
+    
+</body>
+</html>
