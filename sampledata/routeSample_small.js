@@ -22,7 +22,7 @@ var routeSample = {
     {
         "_id":"5224a997e4b0cfb71e4bc235",
         "Name":"#1044",
-        "Colour":"purple",
+        "Colour":"green",
         "Date":"2013-08-31",
         "Sector":"Turm-C",
         "French":"6a+",

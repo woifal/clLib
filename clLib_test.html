@@ -14,7 +14,10 @@
 </head>
     
 <body>
-	<input id="whereClauseStr" value=""/><input id="testQuery" type="button">
+	<input style="width: 300px" id="whereClauseStr" value=""/>
+	<input style="width: 200px" id="distinctColumn" value=""/>
+	<input id="testQuery" type="button">
+	
 	<div id="foo">xx</div>
 	<script>
 	"use strict";
@@ -26,11 +29,15 @@
    console.log("start");
 	
 	
-	var profiledFnCall = function(aFunc) {
-		var startDate = +new Date();
-		aFunc();
-		var endDate = +new Date();
-		alert("Duration: " + (endDate - startDate));
+	var profiledFnCall = function(iterations, aFunc) {
+		var totalDuration = 0;
+		for(var i = 0; i < iterations; i++) {
+			var startDate = +new Date();
+			aFunc();
+			var endDate = +new Date();
+			totalDuration += (endDate - startDate);
+		}
+		return totalDuration / iterations;
 	};
 	
 	//alert(JSON.stringify(routeLogSample));
@@ -39,35 +46,39 @@
 	//clLib.localStorage.initStorage("routeLogStorage", routeLogSample);
 	//console.profile();
 	console.log("init storage start");
-	profiledFnCall(function() { clLib.localStorage.initStorage("routeStorage", routeSample); });
+	//alert(profiledFnCall(1, function() { clLib.localStorage.initStorage("routeStorage", routeSample); }));
 	console.log("init storage end");
 	//console.profileEnd();
 	
-	var whereStr = 
+	var distinctColumn, whereStr = 
 			clLib.getRoutesWhere("French", "6a+", "Climb on Marswiese", "Turm-C");
 	$("#whereClauseStr").val(whereStr);
+	$("#distinctColumn").val("Colour");
 	//alert("built where clause " + tojson(JSON.parse(whereStr)));
 	$("#testQuery").click(function() {
 		whereStr = JSON.parse($("#whereClauseStr").val());
-		profiledFnCall(function() { 
-			//console.profile();
-//			var startDate = +new Date();
-//			$("<p>").html("Start: " + startDate).appendTo("#foo");
-			// TEST with routelogs instead of routes
-			//var results = clLib.localStorage.getEntities("routeLogs", JSON.parse(whereStr), "routeLogStorage");
-			var results = clLib.localStorage.getEntities("routes", whereStr, "routeStorage");
-			
-			//console.log("got results:" + tojson(results));
-			//$("<p>").html("got no of results:" + Object.keys(results).length).appendTo("#foo");
-			
-//			var endDate = +new Date();
-//			$("<p>").html("End: " + endDate).appendTo("#foo");
-//			$("<p>").html("Duration: " + (endDate - startDate)).appendTo("#foo");
-			//console.profileEnd();
-			$("<p>").html("got no of results:" + Object.keys(results).length).appendTo("#foo");
-			//alert(Object.keys(results).length);
+		distinctColumn = $("#distinctColumn").val();
+		var results = {}, distincts = {};
+		
+		var avgDur = profiledFnCall(10, function() { 
+			distincts = clLib.localStorage.getDistinct("routes", whereStr, distinctColumn, "routeStorage");
 		});
+		printi("avg duration for distincts: " + avgDur);
+		
+		var avgDur = profiledFnCall(10, function() { 
+			results = clLib.localStorage.getEntities("routes", whereStr, "routeStorage");
+		});
+		printi("avg duration for results: " + avgDur);
+			printi("got no of results:" + Object.keys(results).length);
+			printi("got no of distinct Colours:" + Object.keys(distincts).length);
+			printi("got distinct Colours:" + JSON.stringify(Object.keys(distincts).sort()));
+			//alert(Object.keys(results).length);
 	});
+	
+	var printi = function(text) {
+		$("<p>").html(text).appendTo("#foo");
+	
+	};
 	
 	console.log("end");
 })(jQuery);

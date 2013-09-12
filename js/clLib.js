@@ -290,20 +290,48 @@ clLib.extendIfDefined = function(targetObj, key, value) {
 };
 
 
-clLib.addObjArr = function(anObj, objKeyL1, objKeyL2, arrValueToAdd) {
-	if(!objKeyL2) {
-		//console.log("no column " + objKeyL2 + " in row " + tojson(anObj));
-		return;
+clLib.addObjArr = function(anObj, pathArr, arrValueToAdd) {
+	var tmpObj = anObj;
+	for(var i = 0; i < pathArr.length; i++) {
+		if(!pathArr[i]) {
+			return;
+		}
+		if(i < pathArr.length - 1) {
+			tmpObj = clLib.getChildObj(tmpObj, pathArr[i]);
+		} else {
+			tmpObj = clLib.getChildArr(tmpObj, pathArr[i]);
+		}
+		//console.log("anObj is " + JSON.stringify(anObj));
 	}
-	if(!anObj[objKeyL1]) {
-		//console.log("adding entry for " + objKeyL1);
-		anObj[objKeyL1] = {};
+	tmpObj.push(arrValueToAdd);
+}; 
+
+
+clLib.getChildObj = function(anObj, objKey) {
+	//console.log("getChildObj called for " + objKey);
+	if(!anObj[objKey]) {
+		anObj[objKey] = {};
 	}
-	if(!anObj[objKeyL1][objKeyL2]) {
-		//console.log("2	adding entry for " + objKeyL1 + "/" + objKeyL2);
-		anObj[objKeyL1][objKeyL2] = [];
+	return anObj[objKey];
+} 
+
+clLib.getChildArr = function(anObj, objKey) {
+	//console.log("getChildArr called for " + objKey);
+	if(!anObj[objKey]) {
+		anObj[objKey] = [];
 	}
-	anObj[objKeyL1][objKeyL2].push(arrValueToAdd);
+	return anObj[objKey];
+} 
+
+clLib.addObjKey = function(anObj, pathArr) {
+	var tmpObj = anObj;
+	for(var i = 0; i < pathArr.length; i++) {
+		if(!pathArr[i]) {
+			return;
+		}
+		tmpObj = clLib.getChildObj(tmpObj, pathArr[i]);
+	}
+	tmpObj += 1;
 }; 
 
 

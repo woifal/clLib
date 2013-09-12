@@ -18,7 +18,7 @@ clLib.localStorage.indexExists = function(storageName, indexName) {
 	var indexedStorages = clLib.localStorage.indexes;
 	if(
 		storageName in indexedStorages &&
-		$.inArray(indexName, indexedStorages.storageName)
+		indexName in indexedStorages.storageName
 	) {
 		return true;
 	}
@@ -44,12 +44,12 @@ clLib.localStorage.initStorage = function(storageName, storageObj) {
 	
 	var indexedItems = {};
 	
-	console.log("indexItems: " + tojson(indexedEntities));
+	//console.log("indexItems: " + tojson(indexedEntities));
 	//console.log("allitems " + tojson(storageItems));
 	// check all entities in storageObj for configured indexs..
 	for(var entityName in indexedEntities) {
 	//$.each(indexedEntities, function(entityName) {
-		console.log("working on indexedentity " + entityName);
+		//console.log("working on indexedentity " + entityName);
 		
 		// iterate indexed entities from storageObj
 		var currentEntityIndexes = indexedEntities[entityName];
@@ -57,7 +57,7 @@ clLib.localStorage.initStorage = function(storageName, storageObj) {
 		var currentEntityIdxItems = {};
 		//console.log("working on currententityitems " + tojson(currentEntityItems));
 		if(!currentEntityItems) {
-			console.log("no items for " + entityName + " in current collection..");
+			//console.log("no items for " + entityName + " in current collection..");
 			return;
 		}
 		// Iterate all items of current entity(routes, areas, etc..)
@@ -65,12 +65,27 @@ clLib.localStorage.initStorage = function(storageName, storageObj) {
 		//for(var currentId in currentEntityItems) {
 			var currentItem = currentEntityItems[currentId];
 			// Resolve every index for current item
-			$.each(currentEntityIndexes, function(idx, indexedCol) {
+			for(var indexedCol in currentEntityIndexes) {
+			//$.each(currentEntityIndexes, function(idx, indexedCol) {
 				//console.log("!!Checking indexed column " + indexedCol);
 				var currentIdxKey = currentItem[indexedCol];
-				clLib.addObjArr(currentEntityIdxItems, indexedCol, currentIdxKey, currentId);
-			});
-			//console.log("3after adding row 	it is" + tojson(currentEntityIdxItems));
+				clLib.addObjArr(
+					currentEntityIdxItems, 
+					[indexedCol, currentIdxKey,	"items"], // French => 8a+ => "items"
+					currentId);  // _123123123
+				// Need to take care of distinct values per indexed column value?
+				$.each(currentEntityIndexes[indexedCol].distinct, function(i, distinctColValue) {
+					clLib.addObjKey(
+							currentEntityIdxItems, 
+							[
+								indexedCol, currentIdxKey, "distinct", distinctColValue,  // French => 8a+ => "distinct" => Colour
+								currentItem[distinctColValue]
+							]); // Blue
+				});
+				
+			}
+			//);
+			//console.log("3after adding row it is" + tojson(currentEntityIdxItems));
 		//}
 		});
 		//console.log("setting index to " + tojson(currentEntityIdxItems));
@@ -104,12 +119,17 @@ clLib.localStorage.setItem = function(key, value){
 clLib.localStorage.getStorageItems = function(storageName) {
 	var storageName = storageName || clLib.localStorage.getItem("defaultStorage");
 	var storageItemsKey = storageName + "_items";
+	if(storageCache[storageName + "_" + storageItemsKey]) {
+		console.log("cached!!" + JSON.stringify(storageCache[storageName + "_" + storageItemsKey]));
+		return storageCache[storageName + "_" + storageItemsKey];
+	}
 	var storageItems = clLib.localStorage.getItem(storageItemsKey);
 	//console.log("getting storage " + storageName);
 	//console.log("storage is " + storageItems);
 	//console.log("JSON storage is " + JSON.parse(storageItems));
 	//console.log("stringed JSON storage is " + tojson(JSON.parse(storageItems)));
-	var storage = JSON.parse(storageItems);
+	var storage	 = JSON.parse(storageItems);
+	storageCache[storageName + "_" + storageItemsKey] = storage;
 	return storage;
 };
 
@@ -170,48 +190,59 @@ clLib.localStorage.getEntities = function(entity, whereObj, storageName) {
 	/* 
 		check for parts of where clause already indexed..
 	*/
-	var allEntityIndexes = clLib.localStorage.getStorageIndexes(storageName, entity);
-	//console.log("Indexes for queried entity: " + JSON.stringify(allEntityIndexes));
-	var origWhereObj = whereObj;
+	var indexes = clLib.localStorage.getStorageIndexes(storageName, entity);
+	//console.log("Indexes for queried entity: " + JSON.stringify(indexes));
+	var remainingWhereObj = {};
 	var foundIds = [];
 	var indexFound = false;
-	$.each(origWhereObj, function(keyName, condition) {
-		//console.log("check for index entries with key " + keyName + " in (" + typeof(clLib.localStorage.indexes[entity]) + ") " + JSON.stringify(clLib.localStorage.indexes[entity]));
-		if(clLib.localStorage.indexes[entity].indexOf(keyName) > -1) {
-			//console.log("   found!");
-			//foundIds.push.apply(foundIds, allEntityIndexes[keyName][condition]);
-			if(indexFound) {
-				foundIds = foundIds.getIntersect(allEntityIndexes[keyName][condition]);
-			} else{
-				foundIds = allEntityIndexes[keyName][condition];
+	if(Object.keys(clLib.localStorage.indexes[entity]) > 0) {
+		$.each(whereObj, function(keyName, condition) {
+			console.log("check for index entries with key " + keyName + " in (" + typeof(clLib.localStorage.indexes[entity]) + ") " + JSON.stringify(clLib.localStorage.indexes[entity]));
+			if(Object.keys(clLib.localStorage.indexes[entity]).indexOf(keyName) > -1) {
+				//console.log("   found!");
+				//foundIds.push.apply(foundIds, indexes[keyName][condition]);
+				if(indexFound) {
+					//foundIds = indexes[keyName][condition].items;
+					foundIds = foundIds.getIntersect(indexes[keyName][condition].items);
+				} else{
+					foundIds = indexes[keyName][condition].items;
+				}
+				indexFound = true;
+			} else {
+				remainingWhereObj[keyName] = condition;
+				//console.log("   not found!");
 			}
-			indexFound = true;
-			delete whereObj[keyName];
-		} else {
-			//console.log("   not found!");
-		}
-	});
+		});
+	}
 	//foundIds = foundIds.getUnique();
 	//console.log("got unique ids " + JSON.stringify(foundIds));
-	//console.log("remaining where clause " + JSON.stringify(whereObj));
+	//console.log("remaining where clause " + JSON.stringify(remainingWhereObj));
 	
 	var remainingIdsToQuery = Object.keys(storage[entity]);
 	if(indexFound) {
 		remainingIdsToQuery = foundIds;
+	} else {
+		remainingWhereObj = whereObj;
 	}
+	
+	if(Object.keys(remainingWhereObj).length == 0) {
+		return foundIds;
+	}
+	
 	$.each(remainingIdsToQuery, function(index, id) {
+		//console.log("remainigni items!!");
 		var currentItem = storage[entity][id];
 		//console.log("iterating id(" + index + ") " + id + " item " + JSON.stringify(currentItem));
 		
 		var eligible = true;
-		//console.log("whereObj " + Object.keys(whereObj).length);
-		//console.log("typeof(whereObj)" + typeof(whereObj));
+		//console.log("remainingWhereObj " + Object.keys(remainingWhereObj).length);
+		//console.log("typeof(remainingWhereObj)" + typeof(remainingWhereObj));
 		if(	
-			typeof(whereObj) !== "undefined" &&
-			Object.keys(whereObj).length > 0
+			typeof(remainingWhereObj) !== "undefined" &&
+			Object.keys(remainingWhereObj).length > 0
 		) {
 			// item is the current row to iterate
-			$.each(whereObj, function(keyName, condition) {
+			$.each(remainingWhereObj, function(keyName, condition) {
 				// still eligible? check remaining conditions..
 				if(eligible) {
 					eligible = clLib.localStorage.evalCondition(currentItem[keyName], condition);
@@ -219,6 +250,7 @@ clLib.localStorage.getEntities = function(entity, whereObj, storageName) {
 			});
 		}
 		if(eligible) {
+			//alert("eligible!");
 			if(!(indexFound) || (
 				indexFound && foundIds.indexOf(id) > -1
 			)) {
@@ -228,6 +260,87 @@ clLib.localStorage.getEntities = function(entity, whereObj, storageName) {
 	});
 	return resultsObj;
 }
+
+var storageCache = {};
+
+/*
+*	Returns all objects from localStorage storage "storageName" where ALL conditions in whereObj are met.
+*/
+clLib.localStorage.getDistinct = function(entity, whereObj, colName, storageName) {
+	var resultsObj = {};
+	var storage = clLib.localStorage.getStorageItems(storageName);
+	//console.log("storage keys: "+ Object.keys(storage));
+	
+	/* 
+		check for parts of where clause already indexed..
+	*/
+	var indexes = clLib.localStorage.getStorageIndexes(storageName, entity);
+	//console.log("Indexes for queried entity: " + JSON.stringify(indexes));
+	var remainingWhereObj = {};
+	var foundValues = [];
+	var indexFound = false;
+	return ;
+	//console.log("Iterating where " + JSON.stringify(whereObj));
+	$.each(whereObj, function(keyName, condition) {
+		// Is there an index for the current where-column?
+		//console.log("Checking for " + keyName + " in " + JSON.stringify(clLib.localStorage.indexes[entity]));
+		if(
+			clLib.localStorage.indexes[entity][keyName] &&
+			clLib.localStorage.indexes[entity][keyName]["distinct"] &&
+			clLib.localStorage.indexes[entity][keyName]["distinct"].indexOf(colName) > -1
+		) {
+			//console.log("   found!");
+			if(indexFound) {
+				foundValues = foundValues.getIntersect(
+					Object.keys(indexes[keyName][condition]["distinct"][colName])
+				);
+			} else{
+				//console.log("indexsxxx" + JSON.stringify(indexes));
+				//console.log("indeasfdas" + JSON.stringify(indexes[keyName][condition]["distinct"][colName]));
+				foundValues = Object.keys(indexes[keyName][condition]["distinct"][colName]);
+			}
+			indexFound = true;
+	
+		} else {
+			remainingWhereObj[keyName] = condition;
+			console.log("   not found!");
+		}
+	});
+	//foundValues = foundValues.getUnique();
+	//console.log("got unique ids " + JSON.stringify(foundValues));
+	//console.log("remaining where clause " + JSON.stringify(remainingWhereObj));
+	
+	if(Object.keys(remainingWhereObj).length > 0) {
+		return foundValues;
+	}
+	var remainingIdsToQuery = Object.keys(storage[entity]);
+	$.each(remainingIdsToQuery, function(index, id) {
+		var currentItem = storage[entity][id];
+		//console.log("iterating id(" + index + ") " + id + " item " + JSON.stringify(currentItem));
+		
+		var eligible = true;
+		//console.log("remainingWhereObj " + Object.keys(remainingWhereObj).length);
+		//console.log("typeof(remainingWhereObj)" + typeof(remainingWhereObj));
+		
+			// item is the current row to iterate
+			$.each(remainingWhereObj, function(keyName, condition) {
+				// still eligible? check remaining conditions..
+				if(eligible) {
+					eligible = clLib.localStorage.evalCondition(currentItem[keyName], condition);
+				}
+			});
+		if(eligible) {
+			resultsObj[currentItem[colName]] += 1;
+		}
+	});
+	console.log("Got resultsobj" + JSON.stringify(resultsObj));
+	if(Object.keys(foundValues).length > 0) {
+		return foundValues.getIntersect(
+			Object.keys(resultsObj));
+	}
+	return Object.keys(resultsObj);
+}
+
 
 /*
 *	{
