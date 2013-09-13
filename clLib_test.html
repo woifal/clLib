@@ -14,11 +14,22 @@
 </head>
     
 <body>
+<p>
+	<select id="whereSamples">
+		<option value='{"Name" : {"$like": "auber" }}'>{"Name" : { "$like": "auber" }}</option>
+		<option value='{"French":"6a+","Area":"Climb on Marswiese","Sector":"Turm-C"}'>{"French":"6a+","Area":"Climb on Marswiese","Sector":"Turm-C"}</option>
+	</select>
+</p>
+<p>
 	<input style="width: 300px" id="whereClauseStr" value=""/>
+</p>
+<p>
 	<input style="width: 200px" id="distinctColumn" value=""/>
+</p>
+<p>
 	<input id="testQuery" type="button">
-	
-	<div id="foo">xx</div>
+</p>	
+	<div id="foo">.....</div>
 	<script>
 	"use strict";
 	
@@ -52,8 +63,13 @@
 	
 	var distinctColumn, whereStr = 
 			clLib.getRoutesWhere("French", "6a+", "Climb on Marswiese", "Turm-C");
+	whereStr = '{"Name" : { "$like": "auber" }}';
 	$("#whereClauseStr").val(whereStr);
 	$("#distinctColumn").val("Colour");
+	$("#whereSamples").change(function() {
+		$("#whereClauseStr").val($(this).val());
+	});
+	
 	//alert("built where clause " + tojson(JSON.parse(whereStr)));
 	$("#testQuery").click(function() {
 		whereStr = JSON.parse($("#whereClauseStr").val());

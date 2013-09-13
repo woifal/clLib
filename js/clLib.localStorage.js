@@ -364,7 +364,11 @@ clLib.localStorage.getDistinct = function(entity, whereObj, colName, storageName
 */
 
 clLib.localStorage.evalCondition = function(valueToTest, condition) {
-	//console.log("checking " + valueToTest + " against " + condition);
+	//console.log("checking " + valueToTest + " against " + JSON.stringify(condition));
+	if(!valueToTest) {
+		return false;
+	}
+	
 	var eligible = true;
 	if(!(condition instanceof Object)) {
 		//console.log("no object, comparing string values >" + valueToTest + "< against >" + condition + "<");
@@ -390,9 +394,11 @@ clLib.localStorage.evalCondition = function(valueToTest, condition) {
 					eligible = false;
 				};
 			} else 
-			if(operator == "$lt"){
-				if(!(valueToTest < compValue)) {
+			if(operator == "$like"){
+				if(!(valueToTest.indexOf(compValue) > -1)) {
 					eligible = false;
+				} else {
+					//console.log("found match!!" + valueToTest);
 				}
 			} 
 		});
