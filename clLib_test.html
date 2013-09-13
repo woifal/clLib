@@ -46,7 +46,7 @@
 	//clLib.localStorage.initStorage("routeLogStorage", routeLogSample);
 	//console.profile();
 	console.log("init storage start");
-	//alert(profiledFnCall(1, function() { clLib.localStorage.initStorage("routeStorage", routeSample); }));
+	alert(profiledFnCall(1, function() { clLib.localStorage.initStorage("routeStorage", routeSample); }));
 	console.log("init storage end");
 	//console.profileEnd();
 	
@@ -71,7 +71,7 @@
 		printi("avg duration for results: " + avgDur);
 			printi("got no of results:" + Object.keys(results).length);
 			printi("got no of distinct Colours:" + Object.keys(distincts).length);
-			printi("got distinct Colours:" + JSON.stringify(Object.keys(distincts).sort()));
+			printi("got distinct Colours:" + JSON.stringify(distincts.sort()));
 			//alert(Object.keys(results).length);
 	});
 	
