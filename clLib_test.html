@@ -1,45 +1,85 @@
+<!DOCTYPE html> 
 <html>
+
 <head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1"> 
+	<title>clLib Test</title> 
+	<link rel="stylesheet" href="http://code.jquery.com/mobile/1.3.0/jquery.mobile-1.3.0.min.css" />
+
+	
 		<script type="text/javascript" src="js/clLib.js"></script>
 		<script type="text/javascript" src="js/clLib.gradeConfig.js"></script>
 		<script type="text/javascript" src="js/clLib.localStorage.js"></script>
 		<script type="text/javascript" src="js/clLib.localStorage.indexes.js"></script>
+
+		
+		
 		
 		<script type="text/javascript" src="sampledata/routeLogSample.js"></script>
 		<script type="text/javascript" src="sampledata/routeSample_big.js"></script>
 		
 		<script type="text/javascript" src="http://codeorigin.jquery.com/jquery-1.8.2.js"></script>
-<!--        <script type="text/javascript" src="http://codeorigin.jquery.com/mobile/1.3.0/jquery.mobile-1.3.0.js"></script>
--->
-</head>
-    
-<body>
-<p>
-	<select id="whereSamples">
-		<option value='{"Name" : {"$like": "auber" }}'>{"Name" : { "$like": "auber" }}</option>
-		<option value='{"French":"6a+","Area":"Climb on Marswiese","Sector":"Turm-C"}'>{"French":"6a+","Area":"Climb on Marswiese","Sector":"Turm-C"}</option>
-	</select>
-</p>
-<p>
-	<input style="width: 300px" id="whereClauseStr" value=""/>
-</p>
-<p>
-	<input style="width: 200px" id="distinctColumn" value=""/>
-</p>
-<p>
-	<input id="testQuery" type="button">
-</p>	
-	<div id="foo">.....</div>
-	<script>
+        <script type="text/javascript" src="http://codeorigin.jquery.com/mobile/1.3.0/jquery.mobile-1.3.0.js"></script>
+
+
+</head> 
+
+<body> 
+
+<div data-role="page">
+
+	<div data-role="header">
+		<h1>Single page</h1>
+	</div><!-- /header -->
+
+	<div data-role="content">	
+
+	
+		<p>
+			<select id="whereSamples">
+				<option value='{"Name" : {"$like": "auber" }}'>{"Name" : { "$like": "auber" }}</option>
+				<option value='{"French":"6a+","Area":"Climb on Marswiese","Sector":"Turm-C"}'>{"French":"6a+","Area":"Climb on Marswiese","Sector":"Turm-C"}</option>
+			</select>
+		</p>
+		<p>
+			<input style="width: 300px" id="whereClauseStr" value=""/>
+		</p>
+		<p>
+			<input style="width: 200px" id="distinctColumn" value=""/>
+		</p>
+		<p>
+			<input id="testQuery" type="button">
+		</p>	
+			<div id="foo">.....</div>
+
+
+	</div><!-- /content -->
+	
+	<div data-role="footer">
+		<h4>Footer content</h4>
+	</div><!-- /footer -->
+	
+</div><!-- /page -->
+<script>
 	"use strict";
 	
 	
 	
-//$( document ).live("pagecreate", function() {
 (function(){
+//$( document ).live("mobileinit", function() {
    console.log("start");
 	
-	
+
+$.mobile.loader( 'show', {
+text: "as",
+textVisible: true,
+theme: "Asdf",
+textonly: false,
+html: "asdf"
+});
+
+
 	var profiledFnCall = function(iterations, aFunc) {
 		var totalDuration = 0;
 		for(var i = 0; i < iterations; i++) {
@@ -61,9 +101,9 @@
 	console.log("init storage end");
 	//console.profileEnd();
 	
-	var distinctColumn, whereStr = 
+	var distinctColumn, where = 
 			clLib.getRoutesWhere("French", "6a+", "Climb on Marswiese", "Turm-C");
-	whereStr = '{"Name" : { "$like": "auber" }}';
+	var whereStr = '{"Name" : { "$like": "auber" }}';
 	$("#whereClauseStr").val(whereStr);
 	$("#distinctColumn").val("Colour");
 	$("#whereSamples").change(function() {
@@ -72,17 +112,17 @@
 	
 	//alert("built where clause " + tojson(JSON.parse(whereStr)));
 	$("#testQuery").click(function() {
-		whereStr = JSON.parse($("#whereClauseStr").val());
+		var whereObj = JSON.parse($("#whereClauseStr").val());
 		distinctColumn = $("#distinctColumn").val();
 		var results = {}, distincts = {};
 		
 		var avgDur = profiledFnCall(10, function() { 
-			distincts = clLib.localStorage.getDistinct("routes", whereStr, distinctColumn, "routeStorage");
+			distincts = clLib.localStorage.getDistinct("routes", whereObj, distinctColumn, "routeStorage");
 		});
 		printi("avg duration for distincts: " + avgDur);
 		
 		var avgDur = profiledFnCall(10, function() { 
-			results = clLib.localStorage.getEntities("routes", whereStr, "routeStorage");
+			results = clLib.localStorage.getEntities("routes", whereObj, "routeStorage");
 		});
 		printi("avg duration for results: " + avgDur);
 			printi("got no of results:" + Object.keys(results).length);
@@ -98,9 +138,11 @@
 	
 	console.log("end");
 })(jQuery);
-//   });		
+//});		
 
    </script>
-    
+	
 </body>
+
+  
 </html>

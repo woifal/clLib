@@ -1,21 +1,37 @@
 "use strict";
 
+
+
+
 //(function(){
 var clLib = {};
 
 
-clLib.populateSelectBox = function($selectBox, dataObj, selectedValue){
+
+clLib.populateSelectBox = function($selectBox, dataObj, selectedValue, preserveCurrentValue){
+	var oldValue = $selectBox.val();
+	var oldValueFound = true;
+	if(preserveCurrentValue) {
+		selectedValue = oldValue;
+		oldValueFound = false;
+	}
+	
 	$selectBox.empty();
 	$.each(dataObj, function(index, value) {
 		var $option = $('<option></option>')
-                .val(index)
-                .html(dataObj instanceof Array ? index: value);
-		if(index == selectedValue) {
+                .val(dataObj instanceof Array ? value : index)
+                .html(value);
+		if(value == selectedValue) {
 			$option.attr("selected", "selected");
+			oldValueFound = true;
 		}
 		$selectBox.append($option);
 	});
 	$selectBox.selectmenu('refresh', true);
+
+	if(!oldValueFound) {
+		alert("Previous value >" + oldValue + "< is no longer present in the select list.");
+	}
 };
 
 /*
@@ -23,7 +39,7 @@ clLib.populateSelectBox = function($selectBox, dataObj, selectedValue){
 */
 clLib.populateGradeTypes = function($gradeTypeSelect, preselectedGradeType){
 	console.log("refreshing gradeTypes for preselected gradetype " + preselectedGradeType);
-	populateSelectBox($gradeTypeSelect, Object.keys(clLib.gradeConfig), preselectedGradeType);
+	clLib.populateSelectBox($gradeTypeSelect, Object.keys(clLib.gradeConfig), preselectedGradeType);
 };
 
 /*
@@ -31,7 +47,7 @@ clLib.populateGradeTypes = function($gradeTypeSelect, preselectedGradeType){
 */
 clLib.populateGrades = function($gradeSelect, selectedGradeType) {
 	console.log("refreshing grades for gradetype " + selectedGradeType);
-	populateSelectBox($gradeSelect, Object.kyes(clLib.gradeConfig[selectedGradeType]["grades"]), selectedGradeType);
+	clLib.populateSelectBox($gradeSelect, Object.keys(clLib.gradeConfig[selectedGradeType]["grades"]), clLib.gradeConfig[selectedGradeType]["defaultGrade"]);
 };
 
 /*
@@ -93,8 +109,6 @@ clLib.tomorrow = function() {
 
 
 
-//clLib.addColorBackground("startScreen_colorSelectMenu"); 
-
 /*
 *  Adds css classes (with the same name as the _values_) to the options
 *  from the specified select box (with id _targetId_).
@@ -139,6 +153,8 @@ clLib.addColorBackground = function(targetId) {
 
 
 
+
+
 // $inElement = $("#startScreen_nameSearchResult").
 // $forElement = Appery("nameSearchField");
 clLib.populateSearchProposals = function($forElement, $inElement) {
@@ -156,6 +172,8 @@ clLib.populateSearchProposals = function($forElement, $inElement) {
 		//$("#startScreen_mobilefooter1").html(result);
 	});
 };
+
+
 
 /****************************************************************************************************
 *           WHERE conditions utility functions
@@ -204,7 +222,7 @@ clLib.getRoutesWhere = function(gradeType, grade, area, sector) {
 	whereObj[gradeType] = grade;
 	clLib.extendIfDefined(whereObj, "Area", area);
 	clLib.extendIfDefined(whereObj, "Sector", sector);
-	return JSON.stringify(whereObj);
+	return whereObj;
 };
 
 /*

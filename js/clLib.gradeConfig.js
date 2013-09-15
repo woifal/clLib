@@ -8,7 +8,7 @@
 */
 clLib.gradeConfig = {
 	"UIAA" : {
-		defaultGrade: "V",
+		defaultGrade: "V+",
 		tickTypeFactors : {
 			"Red Point"       : 1,
 			"Lead / rest"     : 2,
@@ -79,7 +79,7 @@ clLib.gradeConfig = {
 		}
 	},
 	"French" : {                        
-		defaultGrade: "5",
+		defaultGrade: "5b",
 		tickTypeFactors : {
 			"Red Point"       : 1,
 			"Lead / rest"     : 2,
@@ -225,3 +225,4 @@ clLib.gradeConfig = {
 		}
 	}
 };
+
