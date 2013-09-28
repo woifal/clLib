@@ -136,6 +136,11 @@ html: "asdf"
 	
 	};
 	
+	alert("today >" + clLib.today());
+	alert("tomorrow >" + clLib.tomorrow());
+	alert("datebetween : " + JSON.stringify(clLib.colBetweenDate("someDate", Date.parse("09/18/2013"), Date.parse("09/20/2013"))));
+	
+
 	console.log("end");
 })(jQuery);
 //});		

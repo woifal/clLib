@@ -321,7 +321,14 @@ clLib.localStorage.getDistinct = function(entity, whereObj, colName, storageName
 	}
 */	
 	var remainingIdsToQuery = Object.keys(storage[entity]);
+	var foundCounter = 0;
+	var limit = 30;
 	$.each(remainingIdsToQuery, function(index, id) {
+/*
+		if(foundCounter > limit) {
+			return;
+		}
+*/		
 		var currentItem = storage[entity][id];
 		//console.log("iterating id(" + index + ") " + id + " item " + JSON.stringify(currentItem));
 		
@@ -332,19 +339,23 @@ clLib.localStorage.getDistinct = function(entity, whereObj, colName, storageName
 			// still eligible? check remaining conditions..
 			if(eligible) {
 				eligible = clLib.localStorage.evalCondition(currentItem[keyName], condition);
-			}
+		 	}
 		});
 		if(eligible) {
-			resultsObj[currentItem[colName]] += 1;
+			if(typeof(currentItem[colName]) !== 'undefined') {
+				//alert("aaaa" + colName);
+				resultsObj[currentItem[colName]] += 1;
+				foundCounter++;
+			}
 		}
 	});
-	//console.log("Got resultsobj" + JSON.stringify(resultsObj));
+	console.log("Got resultsobj" + JSON.stringify(resultsObj));
 /*	if(Object.keys(foundValues).length > 0) {
 		return foundValues.getIntersect(
 			Object.keys(resultsObj));
 	}
 */
-	return Object.keys(resultsObj);
+	return resultsObj ? Object.keys(resultsObj) : null;
 }
 
 

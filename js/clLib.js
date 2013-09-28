@@ -1,45 +1,32 @@
 "use strict";
 
 
-
+var profiledFnCall = function(iterations, aFunc) {
+	var totalDuration = 0;
+	for(var i = 0; i < iterations; i++) {
+		var startDate = +new Date();
+		aFunc();
+		var endDate = +new Date();
+		totalDuration += (endDate - startDate);
+	}
+	return totalDuration / iterations;
+};
 
 //(function(){
 var clLib = {};
 
-
-
-clLib.populateSelectBox = function($selectBox, dataObj, selectedValue, preserveCurrentValue){
-	var oldValue = $selectBox.val();
-	var oldValueFound = true;
-	if(preserveCurrentValue) {
-		selectedValue = oldValue;
-		oldValueFound = false;
-	}
-	
-	$selectBox.empty();
-	$.each(dataObj, function(index, value) {
-		var $option = $('<option></option>')
-                .val(dataObj instanceof Array ? value : index)
-                .html(value);
-		if(value == selectedValue) {
-			$option.attr("selected", "selected");
-			oldValueFound = true;
-		}
-		$selectBox.append($option);
-	});
-	$selectBox.selectmenu('refresh', true);
-
-	if(!oldValueFound) {
-		alert("Previous value >" + oldValue + "< is no longer present in the select list.");
-	}
-};
 
 /*
 *   Populates a select box with available gradeTypes from clLib.gradeConfig.
 */
 clLib.populateGradeTypes = function($gradeTypeSelect, preselectedGradeType){
 	console.log("refreshing gradeTypes for preselected gradetype " + preselectedGradeType);
-	clLib.populateSelectBox($gradeTypeSelect, Object.keys(clLib.gradeConfig), preselectedGradeType);
+//	clLib.populateSelectBox($gradeTypeSelect, Object.keys(clLib.gradeConfig), preselectedGradeType);
+	clLib.populateSelectBox({
+		selectBoxElement : $gradeTypeSelect,
+		dataObj : Object.keys(clLib.gradeConfig),
+		selectedValue : preselectedGradeType
+	});
 };
 
 /*
@@ -47,7 +34,14 @@ clLib.populateGradeTypes = function($gradeTypeSelect, preselectedGradeType){
 */
 clLib.populateGrades = function($gradeSelect, selectedGradeType) {
 	console.log("refreshing grades for gradetype " + selectedGradeType);
-	clLib.populateSelectBox($gradeSelect, Object.keys(clLib.gradeConfig[selectedGradeType]["grades"]), clLib.gradeConfig[selectedGradeType]["defaultGrade"]);
+	//clLib.populateSelectBox($gradeSelect, Object.keys(clLib.gradeConfig[selectedGradeType]["grades"]), clLib.gradeConfig[selectedGradeType]["defaultGrade"]);
+
+	clLib.populateSelectBox({
+		selectBoxElement : $gradeSelect,
+		dataObj : Object.keys(clLib.gradeConfig[selectedGradeType]["grades"]),
+		selectedValue : clLib.gradeConfig[selectedGradeType]["defaultGrade"]
+	});
+	
 };
 
 /*
@@ -120,7 +114,11 @@ clLib.tomorrow = function() {
 */
 clLib.addColorBackground = function(targetId) {
 	console.log("adding colors to " + targetId);
-    // Add css class named option.value for every entry in #targetId
+    $('#' + targetId).unbind('change.clLibColour');
+	$('#' + targetId).off('change.clLibColour');
+	$('#' + targetId).die('change.clLibColour');
+	
+	// Add css class named option.value for every entry in #targetId
     $('#' + targetId + ' option').each(function () {
         var ind = $(this).index();
         // fetch current option element
@@ -133,7 +131,11 @@ clLib.addColorBackground = function(targetId) {
     });
     // Set currently selected color in collapsed select menu 
     var last_style; // remembers last color chosen
-    $('#' + targetId).on('change', function () {
+    
+	// Update jqm generated widget
+//	$('#' + targetId).trigger('change.clLibColour');
+
+	$('#' + targetId).on('change.clLibColour', function () {
         // Get currently selected element
         var selection = $(this).find(':selected').html();
         // Remove CSS class for previously selected color
@@ -146,32 +148,11 @@ clLib.addColorBackground = function(targetId) {
         last_style = selection;
         //$(this).change();
     });
-	
-    // Update jqm generated widget
-    $('#' + targetId).change();
+
+ 	
 };
 
 
-
-
-
-// $inElement = $("#startScreen_nameSearchResult").
-// $forElement = Appery("nameSearchField");
-clLib.populateSearchProposals = function($forElement, $inElement) {
-	$inElement.attr("data-theme", "c");
-	$inElement.show();
-	console.log("shown");
-
-	$inElement.children().click(function() {
-        console.log("this child;" + $(this).children().first().html());
-		var result = $.trim($(this).children().first().text());
-		console.log("seeting selectedresult to " + result);
-		$forElement.val(result);
-		$(this).parent().hide();
-		console.log("hidden");
-		//$("#startScreen_mobilefooter1").html(result);
-	});
-};
 
 
 
@@ -217,11 +198,12 @@ clLib.colBetweenDate = function(colName, startDate, endDate) {
 * Returns the WHERE clause in JSON notation.
 *
 */
-clLib.getRoutesWhere = function(gradeType, grade, area, sector) {
+clLib.getRoutesWhere = function(gradeType, grade, area, sector, colour) {
 	var whereObj = {};
 	whereObj[gradeType] = grade;
 	clLib.extendIfDefined(whereObj, "Area", area);
 	clLib.extendIfDefined(whereObj, "Sector", sector);
+	clLib.extendIfDefined(whereObj, "Colour", colour);
 	return whereObj;
 };
 
