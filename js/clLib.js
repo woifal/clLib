@@ -20,7 +20,7 @@ var clLib = {};
 *   Populates a select box with available gradeTypes from clLib.gradeConfig.
 */
 clLib.populateGradeTypes = function($gradeTypeSelect, preselectedGradeType){
-	console.log("refreshing gradeTypes for preselected gradetype " + preselectedGradeType);
+	alert("refreshing gradeTypes for preselected gradetype " + preselectedGradeType);
 //	clLib.populateSelectBox($gradeTypeSelect, Object.keys(clLib.gradeConfig), preselectedGradeType);
 	clLib.populateSelectBox({
 		selectBoxElement : $gradeTypeSelect,
@@ -138,7 +138,7 @@ clLib.addColorBackground = function(targetId) {
 		// Get currently selected element
         var selection = $(this).find(':selected').html();
 
-        alert("last_style " + last_style + ",changing to " + selection);
+        //alert("last_style " + last_style + ",changing to " + selection);
 
         // Remove CSS class for previously selected color
         if (last_style) {
@@ -148,7 +148,7 @@ clLib.addColorBackground = function(targetId) {
         $(this).closest('.ui-select').find('.ui-btn').addClass(selection);
         // Remember currently selected color
         $(this).data("cllast_style", selection);
-        alert("remembering last_style " + selection);
+        //alert("remembering last_style " + selection);
 		//$(this).change();
     });
 
@@ -177,16 +177,54 @@ clLib.buildSimpleWhere = function(whereCol, whereVal) {
 	return JSON.stringify(whereObj);
 };
 
+clLib.trimApostrophs = function(str) {
+	var trimmedStr;
+	trimmedStr = str.substring(1,str.length-1);
+	return trimmedStr;
+};
+
+clLib.lpad = function(str1, padString, length) {
+    var str = str1 +"";
+    alert("padding " + str + " with " + padString + " to " + length);
+    while (str.length < length)
+        str = padString + str;
+    alert("returning " + str);
+    return str;
+};
+
+clLib.dateToStr = function(dateObj) {
+	var dateStr = 
+		dateObj.getFullYear() + 
+		"-" + 
+        clLib.lpad((dateObj.getMonth() + 1), '0', 2) + 
+		"-" + 
+		clLib.lpad(dateObj.getDate(), '0', 2) + 
+		" " + 
+		clLib.lpad(dateObj.getHours(), '0', 2)+ 
+		":" + 
+		clLib.lpad(dateObj.getMinutes(), '0', 2) + 
+		":" + 
+		clLib.lpad(dateObj.getSeconds(), '0', 2) + 
+		"." + 
+		clLib.lpad(dateObj.getMilliseconds(), '0', 2)
+	;
+	alert(dateStr);
+	return dateStr;
+};
+
 /*
 *   Returns a "BETWEEN startDate and endDate" where condition in JSON notation.
 */
 clLib.colBetweenDate = function(colName, startDate, endDate) {
+	alert("getting between date " + JSON.stringify(startDate) + " and " + JSON.stringify(endDate));
 	var whereObj = {};
-	whereObj.colName = {
-		"$gte": startDate, 
-		"$lt": endDate
+	whereObj[colName] = {
+		"$gte": clLib.dateToStr(startDate), 
+		"$lt": clLib.dateToStr(endDate)
 	};
-	console.log(JSON.stringify(whereObj));
+	
+	
+	alert(JSON.stringify(whereObj));
 	return whereObj;
 };
 
@@ -203,13 +241,43 @@ clLib.colBetweenDate = function(colName, startDate, endDate) {
 * Returns the WHERE clause in JSON notation.
 *
 */
-clLib.getRoutesWhere = function(gradeType, grade, area, sector, colour) {
-	var whereObj = {};
-	whereObj[gradeType] = grade;
-	clLib.extendIfDefined(whereObj, "Area", area);
-	clLib.extendIfDefined(whereObj, "Sector", sector);
-	clLib.extendIfDefined(whereObj, "Colour", colour);
-	return whereObj;
+clLib.getRoutesWhere = function(gradeType, grade, area, sector, colour, line) {
+	//alert("typeof first ehre argument " + typeof(gradeType));
+	alert("getting " + line);
+	if(typeof(gradeType) !== "object") {
+		return clLib.getRoutesWhere_plain(gradeType, grade, area, sector, colour, line);
+	} else {
+		return clLib.getRoutesWhere_obj(gradeType);
+	}
+}
+
+clLib.getRoutesWhere_plain = function(gradeType, grade, area, sector, colour, line) {
+	var restrictionObj = {};
+	alert("building restrictionobj" + JSON.stringify(line));
+	restrictionObj["GradeType"] = gradeType;
+	restrictionObj["Grade"] = grade;
+	clLib.extendIfDefined(restrictionObj, "Area", area);
+	clLib.extendIfDefined(restrictionObj, "Sector", sector);
+	clLib.extendIfDefined(restrictionObj, "Colour", colour);
+	clLib.extendIfDefined(restrictionObj, "Line", line);
+	alert("getRoutesWhere2" + JSON.stringify(restrictionObj));
+	return clLib.getRoutesWhere(restrictionObj);
+	
+};
+
+clLib.getRoutesWhere_obj = function(restrictionObj) {
+	var gradeType, grade;
+	gradeType = restrictionObj["GradeType"];
+	grade = restrictionObj["Grade"];
+	delete restrictionObj["GradeType"];
+	delete restrictionObj["Grade"];
+	
+	restrictionObj[gradeType] = grade;
+	clLib.removeIfNotDefined(restrictionObj, "Area");
+	clLib.removeIfNotDefined(restrictionObj, "Sector");
+	clLib.removeIfNotDefined(restrictionObj, "Colour");
+	clLib.removeIfNotDefined(restrictionObj, "Line");
+	return restrictionObj;
 };
 
 /*
@@ -225,8 +293,8 @@ clLib.getRouteLogWhere = function(dateWhereObj) {
 	var whereObj = {};
 	$.extend(whereObj, dateWhereObj);
 	$.extend(clLib.extendIfDefined(
-            whereObj, "username", localStore.getItem("currentUser")));
-	return JSON.stringify(whereObj);
+            whereObj, "username", localStorage.getItem("currentUser")));
+	return whereObj;
 };
 
 /*
@@ -234,7 +302,7 @@ clLib.getRouteLogWhere = function(dateWhereObj) {
 *   Restricts results on routeLogs from today.
 */
 clLib.getRouteLogWhereToday = function() {
-	return getRouteLogWhereAtDay(clLib.today())	;
+	return clLib.getRouteLogWhereAtDay(clLib.today())	;
 }
 
 /*
@@ -242,8 +310,8 @@ clLib.getRouteLogWhereToday = function() {
 *   Restricts results on routeLogs at the day contained in "dateObj".
 */
 clLib.getRouteLogWhereAtDay = function(dateObj){
-	return getRouteLogWhere(
-		clLib.colBetweenDate(clLib.dayBegin(dateObj), clLib.dayEnd(dateObj))
+	return clLib.getRouteLogWhere(
+		clLib.colBetweenDate("_createdAt", clLib.dayBegin(dateObj), clLib.dayEnd(dateObj))
 	);
 };
 
@@ -274,15 +342,22 @@ clLib.getRouteLogWhereCurrentScoreRange =  function() {
 *   Returns dateObj at 00:00:00.
 */
 clLib.dayBegin = function(dateObj) {
-	dateObj.setHours(0, 0, 0, 0);
+	alert("setting hours to 0 in " + JSON.stringify(dateObj));
+	var foo = new Date(dateObj.setHours(0, 0, 0, 0));
+	alert("set hours to 0 in " + JSON.stringify(foo));
+	return foo;
 };
 
 /*
 *   Returns dateObj at 23:59:59.
 */
 clLib.dayEnd = function(dateObj) {
-	var dateTomorrow = dateObj.setDate(dateObj.getDate()+1);
-	return dateTomorrow.dayBegin();
+	alert("dateTomorrows was " + JSON.stringify(dateObj));
+	var dateTomorrow = new Date(dateObj.setDate(dateObj.getDate()+1));
+	alert("dateTomorrows now is " + JSON.stringify(dateTomorrow));
+	var foo = clLib.dayBegin(dateTomorrow);
+	alert("begin of tomorrow is " + JSON.stringify(foo));
+	return foo;
 };
 
 
@@ -291,7 +366,21 @@ clLib.dayEnd = function(dateObj) {
 *	=> but only if value is defined!
 */
 clLib.extendIfDefined = function(targetObj, key, value) {
-	if(value) targetObj[key] = value;
+	alert("checking " + targetObj[key] + "!=" + clLib.UI["NOTSELECTED"]["value"]);
+	if(	
+		value &&
+		value != clLib.UI["NOTSELECTED"]["value"]
+	) targetObj[key] = value;
+};
+
+/*
+*	Removes "key" from "targetObj"
+*	=> but only if value is NOT defined!
+*/
+clLib.removeIfNotDefined = function(targetObj, key) {
+	//alert("removeIfNotDefined " + JSON.stringify(targetObj) +", ? => " + key);
+	if(!targetObj[key]) delete targetObj[key];
+	if(targetObj[key] == clLib.UI["NOTSELECTED"]["value"]) delete targetObj[key];
 };
 
 

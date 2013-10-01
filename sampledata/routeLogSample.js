@@ -1,5 +1,6 @@
 "use strict";
 
+// 2013-09-30T22:00:00.000Z
 
 var routeLogSample = {
 	"routeLogs": 
@@ -14,8 +15,8 @@ var routeLogSample = {
         "TickType":"Project",
         "RouteName":"Search Route Name",
         "GradeSystem":"UIAA",
-        "_createdAt":"2013-08-29 20:26:28.565",
-        "_updatedAt":"2013-08-29 20:26:28.565"
+        "_createdAt":"2013-10-01T20:26:28.565Z",
+        "_updatedAt":"2013-10-01T20:26:28.565Z"
     },
     {
         "_id":"521fae77e4b0899403d03883",
@@ -27,8 +28,8 @@ var routeLogSample = {
         "TickType":"Project",
         "RouteName":"Search Route Name",
         "GradeSystem":"UIAA",
-        "_createdAt":"2013-08-29 20:26:31.830",
-        "_updatedAt":"2013-08-29 20:26:31.830"
+        "_createdAt":"2013-10-01T20:26:31.830Z",
+        "_updatedAt":"2013-10-01T20:26:31.830Z"
     },
     {
         "_id":"52219051e4b0158b3c4d3812",
@@ -40,8 +41,8 @@ var routeLogSample = {
         "TickType":"Red Point",
         "RouteName":"Enigma",
         "GradeSystem":"French",
-        "_createdAt":"2013-08-31 06:42:25.261",
-        "_updatedAt":"2013-08-31 06:42:25.261"
+        "_createdAt":"2013-08-31Z06:42:25.261",
+        "_updatedAt":"2013-08-31Z06:42:25.261"
     },
     {
         "_id":"52219633e4b0899403d256ba",
@@ -53,8 +54,8 @@ var routeLogSample = {
         "TickType":"Red Point",
         "RouteName":"ende gelaende",
         "GradeSystem":"French",
-        "_createdAt":"2013-08-31 07:07:31.368",
-        "_updatedAt":"2013-08-31 07:07:31.368"
+        "_createdAt":"2013-08-31Z07:07:31.368",
+        "_updatedAt":"2013-08-31Z07:07:31.368"
     },
     {
         "_id":"5221ee86e4b0158b3c4d38d2",
@@ -66,8 +67,8 @@ var routeLogSample = {
         "TickType":"Red Point",
         "RouteName":"Easy come, easy go...",
         "GradeSystem":"French",
-        "_createdAt":"2013-08-31 13:24:22.697",
-        "_updatedAt":"2013-08-31 13:24:22.697"
+        "_createdAt":"2013-08-31Z13:24:22.697",
+        "_updatedAt":"2013-08-31Z13:24:22.697"
     },
     {
         "_id":"5221ff43e4b0899403d3297d",
@@ -78,8 +79,8 @@ var routeLogSample = {
         "Comment":"5a",
         "TickType":"Red Point",
         "GradeSystem":"UIAA",
-        "_createdAt":"2013-08-31 14:35:47.545",
-        "_updatedAt":"2013-08-31 14:35:47.545"
+        "_createdAt":"2013-08-31Z14:35:47.545",
+        "_updatedAt":"2013-08-31Z14:35:47.545"
     },
     {
         "_id":"5222144ae4b0899403d351b8",
@@ -91,8 +92,8 @@ var routeLogSample = {
         "TickType":"Red Point",
         "RouteName":"Enigma",
         "GradeSystem":"Bleau",
-        "_createdAt":"2013-08-31 16:05:30.850",
-        "_updatedAt":"2013-08-31 16:05:30.850"
+        "_createdAt":"2013-08-31Z16:05:30.850",
+        "_updatedAt":"2013-08-31Z16:05:30.850"
     },
     {
         "_id":"5222144be4b0899403d351b9",
@@ -104,8 +105,8 @@ var routeLogSample = {
         "TickType":"Red Point",
         "RouteName":"Enigma",
         "GradeSystem":"Bleau",
-        "_createdAt":"2013-08-31 16:05:31.971",
-        "_updatedAt":"2013-08-31 16:05:31.971"
+        "_createdAt":"2013-08-31Z16:05:31.971",
+        "_updatedAt":"2013-08-31Z16:05:31.971"
     },
     {
         "_id":"52221d3be4b0899403d360c6",
@@ -117,8 +118,8 @@ var routeLogSample = {
         "TickType":"Red Point",
         "RouteName":"Enigma",
         "GradeSystem":"Bleau",
-        "_createdAt":"2013-08-31 16:43:39.917",
-        "_updatedAt":"2013-08-31 16:43:39.917"
+        "_createdAt":"2013-08-31Z16:43:39.917",
+        "_updatedAt":"2013-08-31Z16:43:39.917"
     },
     {
         "_id":"52222d06e4b0899403d36d74",
@@ -130,8 +131,8 @@ var routeLogSample = {
         "TickType":"Red Point",
         "RouteName":"Enigma",
         "GradeSystem":"Bleau",
-        "_createdAt":"2013-08-31 17:51:02.174",
-        "_updatedAt":"2013-08-31 17:51:02.174"
+        "_createdAt":"2013-08-31Z17:51:02.174",
+        "_updatedAt":"2013-08-31Z17:51:02.174"
     },
     {
         "_id":"5222f853e4b0158b3c4d3a8a",
@@ -143,8 +144,8 @@ var routeLogSample = {
         "TickType":"Red Point",
         "RouteName":"g",
         "GradeSystem":"UIAA",
-        "_createdAt":"2013-09-01 08:18:27.001",
-        "_updatedAt":"2013-09-01 08:18:27.001"
+        "_createdAt":"2013-09-01Z08:18:27.001",
+        "_updatedAt":"2013-09-01Z08:18:27.001"
     },
     {
         "_id":"5222f853e4b0158b3c4d3a8b",
@@ -156,8 +157,8 @@ var routeLogSample = {
         "TickType":"Red Point",
         "RouteName":"g",
         "GradeSystem":"UIAA",
-        "_createdAt":"2013-09-01 08:18:27.004",
-        "_updatedAt":"2013-09-01 08:18:27.004"
+        "_createdAt":"2013-09-01Z08:18:27.004",
+        "_updatedAt":"2013-09-01Z08:18:27.004"
     },
     {
         "_id":"5222f85be4b0158b3c4d3a8c",
@@ -169,8 +170,8 @@ var routeLogSample = {
         "TickType":"Red Point",
         "RouteName":"GR�N- WEI�-BLAU",
         "GradeSystem":"UIAA",
-        "_createdAt":"2013-09-01 08:18:35.069",
-        "_updatedAt":"2013-09-01 08:18:35.069"
+        "_createdAt":"2013-09-01Z08:18:35.069",
+        "_updatedAt":"2013-09-01Z08:18:35.069"
     },
     {
         "_id":"522384e2e4b0de4877e421dd",
@@ -182,8 +183,8 @@ var routeLogSample = {
         "TickType":"Red Point",
         "RouteName":"Arminius",
         "GradeSystem":"Bleau",
-        "_createdAt":"2013-09-01 18:18:10.690",
-        "_updatedAt":"2013-09-01 18:18:10.690"
+        "_createdAt":"2013-09-01Z18:18:10.690",
+        "_updatedAt":"2013-09-01Z18:18:10.690"
     },
     {
         "_id":"52239031e4b0de4877e421ea",
@@ -194,8 +195,8 @@ var routeLogSample = {
         "Comment":"Comment",
         "TickType":"Red Point",
         "GradeSystem":"UIAA",
-        "_createdAt":"2013-09-01 19:06:25.986",
-        "_updatedAt":"2013-09-01 19:06:25.986"
+        "_createdAt":"2013-09-01Z19:06:25.986",
+        "_updatedAt":"2013-09-01Z19:06:25.986"
     },
     {
         "_id":"5223912de4b0de4877e421f0",
@@ -206,8 +207,8 @@ var routeLogSample = {
         "Comment":"Comment",
         "TickType":"Top Rope",
         "GradeSystem":"UIAA",
-        "_createdAt":"2013-09-01 19:10:37.345",
-        "_updatedAt":"2013-09-01 19:10:37.345"
+        "_createdAt":"2013-09-01Z19:10:37.345",
+        "_updatedAt":"2013-09-01Z19:10:37.345"
     },
     {
         "_id":"522448bfe4b0de4877e423b0",
@@ -219,8 +220,8 @@ var routeLogSample = {
         "TickType":"Red Point",
         "RouteName":"Bulgur",
         "GradeSystem":"French",
-        "_createdAt":"2013-09-02 08:13:51.638",
-        "_updatedAt":"2013-09-02 08:13:51.638"
+        "_createdAt":"2013-09-02Z 08:13:51.638",
+        "_updatedAt":"2013-09-02Z 08:13:51.638"
     },
     {
         "_id":"52248e82e4b0cfb71e4bbb6c",
@@ -232,8 +233,8 @@ var routeLogSample = {
         "TickType":"Red Point",
         "RouteName":"Anonym Verf�gung",
         "GradeSystem":"UIAA",
-        "_createdAt":"2013-09-02 13:11:30.785",
-        "_updatedAt":"2013-09-02 13:11:30.785"
+        "_createdAt":"2013-09-02Z 13:11:30.785",
+        "_updatedAt":"2013-09-02Z 13:11:30.785"
     },
     {
         "_id":"52249075e4b0cfb71e4bbb6f",
@@ -245,8 +246,8 @@ var routeLogSample = {
         "TickType":"Red Point",
         "RouteName":"Anonym Verf�gung",
         "GradeSystem":"UIAA",
-        "_createdAt":"2013-09-02 13:19:49.909",
-        "_updatedAt":"2013-09-02 13:19:49.909"
+        "_createdAt":"2013-09-02Z 13:19:49.909",
+        "_updatedAt":"2013-09-02Z 13:19:49.909"
     },
     {
         "_id":"5224907ee4b0cfb71e4bbb70",
@@ -258,8 +259,8 @@ var routeLogSample = {
         "TickType":"Red Point",
         "RouteName":"Anonym Verf�gung",
         "GradeSystem":"UIAA",
-        "_createdAt":"2013-09-02 13:19:58.086",
-        "_updatedAt":"2013-09-02 13:19:58.086"
+        "_createdAt":"2013-09-02Z 13:19:58.086",
+        "_updatedAt":"2013-09-02Z 13:19:58.086"
     },
     {
         "_id":"522493c9e4b0cfb71e4bbb71",
@@ -270,8 +271,8 @@ var routeLogSample = {
         "TickType":"Red Point",
         "RouteName":"Blume",
         "GradeSystem":"UIAA",
-        "_createdAt":"2013-09-02 13:34:01.212",
-        "_updatedAt":"2013-09-02 13:34:01.212"
+        "_createdAt":"2013-09-02Z 13:34:01.212",
+        "_updatedAt":"2013-09-02Z 13:34:01.212"
     },
     {
         "_id":"52249442e4b0cfb71e4bbb73",
@@ -282,8 +283,8 @@ var routeLogSample = {
         "TickType":"Red Point",
         "RouteName":"Blume",
         "GradeSystem":"UIAA",
-        "_createdAt":"2013-09-02 13:36:02.803",
-        "_updatedAt":"2013-09-02 13:36:02.803"
+        "_createdAt":"2013-09-02Z 13:36:02.803",
+        "_updatedAt":"2013-09-02Z 13:36:02.803"
     },
     {
         "_id":"52249455e4b0cfb71e4bbb74",
@@ -294,8 +295,8 @@ var routeLogSample = {
         "TickType":"Red Point",
         "RouteName":"Blume",
         "GradeSystem":"UIAA",
-        "_createdAt":"2013-09-02 13:36:21.085",
-        "_updatedAt":"2013-09-02 13:36:21.085"
+        "_createdAt":"2013-09-02Z 13:36:21.085",
+        "_updatedAt":"2013-09-02Z 13:36:21.085"
     },
     {
         "_id":"522494c0e4b0cfb71e4bbb75",
@@ -306,8 +307,8 @@ var routeLogSample = {
         "TickType":"Red Point",
         "RouteName":"Asphaltgulasch",
         "GradeSystem":"UIAA",
-        "_createdAt":"2013-09-02 13:38:08.542",
-        "_updatedAt":"2013-09-02 13:38:08.542"
+        "_createdAt":"2013-09-02Z 13:38:08.542",
+        "_updatedAt":"2013-09-02Z 13:38:08.542"
     },
     {
         "_id":"522494e2e4b0cfb71e4bbb76",
@@ -318,8 +319,8 @@ var routeLogSample = {
         "TickType":"Red Point",
         "RouteName":"Asphaltgulasch",
         "GradeSystem":"UIAA",
-        "_createdAt":"2013-09-02 13:38:42.894",
-        "_updatedAt":"2013-09-02 13:38:42.894"
+        "_createdAt":"2013-09-02Z 13:38:42.894",
+        "_updatedAt":"2013-09-02Z 13:38:42.894"
     },
     {
         "_id":"522494f3e4b0cfb71e4bbb77",
@@ -329,8 +330,8 @@ var routeLogSample = {
         "Area":"Leiter",
         "TickType":"Red Point",
         "GradeSystem":"UIAA",
-        "_createdAt":"2013-09-02 13:38:59.834",
-        "_updatedAt":"2013-09-02 13:38:59.834"
+        "_createdAt":"2013-09-02Z 13:38:59.834",
+        "_updatedAt":"2013-09-02Z 13:38:59.834"
     },
     {
         "_id":"52249545e4b0cfb71e4bbb78",
@@ -340,8 +341,8 @@ var routeLogSample = {
         "Area":"Leiter",
         "TickType":"Red Point",
         "GradeSystem":"UIAA",
-        "_createdAt":"2013-09-02 13:40:21.039",
-        "_updatedAt":"2013-09-02 13:40:21.039"
+        "_createdAt":"2013-09-02Z 13:40:21.039",
+        "_updatedAt":"2013-09-02Z 13:40:21.039"
     },
     {
         "_id":"5224954be4b0cfb71e4bbb79",
@@ -351,8 +352,8 @@ var routeLogSample = {
         "Area":"Leiter",
         "TickType":"Red Point",
         "GradeSystem":"UIAA",
-        "_createdAt":"2013-09-02 13:40:27.170",
-        "_updatedAt":"2013-09-02 13:40:27.170"
+        "_createdAt":"2013-09-02Z 13:40:27.170",
+        "_updatedAt":"2013-09-02Z 13:40:27.170"
     },
     {
         "_id":"52249550e4b0cfb71e4bbb7a",
@@ -362,8 +363,8 @@ var routeLogSample = {
         "Area":"Leiter",
         "TickType":"Red Point",
         "GradeSystem":"UIAA",
-        "_createdAt":"2013-09-02 13:40:32.740",
-        "_updatedAt":"2013-09-02 13:40:32.740"
+        "_createdAt":"2013-09-02Z 13:40:32.740",
+        "_updatedAt":"2013-09-02Z 13:40:32.740"
     },
     {
         "_id":"52249582e4b0cfb71e4bbb7b",
@@ -372,8 +373,8 @@ var routeLogSample = {
         "Area":"Kletterhalle Wien",
         "TickType":"Red Point",
         "GradeSystem":"UIAA",
-        "_createdAt":"2013-09-02 13:41:22.126",
-        "_updatedAt":"2013-09-02 13:41:22.126"
+        "_createdAt":"2013-09-02Z 13:41:22.126",
+        "_updatedAt":"2013-09-02Z 13:41:22.126"
     },
     {
         "_id":"5224961ce4b0cfb71e4bbb7d",
@@ -382,8 +383,8 @@ var routeLogSample = {
         "Area":"Kletterhalle Wien",
         "TickType":"Red Point",
         "GradeSystem":"UIAA",
-        "_createdAt":"2013-09-02 13:43:56.651",
-        "_updatedAt":"2013-09-02 13:43:56.651"
+        "_createdAt":"2013-09-02Z 13:43:56.651",
+        "_updatedAt":"2013-09-02Z 13:43:56.651"
     },
     {
         "_id":"5224965ee4b0cfb71e4bbb7e",
@@ -392,8 +393,8 @@ var routeLogSample = {
         "Area":"Kletterhalle Wien",
         "TickType":"Red Point",
         "GradeSystem":"UIAA",
-        "_createdAt":"2013-09-02 13:45:02.090",
-        "_updatedAt":"2013-09-02 13:45:02.090"
+        "_createdAt":"2013-09-02Z 13:45:02.090",
+        "_updatedAt":"2013-09-02Z 13:45:02.090"
     },
     {
         "_id":"522496b8e4b0cfb71e4bbb7f",
@@ -402,8 +403,8 @@ var routeLogSample = {
         "Area":"Kletterhalle Wien",
         "TickType":"Red Point",
         "GradeSystem":"UIAA",
-        "_createdAt":"2013-09-02 13:46:32.134",
-        "_updatedAt":"2013-09-02 13:46:32.134"
+        "_createdAt":"2013-09-02Z 13:46:32.134",
+        "_updatedAt":"2013-09-02Z 13:46:32.134"
     },
     {
         "_id":"522496c5e4b0cfb71e4bbb80",
@@ -412,8 +413,8 @@ var routeLogSample = {
         "Area":"Kletterhalle Wien",
         "TickType":"Red Point",
         "GradeSystem":"UIAA",
-        "_createdAt":"2013-09-02 13:46:45.353",
-        "_updatedAt":"2013-09-02 13:46:45.353"
+        "_createdAt":"2013-09-02Z 13:46:45.353",
+        "_updatedAt":"2013-09-02Z 13:46:45.353"
     },
     {
         "_id":"5224fbbee4b09a476a3079ed",
@@ -425,8 +426,8 @@ var routeLogSample = {
         "TickType":"Red Point",
         "RouteName":"Peterl vom Wienerberg",
         "GradeSystem":"UIAA",
-        "_createdAt":"2013-09-02 20:57:34.763",
-        "_updatedAt":"2013-09-02 20:57:34.763"
+        "_createdAt":"2013-09-02Z 20:57:34.763",
+        "_updatedAt":"2013-09-02Z 20:57:34.763"
     },
     {
         "_id":"52250602e4b09a476a309667",
@@ -438,8 +439,8 @@ var routeLogSample = {
         "TickType":"Red Point",
         "RouteName":"die Froschhenkelkuppe",
         "GradeSystem":"UIAA",
-        "_createdAt":"2013-09-02 21:41:22.974",
-        "_updatedAt":"2013-09-02 21:41:22.974"
+        "_createdAt":"2013-09-02Z 21:41:22.974",
+        "_updatedAt":"2013-09-02Z 21:41:22.974"
     },
     {
         "_id":"52250bd8e4b09a476a309671",
@@ -450,8 +451,8 @@ var routeLogSample = {
         "TickType":"Red Point",
         "RouteName":"Dead End Friend",
         "GradeSystem":"UIAA",
-        "_createdAt":"2013-09-02 22:06:16.030",
-        "_updatedAt":"2013-09-02 22:06:16.030"
+        "_createdAt":"2013-09-02Z 22:06:16.030",
+        "_updatedAt":"2013-09-02Z 22:06:16.030"
     },
     {
         "_id":"52257976e4b0cfb71e4bc68b",
@@ -463,8 +464,8 @@ var routeLogSample = {
         "TickType":"Red Point",
         "RouteName":"Die dickste Frau",
         "GradeSystem":"UIAA",
-        "_createdAt":"2013-09-03 05:53:58.436",
-        "_updatedAt":"2013-09-03 05:53:58.436"
+        "_createdAt":"2013-09-03Z05:53:58.436",
+        "_updatedAt":"2013-09-03Z05:53:58.436"
     }
 ]
 };

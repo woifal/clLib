@@ -38,6 +38,7 @@ clLib.localStorage.initStorage = function(storageName, storageObj) {
 	console.log("adding elements " + Object.keys(storageObj).length);
 	var allItems = {};
 	for(var entityName in storageObj) {
+		console.log("entity: " + entityName);
 		var entityItems = {};
 		for(var i = 0; i < storageObj[entityName].length; i++) {
 			entityItems[storageObj[entityName][i]["_id"]] = storageObj[entityName][i];
@@ -397,21 +398,33 @@ clLib.localStorage.evalCondition = function(valueToTest, condition) {
 	}
 	else {
 		//console.log("object condition, comparing advanced values");
+		//alert("evaling conditions " + JSON.stringify(condition));
 		$.each(condition, function(operator, compValue) {
+			//alert("evaling condition " + JSON.stringify(operator));
 			if(operator == "$gte"){
+				//alert("$gt " + valueToTest + " < " + compValue);
+				//alert("$gte2 " + valueToTest + " < " + compValue);
 				if(!(valueToTest >= compValue)) {
 					eligible = false;
+				} else {
+					//alert("yes, gte!");
 				}
 			} else 
 			if(operator == "$gt"){
+				//alert("$gt " + valueToTest + " < " + compValue);
+				//alert("$gt2 " + valueToTest + " < " + compValue);
 				if(!(valueToTest > compValue)) {
 					eligible = false;
 				}
 			} else 
 			if(operator == "$lt") {
+				//alert("$lt " + valueToTest + " < " + compValue);
+				//alert("$lt2 " + valueToTest + " < " + compValue);
 				if(!(valueToTest < compValue)) {
 					eligible = false;
-				};
+				} else {
+					//alert("yes, st!!!");
+				}
 			} else 
 			if(operator == "$like"){
 				if(!(valueToTest.indexOf(compValue) > -1)) {
@@ -429,7 +442,9 @@ clLib.localStorage.evalCondition = function(valueToTest, condition) {
 			} 
 		});
 	};
-	//console.log("Eligibility is " + eligible);
+	if(eligible) {
+		alert("Eligibility is " + eligible);
+	}
 	return eligible;
 	
 };
