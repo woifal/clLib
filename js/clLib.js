@@ -114,12 +114,11 @@ clLib.tomorrow = function() {
 */
 clLib.addColorBackground = function(targetId) {
 	console.log("adding colors to " + targetId);
-    $('#' + targetId).unbind('change.clLibColour');
-	$('#' + targetId).off('change.clLibColour');
-	$('#' + targetId).die('change.clLibColour');
+	var $targetEl = $('#' + targetId);
+	clLib.UI.killEventHandlers($targetEl, "change.clLibColour");
 	
 	// Add css class named option.value for every entry in #targetId
-    $('#' + targetId + ' option').each(function () {
+    $('option', $targetEl).each(function () {
         var ind = $(this).index();
         // fetch current option element
         var entry = $('#' + targetId + '-menu').find('[data-option-index=' + ind + ']');
@@ -129,15 +128,18 @@ clLib.addColorBackground = function(targetId) {
             .addClass("clColorBg")
             .addClass(entry.find("a").html());
     });
-    // Set currently selected color in collapsed select menu 
+    
+	// Set currently selected color in collapsed select menu 
     var last_style; // remembers last color chosen
     
-	// Update jqm generated widget
-//	$('#' + targetId).trigger('change.clLibColour');
+	$targetEl.on('change.clLibColour', function () {
+		var last_style = $(this).data("cllast_style");
 
-	$('#' + targetId).on('change.clLibColour', function () {
-        // Get currently selected element
+		// Get currently selected element
         var selection = $(this).find(':selected').html();
+
+        alert("last_style " + last_style + ",changing to " + selection);
+
         // Remove CSS class for previously selected color
         if (last_style) {
             $(this).closest('.ui-select').find('.ui-btn').removeClass(last_style);
@@ -145,10 +147,13 @@ clLib.addColorBackground = function(targetId) {
         // Set currently selected color
         $(this).closest('.ui-select').find('.ui-btn').addClass(selection);
         // Remember currently selected color
-        last_style = selection;
-        //$(this).change();
+        $(this).data("cllast_style", selection);
+        alert("remembering last_style " + selection);
+		//$(this).change();
     });
 
+	// Update jqm generated widget
+	$('#' + targetId).trigger('change.clLibColour');
  	
 };
 

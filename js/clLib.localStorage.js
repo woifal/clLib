@@ -31,9 +31,11 @@ clLib.localStorage.indexExists = function(storageName, indexName) {
 	return false;
 };
 
+
 clLib.localStorage.initStorage = function(storageName, storageObj) {
-	localStorage.clear();
+//	localStorage.clear();
 	
+	console.log("adding elements " + Object.keys(storageObj).length);
 	var allItems = {};
 	for(var entityName in storageObj) {
 		var entityItems = {};
@@ -42,15 +44,16 @@ clLib.localStorage.initStorage = function(storageName, storageObj) {
 		}
 		allItems[entityName] = entityItems;
 	}
-	
+	console.log("storing items");
 	clLib.localStorage.setStorageItems(storageName, allItems);
+	console.log("items stored");
 	
 	var indexedEntities = clLib.localStorage.indexes;
 	var storageItems = clLib.localStorage.getStorageItems(storageName);
 	
 	var indexedItems = {};
 	
-	//console.log("indexItems: " + tojson(indexedEntities));
+	console.log("indexItems: " + tojson(indexedEntities));
 	//console.log("allitems " + tojson(storageItems));
 	// check all entities in storageObj for configured indexs..
 	for(var entityName in indexedEntities) {
@@ -151,6 +154,11 @@ clLib.localStorage.setStorageItems = function(storageName, storageItems) {
 	var storageName = storageName || clLib.localStorage.getItem("defaultStorage");
 	var storageItemsKey = storageName + "_items";
 	clLib.localStorage.setItem(storageItemsKey, tojson(storageItems));
+	clLib.localStorage.setItem(storageName + "_createdAt", tojson(new Date()));
+};
+
+clLib.localStorage.getLastRefreshDate = function(storageName) {
+	return clLib.localStorage.getItem(storageName + "_createdAt");
 };
 
 clLib.localStorage.setStorageIndexes = function(storageName, entityName, indexItems) {
@@ -410,6 +418,13 @@ clLib.localStorage.evalCondition = function(valueToTest, condition) {
 					eligible = false;
 				} else {
 					//console.log("found match!!" + valueToTest);
+				}
+			} 
+			if(operator == "$starts-with"){
+				if(!(valueToTest.indexOf(compValue) == 0)) {
+					eligible = false;
+				} else {
+					console.log("found starting match!!" + valueToTest);
 				}
 			} 
 		});
