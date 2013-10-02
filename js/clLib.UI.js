@@ -94,10 +94,10 @@ clLib.UI.elements = {
 				"Sector" : $("#newRouteLog_sectorSelect").val(),
 				"Colour" : $("#newRouteLog_colourSelect").val()
 			});
-			alert("Getting lines for " + JSON.stringify(where));
+			//alert("Getting lines for " + JSON.stringify(where));
 
 			results = clLib.localStorage.getDistinct("Routes", where, distinctColumn, "routeStorage");
-			alert("got lines for " + JSON.stringify(where) + ",>" + JSON.stringify(results));
+			//alert("got lines for " + JSON.stringify(where) + ",>" + JSON.stringify(results));
 
 			clLib.populateSelectBox({
 				selectBoxElement : $this,
@@ -165,7 +165,7 @@ clLib.UI.elements = {
 			where["Name"] = {
 				"$starts-with" : $("#newRouteLog_searchRoute").val()	
 			}
-			alert("Getting routes for " + JSON.stringify(where));
+			//alert("Getting routes for " + JSON.stringify(where));
 			results = clLib.localStorage.getDistinct("Routes", where, distinctColumn, "routeStorage");
 			
 			console.log("got routes " + JSON.stringify(results));
@@ -201,10 +201,10 @@ clLib.UI.elements = {
 			distinctColumn = "Area";
 			//alert("building where");
 			where = clLib.getRoutesWhere("UIAA", "VIII");
-			alert("where=" + JSON.stringify(where));
+			//alert("where=" + JSON.stringify(where));
 			results = clLib.localStorage.getDistinct("Routes", where, distinctColumn, "routeStorage");
 			console.log("got areas for " + JSON.stringify(where) + ",>" + JSON.stringify(results));
-
+			
 			clLib.populateSelectBox({
 				selectBoxElement : $this,
 				dataObj : results,

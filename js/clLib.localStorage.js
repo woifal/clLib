@@ -198,8 +198,24 @@ Array.prototype.getIntersect = function(anotherArray) {
 *	Returns all objects from localStorage storage "storageName" where ALL conditions in whereObj are met.
 */
 clLib.localStorage.getEntities = function(entity, whereObj, storageName) {
+//alert(1);
 	var resultsObj = [];
 	var storage = clLib.localStorage.getStorageItems(storageName);
+	if(!storage){
+		alert("no local store available => you need to refresh first.");
+		return;
+	} else {
+		//alert("storage: " + JSON.stringify(storage));
+		
+	}
+//alert(12);
+	if(!storage[entity]){
+		alert("no local data available => you need to refresh first.");
+		return;
+	} else {
+		//alert("entity storage: " + JSON.stringify(storage));
+		
+	}
 	//console.log("storage keys: "+ Object.keys(storage));
 	
 	// Indexes?
@@ -329,6 +345,25 @@ clLib.localStorage.getDistinct = function(entity, whereObj, colName, storageName
 		return foundValues;
 	}
 */	
+//alert(1);
+	var resultsObj = [];
+	var storage = clLib.localStorage.getStorageItems(storageName);
+	if(!storage){
+		alert("no local store available => you need to refresh first.");
+		return {};
+	} else {
+		//alert("storage: " + JSON.stringify(storage));
+		
+	}
+//alert(12);
+	if(!storage[entity]){
+		alert("no local data available => you need to refresh first.");
+		return {};
+	} else {
+		//alert("entity storage: " + JSON.stringify(storage));
+		
+	}
+
 	var remainingIdsToQuery = Object.keys(storage[entity]);
 	var foundCounter = 0;
 	var limit = 30;
