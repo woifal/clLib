@@ -20,7 +20,7 @@ var clLib = {};
 *   Populates a select box with available gradeTypes from clLib.gradeConfig.
 */
 clLib.populateGradeTypes = function($gradeTypeSelect, preselectedGradeType){
-	alert("refreshing gradeTypes for preselected gradetype " + preselectedGradeType);
+	//alert("refreshing gradeTypes for preselected gradetype " + preselectedGradeType);
 //	clLib.populateSelectBox($gradeTypeSelect, Object.keys(clLib.gradeConfig), preselectedGradeType);
 	clLib.populateSelectBox({
 		selectBoxElement : $gradeTypeSelect,
@@ -185,10 +185,10 @@ clLib.trimApostrophs = function(str) {
 
 clLib.lpad = function(str1, padString, length) {
     var str = str1 +"";
-    alert("padding " + str + " with " + padString + " to " + length);
+    //alert("padding " + str + " with " + padString + " to " + length);
     while (str.length < length)
         str = padString + str;
-    alert("returning " + str);
+    //alert("returning " + str);
     return str;
 };
 
@@ -208,7 +208,7 @@ clLib.dateToStr = function(dateObj) {
 		"." + 
 		clLib.lpad(dateObj.getMilliseconds(), '0', 2)
 	;
-	alert(dateStr);
+	//alert(dateStr);
 	return dateStr;
 };
 
@@ -216,15 +216,15 @@ clLib.dateToStr = function(dateObj) {
 *   Returns a "BETWEEN startDate and endDate" where condition in JSON notation.
 */
 clLib.colBetweenDate = function(colName, startDate, endDate) {
-	alert("getting between date " + JSON.stringify(startDate) + " and " + JSON.stringify(endDate));
+	//alert("getting between date " + JSON.stringify(startDate) + " and " + JSON.stringify(endDate));
 	var whereObj = {};
 	whereObj[colName] = {
 		"$gte": clLib.dateToStr(startDate), 
 		"$lt": clLib.dateToStr(endDate)
 	};
+	1;
 	
-	
-	alert(JSON.stringify(whereObj));
+	//alert(JSON.stringify(whereObj));
 	return whereObj;
 };
 
@@ -243,7 +243,7 @@ clLib.colBetweenDate = function(colName, startDate, endDate) {
 */
 clLib.getRoutesWhere = function(gradeType, grade, area, sector, colour, line) {
 	//alert("typeof first ehre argument " + typeof(gradeType));
-	alert("getting " + line);
+	//alert("getting " + line);
 	if(typeof(gradeType) !== "object") {
 		return clLib.getRoutesWhere_plain(gradeType, grade, area, sector, colour, line);
 	} else {
@@ -253,14 +253,14 @@ clLib.getRoutesWhere = function(gradeType, grade, area, sector, colour, line) {
 
 clLib.getRoutesWhere_plain = function(gradeType, grade, area, sector, colour, line) {
 	var restrictionObj = {};
-	alert("building restrictionobj" + JSON.stringify(line));
+	//alert("building restrictionobj" + JSON.stringify(line));
 	restrictionObj["GradeType"] = gradeType;
 	restrictionObj["Grade"] = grade;
 	clLib.extendIfDefined(restrictionObj, "Area", area);
 	clLib.extendIfDefined(restrictionObj, "Sector", sector);
 	clLib.extendIfDefined(restrictionObj, "Colour", colour);
 	clLib.extendIfDefined(restrictionObj, "Line", line);
-	alert("getRoutesWhere2" + JSON.stringify(restrictionObj));
+	//alert("getRoutesWhere2" + JSON.stringify(restrictionObj));
 	return clLib.getRoutesWhere(restrictionObj);
 	
 };
@@ -293,7 +293,7 @@ clLib.getRouteLogWhere = function(dateWhereObj) {
 	var whereObj = {};
 	$.extend(whereObj, dateWhereObj);
 	$.extend(clLib.extendIfDefined(
-            whereObj, "username", localStorage.getItem("currentUser")));
+            whereObj, "userName", localStorage.getItem("currentUser")));
 	return whereObj;
 };
 
@@ -311,7 +311,7 @@ clLib.getRouteLogWhereToday = function() {
 */
 clLib.getRouteLogWhereAtDay = function(dateObj){
 	return clLib.getRouteLogWhere(
-		clLib.colBetweenDate("_createdAt", clLib.dayBegin(dateObj), clLib.dayEnd(dateObj))
+		clLib.colBetweenDate("Date", clLib.dayBegin(dateObj), clLib.dayEnd(dateObj))
 	);
 };
 
@@ -342,9 +342,9 @@ clLib.getRouteLogWhereCurrentScoreRange =  function() {
 *   Returns dateObj at 00:00:00.
 */
 clLib.dayBegin = function(dateObj) {
-	alert("setting hours to 0 in " + JSON.stringify(dateObj));
+	//alert("setting hours to 0 in " + JSON.stringify(dateObj));
 	var foo = new Date(dateObj.setHours(0, 0, 0, 0));
-	alert("set hours to 0 in " + JSON.stringify(foo));
+	//alert("set hours to 0 in " + JSON.stringify(foo));
 	return foo;
 };
 
@@ -352,11 +352,11 @@ clLib.dayBegin = function(dateObj) {
 *   Returns dateObj at 23:59:59.
 */
 clLib.dayEnd = function(dateObj) {
-	alert("dateTomorrows was " + JSON.stringify(dateObj));
+	//alert("dateTomorrows was " + JSON.stringify(dateObj));
 	var dateTomorrow = new Date(dateObj.setDate(dateObj.getDate()+1));
-	alert("dateTomorrows now is " + JSON.stringify(dateTomorrow));
+	//alert("dateTomorrows now is " + JSON.stringify(dateTomorrow));
 	var foo = clLib.dayBegin(dateTomorrow);
-	alert("begin of tomorrow is " + JSON.stringify(foo));
+	//alert("begin of tomorrow is " + JSON.stringify(foo));
 	return foo;
 };
 
@@ -366,7 +366,7 @@ clLib.dayEnd = function(dateObj) {
 *	=> but only if value is defined!
 */
 clLib.extendIfDefined = function(targetObj, key, value) {
-	alert("checking " + targetObj[key] + "!=" + clLib.UI["NOTSELECTED"]["value"]);
+	//alert("checking " + targetObj[key] + "!=" + clLib.UI["NOTSELECTED"]["value"]);
 	if(	
 		value &&
 		value != clLib.UI["NOTSELECTED"]["value"]

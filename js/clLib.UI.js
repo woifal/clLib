@@ -50,7 +50,8 @@ clLib.UI.elements = {
 			); 
 		},
 		"refreshOnUpdate" : {
-			"newRouteLog_sectorSelect" : {}
+			"newRouteLog_sectorSelect" : {},
+			"newRouteLog_lineSelect": {}
 		}
 	},
 	"newRouteLog_sectorSelect" : {
@@ -65,7 +66,7 @@ clLib.UI.elements = {
 				"Line" : $("#newRouteLog_lineSelect").val()
 			});
 			
-				results = clLib.localStorage.getDistinct("routes", where, distinctColumn, "routeStorage");
+				results = clLib.localStorage.getDistinct("Routes", where, distinctColumn, "routeStorage");
 				console.log("got sectors for " + JSON.stringify(where) + ",>" + JSON.stringify(results));
 
 			clLib.populateSelectBox({
@@ -77,8 +78,8 @@ clLib.UI.elements = {
 		},
 		"refreshOnUpdate" : {
 			"newRouteLog_colourSelect" : {}
-			,
-			"newRouteLog_lineSelect" : {}
+			/*,
+			"newRouteLog_lineSelect" : {}*/
 		}
 	},
 	"newRouteLog_lineSelect" : {
@@ -95,7 +96,7 @@ clLib.UI.elements = {
 			});
 			alert("Getting lines for " + JSON.stringify(where));
 
-			results = clLib.localStorage.getDistinct("routes", where, distinctColumn, "routeStorage");
+			results = clLib.localStorage.getDistinct("Routes", where, distinctColumn, "routeStorage");
 			alert("got lines for " + JSON.stringify(where) + ",>" + JSON.stringify(results));
 
 			clLib.populateSelectBox({
@@ -128,7 +129,7 @@ clLib.UI.elements = {
 			});
 			//console.log("Getting routese for " + JSON.stringify(where));
 
-			results = clLib.localStorage.getDistinct("routes", where, distinctColumn, "routeStorage");
+			results = clLib.localStorage.getDistinct("Routes", where, distinctColumn, "routeStorage");
 			console.log("got colours for " + JSON.stringify(where) + ",>" + JSON.stringify(results));
 
 			clLib.populateSelectBox({
@@ -165,7 +166,7 @@ clLib.UI.elements = {
 				"$starts-with" : $("#newRouteLog_searchRoute").val()	
 			}
 			alert("Getting routes for " + JSON.stringify(where));
-			results = clLib.localStorage.getDistinct("routes", where, distinctColumn, "routeStorage");
+			results = clLib.localStorage.getDistinct("Routes", where, distinctColumn, "routeStorage");
 			
 			console.log("got routes " + JSON.stringify(results));
 
@@ -198,10 +199,10 @@ clLib.UI.elements = {
 			console.log("handling content for area..");
 			var distinctColumn, where, results;
 			distinctColumn = "Area";
-			alert("building where");
+			//alert("building where");
 			where = clLib.getRoutesWhere("UIAA", "VIII");
 			alert("where=" + JSON.stringify(where));
-			results = clLib.localStorage.getDistinct("routes", where, distinctColumn, "routeStorage");
+			results = clLib.localStorage.getDistinct("Routes", where, distinctColumn, "routeStorage");
 			console.log("got areas for " + JSON.stringify(where) + ",>" + JSON.stringify(results));
 
 			clLib.populateSelectBox({
@@ -338,6 +339,7 @@ clLib.populateSearchProposals = function($forElement, $inElement, dataObj, hideO
 	//alert(JSON.stringify(dataObj));
 	if(hideOnSingleResult && dataObj.length == 1) {
 		$forElement.val(dataObj[0]);
+		$inElement.hide();
 		return;
 	}
 	
@@ -411,7 +413,7 @@ clLib.UI.fillUIelements = function(pageName) {
 		// populate current element..
 		$element.bind("refresh.clLib", function(event, additionalOptions) {
 			if(!additionalOptions) additionalOptions = {};
-			alert("refreshing element " + elementName + " == " +  additionalOptions["noRefreshOn"]);
+			//alert("refreshing element " + elementName + " == " +  additionalOptions["noRefreshOn"]);
 			if(
 				typeof(additionalOptions) !== "undefined" &&
 				additionalOptions["noRefreshOn"] == elementName
@@ -424,15 +426,23 @@ clLib.UI.fillUIelements = function(pageName) {
 		});
 	});
 
+	// populate autoload elements
 	$.each(clLib.UI.autoLoad[pageName], function(idx, elementName) {
-		console.log("triggering refresh on element >" + elementName + "<");
-		var $element = 
-			$("#" + elementName);
-		// populate current element..
-		$element.trigger("refresh.clLib");
-		
-	});	
-}
+		console.log("triggering autoload for " + elementName);
+		//alert($("#" + elementName).html());
+		$("#" + elementName).trigger("refresh.clLib");
+	});
+};
 
+clLib.UI.showLoading = function(text, html) {
+	$.mobile.loading( 'show', {
+		text: 'foo',
+		textVisible: true,
+		//theme: 'z',
+		html: html
+	});
+};
 
-
+clLib.UI.hideLoading = function() {
+	$.mobile.hidePageLoadingMsg();
+};

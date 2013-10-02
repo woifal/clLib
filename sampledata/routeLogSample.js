@@ -15,8 +15,8 @@ var routeLogSample = {
         "TickType":"Project",
         "RouteName":"Search Route Name",
         "GradeSystem":"UIAA",
-        "_createdAt":"2013-10-01T20:26:28.565Z",
-        "_updatedAt":"2013-10-01T20:26:28.565Z"
+        "_createdAt":"2013-10-02T20:26:28.565Z",
+        "_updatedAt":"2013-10-02T20:26:28.565Z"
     },
     {
         "_id":"521fae77e4b0899403d03883",
@@ -28,8 +28,8 @@ var routeLogSample = {
         "TickType":"Project",
         "RouteName":"Search Route Name",
         "GradeSystem":"UIAA",
-        "_createdAt":"2013-10-01T20:26:31.830Z",
-        "_updatedAt":"2013-10-01T20:26:31.830Z"
+        "_createdAt":"2013-10-02T20:26:31.830Z",
+        "_updatedAt":"2013-10-02T20:26:31.830Z"
     },
     {
         "_id":"52219051e4b0158b3c4d3812",

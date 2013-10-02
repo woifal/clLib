@@ -15,6 +15,7 @@
 		<script type="text/javascript" src="js/clLib.localStorage.js"></script>
 		<script type="text/javascript" src="js/clLib.localStorage.indexes.js"></script>
 		<script type="text/javascript" src="js/clLib.UI.js"></script>
+		<script type="text/javascript" src="js/clLib.REST.js"></script>
 
 		
 		
@@ -77,7 +78,24 @@
 //$( document ).live("mobileinit", function() {
    console.log("start");
 	
+	localStorage.setItem("currentUser", "gere");
+	var userRouteLogs = clLib.REST.getEntities("RouteLog", clLib.getRouteLogWhere());
+//	alert("GOT: "  + JSON.stringify(userRouteLogs));
+	clLib.localStorage.initStorage("routeStorage", userRouteLogs);
+//	clLib.REST.getEntities("RouteLog", clLib.getRouteLogWhereToday());
 
+	var where = clLib.getRouteLogWhereToday();
+	alert("ZZZ" + JSON.stringify(where));
+	var todaysRouteLogs = clLib.localStorage.getEntities("RouteLog", where, "routeStorage");
+
+	alert("items count" + JSON.stringify(todaysRouteLogs.length));
+	alert("items retrieved " + JSON.stringify(todaysRouteLogs));
+	alert("XXX" + clLib.calculateScore(todaysRouteLogs));
+	
+	
+
+return;
+	
 $.mobile.loader( 'show', {
 text: "as",
 textVisible: true,

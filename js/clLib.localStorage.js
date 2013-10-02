@@ -443,7 +443,7 @@ clLib.localStorage.evalCondition = function(valueToTest, condition) {
 		});
 	};
 	if(eligible) {
-		alert("Eligibility is " + eligible);
+		//alert("Eligibility is " + eligible);
 	}
 	return eligible;
 	
