@@ -61,7 +61,42 @@
 		</p>	
 			<div id="foo">.....</div>
 
+		<button id="top5Button">show top5</button>
+		<ul 
+			data-role="listview" id="top5" 
+			data-inset="true" 
+		>
+			<li>
+				<a>
+					asdflaksdflkasjdf
+				</a>
+			</li>
+		</ul>
 
+		<ul 
+			data-role="listview" id="top5simple" 
+			data-inset="true" 
+		>
+			<li>
+				<a>
+					asdflaksdflkasjdf
+				</a>
+			</li>
+		</ul>
+
+<div id="top5Div"
+<div data-role="collapsible" data-theme="b" data-content-theme="d" data-collapsed-icon="arrow-r" data-expanded-icon="arrow-d" data-inset="false">
+							<h2>Pets</h2>
+							<ul data-role="listview">
+								<li><a href="index.html">Canary</a></li>
+								<li><a href="index.html">Cat</a></li>
+								<li><a href="index.html">Dog</a></li>
+								<li><a href="index.html">Gerbil</a></li>
+								<li><a href="index.html">Iguana</a></li>
+								<li><a href="index.html">Mouse</a></li>
+							</ul>
+						</div><!-- /collapsible -->
+</div>
 	</div><!-- /content -->
 	
 	<div data-role="footer">
@@ -78,24 +113,52 @@
 //$( document ).live("mobileinit", function() {
    console.log("start");
 	
+	// set current user...
 	localStorage.setItem("currentUser", "gere");
-	var userRouteLogs = clLib.REST.getEntities("RouteLog", clLib.getRouteLogWhere());
-//	alert("GOT: "  + JSON.stringify(userRouteLogs));
-	clLib.localStorage.initStorage("routeStorage", userRouteLogs);
-//	clLib.REST.getEntities("RouteLog", clLib.getRouteLogWhereToday());
 
+	// get routelog for current user..
+	var userRouteLogs = clLib.REST.getEntities("RouteLog", clLib.getRouteLogWhere());
+
+	// initialize storage for current user's routelogs
+	clLib.localStorage.initStorage("routeStorage", userRouteLogs);
+
+	// build where clause for today's routelogs
 	var where = clLib.getRouteLogWhereToday();
 	alert("ZZZ" + JSON.stringify(where));
+
+	// retrieve today's routelogs
 	var todaysRouteLogs = clLib.localStorage.getEntities("RouteLog", where, "routeStorage");
-
-	alert("items count" + JSON.stringify(todaysRouteLogs.length));
 	alert("items retrieved " + JSON.stringify(todaysRouteLogs));
-	alert("XXX" + clLib.calculateScore(todaysRouteLogs));
-	
-	
 
-return;
+	// retrieve today's routelogs
+	var todaysRouteLogs = clLib.localStorage.getEntities("RouteLog", where, "routeStorage", "Date", true, 2);
+	alert("items retrieved(latest first) " + JSON.stringify(todaysRouteLogs));
+
 	
+	// Get number of today's routes
+	var todaysRouteLogCount = JSON.stringify(todaysRouteLogs.length);
+	alert("items count" + todaysRouteLogCount);
+
+	// calculate today's score
+	var todaysScore = clLib.calculateScore(todaysRouteLogs);
+	alert("XXX" + todaysScore);
+	
+	$("#top5Button").click(function() {
+		//clLib.populateListViewCollapsible($("#top5Div"), todaysRouteLogs, "RouteName");
+
+		/*
+			Show 5 latest routes.
+		*/
+		clLib.populateListView($("#top5"), todaysRouteLogs, function(itemObj) { 
+			return itemObj["RouteName"] + "(@" + itemObj["Date"].substring(11,19) + ")" + "=> score" + clLib.computeScore(itemObj);
+		});
+
+		clLib.populateListView($("#top5simple"), ["aaaaa", "bbbbb"]);
+
+	});
+	
+	return;
+
 $.mobile.loader( 'show', {
 text: "as",
 textVisible: true,

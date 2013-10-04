@@ -50,20 +50,21 @@ clLib.UI.elements = {
 			); 
 		},
 		"refreshOnUpdate" : {
-			"newRouteLog_sectorSelect" : {},
-			"newRouteLog_lineSelect": {}
+			"newRouteLog_sectorSelect" : {}
+			//,"newRouteLog_lineSelect": {}
 		}
 	},
 	"newRouteLog_sectorSelect" : {
 		"contentHandler" : function($this) { 
 			//console.log("handling content for sector.." + $this.val());
+
 			var distinctColumn, where, results;
 			distinctColumn = "Sector";
 			where = clLib.getRoutesWhere({
 				"GradeType" : $("#newRouteLog_gradeTypeSelect").val(),
 				"Grade" : $("#newRouteLog_gradeSelect").val(),
-				"Area" : localStorage.getItem("currentlySelectedArea"),
-				"Line" : $("#newRouteLog_lineSelect").val()
+				"Area" : localStorage.getItem("currentlySelectedArea")
+//				,"Line" : $("#newRouteLog_lineSelect").val()
 			});
 			
 				results = clLib.localStorage.getDistinct("Routes", where, distinctColumn, "routeStorage");
@@ -75,11 +76,12 @@ clLib.UI.elements = {
 				preserveCurrentValue : true,
 				additionalValue : clLib.UI.NOTSELECTED
 			});
+			
+
 		},
 		"refreshOnUpdate" : {
 			"newRouteLog_colourSelect" : {}
-			/*,
-			"newRouteLog_lineSelect" : {}*/
+			,"newRouteLog_lineSelect" : {}
 		}
 	},
 	"newRouteLog_lineSelect" : {
@@ -109,11 +111,42 @@ clLib.UI.elements = {
 		"refreshOnUpdate" : {
 /*			"newRouteLog_sectorSelect" : {
 				noRefreshOn : "newRouteLog_lineSelect"
-			},*/
-			"newRouteLog_searchRouteResults" : {
+			}*/
+/*			,"newRouteLog_searchRouteResults" : {
 				hideOnSingleResult : true
 			}
+*/
+			"newRouteLog_colourSelect" : {}
 		}
+		,"changeHandler" : function($this) {
+			var $sectorSelect = $("#newRouteLog_sectorSelect");
+			
+			var distinctColumn, where, results;
+			distinctColumn = "Sector";
+			where = clLib.getRoutesWhere({
+				"GradeType" : $("#newRouteLog_gradeTypeSelect").val(),
+				"Grade" : $("#newRouteLog_gradeSelect").val(),
+				"Area" : localStorage.getItem("currentlySelectedArea"),
+				"Line" : $("#newRouteLog_lineSelect").val()
+			});
+			
+			results = clLib.localStorage.getDistinct("Routes", where, distinctColumn, "routeStorage");
+			console.log("got LINE sectors for " + JSON.stringify(where) + ", " + results[0] + " +, >" + JSON.stringify(results));
+			
+			if(results.length == 1) {
+				$sectorSelect.val(results[0]);
+				$sectorSelect.selectmenu('refresh', true);
+
+				console.log("sectorselect changed to " + results[0]);
+			} else {
+				console.log("WTF!?!?!? multiple sectors for line found - setting sector to UNKNOWN..");
+				$sectorSelect.val(clLib.UI.NOTSELECTED.value);
+				$sectorSelect.selectmenu('refresh', true);
+			}
+
+			clLib.UI.defaultChangeHandler($this);
+		}
+
 	},
 	"newRouteLog_colourSelect": {
 		"contentHandler" : function($this) { 
@@ -139,11 +172,19 @@ clLib.UI.elements = {
 				additionalValue : clLib.UI.NOTSELECTED
 			});
 			clLib.addColorBackground("newRouteLog_colourSelect"); 
+			
 		},
 		"refreshOnUpdate" : {
 			"newRouteLog_searchRouteResults" : {
 				hideOnSingleResult : true
 			}
+		}
+		,"changeHandler" : function($this) {
+			var $forElement = $("#newRouteLog_searchRoute");
+			$forElement.val("");
+			console.log("searchRoute set to ''");
+
+			clLib.UI.defaultChangeHandler($this);
 		}
 	},
 	"newRouteLog_searchRouteResults" : {
@@ -151,6 +192,8 @@ clLib.UI.elements = {
 			options = options || {};
 			console.log("refreshing searchrouteresults with options " + JSON.stringify(options));
 			var $inElement = $this;
+			var $forElement = $("#newRouteLog_searchRoute");
+			;
 			
 			var distinctColumn, where, results;
 			distinctColumn = "Name";
@@ -165,12 +208,12 @@ clLib.UI.elements = {
 			where["Name"] = {
 				"$starts-with" : $("#newRouteLog_searchRoute").val()	
 			}
-			//alert("Getting routes for " + JSON.stringify(where));
+			console.log("Getting routes for " + JSON.stringify(where));
 			results = clLib.localStorage.getDistinct("Routes", where, distinctColumn, "routeStorage");
 			
 			console.log("got routes " + JSON.stringify(results));
 
-			var $forElement = $("#newRouteLog_searchRoute");
+
 			//console.log("adding results from " + $forElement.attr("id") + " to " + $inElement.attr("id"));
 			clLib.populateSearchProposals($forElement, $inElement, results, options["hideOnSingleResult"]);
 		},
@@ -229,16 +272,29 @@ clLib.UI.killEventHandlers = function($element, eventName) {
 	$element.unbind(eventName);
 }
 
-clLib.populateListView = function($list, dataObj){
+
+
+
+
+
+
+
+clLib.populateListView = function($list, dataObj, formatFunc){
 	$list.empty();
 	$.each(dataObj, function(index, value) {
+		var itemValue;
+		if(formatFunc) {
+			itemValue = formatFunc(value);
+		}
+		else {
+			itemValue = value;
+		}
 		var $listItem = $('<li></li>')
-                .html(value);
+                .html(itemValue);
 		$list.append($listItem);
 	});
 	$list.listview('refresh', true);
 };
-
 
 
 clLib.populateSelectBox = function(options) {
@@ -256,11 +312,14 @@ clLib.populateSelectBox = function(options) {
 		console.log("oldEventHandler " + JSON.stringify(oldEventHandler));
 */
 		// disable current onChange handler
+	var selectBoxId = options.selectBoxElement.attr('id');
+	console.log("killing evnet handlers for  " + selectBoxId);
+
 	clLib.UI.killEventHandlers(options.selectBoxElement, "change.clLib");
 /*
 	}
 */
-	var returnObj = clLib.populateSelectBox_plain(
+	var needRefresh = clLib.populateSelectBox_plain(
 		options.selectBoxElement,
 		options.dataObj,
 		options.selectedValue,
@@ -268,11 +327,23 @@ clLib.populateSelectBox = function(options) {
 		options.additionalValue
 	);
 
-	options.selectBoxElement.live("change.clLib", function() {
-		clLib.UI.defaultChangeHandler($(this))
+	options.selectBoxElement.bind("change.clLib", function() {
+		var customChangeHandler = clLib.UI.elements[selectBoxId]["changeHandler"];
+		if(customChangeHandler) {
+			console.log("custom event handler for " + selectBoxId + "found.." + customChangeHandler);
+		}
+		var changeHandler = customChangeHandler || clLib.UI.defaultChangeHandler;
+		if(customChangeHandler) {
+			console.log("custom event handler is now.." + changeHandler);
+		}
+		
+		changeHandler($(this));
 	});
+	
 
-	return returnObj;
+	if(needRefresh) {
+		options.selectBoxElement.trigger("change.clLib");
+	}
 
 };
 
@@ -325,10 +396,15 @@ clLib.populateSelectBox_plain = function($selectBox, dataObj, selectedValue, pre
 	
 	$selectBox.selectmenu('refresh', true);
 
-	if(!oldValueFound) {
-		1;
-		//console.log("Previous value >" + oldValue + "< is no longer present in the select list.");
+	if(oldValueFound) {
+		// no refresh necessary..
+		return false;
 	}
+
+	// need to refresh
+	return true;
+	//console.log("Previous value >" + oldValue + "< is no longer present in the select list.");
+
 };
 
 
@@ -338,9 +414,12 @@ clLib.populateSearchProposals = function($forElement, $inElement, dataObj, hideO
 	
 	//alert(JSON.stringify(dataObj));
 	if(hideOnSingleResult && dataObj.length == 1) {
+		console.log("single element found, hiding results..");
 		$forElement.val(dataObj[0]);
 		$inElement.hide();
 		return;
+	} else {
+		$forElement.val("");
 	}
 	
 	clLib.populateListView($inElement, dataObj);
@@ -379,7 +458,7 @@ clLib.UI.defaultChangeHandler = function($element) {
 	$.each(elementConfig.refreshOnUpdate, function(refreshTargetName, refreshOptions) {
 		console.log("refreshing dependent element " + refreshTargetName);
 		if(!$("#" + refreshTargetName)) {
-			alert("element " + "#" + refreshTargetName + " not found!");
+			console.log("element " + "#" + refreshTargetName + " not found!");
 		}
 		$("#" + refreshTargetName)
 			.trigger("refresh.clLib", refreshOptions);
@@ -413,12 +492,12 @@ clLib.UI.fillUIelements = function(pageName) {
 		// populate current element..
 		$element.bind("refresh.clLib", function(event, additionalOptions) {
 			if(!additionalOptions) additionalOptions = {};
-			//alert("refreshing element " + elementName + " == " +  additionalOptions["noRefreshOn"]);
+			//console.log("refreshing element " + elementName + " == " +  additionalOptions["noRefreshOn"]);
 			if(
 				typeof(additionalOptions) !== "undefined" &&
 				additionalOptions["noRefreshOn"] == elementName
 			) {
-				alert("not refreshing element " + elementName);
+				console.log("not refreshing element " + elementName);
 			}
 			console.log("refresh element " + $(this).attr("id") + " with elementConfig " + JSON.stringify(elementConfig));
 			elementConfig.contentHandler($element, additionalOptions);

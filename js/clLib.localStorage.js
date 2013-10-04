@@ -194,10 +194,25 @@ Array.prototype.getIntersect = function(anotherArray) {
 	return resultArray;
 }
 	
+Array.prototype.sortBy = function(sortKey, descSortFlag) {
+    this.sort(function(a, b) {
+		//alert("comparing " + a[sortKey] + " - " +  b[sortKey]);
+		var sortResult = 
+			a[sortKey] < b[sortKey] ? -1 : 1;
+		//alert("sortresult is " + sortResult);
+
+        if(descSortFlag) {
+			sortResult *= -1;
+		}
+		//alert("returning " + sortResult);
+		return sortResult;
+    });
+};
+
 /*
 *	Returns all objects from localStorage storage "storageName" where ALL conditions in whereObj are met.
 */
-clLib.localStorage.getEntities = function(entity, whereObj, storageName) {
+clLib.localStorage.getEntities = function(entity, whereObj, storageName, sortKey, descSortFlag, limit) {
 //alert(1);
 	var resultsObj = [];
 	var storage = clLib.localStorage.getStorageItems(storageName);
@@ -291,7 +306,19 @@ clLib.localStorage.getEntities = function(entity, whereObj, storageName) {
 			
 		}
 	});
+	
+	if(sortKey) {
+		//alert("sorting by "  + sortKey);
+		resultsObj.sortBy(sortKey, descSortFlag);
+		//alert("sorted result " + JSON.stringify(resultsObj));
+	}
+
+	if(limit) {
+		resultsObj = resultsObj.slice(0, limit);
+	}
 	return resultsObj;
+	
+	
 }
 
 /*
