@@ -20,7 +20,7 @@ var clLib = {};
 *   Populates a select box with available gradeTypes from clLib.gradeConfig.
 */
 clLib.populateGradeTypes = function($gradeTypeSelect, preselectedGradeType){
-	console.log("refreshing gradeTypes for preselected gradetype " + preselectedGradeType);
+	//alert("refreshing gradeTypes for preselected gradetype " + preselectedGradeType);
 //	clLib.populateSelectBox($gradeTypeSelect, Object.keys(clLib.gradeConfig), preselectedGradeType);
 	clLib.populateSelectBox({
 		selectBoxElement : $gradeTypeSelect,
@@ -128,15 +128,18 @@ clLib.addColorBackground = function(targetId) {
             .addClass("clColorBg")
             .addClass(entry.find("a").html());
     });
-    // Set currently selected color in collapsed select menu 
+    
+	// Set currently selected color in collapsed select menu 
     var last_style; // remembers last color chosen
     
-	// Update jqm generated widget
-//	$('#' + targetId).trigger('change.clLibColour');
-
 	$targetEl.on('change.clLibColour', function () {
-        // Get currently selected element
+		var last_style = $(this).data("cllast_style");
+
+		// Get currently selected element
         var selection = $(this).find(':selected').html();
+
+        //alert("last_style " + last_style + ",changing to " + selection);
+
         // Remove CSS class for previously selected color
         if (last_style) {
             $(this).closest('.ui-select').find('.ui-btn').removeClass(last_style);
@@ -144,10 +147,13 @@ clLib.addColorBackground = function(targetId) {
         // Set currently selected color
         $(this).closest('.ui-select').find('.ui-btn').addClass(selection);
         // Remember currently selected color
-        last_style = selection;
-        //$(this).change();
+        $(this).data("cllast_style", selection);
+        //alert("remembering last_style " + selection);
+		//$(this).change();
     });
 
+	// Update jqm generated widget
+	$('#' + targetId).trigger('change.clLibColour');
  	
 };
 
@@ -171,16 +177,54 @@ clLib.buildSimpleWhere = function(whereCol, whereVal) {
 	return JSON.stringify(whereObj);
 };
 
+clLib.trimApostrophs = function(str) {
+	var trimmedStr;
+	trimmedStr = str.substring(1,str.length-1);
+	return trimmedStr;
+};
+
+clLib.lpad = function(str1, padString, length) {
+    var str = str1 +"";
+    //alert("padding " + str + " with " + padString + " to " + length);
+    while (str.length < length)
+        str = padString + str;
+    //alert("returning " + str);
+    return str;
+};
+
+clLib.dateToStr = function(dateObj) {
+	var dateStr = 
+		dateObj.getFullYear() + 
+		"-" + 
+        clLib.lpad((dateObj.getMonth() + 1), '0', 2) + 
+		"-" + 
+		clLib.lpad(dateObj.getDate(), '0', 2) + 
+		" " + 
+		clLib.lpad(dateObj.getHours(), '0', 2)+ 
+		":" + 
+		clLib.lpad(dateObj.getMinutes(), '0', 2) + 
+		":" + 
+		clLib.lpad(dateObj.getSeconds(), '0', 2) + 
+		"." + 
+		clLib.lpad(dateObj.getMilliseconds(), '0', 2)
+	;
+	//alert(dateStr);
+	return dateStr;
+};
+
 /*
 *   Returns a "BETWEEN startDate and endDate" where condition in JSON notation.
 */
 clLib.colBetweenDate = function(colName, startDate, endDate) {
+	//alert("getting between date " + JSON.stringify(startDate) + " and " + JSON.stringify(endDate));
 	var whereObj = {};
-	whereObj.colName = {
-		"$gte": startDate, 
-		"$lt": endDate
+	whereObj[colName] = {
+		"$gte": clLib.dateToStr(startDate), 
+		"$lt": clLib.dateToStr(endDate)
 	};
-	console.log(JSON.stringify(whereObj));
+	1;
+	
+	//alert(JSON.stringify(whereObj));
 	return whereObj;
 };
 
@@ -197,13 +241,43 @@ clLib.colBetweenDate = function(colName, startDate, endDate) {
 * Returns the WHERE clause in JSON notation.
 *
 */
-clLib.getRoutesWhere = function(gradeType, grade, area, sector, colour) {
-	var whereObj = {};
-	whereObj[gradeType] = grade;
-	clLib.extendIfDefined(whereObj, "Area", area);
-	clLib.extendIfDefined(whereObj, "Sector", sector);
-	clLib.extendIfDefined(whereObj, "Colour", colour);
-	return whereObj;
+clLib.getRoutesWhere = function(gradeType, grade, area, sector, colour, line) {
+	//alert("typeof first ehre argument " + typeof(gradeType));
+	//alert("getting " + line);
+	if(typeof(gradeType) !== "object") {
+		return clLib.getRoutesWhere_plain(gradeType, grade, area, sector, colour, line);
+	} else {
+		return clLib.getRoutesWhere_obj(gradeType);
+	}
+}
+
+clLib.getRoutesWhere_plain = function(gradeType, grade, area, sector, colour, line) {
+	var restrictionObj = {};
+	//alert("building restrictionobj" + JSON.stringify(line));
+	restrictionObj["GradeType"] = gradeType;
+	restrictionObj["Grade"] = grade;
+	clLib.extendIfDefined(restrictionObj, "Area", area);
+	clLib.extendIfDefined(restrictionObj, "Sector", sector);
+	clLib.extendIfDefined(restrictionObj, "Colour", colour);
+	clLib.extendIfDefined(restrictionObj, "Line", line);
+	//alert("getRoutesWhere2" + JSON.stringify(restrictionObj));
+	return clLib.getRoutesWhere(restrictionObj);
+	
+};
+
+clLib.getRoutesWhere_obj = function(restrictionObj) {
+	var gradeType, grade;
+	gradeType = restrictionObj["GradeType"];
+	grade = restrictionObj["Grade"];
+	delete restrictionObj["GradeType"];
+	delete restrictionObj["Grade"];
+	
+	restrictionObj[gradeType] = grade;
+	clLib.removeIfNotDefined(restrictionObj, "Area");
+	clLib.removeIfNotDefined(restrictionObj, "Sector");
+	clLib.removeIfNotDefined(restrictionObj, "Colour");
+	clLib.removeIfNotDefined(restrictionObj, "Line");
+	return restrictionObj;
 };
 
 /*
@@ -219,8 +293,8 @@ clLib.getRouteLogWhere = function(dateWhereObj) {
 	var whereObj = {};
 	$.extend(whereObj, dateWhereObj);
 	$.extend(clLib.extendIfDefined(
-            whereObj, "username", localStore.getItem("currentUser")));
-	return JSON.stringify(whereObj);
+            whereObj, "userName", localStorage.getItem("currentUser")));
+	return whereObj;
 };
 
 /*
@@ -228,7 +302,7 @@ clLib.getRouteLogWhere = function(dateWhereObj) {
 *   Restricts results on routeLogs from today.
 */
 clLib.getRouteLogWhereToday = function() {
-	return getRouteLogWhereAtDay(clLib.today())	;
+	return clLib.getRouteLogWhereAtDay(clLib.today())	;
 }
 
 /*
@@ -236,8 +310,8 @@ clLib.getRouteLogWhereToday = function() {
 *   Restricts results on routeLogs at the day contained in "dateObj".
 */
 clLib.getRouteLogWhereAtDay = function(dateObj){
-	return getRouteLogWhere(
-		clLib.colBetweenDate(clLib.dayBegin(dateObj), clLib.dayEnd(dateObj))
+	return clLib.getRouteLogWhere(
+		clLib.colBetweenDate("Date", clLib.dayBegin(dateObj), clLib.dayEnd(dateObj))
 	);
 };
 
@@ -268,15 +342,22 @@ clLib.getRouteLogWhereCurrentScoreRange =  function() {
 *   Returns dateObj at 00:00:00.
 */
 clLib.dayBegin = function(dateObj) {
-	dateObj.setHours(0, 0, 0, 0);
+	//alert("setting hours to 0 in " + JSON.stringify(dateObj));
+	var foo = new Date(dateObj.setHours(0, 0, 0, 0));
+	//alert("set hours to 0 in " + JSON.stringify(foo));
+	return foo;
 };
 
 /*
 *   Returns dateObj at 23:59:59.
 */
 clLib.dayEnd = function(dateObj) {
-	var dateTomorrow = dateObj.setDate(dateObj.getDate()+1);
-	return dateTomorrow.dayBegin();
+	//alert("dateTomorrows was " + JSON.stringify(dateObj));
+	var dateTomorrow = new Date(dateObj.setDate(dateObj.getDate()+1));
+	//alert("dateTomorrows now is " + JSON.stringify(dateTomorrow));
+	var foo = clLib.dayBegin(dateTomorrow);
+	//alert("begin of tomorrow is " + JSON.stringify(foo));
+	return foo;
 };
 
 
@@ -285,7 +366,21 @@ clLib.dayEnd = function(dateObj) {
 *	=> but only if value is defined!
 */
 clLib.extendIfDefined = function(targetObj, key, value) {
-	if(value) targetObj[key] = value;
+	//alert("checking " + targetObj[key] + "!=" + clLib.UI["NOTSELECTED"]["value"]);
+	if(	
+		value &&
+		value != clLib.UI["NOTSELECTED"]["value"]
+	) targetObj[key] = value;
+};
+
+/*
+*	Removes "key" from "targetObj"
+*	=> but only if value is NOT defined!
+*/
+clLib.removeIfNotDefined = function(targetObj, key) {
+	//alert("removeIfNotDefined " + JSON.stringify(targetObj) +", ? => " + key);
+	if(!targetObj[key]) delete targetObj[key];
+	if(targetObj[key] == clLib.UI["NOTSELECTED"]["value"]) delete targetObj[key];
 };
 
 
@@ -603,6 +698,7 @@ clLib.localStorage.initStorage = function(storageName, storageObj) {
 	console.log("adding elements " + Object.keys(storageObj).length);
 	var allItems = {};
 	for(var entityName in storageObj) {
+		console.log("entity: " + entityName);
 		var entityItems = {};
 		for(var i = 0; i < storageObj[entityName].length; i++) {
 			entityItems[storageObj[entityName][i]["_id"]] = storageObj[entityName][i];
@@ -758,12 +854,43 @@ Array.prototype.getIntersect = function(anotherArray) {
 	return resultArray;
 }
 	
+Array.prototype.sortBy = function(sortKey, descSortFlag) {
+    this.sort(function(a, b) {
+		//alert("comparing " + a[sortKey] + " - " +  b[sortKey]);
+		var sortResult = 
+			a[sortKey] < b[sortKey] ? -1 : 1;
+		//alert("sortresult is " + sortResult);
+
+        if(descSortFlag) {
+			sortResult *= -1;
+		}
+		//alert("returning " + sortResult);
+		return sortResult;
+    });
+};
+
 /*
 *	Returns all objects from localStorage storage "storageName" where ALL conditions in whereObj are met.
 */
-clLib.localStorage.getEntities = function(entity, whereObj, storageName) {
+clLib.localStorage.getEntities = function(entity, whereObj, storageName, sortKey, descSortFlag, limit) {
+//alert(1);
 	var resultsObj = [];
 	var storage = clLib.localStorage.getStorageItems(storageName);
+	if(!storage){
+		alert("no local store available => you need to refresh first.");
+		return;
+	} else {
+		//alert("storage: " + JSON.stringify(storage));
+		
+	}
+//alert(12);
+	if(!storage[entity]){
+		alert("no local data available => you need to refresh first.");
+		return;
+	} else {
+		//alert("entity storage: " + JSON.stringify(storage));
+		
+	}
 	//console.log("storage keys: "+ Object.keys(storage));
 	
 	// Indexes?
@@ -839,7 +966,19 @@ clLib.localStorage.getEntities = function(entity, whereObj, storageName) {
 			
 		}
 	});
+	
+	if(sortKey) {
+		//alert("sorting by "  + sortKey);
+		resultsObj.sortBy(sortKey, descSortFlag);
+		//alert("sorted result " + JSON.stringify(resultsObj));
+	}
+
+	if(limit) {
+		resultsObj = resultsObj.slice(0, limit);
+	}
 	return resultsObj;
+	
+	
 }
 
 /*
@@ -893,6 +1032,25 @@ clLib.localStorage.getDistinct = function(entity, whereObj, colName, storageName
 		return foundValues;
 	}
 */	
+//alert(1);
+	var resultsObj = [];
+	var storage = clLib.localStorage.getStorageItems(storageName);
+	if(!storage){
+		alert("no local store available => you need to refresh first.");
+		return {};
+	} else {
+		//alert("storage: " + JSON.stringify(storage));
+		
+	}
+//alert(12);
+	if(!storage[entity]){
+		alert("no local data available => you need to refresh first.");
+		return {};
+	} else {
+		//alert("entity storage: " + JSON.stringify(storage));
+		
+	}
+
 	var remainingIdsToQuery = Object.keys(storage[entity]);
 	var foundCounter = 0;
 	var limit = 30;
@@ -962,21 +1120,33 @@ clLib.localStorage.evalCondition = function(valueToTest, condition) {
 	}
 	else {
 		//console.log("object condition, comparing advanced values");
+		//alert("evaling conditions " + JSON.stringify(condition));
 		$.each(condition, function(operator, compValue) {
+			//alert("evaling condition " + JSON.stringify(operator));
 			if(operator == "$gte"){
+				//alert("$gt " + valueToTest + " < " + compValue);
+				//alert("$gte2 " + valueToTest + " < " + compValue);
 				if(!(valueToTest >= compValue)) {
 					eligible = false;
+				} else {
+					//alert("yes, gte!");
 				}
 			} else 
 			if(operator == "$gt"){
+				//alert("$gt " + valueToTest + " < " + compValue);
+				//alert("$gt2 " + valueToTest + " < " + compValue);
 				if(!(valueToTest > compValue)) {
 					eligible = false;
 				}
 			} else 
 			if(operator == "$lt") {
+				//alert("$lt " + valueToTest + " < " + compValue);
+				//alert("$lt2 " + valueToTest + " < " + compValue);
 				if(!(valueToTest < compValue)) {
 					eligible = false;
-				};
+				} else {
+					//alert("yes, st!!!");
+				}
 			} else 
 			if(operator == "$like"){
 				if(!(valueToTest.indexOf(compValue) > -1)) {
@@ -994,7 +1164,9 @@ clLib.localStorage.evalCondition = function(valueToTest, condition) {
 			} 
 		});
 	};
-	//console.log("Eligibility is " + eligible);
+	if(eligible) {
+		//alert("Eligibility is " + eligible);
+	}
 	return eligible;
 	
 };
@@ -1026,10 +1198,13 @@ clLib.localStorage.indexes = {
 
 clLib.UI = {};
 
+clLib.UI = {
+	"NOTSELECTED": {
+		text : "UNKNOWN",
+		value : "__UNKNOWN__"
+	}
+};
 
-clLib.UI.selector = {
-	
-}
 clLib.UI.autoLoad = {
 	newRouteLog : [
 		"newRouteLog_gradeTypeSelect",
@@ -1046,6 +1221,7 @@ clLib.UI.pageElements = {
 		"newRouteLog_gradeSelect",
 		"newRouteLog_sectorSelect",
 		"newRouteLog_colourSelect",
+		"newRouteLog_lineSelect",
 		"newRouteLog_searchRouteResults",
 		"newRouteLog_searchRoute"
 	],
@@ -1071,67 +1247,140 @@ clLib.UI.elements = {
 		},
 		"refreshOnUpdate" : {
 			"newRouteLog_sectorSelect" : {}
+			//,"newRouteLog_lineSelect": {}
 		}
 	},
 	"newRouteLog_sectorSelect" : {
 		"contentHandler" : function($this) { 
 			//console.log("handling content for sector.." + $this.val());
+
 			var distinctColumn, where, results;
 			distinctColumn = "Sector";
-			where = clLib.getRoutesWhere(
-				$("#newRouteLog_gradeTypeSelect").val(),
-				$("#newRouteLog_gradeSelect").val(),
-				localStorage.getItem("currentlySelectedArea"),
-				null);
+			where = clLib.getRoutesWhere({
+				"GradeType" : $("#newRouteLog_gradeTypeSelect").val(),
+				"Grade" : $("#newRouteLog_gradeSelect").val(),
+				"Area" : localStorage.getItem("currentlySelectedArea")
+//				,"Line" : $("#newRouteLog_lineSelect").val()
+			});
 			
-				results = clLib.localStorage.getDistinct("routes", where, distinctColumn, "routeStorage");
+				results = clLib.localStorage.getDistinct("Routes", where, distinctColumn, "routeStorage");
 				console.log("got sectors for " + JSON.stringify(where) + ",>" + JSON.stringify(results));
 
 			clLib.populateSelectBox({
 				selectBoxElement : $this,
 				dataObj : results,
 				preserveCurrentValue : true,
-				additionalValue : {
-					text: "..UNKNOWN SECTOR",
-					value: ""
-				}
+				additionalValue : clLib.UI.NOTSELECTED
 			});
+			
+
 		},
 		"refreshOnUpdate" : {
 			"newRouteLog_colourSelect" : {}
+			,"newRouteLog_lineSelect" : {}
 		}
+	},
+	"newRouteLog_lineSelect" : {
+		"contentHandler" : function($this) { 
+			console.log("getting lines");
+			var distinctColumn, where, results;
+			distinctColumn = "Line";
+			where = clLib.getRoutesWhere({
+				"GradeType" : $("#newRouteLog_gradeTypeSelect").val(),
+				"Grade" : $("#newRouteLog_gradeSelect").val(),
+				"Area" : localStorage.getItem("currentlySelectedArea"),
+				"Sector" : $("#newRouteLog_sectorSelect").val(),
+				"Colour" : $("#newRouteLog_colourSelect").val()
+			});
+			//alert("Getting lines for " + JSON.stringify(where));
+
+			results = clLib.localStorage.getDistinct("Routes", where, distinctColumn, "routeStorage");
+			//alert("got lines for " + JSON.stringify(where) + ",>" + JSON.stringify(results));
+
+			clLib.populateSelectBox({
+				selectBoxElement : $this,
+				dataObj : results,
+				preserveCurrentValue : true,
+				additionalValue : clLib.UI.NOTSELECTED
+			});
+		},
+		"refreshOnUpdate" : {
+/*			"newRouteLog_sectorSelect" : {
+				noRefreshOn : "newRouteLog_lineSelect"
+			}*/
+/*			,"newRouteLog_searchRouteResults" : {
+				hideOnSingleResult : true
+			}
+*/
+			"newRouteLog_colourSelect" : {}
+		}
+		,"changeHandler" : function($this) {
+			var $sectorSelect = $("#newRouteLog_sectorSelect");
+			
+			var distinctColumn, where, results;
+			distinctColumn = "Sector";
+			where = clLib.getRoutesWhere({
+				"GradeType" : $("#newRouteLog_gradeTypeSelect").val(),
+				"Grade" : $("#newRouteLog_gradeSelect").val(),
+				"Area" : localStorage.getItem("currentlySelectedArea"),
+				"Line" : $("#newRouteLog_lineSelect").val()
+			});
+			
+			results = clLib.localStorage.getDistinct("Routes", where, distinctColumn, "routeStorage");
+			console.log("got LINE sectors for " + JSON.stringify(where) + ", " + results[0] + " +, >" + JSON.stringify(results));
+			
+			if(results.length == 1) {
+				$sectorSelect.val(results[0]);
+				$sectorSelect.selectmenu('refresh', true);
+
+				console.log("sectorselect changed to " + results[0]);
+			} else {
+				console.log("WTF!?!?!? multiple sectors for line found - setting sector to UNKNOWN..");
+				$sectorSelect.val(clLib.UI.NOTSELECTED.value);
+				$sectorSelect.selectmenu('refresh', true);
+			}
+
+			clLib.UI.defaultChangeHandler($this);
+		}
+
 	},
 	"newRouteLog_colourSelect": {
 		"contentHandler" : function($this) { 
 			console.log("getting colours");
 			var distinctColumn, where, results;
 			distinctColumn = "Colour";
-			where = clLib.getRoutesWhere(
-				$("#newRouteLog_gradeTypeSelect").val(),
-				$("#newRouteLog_gradeSelect").val(),
-				localStorage.getItem("currentlySelectedArea"),
-				$("#newRouteLog_sectorSelect").val()	
-			);
+			where = clLib.getRoutesWhere({
+				"GradeType" : $("#newRouteLog_gradeTypeSelect").val(),
+				"Grade" : $("#newRouteLog_gradeSelect").val(),
+				"Area" : localStorage.getItem("currentlySelectedArea"),
+				"Sector" : $("#newRouteLog_sectorSelect").val(),
+				"Line" : $("#newRouteLog_lineSelect").val()
+			});
 			//console.log("Getting routese for " + JSON.stringify(where));
 
-			results = clLib.localStorage.getDistinct("routes", where, distinctColumn, "routeStorage");
+			results = clLib.localStorage.getDistinct("Routes", where, distinctColumn, "routeStorage");
 			console.log("got colours for " + JSON.stringify(where) + ",>" + JSON.stringify(results));
 
 			clLib.populateSelectBox({
 				selectBoxElement : $this,
 				dataObj : results,
 				preserveCurrentValue : true,
-				additionalValue : {
-					text: "..UNKNOWN COLOR",
-					value: "---"
-				}
+				additionalValue : clLib.UI.NOTSELECTED
 			});
 			clLib.addColorBackground("newRouteLog_colourSelect"); 
+			
 		},
 		"refreshOnUpdate" : {
 			"newRouteLog_searchRouteResults" : {
 				hideOnSingleResult : true
 			}
+		}
+		,"changeHandler" : function($this) {
+			var $forElement = $("#newRouteLog_searchRoute");
+			$forElement.val("");
+			console.log("searchRoute set to ''");
+
+			clLib.UI.defaultChangeHandler($this);
 		}
 	},
 	"newRouteLog_searchRouteResults" : {
@@ -1139,25 +1388,28 @@ clLib.UI.elements = {
 			options = options || {};
 			console.log("refreshing searchrouteresults with options " + JSON.stringify(options));
 			var $inElement = $this;
+			var $forElement = $("#newRouteLog_searchRoute");
+			;
 			
 			var distinctColumn, where, results;
 			distinctColumn = "Name";
-			where = clLib.getRoutesWhere(
-				$("#newRouteLog_gradeTypeSelect").val(),
-				$("#newRouteLog_gradeSelect").val(),
-				localStorage.getItem("currentlySelectedArea"),
-				$("#newRouteLog_sectorSelect").val(),
-				$("#newRouteLog_colourSelect").val()	
-			);
+			where = clLib.getRoutesWhere({
+				"GradeType" : $("#newRouteLog_gradeTypeSelect").val(),
+				"Grade": $("#newRouteLog_gradeSelect").val(),
+				"Area" : localStorage.getItem("currentlySelectedArea"),
+				"Sector" : $("#newRouteLog_sectorSelect").val(),
+				"Colour" : $("#newRouteLog_colourSelect").val(),
+				"Line" : $("#newRouteLog_lineSelect").val()
+			});
 			where["Name"] = {
 				"$starts-with" : $("#newRouteLog_searchRoute").val()	
 			}
 			console.log("Getting routes for " + JSON.stringify(where));
-			results = clLib.localStorage.getDistinct("routes", where, distinctColumn, "routeStorage");
+			results = clLib.localStorage.getDistinct("Routes", where, distinctColumn, "routeStorage");
 			
 			console.log("got routes " + JSON.stringify(results));
 
-			var $forElement = $("#newRouteLog_searchRoute");
+
 			//console.log("adding results from " + $forElement.attr("id") + " to " + $inElement.attr("id"));
 			clLib.populateSearchProposals($forElement, $inElement, results, options["hideOnSingleResult"]);
 		},
@@ -1186,10 +1438,12 @@ clLib.UI.elements = {
 			console.log("handling content for area..");
 			var distinctColumn, where, results;
 			distinctColumn = "Area";
+			//alert("building where");
 			where = clLib.getRoutesWhere("UIAA", "VIII");
-			results = clLib.localStorage.getDistinct("routes", where, distinctColumn, "routeStorage");
+			//alert("where=" + JSON.stringify(where));
+			results = clLib.localStorage.getDistinct("Routes", where, distinctColumn, "routeStorage");
 			console.log("got areas for " + JSON.stringify(where) + ",>" + JSON.stringify(results));
-
+			
 			clLib.populateSelectBox({
 				selectBoxElement : $this,
 				dataObj : results,
@@ -1214,16 +1468,29 @@ clLib.UI.killEventHandlers = function($element, eventName) {
 	$element.unbind(eventName);
 }
 
-clLib.populateListView = function($list, dataObj){
+
+
+
+
+
+
+
+clLib.populateListView = function($list, dataObj, formatFunc){
 	$list.empty();
 	$.each(dataObj, function(index, value) {
+		var itemValue;
+		if(formatFunc) {
+			itemValue = formatFunc(value);
+		}
+		else {
+			itemValue = value;
+		}
 		var $listItem = $('<li></li>')
-                .html(value);
+                .html(itemValue);
 		$list.append($listItem);
 	});
 	$list.listview('refresh', true);
 };
-
 
 
 clLib.populateSelectBox = function(options) {
@@ -1241,11 +1508,14 @@ clLib.populateSelectBox = function(options) {
 		console.log("oldEventHandler " + JSON.stringify(oldEventHandler));
 */
 		// disable current onChange handler
+	var selectBoxId = options.selectBoxElement.attr('id');
+	console.log("killing evnet handlers for  " + selectBoxId);
+
 	clLib.UI.killEventHandlers(options.selectBoxElement, "change.clLib");
 /*
 	}
 */
-	var returnObj = clLib.populateSelectBox_plain(
+	var needRefresh = clLib.populateSelectBox_plain(
 		options.selectBoxElement,
 		options.dataObj,
 		options.selectedValue,
@@ -1253,11 +1523,23 @@ clLib.populateSelectBox = function(options) {
 		options.additionalValue
 	);
 
-	options.selectBoxElement.live("change.clLib", function() {
-		clLib.UI.defaultChangeHandler($(this))
+	options.selectBoxElement.bind("change.clLib", function() {
+		var customChangeHandler = clLib.UI.elements[selectBoxId]["changeHandler"];
+		if(customChangeHandler) {
+			console.log("custom event handler for " + selectBoxId + "found.." + customChangeHandler);
+		}
+		var changeHandler = customChangeHandler || clLib.UI.defaultChangeHandler;
+		if(customChangeHandler) {
+			console.log("custom event handler is now.." + changeHandler);
+		}
+		
+		changeHandler($(this));
 	});
+	
 
-	return returnObj;
+	if(needRefresh) {
+		options.selectBoxElement.trigger("change.clLib");
+	}
 
 };
 
@@ -1310,10 +1592,15 @@ clLib.populateSelectBox_plain = function($selectBox, dataObj, selectedValue, pre
 	
 	$selectBox.selectmenu('refresh', true);
 
-	if(!oldValueFound) {
-		1;
-		//console.log("Previous value >" + oldValue + "< is no longer present in the select list.");
+	if(oldValueFound) {
+		// no refresh necessary..
+		return false;
 	}
+
+	// need to refresh
+	return true;
+	//console.log("Previous value >" + oldValue + "< is no longer present in the select list.");
+
 };
 
 
@@ -1323,8 +1610,12 @@ clLib.populateSearchProposals = function($forElement, $inElement, dataObj, hideO
 	
 	//alert(JSON.stringify(dataObj));
 	if(hideOnSingleResult && dataObj.length == 1) {
+		console.log("single element found, hiding results..");
 		$forElement.val(dataObj[0]);
+		$inElement.hide();
 		return;
+	} else {
+		$forElement.val("");
 	}
 	
 	clLib.populateListView($inElement, dataObj);
@@ -1363,7 +1654,7 @@ clLib.UI.defaultChangeHandler = function($element) {
 	$.each(elementConfig.refreshOnUpdate, function(refreshTargetName, refreshOptions) {
 		console.log("refreshing dependent element " + refreshTargetName);
 		if(!$("#" + refreshTargetName)) {
-			alert("element " + "#" + refreshTargetName + " not found!");
+			console.log("element " + "#" + refreshTargetName + " not found!");
 		}
 		$("#" + refreshTargetName)
 			.trigger("refresh.clLib", refreshOptions);
@@ -1396,21 +1687,92 @@ clLib.UI.fillUIelements = function(pageName) {
 
 		// populate current element..
 		$element.bind("refresh.clLib", function(event, additionalOptions) {
+			if(!additionalOptions) additionalOptions = {};
+			//console.log("refreshing element " + elementName + " == " +  additionalOptions["noRefreshOn"]);
+			if(
+				typeof(additionalOptions) !== "undefined" &&
+				additionalOptions["noRefreshOn"] == elementName
+			) {
+				console.log("not refreshing element " + elementName);
+			}
 			console.log("refresh element " + $(this).attr("id") + " with elementConfig " + JSON.stringify(elementConfig));
 			elementConfig.contentHandler($element, additionalOptions);
 			$(this).trigger("change.clLib");
 		});
 	});
 
+	// populate autoload elements
 	$.each(clLib.UI.autoLoad[pageName], function(idx, elementName) {
-		console.log("triggering refresh on element >" + elementName + "<");
-		var $element = 
-			$("#" + elementName);
-		// populate current element..
-		$element.trigger("refresh.clLib");
-		
-	});	
+		console.log("triggering autoload for " + elementName);
+		//alert($("#" + elementName).html());
+		$("#" + elementName).trigger("refresh.clLib");
+	});
+};
+
+clLib.UI.showLoading = function(text, html) {
+	$.mobile.loading( 'show', {
+		text: 'foo',
+		textVisible: true,
+		//theme: 'z',
+		html: html
+	});
+};
+
+clLib.UI.hideLoading = function() {
+	$.mobile.hidePageLoadingMsg();
+};
+"use strict";
+
+clLib.REST = {};
+
+clLib.REST.execute = function(uri, method, whereObj) {
+	var getParams;
+	if(whereObj) {
+		getParams = "where=" + encodeURIComponent(JSON.stringify(whereObj));
+	}
+	var request = {
+		async: false,
+		url: uri,
+		type: method,
+		contentType: "application/json",
+		accepts: "application/json",
+		cache: true,
+		dataType: 'json',
+//		data: JSON.stringify("where=" + JSON.stringify(data)),
+//curl 'https://api.appery.io/rest/1/db/collections/RouteLog?where=%7B%22Area%22+%3A+%22Kletterhalle+Wien%22%7D' -H 'Accept: application/json, text/javascript, */*; q=0.01' -H 'Accept-Encoding: gzip, deflate' -H 'Accept-Language: de-de,de;q=0.8,en-us;q=0.5,en;q=0.3' -H 'Connection: keep-alive' -H 'DNT: 1' -H 'Host: api.appery.io' -H 'Origin: http://appery.io' -H 'Referer: http://appery.io/app/view/72918a4b-035e-44c2-ad30-c0740199fca3/startScreen.html' -H 'User-Agent: Mozilla/5.0 (Windows NT 6.2; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0' -H 'X-Appery-Database-Id: 52093c91e4b04c2d0a027d7f'
+
+//curl 'https://api.appery.io/rest/1/db/collections/RouteLog?where=%7B%22Area%22%20:%20%22Kletterhalle%20Wien%22%7D' -H 'Host: api.appery.io' -H 'User-Agent: Mozilla/5.0 (Windows NT 6.2; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0' -H 'Accept: application/json, text/javascript, */*; q=0.01' -H 'Accept-Language: de-de,de;q=0.8,en-us;q=0.5,en;q=0.3' -H 'Accept-Encoding: gzip, deflate' -H 'DNT: 1' -H 'Content-Type: application/json' -H 'X-Appery-Database-Id: 52093c91e4b04c2d0a027d7f' -H 'Origin: null'
+
+//		data: "where=" + encodeURIComponent("{\"Area\" : \"Kletterhalle Wien\"}"),
+		data: getParams,
+		beforeSend: function (xhr) {
+//			xhr.setRequestHeader("X-Appery-Database-Id", "52093c91e4b04c2d0a027d7f");
+			xhr.setRequestHeader("Accept", "application/json, text/javascript, */*; q=0.01");
+			xhr.setRequestHeader("Accept-Encoding", "gzip, deflate");
+			xhr.setRequestHeader("Accept-Language", "de-de,de;q=0.8,en-us;q=0.5,en;q=0.3");
+			xhr.setRequestHeader("Connection", "keep-alive");
+			xhr.setRequestHeader("DNT", "1");
+//			xhr.setRequestHeader("User-Agent", "Mozilla/5.0 (Windows NT 6.2; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0");
+			xhr.setRequestHeader("X-Appery-Database-Id", "52093c91e4b04c2d0a027d7f");
+		},
+		error: function(jqXHR) {
+			console.log("ajax error " + jqXHR.status);
+		}
+	};
+	return $.ajax(request);
 }
 
-
-
+clLib.REST.getEntities = function(entityName, whereObj) {
+	var uri = "https://api.appery.io/rest/1/db/collections/" + entityName;
+	//clLib.UI.showLoading("Loading " + entityName + " from server...", "xyxyx");
+	var ajaxrequest = clLib.REST.execute(uri, 'GET', whereObj);
+	var returnObj = {};
+	ajaxrequest.done(function(data) {
+		//alert("retrieved data " + JSON.stringify(data));
+		//clLib.UI.hideLoading();
+		returnObj[entityName] = data;//.responseText;
+		//alert("returning " + JSON.stringify(returnObj));
+	});
+	//alert("2returning " + JSON.stringify(returnObj));
+	return returnObj;
+}
