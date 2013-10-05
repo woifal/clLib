@@ -120,18 +120,18 @@
 	var userRouteLogs = clLib.REST.getEntities("RouteLog", clLib.getRouteLogWhere());
 
 	// initialize storage for current user's routelogs
-	clLib.localStorage.initStorage("routeStorage", userRouteLogs);
+	clLib.localStorage.initStorage("routeLogStorage", userRouteLogs);
 
 	// build where clause for today's routelogs
 	var where = clLib.getRouteLogWhereToday();
 	alert("ZZZ" + JSON.stringify(where));
 
 	// retrieve today's routelogs
-	var todaysRouteLogs = clLib.localStorage.getEntities("RouteLog", where, "routeStorage");
+	var todaysRouteLogs = clLib.localStorage.getEntities("RouteLog", where, "routeLogStorage");
 	alert("items retrieved " + JSON.stringify(todaysRouteLogs));
 
 	// retrieve today's routelogs
-	var todaysRouteLogs = clLib.localStorage.getEntities("RouteLog", where, "routeStorage", "Date", true, 2);
+	var todaysRouteLogs = clLib.localStorage.getEntities("RouteLog", where, "routeLogStorage", "Date", true, 2);
 	alert("items retrieved(latest first) " + JSON.stringify(todaysRouteLogs));
 
 	
@@ -191,7 +191,7 @@ html: "asdf"
 	
 	//console.profile();
 	console.log("init storage start");
-	alert(profiledFnCall(1, function() { clLib.localStorage.initStorage("routeStorage", routeSample); }));
+	alert(profiledFnCall(1, function() { clLib.localStorage.initStorage("routeLogStorage", routeSample); }));
 	console.log("init storage end");
 	//console.profileEnd();
 	
@@ -211,12 +211,12 @@ html: "asdf"
 		var results = {}, distincts = {};
 		
 		var avgDur = profiledFnCall(10, function() { 
-			distincts = clLib.localStorage.getDistinct("routes", whereObj, distinctColumn, "routeStorage");
+			distincts = clLib.localStorage.getDistinct("routes", whereObj, distinctColumn, "routeLogStorage");
 		});
 		printi("avg duration for distincts: " + avgDur);
 		
 		var avgDur = profiledFnCall(10, function() { 
-			results = clLib.localStorage.getEntities("routes", whereObj, "routeStorage");
+			results = clLib.localStorage.getEntities("routes", whereObj, "routeLogStorage");
 		});
 		printi("avg duration for results: " + avgDur);
 			printi("got no of results:" + Object.keys(results).length);

@@ -694,7 +694,7 @@ clLib.localStorage.indexExists = function(storageName, indexName) {
 
 clLib.localStorage.initStorage = function(storageName, storageObj) {
 //	localStorage.clear();
-	
+	//alert("adding elements " + JSON.stringify(storageObj));
 	console.log("adding elements " + Object.keys(storageObj).length);
 	var allItems = {};
 	for(var entityName in storageObj) {
@@ -770,7 +770,7 @@ clLib.localStorage.initStorage = function(storageName, storageObj) {
 	//console.log("initialized storage " + storageName);
 	//console.log("storage now is " + JSON.stringify(clLib.localStorage.getItem(storageName + "_items")));
 	//console.log("index now is " + JSON.stringify(clLib.localStorage.getItem(storageName + "_index_" + "routes")));
-	
+	//alert("local storage after init " + JSON.stringify(localStorage));
 };
 
 
@@ -1036,7 +1036,7 @@ clLib.localStorage.getDistinct = function(entity, whereObj, colName, storageName
 	var resultsObj = [];
 	var storage = clLib.localStorage.getStorageItems(storageName);
 	if(!storage){
-		alert("no local store available => you need to refresh first.");
+		alert("no local store available for storage " + storageName + " => you need to refresh first.");
 		return {};
 	} else {
 		//alert("storage: " + JSON.stringify(storage));
@@ -1044,7 +1044,7 @@ clLib.localStorage.getDistinct = function(entity, whereObj, colName, storageName
 	}
 //alert(12);
 	if(!storage[entity]){
-		alert("no local data available => you need to refresh first.");
+		alert("no local data available for " + storageName + "[" + entity + "]=> you need to refresh first.");
 		return {};
 	} else {
 		//alert("entity storage: " + JSON.stringify(storage));
@@ -1457,6 +1457,7 @@ clLib.UI.elements = {
 	"startScreen_selectedArea" : {
 		"contentHandler" : function($this) { 
 			localStorage.setItem("currentlySelectedArea", $("#startScreen_areaSelect").val());
+			clLib.UI.fillUIelements("newRouteLog");
 		},
 		"refreshOnUpdate" : {}
 	}
@@ -1648,7 +1649,7 @@ clLib.populateSearchProposals = function($forElement, $inElement, dataObj, hideO
 clLib.UI.defaultChangeHandler = function($element) {
 	// Store current value
 	$element.data("clLib.currentValue", $element.val());
-	console.log($element.attr("id") + " was changed(to: >" + $element.data("clLib.currentValue") + "<");
+	//alert($element.attr("id") + " was changed(to: >" + $element.data("clLib.currentValue") + "<");
 	var elementConfig = clLib.UI.elements[$element.attr("id")];
 	//console.log("elementConfig for " + $element.attr("id") + " is " + JSON.stringify(elementConfig));
 	$.each(elementConfig.refreshOnUpdate, function(refreshTargetName, refreshOptions) {

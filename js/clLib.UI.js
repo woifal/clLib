@@ -261,6 +261,7 @@ clLib.UI.elements = {
 	"startScreen_selectedArea" : {
 		"contentHandler" : function($this) { 
 			localStorage.setItem("currentlySelectedArea", $("#startScreen_areaSelect").val());
+			clLib.UI.fillUIelements("newRouteLog");
 		},
 		"refreshOnUpdate" : {}
 	}
@@ -452,7 +453,7 @@ clLib.populateSearchProposals = function($forElement, $inElement, dataObj, hideO
 clLib.UI.defaultChangeHandler = function($element) {
 	// Store current value
 	$element.data("clLib.currentValue", $element.val());
-	console.log($element.attr("id") + " was changed(to: >" + $element.data("clLib.currentValue") + "<");
+	//alert($element.attr("id") + " was changed(to: >" + $element.data("clLib.currentValue") + "<");
 	var elementConfig = clLib.UI.elements[$element.attr("id")];
 	//console.log("elementConfig for " + $element.attr("id") + " is " + JSON.stringify(elementConfig));
 	$.each(elementConfig.refreshOnUpdate, function(refreshTargetName, refreshOptions) {

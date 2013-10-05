@@ -251,7 +251,7 @@ $( document ).live("pageinit", function() {
 		alert("previous refresh:" + clLib.localStorage.getLastRefreshDate("routeStorage"));
 		
 		var userRoutes = clLib.REST.getEntities("Routes");
-		//	alert("GOT: "  + JSON.stringify(userRouteLogs));
+		alert("GOT: "  + JSON.stringify(userRoutes));
 		clLib.localStorage.initStorage("routeStorage", userRoutes);
 		//	clLib.REST.getEntities("RouteLog", clLib.getRouteLogWhereToday());
 		

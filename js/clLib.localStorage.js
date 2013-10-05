@@ -34,7 +34,7 @@ clLib.localStorage.indexExists = function(storageName, indexName) {
 
 clLib.localStorage.initStorage = function(storageName, storageObj) {
 //	localStorage.clear();
-	
+	//alert("adding elements " + JSON.stringify(storageObj));
 	console.log("adding elements " + Object.keys(storageObj).length);
 	var allItems = {};
 	for(var entityName in storageObj) {
@@ -110,7 +110,7 @@ clLib.localStorage.initStorage = function(storageName, storageObj) {
 	//console.log("initialized storage " + storageName);
 	//console.log("storage now is " + JSON.stringify(clLib.localStorage.getItem(storageName + "_items")));
 	//console.log("index now is " + JSON.stringify(clLib.localStorage.getItem(storageName + "_index_" + "routes")));
-	
+	//alert("local storage after init " + JSON.stringify(localStorage));
 };
 
 
@@ -376,7 +376,7 @@ clLib.localStorage.getDistinct = function(entity, whereObj, colName, storageName
 	var resultsObj = [];
 	var storage = clLib.localStorage.getStorageItems(storageName);
 	if(!storage){
-		alert("no local store available => you need to refresh first.");
+		alert("no local store available for storage " + storageName + " => you need to refresh first.");
 		return {};
 	} else {
 		//alert("storage: " + JSON.stringify(storage));
@@ -384,7 +384,7 @@ clLib.localStorage.getDistinct = function(entity, whereObj, colName, storageName
 	}
 //alert(12);
 	if(!storage[entity]){
-		alert("no local data available => you need to refresh first.");
+		alert("no local data available for " + storageName + "[" + entity + "]=> you need to refresh first.");
 		return {};
 	} else {
 		//alert("entity storage: " + JSON.stringify(storage));
