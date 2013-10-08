@@ -530,11 +530,11 @@ clLib.UI.hideLoading = function() {
 
 
 
-clLib.UI.showAllTodayScores = function(buddyNames) {
-	alert("buddies changed..refreshing todaysscore..");
+clLib.UI.showAllTodayScores = function(buddyNames, targetElement) {
+	//alert("buddies changed..refreshing todaysscore..");
 
 	var allTodaysScores = [];
-	var buddyArray = buddyNames.split(",");
+	var buddyArray = (buddyNames && buddyNames.split(",")) || [];
 	buddyArray.push(localStorage.getItem("currentUser"));
 	$.each(buddyArray, function(idx, buddyName) {
 		// build where clause for today's routelogs
@@ -545,13 +545,13 @@ clLib.UI.showAllTodayScores = function(buddyNames) {
 			true, 10);
 		// calculate today's score
 		var buddyTodaysTopScore = clLib.calculateScore(buddyTodaysTopRouteLogs);
-		alert("buddys todays score(top10)" + buddyTodaysTopScore);
+		//alert("buddys todays score(top10)" + buddyTodaysTopScore);
 		var buddyTodayStr = buddyName + " => " + buddyTodaysTopScore;
 		allTodaysScores.push(buddyTodayStr);
 	});
-	alert("allTodaysTopScore: " + JSON.stringify(allTodaysScores));
+	//alert("allTodaysTopScore: " + JSON.stringify(allTodaysScores));
 	// show buddies todays' score
-	clLib.populateListView($("#todaysScoreList"), allTodaysScores);
+	clLib.populateListView(targetElement, allTodaysScores);
 };
 
 
