@@ -117,39 +117,57 @@
 	localStorage.setItem("currentUser", "gere");
 
 	// get routelog for current user..
-	var userRouteLogs = clLib.REST.getEntities("RouteLog", clLib.getRouteLogWhere());
+	var userRouteLogs = clLib.REST.getEntities("RouteLog", {});
 
 	// initialize storage for current user's routelogs
 	clLib.localStorage.initStorage("routeLogStorage", userRouteLogs);
 
 	// build where clause for today's routelogs
-	var where = clLib.getRouteLogWhereToday();
-	alert("ZZZ" + JSON.stringify(where));
+	var where = clLib.getRouteLogWhereToday(clLib.getCurrentUserWhere());
+	//alert("ZZZ" + JSON.stringify(where));
 
 	// retrieve today's routelogs
-	var todaysRouteLogs = clLib.localStorage.getEntities("RouteLog", where, "routeLogStorage");
-	alert("items retrieved " + JSON.stringify(todaysRouteLogs));
+	//var todaysRouteLogs = clLib.localStorage.getEntities("RouteLog", where, "routeLogStorage");
+	//alert("items retrieved " + JSON.stringify(todaysRouteLogs));
 
-	// retrieve today's top2 routelogs
-	var todaysRouteLogs = clLib.localStorage.getEntities("RouteLog", where, "routeLogStorage", "Date", true, 2);
-	alert("items retrieved(latest first) " + JSON.stringify(todaysRouteLogs));
-
-
-	// retrieve today's 2 top scored routelogs
-	var todaysRouteLogs = clLib.localStorage.getEntities("RouteLog", where, "routeLogStorage", 
-		clLib.sortByScoreFunc,
-		true, 2);
-	alert("items retrieved(latest first) " + JSON.stringify(todaysRouteLogs));
+	// retrieve today's routelogs (sorted by Date)
+	var todaysRouteLogs = clLib.localStorage.getEntities("RouteLog", where, "routeLogStorage", "Date", true, 10);
+	//alert("items retrieved(latest first) " + JSON.stringify(todaysRouteLogs));
 
 	
 	// Get number of today's routes
 	var todaysRouteLogCount = JSON.stringify(todaysRouteLogs.length);
-	alert("items count" + todaysRouteLogCount);
+	//alert("items count" + todaysRouteLogCount);
+
+
+	// retrieve today's 2 top scored routelogs
+	var todaysTopRouteLogs = clLib.localStorage.getEntities("RouteLog", where, "routeLogStorage", 
+		clLib.sortByScoreFunc,
+		true, 10);
+	//alert("items retrieved(high-scored first) " + JSON.stringify(todaysTopRouteLogs));
+	//alert("items retrieved(latest first) " + JSON.stringify(todaysRouteLogs));
 
 	// calculate today's score
+	var todaysTopScore = clLib.calculateScore(todaysTopRouteLogs);
 	var todaysScore = clLib.calculateScore(todaysRouteLogs);
-	alert("XXX" + todaysScore);
+	alert("todays score(latest10)" + todaysScore);
+	alert("todays score(top10)" + todaysTopScore);
+
 	
+	// build where clause for today's routelogs
+	var buddyWhere = clLib.getRouteLogWhereToday({userName: "edgar"});
+	// retrieve today's top scored routelogs
+	var buddyTodaysTopRouteLogs = clLib.localStorage.getEntities("RouteLog", buddyWhere, "routeLogStorage", 
+		clLib.sortByScoreFunc,
+		true, 10);
+	// calculate today's score
+	var buddyTodaysTopScore = clLib.calculateScore(buddyTodaysTopRouteLogs);
+	alert("buddys todays score(top10)" + buddyTodaysTopScore);
+	
+
+
+
+
 	$("#top5Button").click(function() {
 		//clLib.populateListViewCollapsible($("#top5Div"), todaysRouteLogs, "RouteName");
 

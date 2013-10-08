@@ -289,29 +289,35 @@ clLib.getRoutesWhere_obj = function(restrictionObj) {
 * Returns the WHERE clause in JSON notation.
 *
 */
-clLib.getRouteLogWhere = function(dateWhereObj) {
+clLib.getRouteLogWhereAt = function(dateWhereObj, additionalWhere) {
 	var whereObj = {};
 	$.extend(whereObj, dateWhereObj);
-	$.extend(clLib.extendIfDefined(
-            whereObj, "userName", localStorage.getItem("currentUser")));
+	$.extend(whereObj, additionalWhere);
 	return whereObj;
 };
+
+clLib.getCurrentUserWhere = function() {
+	return {
+		userName: localStorage.getItem("currentUser")
+	}
+}
 
 /*
 *   Builds a mongodb WHERE clause to use for "RouteLog" collection queries.
 *   Restricts results on routeLogs from today.
 */
-clLib.getRouteLogWhereToday = function() {
-	return clLib.getRouteLogWhereAtDay(clLib.today())	;
+clLib.getRouteLogWhereToday = function(additionalWhere) {
+	return clLib.getRouteLogWhereAtDay(clLib.today(), additionalWhere);
 }
 
 /*
 *   Builds a mongodb WHERE clause to use for "RouteLog" collection queries.
 *   Restricts results on routeLogs at the day contained in "dateObj".
 */
-clLib.getRouteLogWhereAtDay = function(dateObj){
-	return clLib.getRouteLogWhere(
-		clLib.colBetweenDate("Date", clLib.dayBegin(dateObj), clLib.dayEnd(dateObj))
+clLib.getRouteLogWhereAtDay = function(dateObj, additionalWhere){
+	return clLib.getRouteLogWhereAt(
+		clLib.colBetweenDate("Date", clLib.dayBegin(dateObj), clLib.dayEnd(dateObj)),
+		additionalWhere
 	);
 };
 
@@ -322,17 +328,18 @@ clLib.getRouteLogWhereAtDay = function(dateObj){
 *       "customRange" (between localStorage items "scoreRangeFrom" and "scoreRangeTo" )
 *       "today"
 */
-clLib.getRouteLogWhereCurrentScoreRange =  function() {
+clLib.getRouteLogWhereCurrentScoreRange =  function(additionalWhere) {
 	if(localStorage.getItem("scoreRange") == 'today') {
-		return clLib.getRouteLogWhereToday();
+		return clLib.getRouteLogWhereToday(additionalWhere);
 	}
 	else if(localStorage.getItem("scoreRange") == 'customRange') {
 		var fromDate = localStorage.getItem("scoreRangeFrom");
 		var toDate = localStorage.getItem("scoreRangeTo");
-		return clLib.getRouteLogWhere(
+		return clLib.getRouteLogWhereAt(
 				clLib.colBetweenDate(
 						fromDate, toDate
-				)
+				),
+				additionalWhere
 		);
 	}
 };
