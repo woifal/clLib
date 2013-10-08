@@ -429,6 +429,33 @@ clLib.addObjKey = function(anObj, pathArr) {
 }; 
 
 
+
+
+
+
+
+
+clLib.sortByScoreFunc = function(routeLog) {
+	//alert("functon called!" + JSON.stringify(routeLog));
+	return clLib.computeScore(routeLog);
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 //})(jQuery)
 ;"use strict";
 
@@ -693,7 +720,11 @@ clLib.localStorage.indexExists = function(storageName, indexName) {
 
 
 clLib.localStorage.initStorage = function(storageName, storageObj) {
-//	localStorage.clear();
+	// Delete cache
+	var storageItemsKey = storageName + "_items";
+	delete(storageCache[storageItemsKey]);
+
+
 	//alert("adding elements " + JSON.stringify(storageObj));
 	console.log("adding elements " + Object.keys(storageObj).length);
 	var allItems = {};
@@ -854,20 +885,47 @@ Array.prototype.getIntersect = function(anotherArray) {
 	return resultArray;
 }
 	
-Array.prototype.sortBy = function(sortKey, descSortFlag) {
+clLib.isFunction = function(functionToCheck) {
+ var getType = {};
+ //alert("am i a function? :" + getType.toString.call(functionToCheck));
+ return functionToCheck && getType.toString.call(functionToCheck) === '[object Function]';
+}
+
+Array.prototype.sortByKey = function(sortKey, descSortFlag) {
     this.sort(function(a, b) {
-		//alert("comparing " + a[sortKey] + " - " +  b[sortKey]);
 		var sortResult = 
 			a[sortKey] < b[sortKey] ? -1 : 1;
-		//alert("sortresult is " + sortResult);
-
-        if(descSortFlag) {
+		if(descSortFlag) {
 			sortResult *= -1;
 		}
-		//alert("returning " + sortResult);
+		return sortResult;
+	});
+};
+
+Array.prototype.sortByFunction = function(sortFunction, descSortFlag) {
+//	alert("yes, sorting by function " + JSON.stringify(sortFunction));
+    this.sort(function(a, b) {
+		var sortResult = 
+			sortFunction(a) < sortFunction(b) ? -1 : 1;
+		if(descSortFlag) {
+			sortResult *= -1;
+		}
 		return sortResult;
     });
 };
+
+Array.prototype.sortBy = function(sortBy, descSortFlag) {
+	var sortFunc;
+//	alert("sortBy " + JSON.stringify(sortBy));
+
+	if(clLib.isFunction(sortBy)) {
+//		alert("JSON.stringify " + JSON.stringify(sortBy));
+		return this.sortByFunction(sortBy, descSortFlag);	
+	} else {
+		return this.sortByKey(sortBy, descSortFlag);
+	}
+};
+
 
 /*
 *	Returns all objects from localStorage storage "storageName" where ALL conditions in whereObj are met.
@@ -1335,8 +1393,9 @@ clLib.UI.elements = {
 
 				console.log("sectorselect changed to " + results[0]);
 			} else {
-				console.log("WTF!?!?!? multiple sectors for line found - setting sector to UNKNOWN..");
-				$sectorSelect.val(clLib.UI.NOTSELECTED.value);
+				console.log("2013-10-07-WTF!?!?!? multiple sectors for line found - setting sector to the one of first result...");
+				$sectorSelect.val(results[0]);     
+
 				$sectorSelect.selectmenu('refresh', true);
 			}
 
