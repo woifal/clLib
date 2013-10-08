@@ -139,8 +139,9 @@ clLib.UI.elements = {
 
 				console.log("sectorselect changed to " + results[0]);
 			} else {
-				console.log("WTF!?!?!? multiple sectors for line found - setting sector to UNKNOWN..");
-				$sectorSelect.val(clLib.UI.NOTSELECTED.value);
+				console.log("2013-10-07-WTF!?!?!? multiple sectors for line found - setting sector to the one of first result...");
+				$sectorSelect.val(results[0]);     
+
 				$sectorSelect.selectmenu('refresh', true);
 			}
 

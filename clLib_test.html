@@ -130,8 +130,15 @@
 	var todaysRouteLogs = clLib.localStorage.getEntities("RouteLog", where, "routeLogStorage");
 	alert("items retrieved " + JSON.stringify(todaysRouteLogs));
 
-	// retrieve today's routelogs
+	// retrieve today's top2 routelogs
 	var todaysRouteLogs = clLib.localStorage.getEntities("RouteLog", where, "routeLogStorage", "Date", true, 2);
+	alert("items retrieved(latest first) " + JSON.stringify(todaysRouteLogs));
+
+
+	// retrieve today's 2 top scored routelogs
+	var todaysRouteLogs = clLib.localStorage.getEntities("RouteLog", where, "routeLogStorage", 
+		clLib.sortByScoreFunc,
+		true, 2);
 	alert("items retrieved(latest first) " + JSON.stringify(todaysRouteLogs));
 
 	

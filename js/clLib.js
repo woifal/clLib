@@ -429,5 +429,32 @@ clLib.addObjKey = function(anObj, pathArr) {
 }; 
 
 
+
+
+
+
+
+
+clLib.sortByScoreFunc = function(routeLog) {
+	//alert("functon called!" + JSON.stringify(routeLog));
+	return clLib.computeScore(routeLog);
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 //})(jQuery)
 ;
