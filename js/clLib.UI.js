@@ -527,3 +527,31 @@ clLib.UI.showLoading = function(text, html) {
 clLib.UI.hideLoading = function() {
 	$.mobile.hidePageLoadingMsg();
 };
+
+
+
+clLib.UI.showAllTodayScores = function(buddyNames) {
+	alert("buddies changed..refreshing todaysscore..");
+
+	var allTodaysScores = [];
+	var buddyArray = buddyNames.split(",");
+	buddyArray.push(localStorage.getItem("currentUser"));
+	$.each(buddyArray, function(idx, buddyName) {
+		// build where clause for today's routelogs
+		var buddyWhere = clLib.getRouteLogWhereToday({userName: buddyName});
+		// retrieve today's top scored routelogs
+		var buddyTodaysTopRouteLogs = clLib.localStorage.getEntities("RouteLog", buddyWhere, "routeLogStorage", 
+			clLib.sortByScoreFunc,
+			true, 10);
+		// calculate today's score
+		var buddyTodaysTopScore = clLib.calculateScore(buddyTodaysTopRouteLogs);
+		alert("buddys todays score(top10)" + buddyTodaysTopScore);
+		var buddyTodayStr = buddyName + " => " + buddyTodaysTopScore;
+		allTodaysScores.push(buddyTodayStr);
+	});
+	alert("allTodaysTopScore: " + JSON.stringify(allTodaysScores));
+	// show buddies todays' score
+	clLib.populateListView($("#todaysScoreList"), allTodaysScores);
+};
+
+
