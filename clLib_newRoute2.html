@@ -247,6 +247,15 @@ $( document ).live("pageinit", function() {
 		//alert("filled...");
 });
 
+$( document ).live("change.clLib", function(e) {
+//		alert("changed..." + JSON.stringify($(e.target).attr("id")) + " with data " + JSON.stringify(e.data));
+//		alert("2changed..." + JSON.stringify(e));
+});
+$( document ).bind("refresh.clLib", function(e, options) {
+//		alert("refresh..." + JSON.stringify($(e.target).attr("id")) + " with options " + JSON.stringify(options));
+//		alert("refreshed..." + JSON.stringify(e));
+});
+
 	$("#refreshStartScreen").click(function() {
 		alert("previous refresh:" + clLib.localStorage.getLastRefreshDate("routeStorage"));
 		

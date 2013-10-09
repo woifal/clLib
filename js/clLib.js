@@ -393,23 +393,37 @@ clLib.removeIfNotDefined = function(targetObj, key) {
 
 clLib.addObjArr = function(anObj, pathArr, arrValueToAdd) {
 	var tmpObj = anObj;
+//	alert("is tmpObj?" + JSON.stringify(tmpObj));
+	if(!tmpObj) {
+		//alert("no");
+		tmpObj = {};
+	}
+//	alert("yes");
 	for(var i = 0; i < pathArr.length; i++) {
+//		alert("looping " + i);
 		if(!pathArr[i]) {
+//			alert("returning early");
 			return;
 		}
 		if(i < pathArr.length - 1) {
+//			alert("getting childobj " + pathArr[i] + " " + JSON.stringify(tmpObj));
 			tmpObj = clLib.getChildObj(tmpObj, pathArr[i]);
 		} else {
+//			alert("getting childarr " + pathArr[i] + " " + JSON.stringify(tmpObj));
 			tmpObj = clLib.getChildArr(tmpObj, pathArr[i]);
 		}
-		//console.log("anObj is " + JSON.stringify(anObj));
+//		alert("tmpObj is " + JSON.stringify(tmpObj));
+//		alert("anObj is " + JSON.stringify(anObj));
 	}
 	tmpObj.push(arrValueToAdd);
+//	alert("2tmpObj is " + JSON.stringify(tmpObj));
+//	return JSON.parse(JSON.stringify(tmpObj));
+//	return tmp0bj;
 }; 
 
 
 clLib.getChildObj = function(anObj, objKey) {
-	//console.log("getChildObj called for " + objKey);
+	//alert("getChildObj called for " + objKey);
 	if(!anObj[objKey]) {
 		anObj[objKey] = {};
 	}
