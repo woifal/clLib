@@ -393,23 +393,37 @@ clLib.removeIfNotDefined = function(targetObj, key) {
 
 clLib.addObjArr = function(anObj, pathArr, arrValueToAdd) {
 	var tmpObj = anObj;
+//	alert("is tmpObj?" + JSON.stringify(tmpObj));
+	if(!tmpObj) {
+		//alert("no");
+		tmpObj = {};
+	}
+//	alert("yes");
 	for(var i = 0; i < pathArr.length; i++) {
+//		alert("looping " + i);
 		if(!pathArr[i]) {
+//			alert("returning early");
 			return;
 		}
 		if(i < pathArr.length - 1) {
+//			alert("getting childobj " + pathArr[i] + " " + JSON.stringify(tmpObj));
 			tmpObj = clLib.getChildObj(tmpObj, pathArr[i]);
 		} else {
+//			alert("getting childarr " + pathArr[i] + " " + JSON.stringify(tmpObj));
 			tmpObj = clLib.getChildArr(tmpObj, pathArr[i]);
 		}
-		//console.log("anObj is " + JSON.stringify(anObj));
+//		alert("tmpObj is " + JSON.stringify(tmpObj));
+//		alert("anObj is " + JSON.stringify(anObj));
 	}
 	tmpObj.push(arrValueToAdd);
+//	alert("2tmpObj is " + JSON.stringify(tmpObj));
+//	return JSON.parse(JSON.stringify(tmpObj));
+//	return tmp0bj;
 }; 
 
 
 clLib.getChildObj = function(anObj, objKey) {
-	//console.log("getChildObj called for " + objKey);
+	//alert("getChildObj called for " + objKey);
 	if(!anObj[objKey]) {
 		anObj[objKey] = {};
 	}
@@ -1273,7 +1287,8 @@ clLib.UI = {
 clLib.UI.autoLoad = {
 	newRouteLog : [
 		"newRouteLog_gradeTypeSelect",
-		"newRouteLog_searchRoute"
+		"newRouteLog_searchRoute",
+		"newRouteLog_ratingSelect"
 	],
 	startScreen : [
 		"startScreen_areaSelect"
@@ -1288,7 +1303,8 @@ clLib.UI.pageElements = {
 		"newRouteLog_colourSelect",
 		"newRouteLog_lineSelect",
 		"newRouteLog_searchRouteResults",
-		"newRouteLog_searchRoute"
+		"newRouteLog_searchRoute",
+		"newRouteLog_ratingSelect"
 	],
 	startScreen : [
 		"startScreen_areaSelect",
@@ -1298,14 +1314,14 @@ clLib.UI.pageElements = {
 
 clLib.UI.elements = {
 	"newRouteLog_gradeTypeSelect" : {
-		"contentHandler" : function($this) { 
+		"refreshHandler" : function($this) { 
 			clLib.populateGradeTypes($this, "UIAA") },
 		"refreshOnUpdate" : {
-			"newRouteLog_gradeSelect" : {}
+			"newRouteLog_gradeSelect" : { }
 		}
 	},
 	"newRouteLog_gradeSelect" : {
-		"contentHandler" : function($this) { 
+		"refreshHandler" : function($this) { 
 			clLib.populateGrades($this, 
 				$("#newRouteLog_gradeTypeSelect").val()
 			); 
@@ -1316,7 +1332,7 @@ clLib.UI.elements = {
 		}
 	},
 	"newRouteLog_sectorSelect" : {
-		"contentHandler" : function($this) { 
+		"refreshHandler" : function($this) { 
 			//console.log("handling content for sector.." + $this.val());
 
 			var distinctColumn, where, results;
@@ -1328,8 +1344,8 @@ clLib.UI.elements = {
 //				,"Line" : $("#newRouteLog_lineSelect").val()
 			});
 			
-				results = clLib.localStorage.getDistinct("Routes", where, distinctColumn, "routeStorage");
-				console.log("got sectors for " + JSON.stringify(where) + ",>" + JSON.stringify(results));
+			results = clLib.localStorage.getDistinct("Routes", where, distinctColumn, "routeStorage");
+			console.log("got sectors for " + JSON.stringify(where) + ",>" + JSON.stringify(results));
 
 			clLib.populateSelectBox({
 				selectBoxElement : $this,
@@ -1337,8 +1353,6 @@ clLib.UI.elements = {
 				preserveCurrentValue : true,
 				additionalValue : clLib.UI.NOTSELECTED
 			});
-			
-
 		},
 		"refreshOnUpdate" : {
 			"newRouteLog_colourSelect" : {}
@@ -1346,7 +1360,7 @@ clLib.UI.elements = {
 		}
 	},
 	"newRouteLog_lineSelect" : {
-		"contentHandler" : function($this) { 
+		"refreshHandler" : function($this) { 
 			console.log("getting lines");
 			var distinctColumn, where, results;
 			distinctColumn = "Line";
@@ -1368,18 +1382,8 @@ clLib.UI.elements = {
 				preserveCurrentValue : true,
 				additionalValue : clLib.UI.NOTSELECTED
 			});
-		},
-		"refreshOnUpdate" : {
-/*			"newRouteLog_sectorSelect" : {
-				noRefreshOn : "newRouteLog_lineSelect"
-			}*/
-/*			,"newRouteLog_searchRouteResults" : {
-				hideOnSingleResult : true
-			}
-*/
-			"newRouteLog_colourSelect" : {}
 		}
-		,"changeHandler" : function($this) {
+		,"changeHandler" : function($this, changeOptions) {
 			var $sectorSelect = $("#newRouteLog_sectorSelect");
 			
 			var distinctColumn, where, results;
@@ -1400,18 +1404,31 @@ clLib.UI.elements = {
 
 				console.log("sectorselect changed to " + results[0]);
 			} else {
-				console.log("2013-10-07-WTF!?!?!? multiple sectors for line found - setting sector to the one of first result...");
-				$sectorSelect.val(results[0]);     
+				if($("#newRouteLog_lineSelect").val() != clLib.UI.NOTSELECTED.value) {
+					//alert("2013-10-07-WTF!?!?!? multiple sectors for line " + $("#newRouteLog_lineSelect").val() + " found - setting sector to the one of first result...");
+					$sectorSelect.val(results[0]);     
+				}
 
 				$sectorSelect.selectmenu('refresh', true);
 			}
 
-			clLib.UI.defaultChangeHandler($this);
+			clLib.UI.defaultChangeHandler($this, changeOptions);
 		}
+		,"refreshOnUpdate" : {
+/*			"newRouteLog_sectorSelect" : {
+				noRefreshOn : "newRouteLog_lineSelect"
+			}*/
+/*			,"newRouteLog_searchRouteResults" : {
+				hideOnSingleResult : true
+			}
+*/
+			"newRouteLog_colourSelect" : {}
+		}
+
 
 	},
 	"newRouteLog_colourSelect": {
-		"contentHandler" : function($this) { 
+		"refreshHandler" : function($this) { 
 			console.log("getting colours");
 			var distinctColumn, where, results;
 			distinctColumn = "Colour";
@@ -1441,16 +1458,16 @@ clLib.UI.elements = {
 				hideOnSingleResult : true
 			}
 		}
-		,"changeHandler" : function($this) {
+		,"changeHandler" : function($this, changeOptions) {
 			var $forElement = $("#newRouteLog_searchRoute");
 			$forElement.val("");
 			console.log("searchRoute set to ''");
 
-			clLib.UI.defaultChangeHandler($this);
+			clLib.UI.defaultChangeHandler($this, changeOptions);
 		}
 	},
 	"newRouteLog_searchRouteResults" : {
-		"contentHandler" : function($this, options) { 
+		"refreshHandler" : function($this, options) { 
 			options = options || {};
 			console.log("refreshing searchrouteresults with options " + JSON.stringify(options));
 			var $inElement = $this;
@@ -1468,7 +1485,7 @@ clLib.UI.elements = {
 				"Line" : $("#newRouteLog_lineSelect").val()
 			});
 			where["Name"] = {
-				"$starts-with" : $("#newRouteLog_searchRoute").val()	
+				"$starts-with" : $forElement.val()	
 			}
 			console.log("Getting routes for " + JSON.stringify(where));
 			results = clLib.localStorage.getDistinct("Routes", where, distinctColumn, "routeStorage");
@@ -1482,12 +1499,16 @@ clLib.UI.elements = {
 		"refreshOnUpdate" : []
 	},
 	"newRouteLog_searchRoute" : {
-		"contentHandler" : function($this) { 
+		"refreshHandler" : function($this, options) { 
 			console.log("binding to keyup events...");
 			$this.bind("keyup.clLib", function() {
 				console.log("keyup, refresh search proposals!!!");
-				$("#newRouteLog_searchRouteResults").trigger("refresh.clLib");
+				$("#newRouteLog_searchRouteResults").trigger(
+					"refresh.clLib", 
+					clLib.UI.addObjArr(options || {}, ["eventSourcePath"], $this.attr("id"))
+				);
 			});
+/*
 			$this.bind("click.clLib", function() {
 				console.log("click, refresh search proposals!!!");
 				$("#newRouteLog_searchRouteResults").trigger("refresh.clLib");
@@ -1496,11 +1517,37 @@ clLib.UI.elements = {
 				console.log("changed, refresh search proposals!!!");
 				$("#newRouteLog_searchRouteResults").trigger("refresh.clLib");
 			});
+*/
 		},
 		"refreshOnUpdate" : []
 	},
+	"newRouteLog_ratingSelect" : {
+		"refreshHandler" : function($this, options) { 
+//			alert("refreshign ratingselec.t..");
+			$("input[type='radio']", $this).each(function() {
+				$(this).addClass("unrated");
+			});
+//			alert("onclicking ratingselec.t..");
+			clLib.UI.killEventHandlers($this, "click.clLib");
+
+			$("input[type='radio']", $this).bind("click.clLib", function(e) {
+//				alert("radio clicked!" + $(this).val());
+				var $label = $(this).parent();
+
+				$label.nextAll().addClass("unrated");
+				$label.nextAll().removeClass("rated");
+				$label.prevAll().addClass("rated");
+				$label.addClass("rated");
+				$label.prevAll().removeClass("unrated");
+				$label.removeClass("unrated");
+			});
+//			alert("inclicked ratingselec.t..");
+		},
+		"refreshOnUpdate" : []
+		,"changeHandler" : function($this, changeOptions) {}
+	},
 	"startScreen_areaSelect" : {
-		"contentHandler" : function($this) { 
+		"refreshHandler" : function($this) { 
 			console.log("handling content for area..");
 			var distinctColumn, where, results;
 			distinctColumn = "Area";
@@ -1521,7 +1568,7 @@ clLib.UI.elements = {
 		}
 	},
 	"startScreen_selectedArea" : {
-		"contentHandler" : function($this) { 
+		"refreshHandler" : function($this) { 
 			localStorage.setItem("currentlySelectedArea", $("#startScreen_areaSelect").val());
 			clLib.UI.fillUIelements("newRouteLog");
 		},
@@ -1590,22 +1637,19 @@ clLib.populateSelectBox = function(options) {
 		options.additionalValue
 	);
 
-	options.selectBoxElement.bind("change.clLib", function() {
-		var customChangeHandler = clLib.UI.elements[selectBoxId]["changeHandler"];
-		if(customChangeHandler) {
-			console.log("custom event handler for " + selectBoxId + "found.." + customChangeHandler);
-		}
-		var changeHandler = customChangeHandler || clLib.UI.defaultChangeHandler;
-		if(customChangeHandler) {
-			console.log("custom event handler is now.." + changeHandler);
-		}
-		
-		changeHandler($(this));
-	});
-	
+	var customChangeHandler = clLib.UI.elements[selectBoxId]["changeHandler"];
+	if(customChangeHandler) {
+		console.log("custom event handler for " + selectBoxId + "found.." + customChangeHandler);
+	}
+	var changeHandler = customChangeHandler || clLib.UI.defaultChangeHandler;
 
+	options.selectBoxElement.bind("change.clLib", function(event, changeOptions) {
+		changeHandler($(this), changeOptions);
+	});
+
+	
 	if(needRefresh) {
-		options.selectBoxElement.trigger("change.clLib");
+		options.selectBoxElement.trigger("change.clLib", options.changeOptions);
 	}
 
 };
@@ -1677,12 +1721,12 @@ clLib.populateSearchProposals = function($forElement, $inElement, dataObj, hideO
 	
 	//alert(JSON.stringify(dataObj));
 	if(hideOnSingleResult && dataObj.length == 1) {
-		console.log("single element found, hiding results..");
+		//alert("single element found, hiding results..");
 		$forElement.val(dataObj[0]);
 		$inElement.hide();
 		return;
 	} else {
-		$forElement.val("");
+		//$forElement.val("");
 	}
 	
 	clLib.populateListView($inElement, dataObj);
@@ -1691,16 +1735,6 @@ clLib.populateSearchProposals = function($forElement, $inElement, dataObj, hideO
 	$inElement.show();
 	console.log("shown" + $inElement.children().length);
 
-// Following was replaced by dataObj checking..
-/*
-	if($inElement.children().length == 1) {
-		var result = $.trim($inElement.children().first().text());
-		console.log("seeting SINGLE selectedresult to " + result);
-		$forElement.val(result);
-		$inElement.hide();
-		console.log("hidden (SINGLE)");
-	}
-*/	
 	$inElement.children().click(function() {
         console.log("this child;" + $(this).html());
 		var result = $.trim($(this).html());
@@ -1712,7 +1746,7 @@ clLib.populateSearchProposals = function($forElement, $inElement, dataObj, hideO
 	});
 };
 
-clLib.UI.defaultChangeHandler = function($element) {
+clLib.UI.defaultChangeHandler = function($element, changeOptions) {
 	// Store current value
 	$element.data("clLib.currentValue", $element.val());
 	//alert($element.attr("id") + " was changed(to: >" + $element.data("clLib.currentValue") + "<");
@@ -1723,8 +1757,13 @@ clLib.UI.defaultChangeHandler = function($element) {
 		if(!$("#" + refreshTargetName)) {
 			console.log("element " + "#" + refreshTargetName + " not found!");
 		}
+
+		$.extend(refreshOptions, changeOptions);
+		
 		$("#" + refreshTargetName)
-			.trigger("refresh.clLib", refreshOptions);
+			.trigger("refresh.clLib", 
+				clLib.UI.addObjArr(refreshOptions, ["eventSourcePath"], $element.attr("id"))
+		);
 	});
 
 }
@@ -1734,14 +1773,14 @@ clLib.UI.defaultChangeHandler = function($element) {
 *
 * Populates HTML UI elements for a page using the clLib.UI.elements configuration object.
 * Configuration includes a function handle to populate each element and a list of dependent elements to refresh in case of changes.
-* The "refresh.clLib" event can (and should) be used to re-populate such elements using the defined "contentHandler" function.
+* The "refresh.clLib" event can (and should) be used to re-populate such elements using the defined "refreshHandler" function.
 *
 */
 clLib.UI.fillUIelements = function(pageName) {
-	console.log("populating UI elements for page >" + pageName + "<");
+	//alert("populating UI elements for page >" + pageName + "<");
 	$.each(clLib.UI.pageElements[pageName], function(idx, elementName) {
 		var elementConfig = clLib.UI.elements[elementName];
-		console.log("adding events for  element >" + elementName + "<");
+		//alert("adding events for  element >" + elementName + "<");
 		var $element = $("#" + elementName);
 		//console.log("element is >" + $element.attr("id") + "<");
 
@@ -1755,7 +1794,7 @@ clLib.UI.fillUIelements = function(pageName) {
 		// populate current element..
 		$element.bind("refresh.clLib", function(event, additionalOptions) {
 			if(!additionalOptions) additionalOptions = {};
-			//console.log("refreshing element " + elementName + " == " +  additionalOptions["noRefreshOn"]);
+			//alert("refreshing element " + elementName + " with " +  JSON.stringify(additionalOptions));
 			if(
 				typeof(additionalOptions) !== "undefined" &&
 				additionalOptions["noRefreshOn"] == elementName
@@ -1763,18 +1802,26 @@ clLib.UI.fillUIelements = function(pageName) {
 				console.log("not refreshing element " + elementName);
 			}
 			console.log("refresh element " + $(this).attr("id") + " with elementConfig " + JSON.stringify(elementConfig));
-			elementConfig.contentHandler($element, additionalOptions);
-			$(this).trigger("change.clLib");
+			elementConfig.refreshHandler($element, additionalOptions);
+			$(this).trigger("change.clLib", additionalOptions);
 		});
 	});
 
 	// populate autoload elements
 	$.each(clLib.UI.autoLoad[pageName], function(idx, elementName) {
-		console.log("triggering autoload for " + elementName);
+		//alert("triggering autoload for " + elementName);
 		//alert($("#" + elementName).html());
-		$("#" + elementName).trigger("refresh.clLib");
+		var optionObj = {asf: "asdf"};
+		$("#" + elementName).trigger("refresh.clLib", 
+			clLib.UI.addObjArr(optionObj,["eventSourcePath"], "AUTOLOAD")
+		);
 	});
 };
+
+clLib.UI.addObjArr = function(anObj, pathArray, objValue) {
+	clLib.addObjArr(anObj,pathArray, objValue);
+	return JSON.parse(JSON.stringify(anObj));
+}
 
 clLib.UI.showLoading = function(text, html) {
 	$.mobile.loading( 'show', {
@@ -1816,7 +1863,56 @@ clLib.UI.showAllTodayScores = function(buddyNames, targetElement) {
 };
 
 
-"use strict";
+
+clLib.UI.buildRatingRadio = function($element) {
+	$element.html("" + 
+"                                                                                                                                                                               " +
+"<style>                                                                                                                                                                        " +
+".ratingSelect {                                                                                                                                                                " +
+"	border: 0px solid red;                                                                                                                                                      " +
+"	padding: 0px 0px 0px 0px;                                                                                                                                                   " +
+"	margin: 0px 0px 0px 0px;                                                                                                                                                    " +
+"}                                                                                                                                                                              " +
+"                                                                                                                                                                               " +
+".ratingSelect > label > input {                                                                                                                                                " +
+"    display: none;                                                                                                                                                             " +
+"}                                                                                                                                                                              " +
+"                                                                                                                                                                               " +
+".ratingSelect > label > .img {                                                                                                                                                 " +
+"	float: left;                                                                                                                                                                " +
+"	width: 40px;                                                                                                                                                                " +
+"	height: 40px;                                                                                                                                                               " +
+"	border: none;                                                                                                                                                               " +
+"}                                                                                                                                                                              " +
+"                                                                                                                                                                               " +
+".ratingSelect > label.rated > .img {                                                                                                                                           " +
+"	background-image: url(\"images/star_rated.jpg\"); /* no-repeat;*/                                                                                                             " +
+"	background-size: 100% 100%;                                                                                                                                                 " +
+"}                                                                                                                                                                              " +
+".ratingSelect > label.unrated > .img { 	                                                                                                                                    " +
+"	background-image: url(\"images/star_unrated.jpg\"); /* no-repeat; */                                                                                                          " +
+"	background-size: 100% 100%;                                                                                                                                                 " +
+"}                                                                                                                                                                              " +
+"                                                                                                                                                                               " +
+"                                                                                                                                                                               " +
+"                                                                                                                                                                               " +
+"</style>                                                                                                                                                                       " +
+"                                                                                                                                                                               " +
+"                                                                                                                                                                               " +
+"                                                                                                                                                                               " +
+"                                                                                                                                                                               " +
+"			<div data-role=\"none\" class=\"ratingSelect\" id=\"newRouteLog_ratingSelect\">                                                                                           " +
+"					<label data-role=\"none\" class=\"unrated\"><input data-role=\"none\" type=\"radio\" id=\"newRouteLog_ratingSelectRadio\" value=\"1\"/><div class=\"img\"></div></label>  " +
+"					<label data-role=\"none\" class=\"unrated\"><input data-role=\"none\" type=\"radio\" id=\"newRouteLog_ratingSelectRadio\" value=\"2\"/><div class=\"img\"></div></label>  " +
+"					<label data-role=\"none\" class=\"unrated\"><input data-role=\"none\" type=\"radio\" id=\"newRouteLog_ratingSelectRadio\" value=\"3\"/><div class=\"img\"></div></label>  " +
+"					<label data-role=\"none\" class=\"unrated\"><input data-role=\"none\" type=\"radio\" id=\"newRouteLog_ratingSelectRadio\" value=\"4\"/><div class=\"img\"></div></label>  " +
+"					<label data-role=\"none\" class=\"unrated\"><input data-role=\"none\" type=\"radio\" id=\"newRouteLog_ratingSelectRadio\" value=\"5\"/><div class=\"img\"></div></label>  " +
+"				</div>                                                                                                                                                          " +
+"	                                                                                                                                                                            " +
+""
+	);
+
+};"use strict";
 
 clLib.REST = {};
 
