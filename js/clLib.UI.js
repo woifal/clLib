@@ -12,7 +12,8 @@ clLib.UI = {
 clLib.UI.autoLoad = {
 	newRouteLog : [
 		"newRouteLog_gradeTypeSelect",
-		"newRouteLog_searchRoute"
+		"newRouteLog_searchRoute",
+		"newRouteLog_ratingSelect"
 	],
 	startScreen : [
 		"startScreen_areaSelect"
@@ -27,7 +28,8 @@ clLib.UI.pageElements = {
 		"newRouteLog_colourSelect",
 		"newRouteLog_lineSelect",
 		"newRouteLog_searchRouteResults",
-		"newRouteLog_searchRoute"
+		"newRouteLog_searchRoute",
+		"newRouteLog_ratingSelect"
 	],
 	startScreen : [
 		"startScreen_areaSelect",
@@ -243,6 +245,31 @@ clLib.UI.elements = {
 */
 		},
 		"refreshOnUpdate" : []
+	},
+	"newRouteLog_ratingSelect" : {
+		"refreshHandler" : function($this, options) { 
+//			alert("refreshign ratingselec.t..");
+			$("input[type='radio']", $this).each(function() {
+				$(this).addClass("unrated");
+			});
+//			alert("onclicking ratingselec.t..");
+			clLib.UI.killEventHandlers($this, "click.clLib");
+
+			$("input[type='radio']", $this).bind("click.clLib", function(e) {
+//				alert("radio clicked!" + $(this).val());
+				var $label = $(this).parent();
+
+				$label.nextAll().addClass("unrated");
+				$label.nextAll().removeClass("rated");
+				$label.prevAll().addClass("rated");
+				$label.addClass("rated");
+				$label.prevAll().removeClass("unrated");
+				$label.removeClass("unrated");
+			});
+//			alert("inclicked ratingselec.t..");
+		},
+		"refreshOnUpdate" : []
+		,"changeHandler" : function($this, changeOptions) {}
 	},
 	"startScreen_areaSelect" : {
 		"refreshHandler" : function($this) { 
@@ -561,3 +588,53 @@ clLib.UI.showAllTodayScores = function(buddyNames, targetElement) {
 };
 
 
+
+clLib.UI.buildRatingRadio = function($element) {
+	$element.html("" + 
+"                                                                                                                                                                               " +
+"<style>                                                                                                                                                                        " +
+".ratingSelect {                                                                                                                                                                " +
+"	border: 0px solid red;                                                                                                                                                      " +
+"	padding: 0px 0px 0px 0px;                                                                                                                                                   " +
+"	margin: 0px 0px 0px 0px;                                                                                                                                                    " +
+"}                                                                                                                                                                              " +
+"                                                                                                                                                                               " +
+".ratingSelect > label > input {                                                                                                                                                " +
+"    display: none;                                                                                                                                                             " +
+"}                                                                                                                                                                              " +
+"                                                                                                                                                                               " +
+".ratingSelect > label > .img {                                                                                                                                                 " +
+"	float: left;                                                                                                                                                                " +
+"	width: 40px;                                                                                                                                                                " +
+"	height: 40px;                                                                                                                                                               " +
+"	border: none;                                                                                                                                                               " +
+"}                                                                                                                                                                              " +
+"                                                                                                                                                                               " +
+".ratingSelect > label.rated > .img {                                                                                                                                           " +
+"	background-image: url(\"images/star_rated.jpg\"); /* no-repeat;*/                                                                                                             " +
+"	background-size: 100% 100%;                                                                                                                                                 " +
+"}                                                                                                                                                                              " +
+".ratingSelect > label.unrated > .img { 	                                                                                                                                    " +
+"	background-image: url(\"images/star_unrated.jpg\"); /* no-repeat; */                                                                                                          " +
+"	background-size: 100% 100%;                                                                                                                                                 " +
+"}                                                                                                                                                                              " +
+"                                                                                                                                                                               " +
+"                                                                                                                                                                               " +
+"                                                                                                                                                                               " +
+"</style>                                                                                                                                                                       " +
+"                                                                                                                                                                               " +
+"                                                                                                                                                                               " +
+"                                                                                                                                                                               " +
+"                                                                                                                                                                               " +
+"			<div data-role=\"none\" class=\"ratingSelect\" id=\"newRouteLog_ratingSelect\">                                                                                           " +
+"					<label data-role=\"none\" class=\"unrated\"><input data-role=\"none\" type=\"radio\" id=\"newRouteLog_ratingSelectRadio\" value=\"1\"/><div class=\"img\"></div></label>  " +
+"					<label data-role=\"none\" class=\"unrated\"><input data-role=\"none\" type=\"radio\" id=\"newRouteLog_ratingSelectRadio\" value=\"2\"/><div class=\"img\"></div></label>  " +
+"					<label data-role=\"none\" class=\"unrated\"><input data-role=\"none\" type=\"radio\" id=\"newRouteLog_ratingSelectRadio\" value=\"3\"/><div class=\"img\"></div></label>  " +
+"					<label data-role=\"none\" class=\"unrated\"><input data-role=\"none\" type=\"radio\" id=\"newRouteLog_ratingSelectRadio\" value=\"4\"/><div class=\"img\"></div></label>  " +
+"					<label data-role=\"none\" class=\"unrated\"><input data-role=\"none\" type=\"radio\" id=\"newRouteLog_ratingSelectRadio\" value=\"5\"/><div class=\"img\"></div></label>  " +
+"				</div>                                                                                                                                                          " +
+"	                                                                                                                                                                            " +
+""
+	);
+
+};

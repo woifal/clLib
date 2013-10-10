@@ -4,6 +4,7 @@
     padding-left: 0px; /*8%;*/
 	/*background-image: none;*/
     background-image: URL('https://cdn2.iconfinder.com/data/icons/flat-ui-icons-24-px/24/lock-24-48.png');
+    background-size: 100%;
 }
 .white-green-blue {
     background-repeat: no-repeat;

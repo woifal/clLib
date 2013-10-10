@@ -3,87 +3,33 @@
 	height: 50px;
 }
 
-
-.clColorBg {
-    background-repeat: no-repeat;
-    background-position: 0px 0px;
-    padding-left: 0px; /*8%;*/
-	/*background-image: none;*/
-    background-image: URL('https://cdn2.iconfinder.com/data/icons/flat-ui-icons-24-px/24/lock-24-48.png');
+.clSmallFont {
+	font-size: 10pt;
 }
-.blue {
-    background-image: none;
-    background-color: #0000FF;
-}
-.green {
-    background-image: none;
-    background-color: #00cd00;
-}
-.red {
-    background-image: none;
-    background-color: #FF0000;    
-}
-.black {
-    background-image: none;
-    background-color: #000000;
-}
-.white {
-    background-image: none;
-    background-color: #ffffff;
+/*
+.ratingSelect {
+	border: 0px solid red;
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 0px 0px;
 }
 
-.grey{
-    background-image: none;
-    background-color: #A4A4A4;
+.ratingSelect > label > input {
+    display: none;
 }
 
-.brown{
-    background-image: none;
-    background-color: #8A4B08;
+.ratingSelect > label > .img {
+	float: left;
+	width: 20px;
+	height: 20px;
+	border: none;
 }
 
-.darkbrown{
-    background-image: none;
-    background-color: #61380B;
+.ratingSelect > label.rated > .img { 
+	background: url("images/star_rated.jpg") no-repeat;
+}
+.ratingSelect > label.unrated > .img { 	
+	background: url("images/star_unrated.jpg") no-repeat;
 }
 
-.sand{
-    background-image: none;
-    background-color: #FFBF00;
-}
 
-.purple{
-    background-image: none;
-    background-color: #A901DB;
-}
-
-/*.white/yellow/black{
-    background-image: none;
-    background-color: #ffffff;
-}
-
-.white/green/blue{
-    background-image: none;
-    background-color: #ffffff;
-}
 */
-.yellow{
-    background-image: none;
-    background-color: #FFFF00;
-}
-
-.orange{
-    background-image: none;
-    background-color: #FF8000;
-}
-
-.pink{
-    background-image: none;
-    background-color: #F781D8;
-}
-
-.steelblue{
-    background-image: none;
-    background-color: #58ACFA;
-}
-
