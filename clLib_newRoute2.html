@@ -58,6 +58,43 @@
 			asdfasfd
 			</div>
 			
+<!--                                                                                                                                                                               
+			<style>                                                                                                                                                                        
+			.ratingSelect {                                                                                                                                                                
+				border: 0px solid red;                                                                                                                                                      
+				padding: 0px 0px 0px 0px;                                                                                                                                                   
+				margin: 0px 0px 0px 0px;                                                                                                                                                    
+			}                                                                                                                                                                              
+																																														   
+			.ratingSelect > label > input {                                                                                                                                                
+				display: none;                                                                                                                                                             
+			}                                                                                                                                                                              
+																																														   
+			.ratingSelect > label > .img {                                                                                                                                                 
+				float: left;                                                                                                                                                                
+				width: 40px;                                                                                                                                                                
+				height: 40px;                                                                                                                                                               
+				border: none;                                                                                                                                                               
+			}                                                                                                                                                                              
+																																														   
+			.ratingSelect > label.rated > .img {                                                                                                                                           
+				background-image: url("images/star_rated.jpg"); /* no-repeat;*/                                                                                                             
+				background-size: 100% 100%;                                                                                                                                                 
+			}                                                                                                                                                                              
+			.ratingSelect > label.unrated > .img { 	                                                                                                                                    
+				background-image: url("images/star_unrated.jpg"); /* no-repeat; */                                                                                                          
+				background-size: 100% 100%;                                                                                                                                                 
+			}
+			</style>
+			<div data-role="none" class="ratingSelect" id="newRouteLog_ratingSelect">                                                                                           
+					<label data-role="none" class="unrated"><input data-role="none" name="foo" type="radio" id="newRouteLog_ratingSelectRadio" value="1"/><div class="img"></div></label>  
+					<label data-role="none" class="unrated"><input data-role="none" name="foo" type="radio" id="newRouteLog_ratingSelectRadio" value="2"/><div class="img"></div></label>  
+					<label data-role="none" class="unrated"><input data-role="none" name="foo" type="radio" id="newRouteLog_ratingSelectRadio" value="3"/><div class="img"></div></label>  
+					<label data-role="none" class="unrated"><input data-role="none" name="foo" type="radio" id="newRouteLog_ratingSelectRadio" value="4"/><div class="img"></div></label>  
+					<label data-role="none" class="unrated"><input data-role="none" name="foo" type="radio" id="newRouteLog_ratingSelectRadio" value="5"/><div class="img"></div></label>  
+				</div>                                                                                                                                                          
+	                                                                                                                                                                            
+-->
 				<div data-role="fieldcontain">
 					<button id="refreshStartScreen">refresh local date..</button>
 				</div>
@@ -299,6 +336,9 @@ $( document ).bind("refresh.clLib", function(e, options) {
 	$("#newRouteLog_save_tick").bind("click.clLib", function(e) {
 		var selValue = $("#newRouteLog_ratingSelectRadio" + ":checked").val(); 
 		alert(selValue);
+		clLib.UI.buildRatingRadio($("#testInsert"));
+		clLib.UI.fillUIelements("startScreen");
+
 	});
 
 

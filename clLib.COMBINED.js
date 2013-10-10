@@ -1523,15 +1523,15 @@ clLib.UI.elements = {
 	},
 	"newRouteLog_ratingSelect" : {
 		"refreshHandler" : function($this, options) { 
-//			alert("refreshign ratingselec.t..");
+			//alert("refreshign ratingselec.t..");
 			$("input[type='radio']", $this).each(function() {
 				$(this).addClass("unrated");
 			});
 //			alert("onclicking ratingselec.t..");
-			clLib.UI.killEventHandlers($this, "click.clLib");
+			clLib.UI.killEventHandlers($("input[type='radio']", $this), "click.clLib");
 
 			$("input[type='radio']", $this).bind("click.clLib", function(e) {
-//				alert("radio clicked!" + $(this).val());
+				//alert("radio clicked!" + $(this).val());
 				var $label = $(this).parent();
 
 				$label.nextAll().addClass("unrated");
@@ -1865,6 +1865,7 @@ clLib.UI.showAllTodayScores = function(buddyNames, targetElement) {
 
 
 clLib.UI.buildRatingRadio = function($element) {
+	$element.children().remove();
 	$element.html("" + 
 "                                                                                                                                                                               " +
 "<style>                                                                                                                                                                        " +
@@ -1886,11 +1887,11 @@ clLib.UI.buildRatingRadio = function($element) {
 "}                                                                                                                                                                              " +
 "                                                                                                                                                                               " +
 ".ratingSelect > label.rated > .img {                                                                                                                                           " +
-"	background-image: url(\"images/star_rated.jpg\"); /* no-repeat;*/                                                                                                             " +
+"	background-image: url(\"files/views/assets/image/star_rated.jpg\"); /* no-repeat;*/                                                                                                             " +
 "	background-size: 100% 100%;                                                                                                                                                 " +
 "}                                                                                                                                                                              " +
 ".ratingSelect > label.unrated > .img { 	                                                                                                                                    " +
-"	background-image: url(\"images/star_unrated.jpg\"); /* no-repeat; */                                                                                                          " +
+"	background-image: url(\"files/views/assets/image/star_unrated.jpg\"); /* no-repeat; */                                                                                                          " +
 "	background-size: 100% 100%;                                                                                                                                                 " +
 "}                                                                                                                                                                              " +
 "                                                                                                                                                                               " +
@@ -1902,11 +1903,11 @@ clLib.UI.buildRatingRadio = function($element) {
 "                                                                                                                                                                               " +
 "                                                                                                                                                                               " +
 "			<div data-role=\"none\" class=\"ratingSelect\" id=\"newRouteLog_ratingSelect\">                                                                                           " +
-"					<label data-role=\"none\" class=\"unrated\"><input data-role=\"none\" type=\"radio\" id=\"newRouteLog_ratingSelectRadio\" value=\"1\"/><div class=\"img\"></div></label>  " +
-"					<label data-role=\"none\" class=\"unrated\"><input data-role=\"none\" type=\"radio\" id=\"newRouteLog_ratingSelectRadio\" value=\"2\"/><div class=\"img\"></div></label>  " +
-"					<label data-role=\"none\" class=\"unrated\"><input data-role=\"none\" type=\"radio\" id=\"newRouteLog_ratingSelectRadio\" value=\"3\"/><div class=\"img\"></div></label>  " +
-"					<label data-role=\"none\" class=\"unrated\"><input data-role=\"none\" type=\"radio\" id=\"newRouteLog_ratingSelectRadio\" value=\"4\"/><div class=\"img\"></div></label>  " +
-"					<label data-role=\"none\" class=\"unrated\"><input data-role=\"none\" type=\"radio\" id=\"newRouteLog_ratingSelectRadio\" value=\"5\"/><div class=\"img\"></div></label>  " +
+"					<label data-role=\"none\" class=\"unrated\"><input data-role=\"none\" name=\"foo\" type=\"radio\" id=\"newRouteLog_ratingSelectRadio\" value=\"1\"/><div class=\"img\"></div></label>  " +
+"					<label data-role=\"none\" class=\"unrated\"><input data-role=\"none\" name=\"foo\" type=\"radio\" id=\"newRouteLog_ratingSelectRadio\" value=\"2\"/><div class=\"img\"></div></label>  " +
+"					<label data-role=\"none\" class=\"unrated\"><input data-role=\"none\" name=\"foo\" type=\"radio\" id=\"newRouteLog_ratingSelectRadio\" value=\"3\"/><div class=\"img\"></div></label>  " +
+"					<label data-role=\"none\" class=\"unrated\"><input data-role=\"none\" name=\"foo\" type=\"radio\" id=\"newRouteLog_ratingSelectRadio\" value=\"4\"/><div class=\"img\"></div></label>  " +
+"					<label data-role=\"none\" class=\"unrated\"><input data-role=\"none\" name=\"foo\" type=\"radio\" id=\"newRouteLog_ratingSelectRadio\" value=\"5\"/><div class=\"img\"></div></label>  " +
 "				</div>                                                                                                                                                          " +
 "	                                                                                                                                                                            " +
 ""
