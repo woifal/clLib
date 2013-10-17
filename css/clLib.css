@@ -25,10 +25,10 @@
 }
 
 .ratingSelect > label.rated > .img { 
-	background: url("images/star_rated.jpg") no-repeat;
+	background: url("images/star_rated.png") no-repeat;
 }
 .ratingSelect > label.unrated > .img { 	
-	background: url("images/star_unrated.jpg") no-repeat;
+	background: url("images/star_unrated.png") no-repeat;
 }
 
 
