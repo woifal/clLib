@@ -254,8 +254,10 @@ clLib.getRoutesWhere = function(gradeType, grade, area, sector, colour, line) {
 clLib.getRoutesWhere_plain = function(gradeType, grade, area, sector, colour, line) {
 	var restrictionObj = {};
 	//alert("building restrictionobj" + JSON.stringify(line));
-	restrictionObj["GradeType"] = gradeType;
-	restrictionObj["Grade"] = grade;
+	if(restrictionObj["GradeType"]) {
+		restrictionObj["GradeType"] = gradeType;
+		restrictionObj["Grade"] = grade;
+	}
 	clLib.extendIfDefined(restrictionObj, "Area", area);
 	clLib.extendIfDefined(restrictionObj, "Sector", sector);
 	clLib.extendIfDefined(restrictionObj, "Colour", colour);
@@ -272,7 +274,9 @@ clLib.getRoutesWhere_obj = function(restrictionObj) {
 	delete restrictionObj["GradeType"];
 	delete restrictionObj["Grade"];
 	
-	restrictionObj[gradeType] = grade;
+	if(gradeType) {
+		restrictionObj[gradeType] = grade;
+	}
 	clLib.removeIfNotDefined(restrictionObj, "Area");
 	clLib.removeIfNotDefined(restrictionObj, "Sector");
 	clLib.removeIfNotDefined(restrictionObj, "Colour");
