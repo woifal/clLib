@@ -256,7 +256,7 @@ clLib.localStorage.getEntities = function(entity, whereObj, storageName, sortKey
 	}
 //alert(12);
 	if(!storage[entity]){
-		alert("no local data available => you need to refresh first.");
+		alert("no local data available for >" + entity + "<. You need to refresh first.");
 		return;
 	} else {
 		//alert("entity storage: " + JSON.stringify(storage));
@@ -310,7 +310,7 @@ clLib.localStorage.getEntities = function(entity, whereObj, storageName, sortKey
 	$.each(remainingIdsToQuery, function(index, id) {
 		//console.log("remainigni items!!");
 		var currentItem = storage[entity][id];
-		//console.log("iterating id(" + index + ") " + id + " item " + JSON.stringify(currentItem));
+		console.log("iterating id(" + index + ") " + id + " item " + JSON.stringify(currentItem));
 		
 		var eligible = true;
 		if(	
@@ -477,15 +477,19 @@ clLib.localStorage.getDistinct = function(entity, whereObj, colName, storageName
 */
 
 clLib.localStorage.evalCondition = function(valueToTest, condition) {
+	// remove leading/trailing whitespace..
+	valueToTest = $.trim(valueToTest);
+
 	//console.log("checking " + valueToTest + " against " + JSON.stringify(condition));
 	if(!valueToTest) {
 		return false;
 	}
+
 	
 	var eligible = true;
 	if(!(condition instanceof Object)) {
-		//console.log("no object, comparing string values >" + valueToTest + "< against >" + condition + "<");
-		if(valueToTest != condition) {
+		//alert("no object, comparing string values >" + $.trim(valueToTest) + "< against >" + condition + "<");
+		if($.trim(valueToTest) != condition) {
 			eligible = false;
 		}
 	}

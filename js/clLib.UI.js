@@ -78,7 +78,44 @@ clLib.UI.elements = {
 				preserveCurrentValue : true,
 				additionalValue : clLib.UI.NOTSELECTED
 			});
+		}
+		,"setSelectedValueHandler" : function($this, changeOptions) { return clLib.UI.setSelectedValueOnlyHandler($this, changeOptions); }
+		,"changeHandler" : function($this, changeOptions) {
+			//alert("sector change handler!!");
+			var $sectorSelect = $("#newRouteLog_sectorSelect");
+			
+			var distinctColumn, where, results;
+			distinctColumn = "Sector";
+			where = clLib.getRoutesWhere({
+				"GradeType" : $("#newRouteLog_gradeTypeSelect").val(),
+				"Grade" : $("#newRouteLog_gradeSelect").val(),
+				"Area" : localStorage.getItem("currentlySelectedArea"),
+				"Line" : $("#newRouteLog_lineSelect").val()
+			});
+			
+			results = clLib.localStorage.getDistinct("Routes", where, distinctColumn, "routeStorage");
+			console.log("got LINE sectors for " + JSON.stringify(where) + ", " + results[0] + " +, >" + JSON.stringify(results));
+			
+			if(results.length == 1) {
+				$sectorSelect.val(results[0]);
+				$sectorSelect.selectmenu('refresh', true);
+
+				console.log("sectorselect changed to " + results[0]);
+			} else {
+				if($("#newRouteLog_lineSelect").val() != clLib.UI.NOTSELECTED.value) {
+					//alert("2013-10-07-WTF!?!?!? multiple sectors for line " + $("#newRouteLog_lineSelect").val() + " found - setting sector to the one of first result...");
+					$sectorSelect.val(results[0]);     
+				}
+
+				$sectorSelect.selectmenu('refresh', true);
+			}
+
+			clLib.UI.defaultChangeHandler($this, changeOptions);
 		},
+
+
+
+
 		"refreshOnUpdate" : {
 			"newRouteLog_colourSelect" : {}
 			,"newRouteLog_lineSelect" : {}
@@ -108,6 +145,7 @@ clLib.UI.elements = {
 				additionalValue : clLib.UI.NOTSELECTED
 			});
 		}
+		,"setSelectedValueHandler" : function($this, changeOptions) { return clLib.UI.setSelectedValueOnlyHandler($this, changeOptions); }
 		,"changeHandler" : function($this, changeOptions) {
 			var $sectorSelect = $("#newRouteLog_sectorSelect");
 			
@@ -177,8 +215,9 @@ clLib.UI.elements = {
 			});
 			clLib.addColorBackground("newRouteLog_colourSelect"); 
 			
-		},
-		"refreshOnUpdate" : {
+		}
+		,"setSelectedValueHandler" : function($this, changeOptions) { return clLib.UI.setSelectedValueOnlyHandler($this, changeOptions); }
+		,"refreshOnUpdate" : {
 			"newRouteLog_searchRouteResults" : {
 				hideOnSingleResult : true
 			}
@@ -220,8 +259,8 @@ clLib.UI.elements = {
 
 			//console.log("adding results from " + $forElement.attr("id") + " to " + $inElement.attr("id"));
 			clLib.populateSearchProposals($forElement, $inElement, results, options["hideOnSingleResult"]);
-		},
-		"refreshOnUpdate" : []
+		}
+		,"refreshOnUpdate" : []
 	},
 	"newRouteLog_searchRoute" : {
 		"refreshHandler" : function($this, options) { 
@@ -239,12 +278,35 @@ clLib.UI.elements = {
 				$("#newRouteLog_searchRouteResults").trigger("refresh.clLib");
 			});
 			$this.bind("change.clLib.route", function() {
-				console.log("changed, refresh search proposals!!!");
-				$("#newRouteLog_searchRouteResults").trigger("refresh.clLib");
 			});
-*/
-		},
-		"refreshOnUpdate" : []
+*/		
+		}
+		,"setSelectedValueHandler" : function($this, changeOptions) {
+			//alert("searchRoute changed, refresh all other elements!!!");
+			//alert(">>>" + $this.attr("id") + "," + JSON.stringify(changeOptions));
+			$this.val(changeOptions["value"]);
+			//
+			//	set all other elements to the one of the currently selected route..
+			//
+			var distinctColumn, where, results;
+			where = clLib.getRoutesWhere({
+				"GradeType" : $("#newRouteLog_gradeTypeSelect").val(),
+				"Grade" : $("#newRouteLog_gradeSelect").val(),
+				"Name": changeOptions["value"]
+			});
+			
+			var currentRoute = clLib.localStorage.getEntities("Routes", where, "routeStorage");
+			alert("got route data for " + JSON.stringify(where) + " >" + JSON.stringify(currentRoute));
+			
+			if(currentRoute) {
+				clLib.UI.setSelectedValue($("#newRouteLog_sectorSelect"), currentRoute[0]["Sector"]);
+				clLib.UI.setSelectedValue($("#newRouteLog_lineSelect"), currentRoute[0]["Line"]);
+				clLib.UI.setSelectedValue($("#newRouteLog_colourSelect"), currentRoute[0]["Colour"]);
+			} else {
+				alert("no route for name >" + changeOptions["value"] + "< found.");
+			}
+		}
+		,"refreshOnUpdate" : []
 	},
 	"newRouteLog_ratingSelect" : {
 		"refreshHandler" : function($this, options) { 
@@ -308,7 +370,12 @@ clLib.UI.killEventHandlers = function($element, eventName) {
 }
 
 
-
+clLib.UI.setSelectedValue = function($element, newValue) {
+	//alert("triggering setSelectedValue.clLib on " + $element.attr("id") + " with value " + JSON.stringify(newValue));
+	$element.trigger("setSelectedValue.clLib", 
+		{ "value": newValue }
+	);
+};
 
 
 
@@ -464,7 +531,11 @@ clLib.populateSearchProposals = function($forElement, $inElement, dataObj, hideO
         console.log("this child;" + $(this).html());
 		var result = $.trim($(this).html());
 		console.log("seeting selectedresult to " + result);
-		$forElement.val(result);
+
+		console.log("forElement is " + $forElement.attr("id"));
+		$forElement.trigger("setSelectedValue.clLib", {"value": result});
+		//$forElement.val(result);
+
 		$(this).parent().hide();
 		console.log("hidden");
 		//$("#startScreen_mobilefooter1").html(result);
@@ -493,6 +564,25 @@ clLib.UI.defaultChangeHandler = function($element, changeOptions) {
 
 }
 	
+clLib.UI.defaultSetSelectedValueHandler = function($element, changeOptions) {
+	return clLib.UI.defaultChangeHandler($element, changeOptions);
+}
+	
+clLib.UI.setSelectedValueOnlyHandler = function($element, changeOptions) {
+	//alert("solely changing value of sector.." + $element.attr("id") + " to " + JSON.stringify(changeOptions));
+	// avoid default onChange handler..
+	clLib.UI.killEventHandlers($element, "change.clLib");
+	// set desired value
+	$element.val(changeOptions["value"]);
+	$element.selectmenu('refresh', true);
+	// restore onChange handler for further changes..
+	var customChangeHandler = clLib.UI.elements[$element.attr("id")]["changeHandler"];
+	var changeHandler = customChangeHandler || clLib.UI.defaultChangeHandler;
+	$element.bind("change.clLib", function(event, changeOptions) {
+		changeHandler($element, changeOptions);
+	});
+}
+	
 
 /*
 *
@@ -512,8 +602,16 @@ clLib.UI.fillUIelements = function(pageName) {
 		// Re-attach event handlers
 		clLib.UI.killEventHandlers($element, "change.clLib");
 		clLib.UI.killEventHandlers($element, "refresh.clLib");
+		var changeHandler = elementConfig["changeHandler"] || clLib.UI.defaultChangeHandler;
 		$element.bind("change.clLib", function() {
-			clLib.UI.defaultChangeHandler($element);
+			changeHandler($element);
+		});
+
+		var setSelectedValueHandler = elementConfig["setSelectedValueHandler"] || clLib.UI.defaultSetSelectedValueHandler;
+		//alert("setting setSelectedValueHandle for " + $element.attr("id"));
+		$element.bind("setSelectedValue.clLib", function(event, changeOptions) {
+			//alert("executing setSelectedValue handler for "+ $element.attr("id") + ">>>>" + elementConfig["setSelectedValueHandler"]);
+			setSelectedValueHandler($element, changeOptions);
 		});
 
 		// populate current element..
@@ -606,17 +704,17 @@ clLib.UI.buildRatingRadio = function($element) {
 "                                                                                                                                                                               " +
 ".ratingSelect > label > .img {                                                                                                                                                 " +
 "	float: left;                                                                                                                                                                " +
-"	width: 40px;                                                                                                                                                                " +
-"	height: 40px;                                                                                                                                                               " +
+"	width: 20px;                                                                                                                                                                " +
+"	height: 20px;                                                                                                                                                               " +
 "	border: none;                                                                                                                                                               " +
 "}                                                                                                                                                                              " +
 "                                                                                                                                                                               " +
 ".ratingSelect > label.rated > .img {                                                                                                                                           " +
-"	background-image: url(\"files/views/assets/image/star_rated.jpg\"); /* no-repeat;*/                                                                                                             " +
+"	background-image: url(\"files/views/assets/image/star_rated.png\"); /* no-repeat;*/                                                                                                             " +
 "	background-size: 100% 100%;                                                                                                                                                 " +
 "}                                                                                                                                                                              " +
 ".ratingSelect > label.unrated > .img { 	                                                                                                                                    " +
-"	background-image: url(\"files/views/assets/image/star_unrated.jpg\"); /* no-repeat; */                                                                                                          " +
+"	background-image: url(\"files/views/assets/image/star_unrated.png\"); /* no-repeat; */                                                                                                          " +
 "	background-size: 100% 100%;                                                                                                                                                 " +
 "}                                                                                                                                                                              " +
 "                                                                                                                                                                               " +
