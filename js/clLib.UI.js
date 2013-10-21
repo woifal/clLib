@@ -24,7 +24,8 @@ clLib.UI.elementsToReset = {
 	newRouteLog : [
 		"newRouteLog_lineSelect",
 		"newRouteLog_sectorSelect",
-		"newRouteLog_colourSelect"
+		"newRouteLog_colourSelect",
+		"newRouteLog_ratingSelect"
 	],
 	startScreen : [
 	]
@@ -361,6 +362,19 @@ clLib.UI.elements = {
 //			alert("inclicked ratingselec.t..");
 		},
 		"refreshOnUpdate" : []
+		,"setSelectedValueHandler" : function($this, changeOptions) { 
+			alert("setting rating select to " + JSON.stringify(changeOptions));
+//			clLib.UI.buildRatingRadio($("#newRouteLog_ratingSelectWrapper"));
+
+			if(changeOptions && changeOptions["value"] == clLib.UI.NOTSELECTED.value) {
+				$this.children().addClass("unrated");
+				$this.children().removeClass("rated");
+				$("input[type='radio']", $this).each(function() {
+					$(this).prop('checked', false);
+				});
+			}
+
+		}
 		,"changeHandler" : function($this, changeOptions) {}
 	},
 	"startScreen_areaSelect" : {

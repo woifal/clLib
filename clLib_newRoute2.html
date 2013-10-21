@@ -54,7 +54,7 @@
 
 
 
-			<div date-role="none" id="testInsert">
+			<div date-role="none" id="newRouteLog_ratingSelectWrapper">
 			asdfasfd
 			</div>
 			
@@ -255,7 +255,7 @@ var printi = function(text) {
 
 $( document ).live("pageinit", function() {
 		//alert("filling...");
-		clLib.UI.buildRatingRadio($("#testInsert"));
+		clLib.UI.buildRatingRadio($("#newRouteLog_ratingSelectWrapper"));
 		clLib.UI.fillUIelements("startScreen");
 		//alert("filled...");
 });
@@ -303,9 +303,8 @@ $( document ).bind("refresh.clLib", function(e, options) {
 
 	$("#newRouteLog_save_tick").bind("click.clLib", function(e) {
 		var selValue = $("#newRouteLog_ratingSelectRadio" + ":checked").val(); 
-		alert(selValue);
-		clLib.UI.buildRatingRadio($("#testInsert"));
-		clLib.UI.fillUIelements("startScreen");
+		alert("rating:" + selValue);
+//		clLib.UI.buildRatingRadio($("#newRouteLog_ratingSelectWrapper"));
 		
 		var saveObj= {
 			"GradeType": $("#newRouteLog_gradeTypeSelect").val(),
@@ -319,6 +318,8 @@ $( document ).bind("refresh.clLib", function(e, options) {
 
 		clLib.localStorage.addInstance("RouteLog", saveObj, "routeLogStorage");
 
+		clLib.UI.fillUIelements("startScreen");
+		clLib.UI.resetUIelements("newRouteLog");
 	});
 
 	$("#addRouteButton").bind("click", function(e) {
