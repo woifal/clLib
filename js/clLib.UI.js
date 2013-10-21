@@ -640,7 +640,7 @@ clLib.UI.resetUIelements = function(pageName) {
 		clLib.UI.setSelectedValue($element, clLib.UI.NOTSELECTED.value);
 	});
 	
-	$("#newRouteLog_comment_text_area").val('');
+	$("#newRouteLog_commentText").val('');
 };
 	
 /*
