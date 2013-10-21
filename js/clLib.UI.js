@@ -20,6 +20,16 @@ clLib.UI.autoLoad = {
 	]
 };
 
+clLib.UI.elementsToReset = {
+	newRouteLog : [
+		"newRouteLog_lineSelect",
+		"newRouteLog_sectorSelect",
+		"newRouteLog_colourSelect"
+	],
+	startScreen : [
+	]
+};
+
 clLib.UI.pageElements = {
 	newRouteLog : [
 		"newRouteLog_gradeTypeSelect",
@@ -102,8 +112,12 @@ clLib.UI.elements = {
 
 				console.log("sectorselect changed to " + results[0]);
 			} else {
-				if($("#newRouteLog_lineSelect").val() != clLib.UI.NOTSELECTED.value) {
-					//alert("2013-10-07-WTF!?!?!? multiple sectors for line " + $("#newRouteLog_lineSelect").val() + " found - setting sector to the one of first result...");
+				if(
+					$("#newRouteLog_lineSelect").val() != clLib.UI.NOTSELECTED.value &&
+					$("#newRouteLog_lineSelect").val() != ""
+				) {
+					console.log("2013-10-07-WTF!?!?!? multiple sectors for line " + $("#newRouteLog_lineSelect").val() + " found - setting sector to the one of first result...");
+					alert("setting sector to the one of first result...");
 					$sectorSelect.val(results[0]);     
 				}
 
@@ -216,7 +230,10 @@ clLib.UI.elements = {
 			clLib.addColorBackground("newRouteLog_colourSelect"); 
 			
 		}
-		,"setSelectedValueHandler" : function($this, changeOptions) { return clLib.UI.setSelectedValueOnlyHandler($this, changeOptions); }
+		,"setSelectedValueHandler" : function($this, changeOptions) { 
+			clLib.UI.setSelectedValueOnlyHandler($this, changeOptions);
+			clLib.addColorBackground($this.attr("id")); 
+		}
 		,"refreshOnUpdate" : {
 			"newRouteLog_searchRouteResults" : {
 				hideOnSingleResult : true
@@ -225,7 +242,7 @@ clLib.UI.elements = {
 		,"changeHandler" : function($this, changeOptions) {
 			var $forElement = $("#newRouteLog_searchRoute");
 			$forElement.val("");
-			console.log("searchRoute set to ''");
+			//alert("searchRoute set to ''");
 
 			clLib.UI.defaultChangeHandler($this, changeOptions);
 		}
@@ -272,19 +289,32 @@ clLib.UI.elements = {
 					clLib.UI.addObjArr(options || {}, ["eventSourcePath"], $this.attr("id"))
 				);
 			});
-/*
 			$this.bind("click.clLib", function() {
 				console.log("click, refresh search proposals!!!");
-				$("#newRouteLog_searchRouteResults").trigger("refresh.clLib");
+				$("#newRouteLog_searchRouteResults").trigger(
+					"refresh.clLib", 
+					clLib.UI.addObjArr(options || {}, ["eventSourcePath"], $this.attr("id"))
+				);
 			});
+/*
 			$this.bind("change.clLib.route", function() {
 			});
-*/		
+*/
+		
 		}
 		,"setSelectedValueHandler" : function($this, changeOptions) {
 			//alert("searchRoute changed, refresh all other elements!!!");
 			//alert(">>>" + $this.attr("id") + "," + JSON.stringify(changeOptions));
+
+			if(changeOptions["value"] == clLib.UI.NOTSELECTED.value) {
+				console.log("empty out search route field..");
+				$this.val("");
+				return;
+			}
+
 			$this.val(changeOptions["value"]);
+			
+			
 			//
 			//	set all other elements to the one of the currently selected route..
 			//
@@ -296,7 +326,7 @@ clLib.UI.elements = {
 			});
 			
 			var currentRoute = clLib.localStorage.getEntities("Routes", where, "routeStorage");
-			alert("got route data for " + JSON.stringify(where) + " >" + JSON.stringify(currentRoute));
+			console.log("got route data for " + JSON.stringify(where) + " >" + JSON.stringify(currentRoute));
 			
 			if(currentRoute) {
 				clLib.UI.setSelectedValue($("#newRouteLog_sectorSelect"), currentRoute[0]["Sector"]);
@@ -431,7 +461,7 @@ clLib.populateSelectBox = function(options) {
 
 	var customChangeHandler = clLib.UI.elements[selectBoxId]["changeHandler"];
 	if(customChangeHandler) {
-		console.log("custom event handler for " + selectBoxId + "found.." + customChangeHandler);
+		//console.log("custom event handler for " + selectBoxId + "found.." + customChangeHandler);
 	}
 	var changeHandler = customChangeHandler || clLib.UI.defaultChangeHandler;
 
@@ -480,7 +510,7 @@ clLib.populateSelectBox_plain = function($selectBox, dataObj, selectedValue, pre
 
 	var i = 0;
 	$.each(dataObj, function(index, value) {
-		console.log("adding option " + value);
+		//console.log("adding option " + value);
 		var $option = $('<option></option>')
                 .val(dataObj instanceof Array ? value : index)
                 .html(value);
@@ -545,7 +575,7 @@ clLib.populateSearchProposals = function($forElement, $inElement, dataObj, hideO
 clLib.UI.defaultChangeHandler = function($element, changeOptions) {
 	// Store current value
 	$element.data("clLib.currentValue", $element.val());
-	//alert($element.attr("id") + " was changed(to: >" + $element.data("clLib.currentValue") + "<");
+	//alert($element.attr("id") + " was changed to: >" + $element.data("clLib.currentValue") + "<" + JSON.stringify(changeOptions));
 	var elementConfig = clLib.UI.elements[$element.attr("id")];
 	//console.log("elementConfig for " + $element.attr("id") + " is " + JSON.stringify(elementConfig));
 	$.each(elementConfig.refreshOnUpdate, function(refreshTargetName, refreshOptions) {
@@ -569,11 +599,14 @@ clLib.UI.defaultSetSelectedValueHandler = function($element, changeOptions) {
 }
 	
 clLib.UI.setSelectedValueOnlyHandler = function($element, changeOptions) {
-	//alert("solely changing value of sector.." + $element.attr("id") + " to " + JSON.stringify(changeOptions));
+	console.log("solely changing value of .." + $element.attr("id") + " to " + JSON.stringify(changeOptions));
 	// avoid default onChange handler..
 	clLib.UI.killEventHandlers($element, "change.clLib");
+	var newValue = changeOptions["value"];
+	
+	delete(changeOptions["value"]);
 	// set desired value
-	$element.val(changeOptions["value"]);
+	$element.val(newValue);
 	$element.selectmenu('refresh', true);
 	// restore onChange handler for further changes..
 	var customChangeHandler = clLib.UI.elements[$element.attr("id")]["changeHandler"];
@@ -584,6 +617,16 @@ clLib.UI.setSelectedValueOnlyHandler = function($element, changeOptions) {
 }
 	
 
+clLib.UI.resetUIelements = function(pageName) {
+
+	// populate autoload elements
+	$.each(clLib.UI.elementsToReset[pageName], function(idx, elementName) {
+		//alert("triggering reset/refresh for " + elementName);
+		var $element = $("#" + elementName);
+		clLib.UI.setSelectedValue($element, clLib.UI.NOTSELECTED.value);
+	});
+};
+	
 /*
 *
 * Populates HTML UI elements for a page using the clLib.UI.elements configuration object.
@@ -634,7 +677,7 @@ clLib.UI.fillUIelements = function(pageName) {
 	$.each(clLib.UI.autoLoad[pageName], function(idx, elementName) {
 		//alert("triggering autoload for " + elementName);
 		//alert($("#" + elementName).html());
-		var optionObj = {asf: "asdf"};
+		var optionObj = {};
 		$("#" + elementName).trigger("refresh.clLib", 
 			clLib.UI.addObjArr(optionObj,["eventSourcePath"], "AUTOLOAD")
 		);

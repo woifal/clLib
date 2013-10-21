@@ -113,7 +113,7 @@ clLib.tomorrow = function() {
 *
 */
 clLib.addColorBackground = function(targetId) {
-	console.log("adding colors to " + targetId);
+	//console.log("adding colors to " + targetId);
 	var $targetEl = $('#' + targetId);
 	clLib.UI.killEventHandlers($targetEl, "change.clLibColour");
 	
@@ -123,7 +123,7 @@ clLib.addColorBackground = function(targetId) {
         // fetch current option element
         var entry = $('#' + targetId + '-menu').find('[data-option-index=' + ind + ']');
         // set corresponding css class
-        console.log("adding class" + entry.find("a").html());
+        //console.log("adding class" + entry.find("a").html());
         entry
             .addClass("clColorBg")
             .addClass(entry.find("a").html());
@@ -153,7 +153,8 @@ clLib.addColorBackground = function(targetId) {
     });
 
 	// Update jqm generated widget
-	$('#' + targetId).trigger('change.clLibColour');
+//	$('#' + targetId).trigger('change.clLibColour');
+	$('#' + targetId).trigger('change');
  	
 };
 
