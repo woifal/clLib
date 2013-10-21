@@ -661,6 +661,7 @@ clLib.UI.fillUIelements = function(pageName) {
 		// Re-attach event handlers
 		clLib.UI.killEventHandlers($element, "change.clLib");
 		clLib.UI.killEventHandlers($element, "refresh.clLib");
+		clLib.UI.killEventHandlers($element, "setSelectedValue.clLib");
 		var changeHandler = elementConfig["changeHandler"] || clLib.UI.defaultChangeHandler;
 		$element.bind("change.clLib", function() {
 			changeHandler($element);
@@ -669,7 +670,7 @@ clLib.UI.fillUIelements = function(pageName) {
 		var setSelectedValueHandler = elementConfig["setSelectedValueHandler"] || clLib.UI.defaultSetSelectedValueHandler;
 		//alert("setting setSelectedValueHandle for " + $element.attr("id"));
 		$element.bind("setSelectedValue.clLib", function(event, changeOptions) {
-			//alert("executing setSelectedValue handler for "+ $element.attr("id") + ">>>>" + elementConfig["setSelectedValueHandler"]);
+			//alert("executing setSelectedValue handler for "+ $element.attr("id") + ">>>>" + JSON.stringify(changeOptions));
 			setSelectedValueHandler($element, changeOptions);
 		});
 
