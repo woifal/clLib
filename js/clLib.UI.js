@@ -639,6 +639,8 @@ clLib.UI.resetUIelements = function(pageName) {
 		var $element = $("#" + elementName);
 		clLib.UI.setSelectedValue($element, clLib.UI.NOTSELECTED.value);
 	});
+	
+	$("#newRouteLog_comment_text_area").val('');
 };
 	
 /*
