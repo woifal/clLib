@@ -363,7 +363,7 @@ clLib.UI.elements = {
 		},
 		"refreshOnUpdate" : []
 		,"setSelectedValueHandler" : function($this, changeOptions) { 
-			alert("setting rating select to " + JSON.stringify(changeOptions));
+			//alert("setting rating select to " + JSON.stringify(changeOptions));
 //			clLib.UI.buildRatingRadio($("#newRouteLog_ratingSelectWrapper"));
 
 			if(changeOptions && changeOptions["value"] == clLib.UI.NOTSELECTED.value) {
