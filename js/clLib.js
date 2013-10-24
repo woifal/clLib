@@ -473,6 +473,10 @@ clLib.sortByScoreFunc = function(routeLog) {
 
 
 
+Array.prototype.hasValue = function(needle) {
+	return this.indexOf(needle) > -1;
+};
+
 
 
 

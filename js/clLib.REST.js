@@ -2,11 +2,27 @@
 
 clLib.REST = {};
 
-clLib.REST.execute = function(uri, method, whereObj) {
-	var getParams;
+
+/*
+*	retrieve => need to encode where string
+*	insert => do NOT encore obj props
+*/
+clLib.REST.executeRetrieve = function(uri, method, whereObj) {
 	if(whereObj) {
-		getParams = "where=" + encodeURIComponent(JSON.stringify(whereObj));
+		whereObj = "where=" + encodeURIComponent(JSON.stringify(whereObj));
 	}
+	return clLib.REST.execute(uri, method, whereObj);
+}
+
+clLib.REST.executeInsert = function(uri, method, objData) {
+	if(objData) {
+		objData = JSON.stringify(objData);
+	}
+	return clLib.REST.execute(uri, method, objData);
+}
+
+
+clLib.REST.execute = function(uri, method, getParams) {
 	var request = {
 		async: false,
 		url: uri,
@@ -33,7 +49,7 @@ clLib.REST.execute = function(uri, method, whereObj) {
 			xhr.setRequestHeader("X-Appery-Database-Id", "52093c91e4b04c2d0a027d7f");
 		},
 		error: function(jqXHR) {
-			console.log("ajax error " + jqXHR.status);
+			alert("ajax error " + jqXHR.status);
 		}
 	};
 	return $.ajax(request);
@@ -42,7 +58,7 @@ clLib.REST.execute = function(uri, method, whereObj) {
 clLib.REST.getEntities = function(entityName, whereObj) {
 	var uri = "https://api.appery.io/rest/1/db/collections/" + entityName;
 	//clLib.UI.showLoading("Loading " + entityName + " from server...", "xyxyx");
-	var ajaxrequest = clLib.REST.execute(uri, 'GET', whereObj);
+	var ajaxrequest = clLib.REST.executeRetrieve(uri, 'GET', whereObj);
 	var returnObj = {};
 	ajaxrequest.done(function(data) {
 		//alert("retrieved data " + JSON.stringify(data));
@@ -51,5 +67,17 @@ clLib.REST.getEntities = function(entityName, whereObj) {
 		//alert("returning " + JSON.stringify(returnObj));
 	});
 	//alert("2returning " + JSON.stringify(returnObj));
+	return returnObj;
+}
+
+clLib.REST.storeEntity = function(entityName, entityInstance) {
+	var uri = "https://api.appery.io/rest/1/db/collections/" + entityName;
+	//clLib.UI.showLoading("Loading " + entityName + " from server...", "xyxyx");
+	var ajaxrequest = clLib.REST.executeInsert(uri, 'POST', entityInstance);
+	var returnObj = {};
+	ajaxrequest.done(function(data) {
+		returnObj = data;
+	});
+	alert("returning(storeEntity) " + JSON.stringify(returnObj));
 	return returnObj;
 }

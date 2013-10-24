@@ -58,7 +58,7 @@ clLib.populateSelectBox = function(options) {
 */
 		// disable current onChange handler
 	var selectBoxId = options.selectBoxElement.attr('id');
-	console.log("killing evnet handlers for  " + selectBoxId);
+	console.log("killing event handlers for  " + selectBoxId);
 
 	clLib.UI.killEventHandlers(options.selectBoxElement, "change.clLib");
 /*
@@ -191,7 +191,24 @@ clLib.UI.defaultChangeHandler = function($element, changeOptions) {
 	//alert($element.attr("id") + " was changed to: >" + $element.data("clLib.currentValue") + "<" + JSON.stringify(changeOptions));
 	var elementConfig = clLib.UI.elements[$element.attr("id")];
 	//console.log("elementConfig for " + $element.attr("id") + " is " + JSON.stringify(elementConfig));
-	$.each(elementConfig.refreshOnUpdate, function(refreshTargetName, refreshOptions) {
+	
+	//
+	// consider currently chosen layout from now on..
+	//
+	var currentLayout = localStorage.getItem("currentLayout");
+	console.log("current layout is >" +  currentLayout  + "<");
+	var refreshTargets = elementConfig.refreshOnUpdate;
+	if(
+		currentLayout in elementConfig.refreshOnUpdate
+	) {
+		console.log(currentLayout + ">>" + JSON.stringify(refreshTargets));
+		refreshTargets = elementConfig.refreshOnUpdate[currentLayout];
+	} else {
+		refreshTargets = elementConfig.refreshOnUpdate["default"] || {};
+	}
+
+	//	$.each(elementConfig.refreshOnUpdate, function(refreshTargetName, refreshOptions) {
+	$.each(refreshTargets, function(refreshTargetName, refreshOptions) {
 		console.log("refreshing dependent element " + refreshTargetName);
 		if(!$("#" + refreshTargetName)) {
 			console.log("element " + "#" + refreshTargetName + " not found!");
@@ -242,6 +259,26 @@ clLib.UI.resetUIelements = function(pageName) {
 	$("#newRouteLog_commentText").val('');
 };
 	
+clLib.UI.hideUIElement = function($element) {
+	console.log("hiding element >" + $element.attr("id") + "< of type " + $element.prop("tagName") + ", display is >" + $element.css("display") + "<");
+
+	$element.css('display', 'none').parent('div').parent('.ui-select').css('display', 'none');
+	if($element.attr("tagName") == 'SELECT') {
+		$element.selectmenu('refresh');
+	}
+
+};
+
+clLib.UI.showUIElement = function($element) {
+	console.log("showing element of type " + $element.prop("tagName") + ", display is >" + $element.css("display") + "<");
+
+	$element.css('display', 'block').parent('div').parent().css('display', 'block');
+	if($element.attr("tagName") == 'SELECT') {
+		$element.selectmenu('refresh');
+	}
+
+};
+
 /*
 *
 * Populates HTML UI elements for a page using the clLib.UI.elements configuration object.
@@ -250,12 +287,48 @@ clLib.UI.resetUIelements = function(pageName) {
 *
 */
 clLib.UI.fillUIelements = function(pageName) {
+	// no special layout to apply? use default layout..
+	var layout = localStorage.getItem("currentLayout") || "default";
+
+	console.log("populating UI elements for page >" + pageName + "< and layout >" + layout + "<");
+
+	if(!(layout in clLib.UI.pageElements[pageName])) {
+		console.log("layout does not exists for page, using default layout..");
+		layout = "default";
+	}
+	
+	
+	$.each(clLib.UI.pageElements[pageName]["default"], function(idx, elementName) {
+		console.log(elementName + " in " + JSON.stringify(clLib.UI.pageElements[pageName][layout])+ "?" + 
+			(clLib.UI.pageElements[pageName][layout].hasValue(elementName))
+		);
+		if(!(clLib.UI.pageElements[pageName][layout].hasValue(elementName))) {
+			var $element = $("#" + elementName);
+			console.log("element is >" + $element.attr("id") + "<, hide it");
+	
+			// hide elements per default..
+			clLib.UI.hideUIElement($element);
+		} else {
+			var $element = $("#" + elementName);
+			console.log("element is >" + $element.attr("id") + "<, SHOW it");
+	
+			// hide elements per default..
+			clLib.UI.showUIElement($element);
+		}
+	});
+
+	console.log("elements for page >" + pageName + "< hidden..");
 	//alert("populating UI elements for page >" + pageName + "<");
-	$.each(clLib.UI.pageElements[pageName], function(idx, elementName) {
+	$.each(clLib.UI.pageElements[pageName][layout], function(idx, elementName) {
 		var elementConfig = clLib.UI.elements[elementName];
-		//alert("adding events for  element >" + elementName + "<");
+
+		if(!elementConfig) {
+			//alert("Can't find element >" + elementName + "<, breaking loop..");
+			return;
+		}
+
+		console.log("adding events for  element >" + elementName + "<");
 		var $element = $("#" + elementName);
-		//console.log("element is >" + $element.attr("id") + "<");
 
 		// Re-attach event handlers
 		clLib.UI.killEventHandlers($element, "change.clLib");

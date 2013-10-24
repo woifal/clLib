@@ -69,6 +69,23 @@
 				</div>
 				
 				<!-- area -->
+                <div data-role="fieldcontain" class="startScreen_layoutSelect clHighButton">
+                    <select name="layoutSelect" id="startScreen_layoutSelect" dsid="layoutSelect" data-theme="a" data-inline="false"
+                    data-mini="false" data-icon="arrow-d" data-iconpos="right" data-native-menu="true"
+                    tabIndex="4" appery-class="startScreen_layoutSelect">
+						<option value="" reRender="layoutSelect" dsid="layoutSelect-0">
+                            -- select layout --
+                        </option>
+						<option value="default" reRender="layoutSelect" dsid="layoutSelect-0">
+                            default
+                        </option>
+						<option value="reduced" reRender="layoutSelect" dsid="layoutSelect-0">
+                            reduced
+                        </option>
+					</select>
+                </div>
+
+				<!-- area -->
                 <div data-role="fieldcontain" class="startScreen_areaSelect clHighButton">
                     <select name="areaSelect" id="startScreen_areaSelect" dsid="areaSelect" data-theme="a" data-inline="false"
                     data-mini="false" data-icon="arrow-d" data-iconpos="right" data-native-menu="true"
@@ -255,9 +272,17 @@ var printi = function(text) {
 
 
 $( document ).live("pageinit", function() {
+
 		//alert("filling...");
 		clLib.UI.buildRatingRadio($("#newRouteLog_ratingSelectWrapper"));
+
 		clLib.UI.fillUIelements("startScreen");
+		$("#startScreen_layoutSelect").val(localStorage.getItem("currentLayout"));
+		$("#startScreen_layoutSelect").selectmenu("refresh");
+		
+
+		clLib.UI.fillUIelements("newRouteLog");
+
 		//alert("filled...");
 });
 
@@ -304,16 +329,19 @@ $( document ).bind("refresh.clLib", function(e, options) {
 
 	$("#newRouteLog_save_tick").bind("click.clLib", function(e) {
 		var selValue = $("#newRouteLog_ratingSelectRadio" + ":checked").val(); 
-		alert("rating:" + selValue);
+		console.log("rating:" + selValue);
 //		clLib.UI.buildRatingRadio($("#newRouteLog_ratingSelectWrapper"));
 		
 		var saveObj= {
-			"GradeType": $("#newRouteLog_gradeTypeSelect").val(),
+			"Area": localStorage.getItem("currentlySelectedArea"),
+			"GradeSystem": $("#newRouteLog_gradeTypeSelect").val(),
 			"Grade": $("#newRouteLog_gradeSelect").val(),
 			"Sector": $("#newRouteLog_sectorSelect").val(),
 			"Colour": $("#newRouteLog_colourSelect").val(),
 			"Line": $("#newRouteLog_lineSelect").val(),
-			"RouteName": $("#newRouteLog_searchRoute").val()
+			"RouteName": $("#newRouteLog_searchRoute").val(),
+			"userName": localStorage.getItem("currentUser"),
+			"Date": new Date()
 		};
 //		clLib.REST.storeEntity("RouteLog", saveObj);
 
@@ -329,7 +357,12 @@ $( document ).bind("refresh.clLib", function(e, options) {
 		//alert("resetted..");
 	});
 
-
+	$("#startScreen_layoutSelect").change(function() {
+		var currentLayout = $(this).val();
+		//alert("setting layout to >" + currentLayout);
+		localStorage.setItem("currentLayout", currentLayout || "default");
+		location.reload();
+	});
 	
 //});		
 })(jQuery);

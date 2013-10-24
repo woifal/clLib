@@ -35,6 +35,7 @@ clLib.localStorage.indexExists = function(storageName, indexName) {
 clLib.localStorage.initStorage = function(storageName, storageObj) {
 	// Delete cache
 	var storageItemsKey = storageName + "_items";
+	
 	delete(storageCache[storageItemsKey]);
 
 
@@ -162,6 +163,8 @@ clLib.localStorage.setStorageItems = function(storageName, storageItems) {
 	clLib.localStorage.setItem(storageName + "_createdAt", tojson(new Date()));
 };
 
+
+
 clLib.localStorage.getLastRefreshDate = function(storageName) {
 	return clLib.localStorage.getItem(storageName + "_createdAt");
 };
@@ -239,6 +242,78 @@ Array.prototype.sortBy = function(sortBy, descSortFlag) {
 	}
 };
 
+clLib.localStorage.syncAllUp = function(entity, storageName) {
+	alert("syncing up all entities for >" + entity + "< in >" + storageName + "<");
+	var storage = clLib.localStorage.getStorageItems(storageName);
+
+	$.each(storage["unsynced"][entity], function(dummyId) {
+		var entityInstance = storage[entity][dummyId];
+		alert("call syncup for >" + dummyId + "< bzw. >" + JSON.stringify(entityInstance) + "<");
+
+		clLib.localStorage.syncUp(entity, entityInstance, storageName);
+	});
+}
+
+
+clLib.localStorage.syncUp = function(entity, entityInstance, storageName) {
+	var storage = clLib.localStorage.getStorageItems(storageName);
+
+	var dummyId = entityInstance["_id"];
+
+	alert("unsynced items:  >" + JSON.stringify(storage["unsynced"]) + "<");
+	alert(">" + dummyId + "< in storagecache? >" + JSON.stringify(storage[entity][dummyId]) + "<");
+
+	delete(entityInstance["_id"]);
+	var realInstance = clLib.REST.storeEntity(entity, entityInstance);
+	
+	alert("synced UP >" + dummyId + "<, new id is " + realInstance["_id"]);
+	// delete dummy id
+	delete(storage[entity][dummyId]);
+	delete(storage["unsynced"][entity][dummyId]);
+
+	// store real id
+	storage[entity][realInstance["_id"]] = entityInstance;
+	
+	
+}
+
+
+
+clLib.localStorage.addInstance = function(entity, entityInstance, storageName) {
+	var storage = clLib.localStorage.getStorageItems(storageName);
+	
+	var dummyId = "DUMMY" + new Date().getTime();
+	entityInstance["_id"] = dummyId;
+	storage[entity][dummyId] = entityInstance;
+	// mark as local-only
+
+	if(!("unsynced" in storage)) {
+		storage["unsynced"] = {};
+	}
+	if(!(entity in storage["unsynced"])) {
+		storage["unsynced"][entity] = {};
+	}
+
+	storage["unsynced"][entity][dummyId] = 1;
+	
+	if(clLib.isOnline()) {
+		alert("online, syncing UP!!!");
+		//clLib.localStorage.syncUp(entity, entityInstance, storageName);
+		clLib.localStorage.syncAllUp(entity, storageName);
+	} else {
+		alert("offline, saving for later sync UP..");
+	}
+}
+
+clLib.isOnline = function() {
+	var currentlyOnline = localStorage.getItem("online");
+	alert("currentlyOnline? >" + currentlyOnline);
+	if(currentlyOnline != -1) {
+		return true;
+	} else {
+		return false;
+	}
+};
 
 /*
 *	Returns all objects from localStorage storage "storageName" where ALL conditions in whereObj are met.
@@ -310,7 +385,7 @@ clLib.localStorage.getEntities = function(entity, whereObj, storageName, sortKey
 	$.each(remainingIdsToQuery, function(index, id) {
 		//console.log("remainigni items!!");
 		var currentItem = storage[entity][id];
-		console.log("iterating id(" + index + ") " + id + " item " + JSON.stringify(currentItem));
+		//console.log("iterating id(" + index + ") " + id + " item " + JSON.stringify(currentItem));
 		
 		var eligible = true;
 		if(	
@@ -534,7 +609,7 @@ clLib.localStorage.evalCondition = function(valueToTest, condition) {
 				if(!(valueToTest.indexOf(compValue) == 0)) {
 					eligible = false;
 				} else {
-					console.log("found starting match!!" + valueToTest);
+					//console.log("found starting match!!" + valueToTest);
 				}
 			} 
 		});

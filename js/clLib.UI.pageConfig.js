@@ -23,20 +23,30 @@ clLib.UI.elementsToReset = {
 };
 
 clLib.UI.pageElements = {
-	newRouteLog : [
-		"newRouteLog_gradeTypeSelect",
-		"newRouteLog_gradeSelect",
-		"newRouteLog_sectorSelect",
-		"newRouteLog_colourSelect",
-		"newRouteLog_lineSelect",
-		"newRouteLog_searchRouteResults",
-		"newRouteLog_searchRoute",
-		"newRouteLog_ratingSelect"
-	],
-	startScreen : [
-		"startScreen_areaSelect",
-		"startScreen_selectedArea"
-	]
+	newRouteLog : {
+		default: [
+			"newRouteLog_gradeTypeSelect",
+			"newRouteLog_gradeSelect",
+			"newRouteLog_sectorSelect",
+			"newRouteLog_colourSelect",
+			"newRouteLog_lineSelect",
+			"newRouteLog_searchRouteResults",
+			"newRouteLog_searchRoute",
+			"newRouteLog_ratingSelect",
+			"newRouteLog_commentText"
+		],
+		reduced: [
+			"newRouteLog_gradeTypeSelect",
+			"newRouteLog_gradeSelect",
+			"newRouteLog_colourSelect"
+		]
+	},
+	startScreen : {
+		default: [
+			"startScreen_areaSelect",
+			"startScreen_selectedArea"
+		]
+	}
 };
 
 clLib.UI.elements = {
@@ -44,7 +54,9 @@ clLib.UI.elements = {
 		"refreshHandler" : function($this) { 
 			clLib.populateGradeTypes($this, "UIAA") },
 		"refreshOnUpdate" : {
-			"newRouteLog_gradeSelect" : { }
+			default: {
+				"newRouteLog_gradeSelect" : { }
+			}
 		}
 	},
 	"newRouteLog_gradeSelect" : {
@@ -54,8 +66,13 @@ clLib.UI.elements = {
 			); 
 		},
 		"refreshOnUpdate" : {
-			"newRouteLog_sectorSelect" : {}
-			//,"newRouteLog_lineSelect": {}
+			default: {
+				"newRouteLog_sectorSelect" : {}
+				//,"newRouteLog_lineSelect": {}
+			},
+			reduced: {
+				"newRouteLog_colourSelect" : {}
+			}
 		}
 	},
 	"newRouteLog_sectorSelect" : {
@@ -123,8 +140,10 @@ clLib.UI.elements = {
 
 
 		"refreshOnUpdate" : {
-			"newRouteLog_colourSelect" : {}
-			,"newRouteLog_lineSelect" : {}
+			default: {
+				"newRouteLog_colourSelect" : {}
+				,"newRouteLog_lineSelect" : {}
+			}
 		}
 	},
 	"newRouteLog_lineSelect" : {
@@ -184,17 +203,17 @@ clLib.UI.elements = {
 			clLib.UI.defaultChangeHandler($this, changeOptions);
 		}
 		,"refreshOnUpdate" : {
-/*			"newRouteLog_sectorSelect" : {
-				noRefreshOn : "newRouteLog_lineSelect"
-			}*/
-/*			,"newRouteLog_searchRouteResults" : {
-				hideOnSingleResult : true
+			default: {
+	/*			"newRouteLog_sectorSelect" : {
+					noRefreshOn : "newRouteLog_lineSelect"
+				}*/
+	/*			,"newRouteLog_searchRouteResults" : {
+					hideOnSingleResult : true
+				}
+	*/
+				"newRouteLog_colourSelect" : {}
 			}
-*/
-			"newRouteLog_colourSelect" : {}
 		}
-
-
 	},
 	"newRouteLog_colourSelect": {
 		"refreshHandler" : function($this) { 
@@ -227,8 +246,10 @@ clLib.UI.elements = {
 			clLib.addColorBackground($this.attr("id")); 
 		}
 		,"refreshOnUpdate" : {
-			"newRouteLog_searchRouteResults" : {
-				hideOnSingleResult : true
+			default: {
+				"newRouteLog_searchRouteResults" : {
+					hideOnSingleResult : true
+				}
 			}
 		}
 		,"changeHandler" : function($this, changeOptions) {
@@ -386,13 +407,15 @@ clLib.UI.elements = {
 			});
 		},
 		"refreshOnUpdate" : {
-			"startScreen_selectedArea" : {}
+			default: {
+				"startScreen_selectedArea" : {}
+			}
 		}
 	},
 	"startScreen_selectedArea" : {
 		"refreshHandler" : function($this) { 
 			localStorage.setItem("currentlySelectedArea", $("#startScreen_areaSelect").val());
-			clLib.UI.fillUIelements("newRouteLog");
+//			clLib.UI.fillUIelements("newRouteLog");
 		},
 		"refreshOnUpdate" : {}
 	}
