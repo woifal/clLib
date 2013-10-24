@@ -14,6 +14,8 @@ var profiledFnCall = function(iterations, aFunc) {
 
 //(function(){
 var clLib = {};
+clLib.UI = {};
+
 
 
 /*
