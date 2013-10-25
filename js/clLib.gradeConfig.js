@@ -6,16 +6,27 @@
 *   For every gradeType column with the same name has to be present in the Routes collection.
 *
 */
+
+/*
+Red Point
+Onsight: + 145 points (based on Red Pointing)
+Flash: +53 points (based on Red Pointing)
+Top Rope: - 150 points (based on Red Pointing)
+Attempt: 0 points
+
+*/
+clLib.defaultTickTypeFactors = {
+	"Red Point" : "+0",
+	"Flash" : "+53",
+	"Onsight" : "+145",
+	"Attempt" : "*0",
+	"Top Rope" : "-150"
+};
+
 clLib.gradeConfig = {
 	"UIAA" : {
 		defaultGrade: "V+",
-		tickTypeFactors : {
-			"Red Point"       : 1,
-			"Lead / rest"     : 2,
-			"Top Rope"        : 3,
-			"Top Rope / rest" : 4,
-			"Project"         : 5
-		},
+		tickTypeFactors : clLib.defaultTickTypeFactors,
 		grades : {
 			"I-" : 10                 ,
 			"I" : 15                  ,
@@ -80,13 +91,7 @@ clLib.gradeConfig = {
 	},
 	"French" : {                        
 		defaultGrade: "5b",
-		tickTypeFactors : {
-			"Red Point"       : 1,
-			"Lead / rest"     : 2,
-			"Top Rope"        : 3,
-			"Top Rope / rest" : 4,
-			"Project"         : 5
-		},
+		tickTypeFactors : clLib.defaultTickTypeFactors,
 		grades : {                    
 			"1" : 10                  ,
 			"2" : 25                  ,
@@ -141,13 +146,7 @@ clLib.gradeConfig = {
 	},
 	"Bleau" : {                        
 		defaultGrade: "Fb 5a",
-		tickTypeFactors : {
-			"Red Point"       : 1,
-			"Lead / rest"     : 2,
-			"Top Rope"        : 3,
-			"Top Rope / rest" : 4,
-			"Project"         : 5
-		},
+		tickTypeFactors : clLib.defaultTickTypeFactors,
 		grades : {                     
 			"Fb 1" : 10               ,
 			"Fb 2" : 90               ,
@@ -180,13 +179,7 @@ clLib.gradeConfig = {
 	},
 	"USA" : {                      
 		defaultGrade: "5.10a",
-		tickTypeFactors : {
-			"Red Point"       : 1,
-			"Lead / rest"     : 2,
-			"Top Rope"        : 3,
-			"Top Rope / rest" : 4,
-			"Project"         : 5
-		},
+		tickTypeFactors : clLib.defaultTickTypeFactors,
 		grades : {                    
 			"5.0" : 10                ,
 			"5.1" : 25                ,

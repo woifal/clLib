@@ -183,10 +183,10 @@
                             colspan=1 rowspan=1>
                                 <div class="cell-wrapper">
                                     <!-- ticktypes -->
-                                    <div data-role="fieldcontain" class="newRouteLog_ticktypes clHighButton">
-                                        <select name="ticktypes" id="newRouteLog_ticktypes" dsid="ticktypes" data-theme="a"
+                                    <div data-role="fieldcontain" class="newRouteLog_tickType clHighButton">
+                                        <select name="ticktypes" id="newRouteLog_tickType" dsid="ticktypes" data-theme="a"
                                         data-inline="false" data-mini="false" data-icon="arrow-d" data-iconpos="right" data-native-menu="true"
-                                        tabIndex="3" appery-class="newRouteLog_ticktypes">
+                                        tabIndex="3" appery-class="newRouteLog_tickType">
                                             <option value="" reRender="ticktypes" dsid="ticktypes-0" selected="selected">
                                                 Tick Type
                                             </option>
@@ -301,9 +301,10 @@ $( document ).bind("refresh.clLib", function(e, options) {
 		var userRoutes = clLib.REST.getEntities("Routes");
 		alert("GOT: "  + JSON.stringify(userRoutes));
 		clLib.localStorage.initStorage("routeStorage", userRoutes);
-		//	clLib.REST.getEntities("RouteLog", clLib.getRouteLogWhereToday());
-		
-//		clLib.localStorage.initStorage("routeStorage", routeSample);
+
+		var userRouteLogs = clLib.REST.getEntities("RouteLog", clLib.getRouteLogWhereToday());
+		alert("GOT: "  + JSON.stringify(userRouteLogs));
+		clLib.localStorage.initStorage("routeLogStorage", userRouteLogs);
 		alert("new refresh:" + clLib.localStorage.getLastRefreshDate("routeStorage"));
 
 		clLib.UI.fillUIelements("startScreen");

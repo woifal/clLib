@@ -5,7 +5,8 @@ clLib.UI.autoLoad = {
 		"newRouteLog_gradeTypeSelect",
 		"newRouteLog_searchRoute",
 		"newRouteLog_ratingSelect",
-		"newRouteLog_tickType"
+		"newRouteLog_tickType",
+		"newRouteLog_character"
 	],
 	startScreen : [
 		"startScreen_areaSelect"
@@ -35,13 +36,15 @@ clLib.UI.pageElements = {
 			"newRouteLog_searchRoute",
 			"newRouteLog_commentText",
 			"newRouteLog_ratingSelect",
-			"newRouteLog_tickType"
+			"newRouteLog_tickType",
+			"newRouteLog_character"
 		],
 		reduced: [
 			"newRouteLog_gradeTypeSelect",
 			"newRouteLog_gradeSelect",
 			"newRouteLog_colourSelect",
-			"newRouteLog_tickType"
+			"newRouteLog_tickType",
+			"newRouteLog_character"
 		]
 	},
 	startScreen : {
@@ -92,9 +95,23 @@ clLib.UI.elements = {
 				preserveCurrentValue : true,
 				additionalValue : clLib.UI.NOTSELECTED
 			});
-
-
-
+		}
+		,"refreshOnUpdate" : []
+	},
+	"newRouteLog_character" : {
+		"refreshHandler" : function($this) { 
+			clLib.populateSelectBox({
+				selectBoxElement : $this,
+				dataObj : [
+					"Platte",
+					"Senkrecht",
+					"Leicht überhängend",
+					"Starkt überhängend",
+					"Dach"
+				],
+				preserveCurrentValue : true,
+				additionalValue : clLib.UI.NOTSELECTED
+			});
 		}
 		,"refreshOnUpdate" : []
 	},
@@ -362,15 +379,19 @@ clLib.UI.elements = {
 			});
 			
 			var currentRoute = clLib.localStorage.getEntities("Routes", where, "routeStorage");
-			console.log("got route data for " + JSON.stringify(where) + " >" + JSON.stringify(currentRoute));
+			alert("got route data for " + JSON.stringify(where) + " >" + JSON.stringify(currentRoute));
 			
 			if(currentRoute) {
 				clLib.UI.setSelectedValue($("#newRouteLog_sectorSelect"), currentRoute[0]["Sector"]);
+				alert("set selected value for sector");
 				clLib.UI.setSelectedValue($("#newRouteLog_lineSelect"), currentRoute[0]["Line"]);
+				alert("set selected value for line");
 				clLib.UI.setSelectedValue($("#newRouteLog_colourSelect"), currentRoute[0]["Colour"]);
+				alert("set selected value for colour");
 			} else {
 				alert("no route for name >" + changeOptions["value"] + "< found.");
 			}
+			alert("done with setselectedvalue handler for searchroute..");
 		}
 		,"refreshOnUpdate" : []
 	},

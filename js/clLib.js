@@ -79,7 +79,9 @@ clLib.computeScore = function(routeLogObj) {
 	
 	var score =
 		gradeTypeScore["grades"][routeLogObj.Grade]+ 0
-		+ gradeTypeScore["tickTypeFactors"][routeLogObj.TickType] + 0
+	;
+	// allow for flexible tick type factors a eval-able expressions...
+	score = eval(score + gradeTypeScore["tickTypeFactors"][routeLogObj.TickType]);
 	;
 	console.log("computed score >" + score + "< for route " + JSON.stringify(routeLogObj));
 	return score;
@@ -155,8 +157,8 @@ clLib.addColorBackground = function(targetId) {
     });
 
 	// Update jqm generated widget
-//	$('#' + targetId).trigger('change.clLibColour');
-	$('#' + targetId).trigger('change');
+	$('#' + targetId).trigger('change.clLibColour');
+//	$('#' + targetId).trigger('change');
  	
 };
 
@@ -422,15 +424,32 @@ clLib.addObjArr = function(anObj, pathArr, arrValueToAdd) {
 //		alert("tmpObj is " + JSON.stringify(tmpObj));
 //		alert("anObj is " + JSON.stringify(anObj));
 	}
+	
 	tmpObj.push(arrValueToAdd);
 //	alert("2tmpObj is " + JSON.stringify(tmpObj));
 //	return JSON.parse(JSON.stringify(tmpObj));
 //	return tmp0bj;
 }; 
 
+clLib.addObjValue = function(anObj, pathArr, valueToAdd) {
+    var anObj = anObj || {};
+    var tmpObj = anObj;
+	for(var i = 0; i < pathArr.length -1; i++) {
+		alert("at path elemnt >" + pathArr[i]);
+		if(!tmpObj[pathArr[i]]) {
+			tmpObj[pathArr[i]] = {};
+		}
+		alert("new anObj " + JSON.stringify(anObj));
+        tmpObj = tmpObj[pathArr[i]];
+	}
+	tmpObj[pathArr[pathArr.length-1]] = valueToAdd;
+	alert("final tmpobj " + JSON.stringify(tmpObj));
+	alert("final anObj " + JSON.stringify(anObj));
+    return anObj;
+}; 
 
 clLib.getChildObj = function(anObj, objKey) {
-	//alert("getChildObj called for " + objKey);
+	alert("getChildObj called for " + objKey);
 	if(!anObj[objKey]) {
 		anObj[objKey] = {};
 	}

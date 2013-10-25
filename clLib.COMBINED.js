@@ -14,6 +14,8 @@ var profiledFnCall = function(iterations, aFunc) {
 
 //(function(){
 var clLib = {};
+clLib.UI = {};
+
 
 
 /*
@@ -77,7 +79,9 @@ clLib.computeScore = function(routeLogObj) {
 	
 	var score =
 		gradeTypeScore["grades"][routeLogObj.Grade]+ 0
-		+ gradeTypeScore["tickTypeFactors"][routeLogObj.TickType] + 0
+	;
+	// allow for flexible tick type factors a eval-able expressions...
+	score = eval(score + gradeTypeScore["tickTypeFactors"][routeLogObj.TickType]);
 	;
 	console.log("computed score >" + score + "< for route " + JSON.stringify(routeLogObj));
 	return score;
@@ -153,8 +157,8 @@ clLib.addColorBackground = function(targetId) {
     });
 
 	// Update jqm generated widget
-//	$('#' + targetId).trigger('change.clLibColour');
-	$('#' + targetId).trigger('change');
+	$('#' + targetId).trigger('change.clLibColour');
+//	$('#' + targetId).trigger('change');
  	
 };
 
@@ -420,15 +424,32 @@ clLib.addObjArr = function(anObj, pathArr, arrValueToAdd) {
 //		alert("tmpObj is " + JSON.stringify(tmpObj));
 //		alert("anObj is " + JSON.stringify(anObj));
 	}
+	
 	tmpObj.push(arrValueToAdd);
 //	alert("2tmpObj is " + JSON.stringify(tmpObj));
 //	return JSON.parse(JSON.stringify(tmpObj));
 //	return tmp0bj;
 }; 
 
+clLib.addObjValue = function(anObj, pathArr, valueToAdd) {
+    var anObj = anObj || {};
+    var tmpObj = anObj;
+	for(var i = 0; i < pathArr.length -1; i++) {
+		alert("at path elemnt >" + pathArr[i]);
+		if(!tmpObj[pathArr[i]]) {
+			tmpObj[pathArr[i]] = {};
+		}
+		alert("new anObj " + JSON.stringify(anObj));
+        tmpObj = tmpObj[pathArr[i]];
+	}
+	tmpObj[pathArr[pathArr.length-1]] = valueToAdd;
+	alert("final tmpobj " + JSON.stringify(tmpObj));
+	alert("final anObj " + JSON.stringify(anObj));
+    return anObj;
+}; 
 
 clLib.getChildObj = function(anObj, objKey) {
-	//alert("getChildObj called for " + objKey);
+	alert("getChildObj called for " + objKey);
 	if(!anObj[objKey]) {
 		anObj[objKey] = {};
 	}
@@ -471,6 +492,10 @@ clLib.sortByScoreFunc = function(routeLog) {
 
 
 
+Array.prototype.hasValue = function(needle) {
+	return this.indexOf(needle) > -1;
+};
+
 
 
 
@@ -491,16 +516,27 @@ clLib.sortByScoreFunc = function(routeLog) {
 *   For every gradeType column with the same name has to be present in the Routes collection.
 *
 */
+
+/*
+Red Point
+Onsight: + 145 points (based on Red Pointing)
+Flash: +53 points (based on Red Pointing)
+Top Rope: - 150 points (based on Red Pointing)
+Attempt: 0 points
+
+*/
+clLib.defaultTickTypeFactors = {
+	"Red Point" : "+0",
+	"Flash" : "+53",
+	"Onsight" : "+145",
+	"Attempt" : "*0",
+	"Top Rope" : "-150"
+};
+
 clLib.gradeConfig = {
 	"UIAA" : {
 		defaultGrade: "V+",
-		tickTypeFactors : {
-			"Red Point"       : 1,
-			"Lead / rest"     : 2,
-			"Top Rope"        : 3,
-			"Top Rope / rest" : 4,
-			"Project"         : 5
-		},
+		tickTypeFactors : clLib.defaultTickTypeFactors,
 		grades : {
 			"I-" : 10                 ,
 			"I" : 15                  ,
@@ -565,13 +601,7 @@ clLib.gradeConfig = {
 	},
 	"French" : {                        
 		defaultGrade: "5b",
-		tickTypeFactors : {
-			"Red Point"       : 1,
-			"Lead / rest"     : 2,
-			"Top Rope"        : 3,
-			"Top Rope / rest" : 4,
-			"Project"         : 5
-		},
+		tickTypeFactors : clLib.defaultTickTypeFactors,
 		grades : {                    
 			"1" : 10                  ,
 			"2" : 25                  ,
@@ -626,13 +656,7 @@ clLib.gradeConfig = {
 	},
 	"Bleau" : {                        
 		defaultGrade: "Fb 5a",
-		tickTypeFactors : {
-			"Red Point"       : 1,
-			"Lead / rest"     : 2,
-			"Top Rope"        : 3,
-			"Top Rope / rest" : 4,
-			"Project"         : 5
-		},
+		tickTypeFactors : clLib.defaultTickTypeFactors,
 		grades : {                     
 			"Fb 1" : 10               ,
 			"Fb 2" : 90               ,
@@ -665,13 +689,7 @@ clLib.gradeConfig = {
 	},
 	"USA" : {                      
 		defaultGrade: "5.10a",
-		tickTypeFactors : {
-			"Red Point"       : 1,
-			"Lead / rest"     : 2,
-			"Top Rope"        : 3,
-			"Top Rope / rest" : 4,
-			"Project"         : 5
-		},
+		tickTypeFactors : clLib.defaultTickTypeFactors,
 		grades : {                    
 			"5.0" : 10                ,
 			"5.1" : 25                ,
@@ -748,27 +766,46 @@ clLib.localStorage.indexExists = function(storageName, indexName) {
 clLib.localStorage.initStorage = function(storageName, storageObj) {
 	// Delete cache
 	var storageItemsKey = storageName + "_items";
+	
+//	localStorage.removeItem("cache_" + storageItemsKey);
 	delete(storageCache[storageItemsKey]);
 
 
 	//alert("adding elements " + JSON.stringify(storageObj));
-	console.log("adding elements " + Object.keys(storageObj).length);
+	alert("adding elements " + Object.keys(storageObj).length + "->" + JSON.stringify(Object.keys(storageObj)));
 	var allItems = {};
 	for(var entityName in storageObj) {
-		console.log("entity: " + entityName);
+		alert("entity: " + entityName);
 		var entityItems = {};
 		for(var i = 0; i < storageObj[entityName].length; i++) {
 			entityItems[storageObj[entityName][i]["_id"]] = storageObj[entityName][i];
 		}
+
+		// add UNSYNCED entries to cache	
+		var unsyncedStorage = clLib.localStorage.getStorageItems("UNSYNCED_" + storageName);
+		alert("currently unsynced items for entity >" + entityName + "< =>" + JSON.stringify(unsyncedStorage) + "<");
+		if(unsyncedStorage) {
+			$.each(unsyncedStorage[entityName], function(dummyId) {
+				var entityInstance = unsyncedStorage[entityName][dummyId];
+				alert("add to storage items for >" + dummyId + "< bzw. >" + JSON.stringify(entityInstance) + "<");
+				entityItems[entityInstance["_id"]] = entityInstance;
+			});
+		}
+		
+		// store retrieved AND unsynced items
 		allItems[entityName] = entityItems;
+
 	}
+
+
+
 	console.log("storing items");
 	clLib.localStorage.setStorageItems(storageName, allItems);
 	console.log("items stored");
 	
-	var indexedEntities = clLib.localStorage.indexes;
+/*
 	var storageItems = clLib.localStorage.getStorageItems(storageName);
-	
+	var indexedEntities = clLib.localStorage.indexes;
 	var indexedItems = {};
 	
 	console.log("indexItems: " + tojson(indexedEntities));
@@ -816,13 +853,14 @@ clLib.localStorage.initStorage = function(storageName, storageObj) {
 		//}
 		});
 		//console.log("setting index to " + tojson(currentEntityIdxItems));
-		/*
-		* Store indexed for current entity
-		*/
+		//
+		// Store indexed for current entity
+		//
 		clLib.localStorage.setStorageIndexes(storageName, entityName, currentEntityIdxItems);
 		
 	}
 	//);
+	*/
 	
 	//console.log("initialized storage " + storageName);
 	//console.log("storage now is " + JSON.stringify(clLib.localStorage.getItem(storageName + "_items")));
@@ -843,17 +881,87 @@ clLib.localStorage.setItem = function(key, value){
 	localStorage.setItem(key, value);
 }
 
-clLib.localStorage.getStorageItems = function(storageName) {
+
+
+
+
+
+
+
+
+
+clLib.localStorage.getStorageItems = function(storageName, reinitCache) {
 	var storageName = storageName || clLib.localStorage.getItem("defaultStorage");
 	var storageItemsKey = storageName + "_items";
-	if(!storageCache[storageItemsKey]) {
-		var jsonItems = clLib.localStorage.getItem(storageItemsKey);
-		var storage	= JSON.parse(jsonItems);
-		storageCache[storageItemsKey] = storage;
+	// session cache is good enough?
+	if(
+		reinitCache ||
+		!storageCache[storageItemsKey]
+	) {
+		clLib.localStorage.initCache(storageName);
 	}
-	
 	return storageCache[storageItemsKey];
 };
+
+clLib.localStorage.initCache = function(storageName) {
+	var storageItemsKey = storageName + "_items";
+	//alert("init cache for " + storageName + " and key " + storageItemsKey);
+	var jsonItems = clLib.localStorage.getItem(storageItemsKey);
+	var storage	= JSON.parse(jsonItems);
+	storageCache[storageItemsKey] = storage;
+};
+
+
+clLib.localStorage.setStorageItems = function(storageName, storageItems) {
+	var storageName = storageName || clLib.localStorage.getItem("defaultStorage");
+	var storageItemsKey = storageName + "_items";
+	clLib.localStorage.setItem(storageItemsKey, tojson(storageItems));
+	clLib.localStorage.setItem(storageName + "_createdAt", tojson(new Date()));
+};
+
+clLib.localStorage.addStorageItem = function(storageName, entity, newItem) {
+	alert("adding storage for storageName >" + storageName + "< and entity >" + entity + "<");
+	// storageItems => [entity][_id]
+	
+	// fetch storage items - NOT using the session cache
+	var storageItemsKey = storageName + "_items";
+	var jsonItems = clLib.localStorage.getItem(storageItemsKey);
+	var storageItems = JSON.parse(jsonItems);
+	// add new item to localstorage 
+	alert("old storageitems: " + JSON.stringify(storageItems));
+	storageItems = clLib.addObjValue(storageItems, [entity, newItem["_id"]], newItem);
+
+	alert("new storageItems >" + JSON.stringify(storageItems));
+	clLib.localStorage.setStorageItems(storageName, storageItems);
+	clLib.localStorage.initCache(storageName, storageItems);
+};
+
+
+clLib.localStorage.removeStorageItem = function(storageName, entity, id2delete) {
+	// storageItems => [entity][_id]
+	
+	// fetch storage items - NOT using the session cache
+	var storageItemsKey = storageName + "_items";
+	var jsonItems = clLib.localStorage.getItem(storageItemsKey);
+	var storageItems = JSON.parse(jsonItems);
+	// remove new item from localstorage 
+	delete(storageItems[entity][id2delete]);
+	clLib.localStorage.setStorageItems(storageName, storageItems);
+	clLib.localStorage.initCache(storageName, storageItems);
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 clLib.localStorage.getStorageIndexes = function(storageName, entityName) {
 	var storageName = storageName || clLib.localStorage.getItem("defaultStorage");
@@ -868,12 +976,7 @@ clLib.localStorage.getStorageIndexes = function(storageName, entityName) {
 	return storageCache[indexItemsKey];
 };
 
-clLib.localStorage.setStorageItems = function(storageName, storageItems) {
-	var storageName = storageName || clLib.localStorage.getItem("defaultStorage");
-	var storageItemsKey = storageName + "_items";
-	clLib.localStorage.setItem(storageItemsKey, tojson(storageItems));
-	clLib.localStorage.setItem(storageName + "_createdAt", tojson(new Date()));
-};
+
 
 clLib.localStorage.getLastRefreshDate = function(storageName) {
 	return clLib.localStorage.getItem(storageName + "_createdAt");
@@ -952,41 +1055,77 @@ Array.prototype.sortBy = function(sortBy, descSortFlag) {
 	}
 };
 
-/*
 clLib.localStorage.syncAllUp = function(entity, storageName) {
-	foreach(entityInstance in storageObj[entity]["unsynced"]) {
-		clLib.localStorage.syncUp(entity, entityInstance);
-	}
-}
-*/
-clLib.localStorage.syncUp = function(entity, entityInstance) {
-	var storage = clLib.localStorage.getStorageItems(storageName);
+	alert("syncing up all entities for >" + entity + "< in >" + storageName + "<");
+	var storage = clLib.localStorage.getStorageItems("UNSYNCED_" + storageName);
+	alert("currently unsynced items >" + JSON.stringify(storage) + "<");
+	$.each(storage[entity], function(dummyId) {
+		var entityInstance = storage[entity][dummyId];
+		alert("call syncup for >" + dummyId + "< bzw. >" + JSON.stringify(entityInstance) + "<");
 
-	var realInstance = clLib.REST.storeEntity(entity, entityInstance);
+		clLib.localStorage.syncUp(entity, entityInstance, storageName);
+	});
+}
+
+
+clLib.localStorage.syncUp = function(entity, entityInstance, storageName) {
+	var entityStorage = clLib.localStorage.getStorageItems(storageName);
+	entityStorage = entityStorage[entity];
 	
+	var unsyncedStorage = clLib.localStorage.getStorageItems("UNSYNCED_" + storageName);
+	unsyncedStorage = unsyncedStorage[entity];
+	
+	var dummyId = entityInstance["_id"];
+
+	alert("unsynced items:  >" + JSON.stringify(unsyncedStorage) + "<");
+	alert(">" + dummyId + "< in storagecache? >" + JSON.stringify(entityStorage[dummyId]) + "<");
+
+	delete(entityInstance["_id"]);
+	var realInstance = clLib.REST.storeEntity(entity, entityInstance);
+	entityInstance["_id"] = realInstance["_id"];	
+
+	alert("synced UP >" + dummyId + "<, new id is " + realInstance["_id"]);
 	// delete dummy id
-	delete(storage[entity][dummyId]);
-	delete(storage["unsynced"][entity][dummyId]);
+	clLib.localStorage.removeStorageItem(storageName, entity, dummyId);
+	// delete from unsynced entries..
+	clLib.localStorage.removeStorageItem("UNSYNCED_" + storageName, entity, dummyId);
 
 	// store real id
-	storage[entity][realInstance["_id"]] = entityInstance;
-	
+	clLib.localStorage.addStorageItem(storageName, entity, entityInstance);
 	
 }
+
+
 
 clLib.localStorage.addInstance = function(entity, entityInstance, storageName) {
 	var storage = clLib.localStorage.getStorageItems(storageName);
 	
-	var dummyId = new Date();
-	storage[entity][dummyId] = entityInstance;
+	var dummyId = "DUMMY" + new Date().getTime();
+	entityInstance["_id"] = dummyId;
+
+	clLib.localStorage.addStorageItem(storageName, entity, entityInstance);
 	// mark as local-only
-	storage["unsynced"][entity][dummyId] = 1;
+
+	clLib.localStorage.addStorageItem("UNSYNCED_" + storageName, entity, entityInstance);
 	
-	if(online) {
-		syncUp(entity, entityInstance);
+	if(clLib.isOnline()) {
+		alert("online, syncing UP!!!");
+		//clLib.localStorage.syncUp(entity, entityInstance, storageName);
+		clLib.localStorage.syncAllUp(entity, storageName);
+	} else {
+		alert("offline, saving for later sync UP..");
 	}
 }
 
+clLib.isOnline = function() {
+	var currentlyOnline = localStorage.getItem("online");
+	alert("currentlyOnline? >" + currentlyOnline);
+	if(currentlyOnline != -1) {
+		return true;
+	} else {
+		return false;
+	}
+};
 
 /*
 *	Returns all objects from localStorage storage "storageName" where ALL conditions in whereObj are met.
@@ -996,7 +1135,7 @@ clLib.localStorage.getEntities = function(entity, whereObj, storageName, sortKey
 	var resultsObj = [];
 	var storage = clLib.localStorage.getStorageItems(storageName);
 	if(!storage){
-		alert("no local store available => you need to refresh first.");
+		//alert("no local store available => you need to refresh first.");
 		return;
 	} else {
 		//alert("storage: " + JSON.stringify(storage));
@@ -1004,7 +1143,7 @@ clLib.localStorage.getEntities = function(entity, whereObj, storageName, sortKey
 	}
 //alert(12);
 	if(!storage[entity]){
-		alert("no local data available for >" + entity + "<. You need to refresh first.");
+		//alert("no local data available for >" + entity + "<. You need to refresh first.");
 		return;
 	} else {
 		//alert("entity storage: " + JSON.stringify(storage));
@@ -1155,7 +1294,7 @@ clLib.localStorage.getDistinct = function(entity, whereObj, colName, storageName
 	var resultsObj = [];
 	var storage = clLib.localStorage.getStorageItems(storageName);
 	if(!storage){
-		alert("no local store available for storage " + storageName + " => you need to refresh first.");
+		//alert("no local store available for storage " + storageName + " => you need to refresh first.");
 		return {};
 	} else {
 		//alert("storage: " + JSON.stringify(storage));
@@ -1163,7 +1302,7 @@ clLib.localStorage.getDistinct = function(entity, whereObj, colName, storageName
 	}
 //alert(12);
 	if(!storage[entity]){
-		alert("no local data available for " + storageName + "[" + entity + "]=> you need to refresh first.");
+		//alert("no local data available for " + storageName + "[" + entity + "]=> you need to refresh first.");
 		return {};
 	} else {
 		//alert("entity storage: " + JSON.stringify(storage));
@@ -1319,8 +1458,6 @@ clLib.localStorage.indexes = {
 };
 "use strict";
 
-clLib.UI = {};
-
 clLib.UI = {
 	"NOTSELECTED": {
 		text : "UNKNOWN",
@@ -1328,403 +1465,6 @@ clLib.UI = {
 	}
 };
 
-clLib.UI.autoLoad = {
-	newRouteLog : [
-		"newRouteLog_gradeTypeSelect",
-		"newRouteLog_searchRoute",
-		"newRouteLog_ratingSelect"
-	],
-	startScreen : [
-		"startScreen_areaSelect"
-	]
-};
-
-clLib.UI.elementsToReset = {
-	newRouteLog : [
-		"newRouteLog_lineSelect",
-		"newRouteLog_sectorSelect",
-		"newRouteLog_colourSelect",
-		"newRouteLog_ratingSelect"
-	],
-	startScreen : [
-	]
-};
-
-clLib.UI.pageElements = {
-	newRouteLog : [
-		"newRouteLog_gradeTypeSelect",
-		"newRouteLog_gradeSelect",
-		"newRouteLog_sectorSelect",
-		"newRouteLog_colourSelect",
-		"newRouteLog_lineSelect",
-		"newRouteLog_searchRouteResults",
-		"newRouteLog_searchRoute",
-		"newRouteLog_ratingSelect"
-	],
-	startScreen : [
-		"startScreen_areaSelect",
-		"startScreen_selectedArea"
-	]
-};
-
-clLib.UI.elements = {
-	"newRouteLog_gradeTypeSelect" : {
-		"refreshHandler" : function($this) { 
-			clLib.populateGradeTypes($this, "UIAA") },
-		"refreshOnUpdate" : {
-			"newRouteLog_gradeSelect" : { }
-		}
-	},
-	"newRouteLog_gradeSelect" : {
-		"refreshHandler" : function($this) { 
-			clLib.populateGrades($this, 
-				$("#newRouteLog_gradeTypeSelect").val()
-			); 
-		},
-		"refreshOnUpdate" : {
-			"newRouteLog_sectorSelect" : {}
-			//,"newRouteLog_lineSelect": {}
-		}
-	},
-	"newRouteLog_sectorSelect" : {
-		"refreshHandler" : function($this) { 
-			//console.log("handling content for sector.." + $this.val());
-
-			var distinctColumn, where, results;
-			distinctColumn = "Sector";
-			where = clLib.getRoutesWhere({
-				"GradeType" : $("#newRouteLog_gradeTypeSelect").val(),
-				"Grade" : $("#newRouteLog_gradeSelect").val(),
-				"Area" : localStorage.getItem("currentlySelectedArea")
-//				,"Line" : $("#newRouteLog_lineSelect").val()
-			});
-			
-			results = clLib.localStorage.getDistinct("Routes", where, distinctColumn, "routeStorage");
-			console.log("got sectors for " + JSON.stringify(where) + ",>" + JSON.stringify(results));
-
-			clLib.populateSelectBox({
-				selectBoxElement : $this,
-				dataObj : results,
-				preserveCurrentValue : true,
-				additionalValue : clLib.UI.NOTSELECTED
-			});
-		}
-		,"setSelectedValueHandler" : function($this, changeOptions) { return clLib.UI.setSelectedValueOnlyHandler($this, changeOptions); }
-		,"changeHandler" : function($this, changeOptions) {
-			//alert("sector change handler!!");
-			var $sectorSelect = $("#newRouteLog_sectorSelect");
-			
-			var distinctColumn, where, results;
-			distinctColumn = "Sector";
-			where = clLib.getRoutesWhere({
-				"GradeType" : $("#newRouteLog_gradeTypeSelect").val(),
-				"Grade" : $("#newRouteLog_gradeSelect").val(),
-				"Area" : localStorage.getItem("currentlySelectedArea"),
-				"Line" : $("#newRouteLog_lineSelect").val()
-			});
-			
-			results = clLib.localStorage.getDistinct("Routes", where, distinctColumn, "routeStorage");
-			console.log("got LINE sectors for " + JSON.stringify(where) + ", " + results[0] + " +, >" + JSON.stringify(results));
-			
-			if(results.length == 1) {
-				$sectorSelect.val(results[0]);
-				$sectorSelect.selectmenu('refresh', true);
-
-				console.log("sectorselect changed to " + results[0]);
-			} else {
-				if(
-					$("#newRouteLog_lineSelect").val() != clLib.UI.NOTSELECTED.value &&
-					$("#newRouteLog_lineSelect").val() != ""
-				) {
-					console.log("2013-10-07-WTF!?!?!? multiple sectors for line " + $("#newRouteLog_lineSelect").val() + " found - setting sector to the one of first result...");
-					alert("setting sector to the one of first result...");
-					$sectorSelect.val(results[0]);     
-				}
-
-				$sectorSelect.selectmenu('refresh', true);
-			}
-
-			clLib.UI.defaultChangeHandler($this, changeOptions);
-		},
-
-
-
-
-		"refreshOnUpdate" : {
-			"newRouteLog_colourSelect" : {}
-			,"newRouteLog_lineSelect" : {}
-		}
-	},
-	"newRouteLog_lineSelect" : {
-		"refreshHandler" : function($this) { 
-			console.log("getting lines");
-			var distinctColumn, where, results;
-			distinctColumn = "Line";
-			where = clLib.getRoutesWhere({
-				"GradeType" : $("#newRouteLog_gradeTypeSelect").val(),
-				"Grade" : $("#newRouteLog_gradeSelect").val(),
-				"Area" : localStorage.getItem("currentlySelectedArea"),
-				"Sector" : $("#newRouteLog_sectorSelect").val(),
-				"Colour" : $("#newRouteLog_colourSelect").val()
-			});
-			//alert("Getting lines for " + JSON.stringify(where));
-
-			results = clLib.localStorage.getDistinct("Routes", where, distinctColumn, "routeStorage");
-			//alert("got lines for " + JSON.stringify(where) + ",>" + JSON.stringify(results));
-
-			clLib.populateSelectBox({
-				selectBoxElement : $this,
-				dataObj : results,
-				preserveCurrentValue : true,
-				additionalValue : clLib.UI.NOTSELECTED
-			});
-		}
-		,"setSelectedValueHandler" : function($this, changeOptions) { return clLib.UI.setSelectedValueOnlyHandler($this, changeOptions); }
-		,"changeHandler" : function($this, changeOptions) {
-			var $sectorSelect = $("#newRouteLog_sectorSelect");
-			
-			var distinctColumn, where, results;
-			distinctColumn = "Sector";
-			where = clLib.getRoutesWhere({
-				"GradeType" : $("#newRouteLog_gradeTypeSelect").val(),
-				"Grade" : $("#newRouteLog_gradeSelect").val(),
-				"Area" : localStorage.getItem("currentlySelectedArea"),
-				"Line" : $("#newRouteLog_lineSelect").val()
-			});
-			
-			results = clLib.localStorage.getDistinct("Routes", where, distinctColumn, "routeStorage");
-			console.log("got LINE sectors for " + JSON.stringify(where) + ", " + results[0] + " +, >" + JSON.stringify(results));
-			
-			if(results.length == 1) {
-				$sectorSelect.val(results[0]);
-				$sectorSelect.selectmenu('refresh', true);
-
-				console.log("sectorselect changed to " + results[0]);
-			} else {
-				if($("#newRouteLog_lineSelect").val() != clLib.UI.NOTSELECTED.value) {
-					//alert("2013-10-07-WTF!?!?!? multiple sectors for line " + $("#newRouteLog_lineSelect").val() + " found - setting sector to the one of first result...");
-					$sectorSelect.val(results[0]);     
-				}
-
-				$sectorSelect.selectmenu('refresh', true);
-			}
-
-			clLib.UI.defaultChangeHandler($this, changeOptions);
-		}
-		,"refreshOnUpdate" : {
-/*			"newRouteLog_sectorSelect" : {
-				noRefreshOn : "newRouteLog_lineSelect"
-			}*/
-/*			,"newRouteLog_searchRouteResults" : {
-				hideOnSingleResult : true
-			}
-*/
-			"newRouteLog_colourSelect" : {}
-		}
-
-
-	},
-	"newRouteLog_colourSelect": {
-		"refreshHandler" : function($this) { 
-			console.log("getting colours");
-			var distinctColumn, where, results;
-			distinctColumn = "Colour";
-			where = clLib.getRoutesWhere({
-				"GradeType" : $("#newRouteLog_gradeTypeSelect").val(),
-				"Grade" : $("#newRouteLog_gradeSelect").val(),
-				"Area" : localStorage.getItem("currentlySelectedArea"),
-				"Sector" : $("#newRouteLog_sectorSelect").val(),
-				"Line" : $("#newRouteLog_lineSelect").val()
-			});
-			//console.log("Getting routese for " + JSON.stringify(where));
-
-			results = clLib.localStorage.getDistinct("Routes", where, distinctColumn, "routeStorage");
-			console.log("got colours for " + JSON.stringify(where) + ",>" + JSON.stringify(results));
-
-			clLib.populateSelectBox({
-				selectBoxElement : $this,
-				dataObj : results,
-				preserveCurrentValue : true,
-				additionalValue : clLib.UI.NOTSELECTED
-			});
-			clLib.addColorBackground("newRouteLog_colourSelect"); 
-			
-		}
-		,"setSelectedValueHandler" : function($this, changeOptions) { 
-			clLib.UI.setSelectedValueOnlyHandler($this, changeOptions);
-			clLib.addColorBackground($this.attr("id")); 
-		}
-		,"refreshOnUpdate" : {
-			"newRouteLog_searchRouteResults" : {
-				hideOnSingleResult : true
-			}
-		}
-		,"changeHandler" : function($this, changeOptions) {
-			var $forElement = $("#newRouteLog_searchRoute");
-			$forElement.val("");
-			//alert("searchRoute set to ''");
-
-			clLib.UI.defaultChangeHandler($this, changeOptions);
-		}
-	},
-	"newRouteLog_searchRouteResults" : {
-		"refreshHandler" : function($this, options) { 
-			options = options || {};
-			console.log("refreshing searchrouteresults with options " + JSON.stringify(options));
-			var $inElement = $this;
-			var $forElement = $("#newRouteLog_searchRoute");
-			;
-			
-			var distinctColumn, where, results;
-			distinctColumn = "Name";
-			where = clLib.getRoutesWhere({
-				"GradeType" : $("#newRouteLog_gradeTypeSelect").val(),
-				"Grade": $("#newRouteLog_gradeSelect").val(),
-				"Area" : localStorage.getItem("currentlySelectedArea"),
-				"Sector" : $("#newRouteLog_sectorSelect").val(),
-				"Colour" : $("#newRouteLog_colourSelect").val(),
-				"Line" : $("#newRouteLog_lineSelect").val()
-			});
-			where["Name"] = {
-				"$starts-with" : $forElement.val()	
-			}
-			console.log("Getting routes for " + JSON.stringify(where));
-			results = clLib.localStorage.getDistinct("Routes", where, distinctColumn, "routeStorage");
-			
-			console.log("got routes " + JSON.stringify(results));
-
-
-			//console.log("adding results from " + $forElement.attr("id") + " to " + $inElement.attr("id"));
-			clLib.populateSearchProposals($forElement, $inElement, results, options["hideOnSingleResult"]);
-		}
-		,"refreshOnUpdate" : []
-	},
-	"newRouteLog_searchRoute" : {
-		"refreshHandler" : function($this, options) { 
-			console.log("binding to keyup events...");
-			$this.bind("keyup.clLib", function() {
-				console.log("keyup, refresh search proposals!!!");
-				$("#newRouteLog_searchRouteResults").trigger(
-					"refresh.clLib", 
-					clLib.UI.addObjArr(options || {}, ["eventSourcePath"], $this.attr("id"))
-				);
-			});
-			$this.bind("click.clLib", function() {
-				console.log("click, refresh search proposals!!!");
-				$("#newRouteLog_searchRouteResults").trigger(
-					"refresh.clLib", 
-					clLib.UI.addObjArr(options || {}, ["eventSourcePath"], $this.attr("id"))
-				);
-			});
-/*
-			$this.bind("change.clLib.route", function() {
-			});
-*/
-		
-		}
-		,"setSelectedValueHandler" : function($this, changeOptions) {
-			//alert("searchRoute changed, refresh all other elements!!!");
-			//alert(">>>" + $this.attr("id") + "," + JSON.stringify(changeOptions));
-
-			if(changeOptions["value"] == clLib.UI.NOTSELECTED.value) {
-				console.log("empty out search route field..");
-				$this.val("");
-				return;
-			}
-
-			$this.val(changeOptions["value"]);
-			
-			
-			//
-			//	set all other elements to the one of the currently selected route..
-			//
-			var distinctColumn, where, results;
-			where = clLib.getRoutesWhere({
-				"GradeType" : $("#newRouteLog_gradeTypeSelect").val(),
-				"Grade" : $("#newRouteLog_gradeSelect").val(),
-				"Name": changeOptions["value"]
-			});
-			
-			var currentRoute = clLib.localStorage.getEntities("Routes", where, "routeStorage");
-			console.log("got route data for " + JSON.stringify(where) + " >" + JSON.stringify(currentRoute));
-			
-			if(currentRoute) {
-				clLib.UI.setSelectedValue($("#newRouteLog_sectorSelect"), currentRoute[0]["Sector"]);
-				clLib.UI.setSelectedValue($("#newRouteLog_lineSelect"), currentRoute[0]["Line"]);
-				clLib.UI.setSelectedValue($("#newRouteLog_colourSelect"), currentRoute[0]["Colour"]);
-			} else {
-				alert("no route for name >" + changeOptions["value"] + "< found.");
-			}
-		}
-		,"refreshOnUpdate" : []
-	},
-	"newRouteLog_ratingSelect" : {
-		"refreshHandler" : function($this, options) { 
-			//alert("refreshign ratingselec.t..");
-			$("input[type='radio']", $this).each(function() {
-				$(this).addClass("unrated");
-			});
-//			alert("onclicking ratingselec.t..");
-			clLib.UI.killEventHandlers($("input[type='radio']", $this), "click.clLib");
-
-			$("input[type='radio']", $this).bind("click.clLib", function(e) {
-				//alert("radio clicked!" + $(this).val());
-				var $label = $(this).parent();
-
-				$label.nextAll().addClass("unrated");
-				$label.nextAll().removeClass("rated");
-				$label.prevAll().addClass("rated");
-				$label.addClass("rated");
-				$label.prevAll().removeClass("unrated");
-				$label.removeClass("unrated");
-			});
-//			alert("inclicked ratingselec.t..");
-		},
-		"refreshOnUpdate" : []
-		,"setSelectedValueHandler" : function($this, changeOptions) { 
-			//alert("setting rating select to " + JSON.stringify(changeOptions));
-//			clLib.UI.buildRatingRadio($("#newRouteLog_ratingSelectWrapper"));
-
-			if(changeOptions && changeOptions["value"] == clLib.UI.NOTSELECTED.value) {
-				$this.children().addClass("unrated");
-				$this.children().removeClass("rated");
-				$("input[type='radio']", $this).each(function() {
-					$(this).prop('checked', false);
-				});
-			}
-
-		}
-		,"changeHandler" : function($this, changeOptions) {}
-	},
-	"startScreen_areaSelect" : {
-		"refreshHandler" : function($this) { 
-			console.log("handling content for area..");
-			var distinctColumn, where, results;
-			distinctColumn = "Area";
-			//alert("building where");
-			where = clLib.getRoutesWhere("UIAA", "VIII");
-			//alert("where=" + JSON.stringify(where));
-			results = clLib.localStorage.getDistinct("Routes", where, distinctColumn, "routeStorage");
-			console.log("got areas for " + JSON.stringify(where) + ",>" + JSON.stringify(results));
-			
-			clLib.populateSelectBox({
-				selectBoxElement : $this,
-				dataObj : results,
-				preserveCurrentValue : true
-			});
-		},
-		"refreshOnUpdate" : {
-			"startScreen_selectedArea" : {}
-		}
-	},
-	"startScreen_selectedArea" : {
-		"refreshHandler" : function($this) { 
-			localStorage.setItem("currentlySelectedArea", $("#startScreen_areaSelect").val());
-			clLib.UI.fillUIelements("newRouteLog");
-		},
-		"refreshOnUpdate" : {}
-	}
-};
 
 clLib.UI.killEventHandlers = function($element, eventName) {
 	$element.die(eventName);
@@ -1739,8 +1479,6 @@ clLib.UI.setSelectedValue = function($element, newValue) {
 		{ "value": newValue }
 	);
 };
-
-
 
 
 
@@ -1778,7 +1516,7 @@ clLib.populateSelectBox = function(options) {
 */
 		// disable current onChange handler
 	var selectBoxId = options.selectBoxElement.attr('id');
-	console.log("killing evnet handlers for  " + selectBoxId);
+	console.log("killing event handlers for  " + selectBoxId);
 
 	clLib.UI.killEventHandlers(options.selectBoxElement, "change.clLib");
 /*
@@ -1876,9 +1614,12 @@ clLib.populateSearchProposals = function($forElement, $inElement, dataObj, hideO
 	
 	//alert(JSON.stringify(dataObj));
 	if(hideOnSingleResult && dataObj.length == 1) {
-		//alert("single element found, hiding results..");
-		$forElement.val(dataObj[0]);
+		alert("single element found (" + dataObj[0] + "), hiding results..");
+		var result = $.trim(dataObj[0]);
+
+		console.log("seeting selectedresult to " + result);
 		$inElement.hide();
+		$forElement.trigger("setSelectedValue.clLib", {"value": result, noDependentRefresh : true});
 		return;
 	} else {
 		//$forElement.val("");
@@ -1911,7 +1652,24 @@ clLib.UI.defaultChangeHandler = function($element, changeOptions) {
 	//alert($element.attr("id") + " was changed to: >" + $element.data("clLib.currentValue") + "<" + JSON.stringify(changeOptions));
 	var elementConfig = clLib.UI.elements[$element.attr("id")];
 	//console.log("elementConfig for " + $element.attr("id") + " is " + JSON.stringify(elementConfig));
-	$.each(elementConfig.refreshOnUpdate, function(refreshTargetName, refreshOptions) {
+	
+	//
+	// consider currently chosen layout from now on..
+	//
+	var currentLayout = localStorage.getItem("currentLayout");
+	console.log("current layout is >" +  currentLayout  + "<");
+	var refreshTargets = elementConfig.refreshOnUpdate;
+	if(
+		currentLayout in elementConfig.refreshOnUpdate
+	) {
+		console.log(currentLayout + ">>" + JSON.stringify(refreshTargets));
+		refreshTargets = elementConfig.refreshOnUpdate[currentLayout];
+	} else {
+		refreshTargets = elementConfig.refreshOnUpdate["default"] || {};
+	}
+
+	//	$.each(elementConfig.refreshOnUpdate, function(refreshTargetName, refreshOptions) {
+	$.each(refreshTargets, function(refreshTargetName, refreshOptions) {
 		console.log("refreshing dependent element " + refreshTargetName);
 		if(!$("#" + refreshTargetName)) {
 			console.log("element " + "#" + refreshTargetName + " not found!");
@@ -1932,9 +1690,10 @@ clLib.UI.defaultSetSelectedValueHandler = function($element, changeOptions) {
 }
 	
 clLib.UI.setSelectedValueOnlyHandler = function($element, changeOptions) {
-	console.log("solely changing value of .." + $element.attr("id") + " to " + JSON.stringify(changeOptions));
+	alert("solely changing value of .." + $element.attr("id") + " to " + JSON.stringify(changeOptions));
 	// avoid default onChange handler..
 	clLib.UI.killEventHandlers($element, "change.clLib");
+	clLib.UI.killEventHandlers($element, "change.clLibColour");
 	var newValue = changeOptions["value"];
 	
 	delete(changeOptions["value"]);
@@ -1962,6 +1721,26 @@ clLib.UI.resetUIelements = function(pageName) {
 	$("#newRouteLog_commentText").val('');
 };
 	
+clLib.UI.hideUIElement = function($element) {
+	console.log("hiding element >" + $element.attr("id") + "< of type " + $element.prop("tagName") + ", display is >" + $element.css("display") + "<");
+
+	$element.css('display', 'none').parent('div').parent('.ui-select').css('display', 'none');
+	if($element.attr("tagName") == 'SELECT') {
+		$element.selectmenu('refresh');
+	}
+
+};
+
+clLib.UI.showUIElement = function($element) {
+	console.log("showing element of type " + $element.prop("tagName") + ", display is >" + $element.css("display") + "<");
+
+	$element.css('display', 'block').parent('div').parent().css('display', 'block');
+	if($element.attr("tagName") == 'SELECT') {
+		$element.selectmenu('refresh');
+	}
+
+};
+
 /*
 *
 * Populates HTML UI elements for a page using the clLib.UI.elements configuration object.
@@ -1970,12 +1749,48 @@ clLib.UI.resetUIelements = function(pageName) {
 *
 */
 clLib.UI.fillUIelements = function(pageName) {
+	// no special layout to apply? use default layout..
+	var layout = localStorage.getItem("currentLayout") || "default";
+
+	console.log("populating UI elements for page >" + pageName + "< and layout >" + layout + "<");
+
+	if(!(layout in clLib.UI.pageElements[pageName])) {
+		console.log("layout does not exists for page, using default layout..");
+		layout = "default";
+	}
+	
+	
+	$.each(clLib.UI.pageElements[pageName]["default"], function(idx, elementName) {
+		console.log(elementName + " in " + JSON.stringify(clLib.UI.pageElements[pageName][layout])+ "?" + 
+			(clLib.UI.pageElements[pageName][layout].hasValue(elementName))
+		);
+		if(!(clLib.UI.pageElements[pageName][layout].hasValue(elementName))) {
+			var $element = $("#" + elementName);
+			console.log("element is >" + $element.attr("id") + "<, hide it");
+	
+			// hide elements per default..
+			clLib.UI.hideUIElement($element);
+		} else {
+			var $element = $("#" + elementName);
+			console.log("element is >" + $element.attr("id") + "<, SHOW it");
+	
+			// hide elements per default..
+			clLib.UI.showUIElement($element);
+		}
+	});
+
+	console.log("elements for page >" + pageName + "< hidden..");
 	//alert("populating UI elements for page >" + pageName + "<");
-	$.each(clLib.UI.pageElements[pageName], function(idx, elementName) {
+	$.each(clLib.UI.pageElements[pageName][layout], function(idx, elementName) {
 		var elementConfig = clLib.UI.elements[elementName];
-		//alert("adding events for  element >" + elementName + "<");
+
+		if(!elementConfig) {
+			//alert("Can't find element >" + elementName + "<, breaking loop..");
+			return;
+		}
+
+		console.log("adding events for  element >" + elementName + "<");
 		var $element = $("#" + elementName);
-		//console.log("element is >" + $element.attr("id") + "<");
 
 		// Re-attach event handlers
 		clLib.UI.killEventHandlers($element, "change.clLib");
@@ -2116,6 +1931,473 @@ clLib.UI.buildRatingRadio = function($element) {
 	);
 
 };"use strict";
+
+clLib.UI.autoLoad = {
+	newRouteLog : [
+		"newRouteLog_gradeTypeSelect",
+		"newRouteLog_searchRoute",
+		"newRouteLog_ratingSelect",
+		"newRouteLog_tickType",
+		"newRouteLog_character"
+	],
+	startScreen : [
+		"startScreen_areaSelect"
+	]
+};
+
+clLib.UI.elementsToReset = {
+	newRouteLog : [
+		"newRouteLog_lineSelect",
+		"newRouteLog_sectorSelect",
+		"newRouteLog_colourSelect",
+		"newRouteLog_ratingSelect"
+	],
+	startScreen : [
+	]
+};
+
+clLib.UI.pageElements = {
+	newRouteLog : {
+		default: [
+			"newRouteLog_gradeTypeSelect",
+			"newRouteLog_gradeSelect",
+			"newRouteLog_sectorSelect",
+			"newRouteLog_colourSelect",
+			"newRouteLog_lineSelect",
+			"newRouteLog_searchRouteResults",
+			"newRouteLog_searchRoute",
+			"newRouteLog_commentText",
+			"newRouteLog_ratingSelect",
+			"newRouteLog_tickType",
+			"newRouteLog_character"
+		],
+		reduced: [
+			"newRouteLog_gradeTypeSelect",
+			"newRouteLog_gradeSelect",
+			"newRouteLog_colourSelect",
+			"newRouteLog_tickType",
+			"newRouteLog_character"
+		]
+	},
+	startScreen : {
+		default: [
+			"startScreen_areaSelect",
+			"startScreen_selectedArea"
+		]
+	}
+};
+
+clLib.UI.elements = {
+	"newRouteLog_gradeTypeSelect" : {
+		"refreshHandler" : function($this) { 
+			clLib.populateGradeTypes($this, "UIAA") },
+		"refreshOnUpdate" : {
+			default: {
+				"newRouteLog_gradeSelect" : { }
+			}
+		}
+	},
+	"newRouteLog_gradeSelect" : {
+		"refreshHandler" : function($this) { 
+			clLib.populateGrades($this, 
+				$("#newRouteLog_gradeTypeSelect").val()
+			); 
+		},
+		"refreshOnUpdate" : {
+			default: {
+				"newRouteLog_sectorSelect" : {}
+				//,"newRouteLog_lineSelect": {}
+			},
+			reduced: {
+				"newRouteLog_colourSelect" : {}
+			}
+		}
+	},
+	"newRouteLog_tickType" : {
+		"refreshHandler" : function($this) { 
+			clLib.populateSelectBox({
+				selectBoxElement : $this,
+				dataObj : [
+					"Red Point",
+					"Flash",
+					"Onsight",
+					"Attempt",
+					"Top Rope"
+				],
+				preserveCurrentValue : true,
+				additionalValue : clLib.UI.NOTSELECTED
+			});
+		}
+		,"refreshOnUpdate" : []
+	},
+	"newRouteLog_character" : {
+		"refreshHandler" : function($this) { 
+			clLib.populateSelectBox({
+				selectBoxElement : $this,
+				dataObj : [
+					"Platte",
+					"Senkrecht",
+					"Leicht überhängend",
+					"Starkt überhängend",
+					"Dach"
+				],
+				preserveCurrentValue : true,
+				additionalValue : clLib.UI.NOTSELECTED
+			});
+		}
+		,"refreshOnUpdate" : []
+	},
+	"newRouteLog_sectorSelect" : {
+		"refreshHandler" : function($this) { 
+			//console.log("handling content for sector.." + $this.val());
+
+			var distinctColumn, where, results;
+			distinctColumn = "Sector";
+			where = clLib.getRoutesWhere({
+				"GradeType" : $("#newRouteLog_gradeTypeSelect").val(),
+				"Grade" : $("#newRouteLog_gradeSelect").val(),
+				"Area" : localStorage.getItem("currentlySelectedArea")
+//				,"Line" : $("#newRouteLog_lineSelect").val()
+			});
+			
+			results = clLib.localStorage.getDistinct("Routes", where, distinctColumn, "routeStorage");
+			console.log("got sectors for " + JSON.stringify(where) + ",>" + JSON.stringify(results));
+
+			clLib.populateSelectBox({
+				selectBoxElement : $this,
+				dataObj : results,
+				preserveCurrentValue : true,
+				additionalValue : clLib.UI.NOTSELECTED
+			});
+		}
+		,"setSelectedValueHandler" : function($this, changeOptions) { return clLib.UI.setSelectedValueOnlyHandler($this, changeOptions); }
+		,"changeHandler" : function($this, changeOptions) {
+			//alert("sector change handler!!");
+			var $sectorSelect = $("#newRouteLog_sectorSelect");
+			
+			var distinctColumn, where, results;
+			distinctColumn = "Sector";
+			where = clLib.getRoutesWhere({
+				"GradeType" : $("#newRouteLog_gradeTypeSelect").val(),
+				"Grade" : $("#newRouteLog_gradeSelect").val(),
+				"Area" : localStorage.getItem("currentlySelectedArea"),
+				"Line" : $("#newRouteLog_lineSelect").val()
+			});
+			
+			results = clLib.localStorage.getDistinct("Routes", where, distinctColumn, "routeStorage");
+			console.log("got LINE sectors for " + JSON.stringify(where) + ", " + results[0] + " +, >" + JSON.stringify(results));
+			
+			if(results.length == 1) {
+				$sectorSelect.val(results[0]);
+				$sectorSelect.selectmenu('refresh', true);
+
+				console.log("sectorselect changed to " + results[0]);
+			} else {
+				if(
+					$("#newRouteLog_lineSelect").val() != clLib.UI.NOTSELECTED.value &&
+					$("#newRouteLog_lineSelect").val() != ""
+				) {
+					console.log("2013-10-07-WTF!?!?!? multiple sectors for line " + $("#newRouteLog_lineSelect").val() + " found - setting sector to the one of first result...");
+					alert("setting sector to the one of first result...");
+					$sectorSelect.val(results[0]);     
+				}
+
+				$sectorSelect.selectmenu('refresh', true);
+			}
+
+			clLib.UI.defaultChangeHandler($this, changeOptions);
+		},
+
+
+
+
+		"refreshOnUpdate" : {
+			default: {
+				"newRouteLog_colourSelect" : {}
+				,"newRouteLog_lineSelect" : {}
+			}
+		}
+	},
+	"newRouteLog_lineSelect" : {
+		"refreshHandler" : function($this) { 
+			console.log("getting lines");
+			var distinctColumn, where, results;
+			distinctColumn = "Line";
+			where = clLib.getRoutesWhere({
+				"GradeType" : $("#newRouteLog_gradeTypeSelect").val(),
+				"Grade" : $("#newRouteLog_gradeSelect").val(),
+				"Area" : localStorage.getItem("currentlySelectedArea"),
+				"Sector" : $("#newRouteLog_sectorSelect").val(),
+				"Colour" : $("#newRouteLog_colourSelect").val()
+			});
+			//alert("Getting lines for " + JSON.stringify(where));
+
+			results = clLib.localStorage.getDistinct("Routes", where, distinctColumn, "routeStorage");
+			//alert("got lines for " + JSON.stringify(where) + ",>" + JSON.stringify(results));
+
+			clLib.populateSelectBox({
+				selectBoxElement : $this,
+				dataObj : results,
+				preserveCurrentValue : true,
+				additionalValue : clLib.UI.NOTSELECTED
+			});
+		}
+		,"setSelectedValueHandler" : function($this, changeOptions) { return clLib.UI.setSelectedValueOnlyHandler($this, changeOptions); }
+		,"changeHandler" : function($this, changeOptions) {
+			var $sectorSelect = $("#newRouteLog_sectorSelect");
+			
+			var distinctColumn, where, results;
+			distinctColumn = "Sector";
+			where = clLib.getRoutesWhere({
+				"GradeType" : $("#newRouteLog_gradeTypeSelect").val(),
+				"Grade" : $("#newRouteLog_gradeSelect").val(),
+				"Area" : localStorage.getItem("currentlySelectedArea"),
+				"Line" : $("#newRouteLog_lineSelect").val()
+			});
+			
+			results = clLib.localStorage.getDistinct("Routes", where, distinctColumn, "routeStorage");
+			console.log("got LINE sectors for " + JSON.stringify(where) + ", " + results[0] + " +, >" + JSON.stringify(results));
+			
+			if(results.length == 1) {
+				$sectorSelect.val(results[0]);
+				$sectorSelect.selectmenu('refresh', true);
+
+				console.log("sectorselect changed to " + results[0]);
+			} else {
+				if($("#newRouteLog_lineSelect").val() != clLib.UI.NOTSELECTED.value) {
+					//alert("2013-10-07-WTF!?!?!? multiple sectors for line " + $("#newRouteLog_lineSelect").val() + " found - setting sector to the one of first result...");
+					$sectorSelect.val(results[0]);     
+				}
+
+				$sectorSelect.selectmenu('refresh', true);
+			}
+
+			clLib.UI.defaultChangeHandler($this, changeOptions);
+		}
+		,"refreshOnUpdate" : {
+			default: {
+	/*			"newRouteLog_sectorSelect" : {
+					noRefreshOn : "newRouteLog_lineSelect"
+				}*/
+	/*			,"newRouteLog_searchRouteResults" : {
+					hideOnSingleResult : true
+				}
+	*/
+				"newRouteLog_colourSelect" : {}
+			}
+		}
+	},
+	"newRouteLog_colourSelect": {
+		"refreshHandler" : function($this) { 
+			console.log("getting colours");
+			var distinctColumn, where, results;
+			distinctColumn = "Colour";
+			where = clLib.getRoutesWhere({
+				"GradeType" : $("#newRouteLog_gradeTypeSelect").val(),
+				"Grade" : $("#newRouteLog_gradeSelect").val(),
+				"Area" : localStorage.getItem("currentlySelectedArea"),
+				"Sector" : $("#newRouteLog_sectorSelect").val(),
+				"Line" : $("#newRouteLog_lineSelect").val()
+			});
+			//console.log("Getting routese for " + JSON.stringify(where));
+
+			results = clLib.localStorage.getDistinct("Routes", where, distinctColumn, "routeStorage");
+			console.log("got colours for " + JSON.stringify(where) + ",>" + JSON.stringify(results));
+
+			clLib.populateSelectBox({
+				selectBoxElement : $this,
+				dataObj : results,
+				preserveCurrentValue : true,
+				additionalValue : clLib.UI.NOTSELECTED
+			});
+			clLib.addColorBackground("newRouteLog_colourSelect"); 
+			
+		}
+		,"setSelectedValueHandler" : function($this, changeOptions) { 
+			clLib.UI.setSelectedValueOnlyHandler($this, changeOptions);
+			clLib.addColorBackground($this.attr("id")); 
+		}
+		,"refreshOnUpdate" : {
+			default: {
+				"newRouteLog_searchRouteResults" : {
+					hideOnSingleResult : true
+				}
+			}
+		}
+		,"changeHandler" : function($this, changeOptions) {
+			var $forElement = $("#newRouteLog_searchRoute");
+			$forElement.val("");
+			//alert("searchRoute set to ''");
+
+			clLib.UI.defaultChangeHandler($this, changeOptions);
+		}
+	},
+	"newRouteLog_searchRouteResults" : {
+		"refreshHandler" : function($this, options) { 
+			options = options || {};
+			console.log("refreshing searchrouteresults with options " + JSON.stringify(options));
+			var $inElement = $this;
+			var $forElement = $("#newRouteLog_searchRoute");
+			;
+			
+			var distinctColumn, where, results;
+			distinctColumn = "Name";
+			where = clLib.getRoutesWhere({
+				"GradeType" : $("#newRouteLog_gradeTypeSelect").val(),
+				"Grade": $("#newRouteLog_gradeSelect").val(),
+				"Area" : localStorage.getItem("currentlySelectedArea"),
+				"Sector" : $("#newRouteLog_sectorSelect").val(),
+				"Colour" : $("#newRouteLog_colourSelect").val(),
+				"Line" : $("#newRouteLog_lineSelect").val()
+			});
+			where["Name"] = {
+				"$starts-with" : $forElement.val()	
+			}
+			console.log("Getting routes for " + JSON.stringify(where));
+			results = clLib.localStorage.getDistinct("Routes", where, distinctColumn, "routeStorage");
+			
+			console.log("got routes " + JSON.stringify(results));
+
+
+			//console.log("adding results from " + $forElement.attr("id") + " to " + $inElement.attr("id"));
+			clLib.populateSearchProposals($forElement, $inElement, results, options["hideOnSingleResult"]);
+		}
+		,"refreshOnUpdate" : []
+	},
+	"newRouteLog_searchRoute" : {
+		"refreshHandler" : function($this, options) { 
+			console.log("binding to keyup events...");
+			$this.bind("keyup.clLib", function() {
+				console.log("keyup, refresh search proposals!!!");
+				$("#newRouteLog_searchRouteResults").trigger(
+					"refresh.clLib", 
+					clLib.UI.addObjArr(options || {}, ["eventSourcePath"], $this.attr("id"))
+				);
+			});
+			$this.bind("click.clLib", function() {
+				console.log("click, refresh search proposals!!!");
+				$("#newRouteLog_searchRouteResults").trigger(
+					"refresh.clLib", 
+					clLib.UI.addObjArr(options || {}, ["eventSourcePath"], $this.attr("id"))
+				);
+			});
+/*
+			$this.bind("change.clLib.route", function() {
+			});
+*/
+		
+		}
+		,"setSelectedValueHandler" : function($this, changeOptions) {
+			//alert("searchRoute changed, refresh all other elements!!!");
+			//alert(">>>" + $this.attr("id") + "," + JSON.stringify(changeOptions));
+
+			if(changeOptions["value"] == clLib.UI.NOTSELECTED.value) {
+				console.log("empty out search route field..");
+				$this.val("");
+				return;
+			}
+
+			$this.val(changeOptions["value"]);
+			
+			
+			//
+			//	set all other elements to the one of the currently selected route..
+			//
+			var distinctColumn, where, results;
+			where = clLib.getRoutesWhere({
+				"GradeType" : $("#newRouteLog_gradeTypeSelect").val(),
+				"Grade" : $("#newRouteLog_gradeSelect").val(),
+				"Name": changeOptions["value"]
+			});
+			
+			var currentRoute = clLib.localStorage.getEntities("Routes", where, "routeStorage");
+			alert("got route data for " + JSON.stringify(where) + " >" + JSON.stringify(currentRoute));
+			
+			if(currentRoute) {
+				clLib.UI.setSelectedValue($("#newRouteLog_sectorSelect"), currentRoute[0]["Sector"]);
+				alert("set selected value for sector");
+				clLib.UI.setSelectedValue($("#newRouteLog_lineSelect"), currentRoute[0]["Line"]);
+				alert("set selected value for line");
+				clLib.UI.setSelectedValue($("#newRouteLog_colourSelect"), currentRoute[0]["Colour"]);
+				alert("set selected value for colour");
+			} else {
+				alert("no route for name >" + changeOptions["value"] + "< found.");
+			}
+			alert("done with setselectedvalue handler for searchroute..");
+		}
+		,"refreshOnUpdate" : []
+	},
+	"newRouteLog_ratingSelect" : {
+		"refreshHandler" : function($this, options) { 
+			//alert("refreshign ratingselec.t..");
+			$("input[type='radio']", $this).each(function() {
+				$(this).addClass("unrated");
+			});
+//			alert("onclicking ratingselec.t..");
+			clLib.UI.killEventHandlers($("input[type='radio']", $this), "click.clLib");
+
+			$("input[type='radio']", $this).bind("click.clLib", function(e) {
+				//alert("radio clicked!" + $(this).val());
+				var $label = $(this).parent();
+
+				$label.nextAll().addClass("unrated");
+				$label.nextAll().removeClass("rated");
+				$label.prevAll().addClass("rated");
+				$label.addClass("rated");
+				$label.prevAll().removeClass("unrated");
+				$label.removeClass("unrated");
+			});
+//			alert("inclicked ratingselec.t..");
+		},
+		"refreshOnUpdate" : []
+		,"setSelectedValueHandler" : function($this, changeOptions) { 
+			//alert("setting rating select to " + JSON.stringify(changeOptions));
+//			clLib.UI.buildRatingRadio($("#newRouteLog_ratingSelectWrapper"));
+
+			if(changeOptions && changeOptions["value"] == clLib.UI.NOTSELECTED.value) {
+				$this.children().addClass("unrated");
+				$this.children().removeClass("rated");
+				$("input[type='radio']", $this).each(function() {
+					$(this).prop('checked', false);
+				});
+			}
+
+		}
+		,"changeHandler" : function($this, changeOptions) {}
+	},
+	"startScreen_areaSelect" : {
+		"refreshHandler" : function($this) { 
+			console.log("handling content for area..");
+			var distinctColumn, where, results;
+			distinctColumn = "Area";
+			//alert("building where");
+			where = clLib.getRoutesWhere("UIAA", "VIII");
+			//alert("where=" + JSON.stringify(where));
+			results = clLib.localStorage.getDistinct("Routes", where, distinctColumn, "routeStorage");
+			console.log("got areas for " + JSON.stringify(where) + ",>" + JSON.stringify(results));
+			
+			clLib.populateSelectBox({
+				selectBoxElement : $this,
+				dataObj : results,
+				preserveCurrentValue : true
+			});
+		},
+		"refreshOnUpdate" : {
+			default: {
+				"startScreen_selectedArea" : {}
+			}
+		}
+	},
+	"startScreen_selectedArea" : {
+		"refreshHandler" : function($this) { 
+			localStorage.setItem("currentlySelectedArea", $("#startScreen_areaSelect").val());
+//			clLib.UI.fillUIelements("newRouteLog");
+		},
+		"refreshOnUpdate" : {}
+	}
+};
+
+"use strict";
 
 clLib.REST = {};
 
