@@ -4,7 +4,8 @@ clLib.UI.autoLoad = {
 	newRouteLog : [
 		"newRouteLog_gradeTypeSelect",
 		"newRouteLog_searchRoute",
-		"newRouteLog_ratingSelect"
+		"newRouteLog_ratingSelect",
+		"newRouteLog_tickType"
 	],
 	startScreen : [
 		"startScreen_areaSelect"
@@ -32,13 +33,15 @@ clLib.UI.pageElements = {
 			"newRouteLog_lineSelect",
 			"newRouteLog_searchRouteResults",
 			"newRouteLog_searchRoute",
+			"newRouteLog_commentText",
 			"newRouteLog_ratingSelect",
-			"newRouteLog_commentText"
+			"newRouteLog_tickType"
 		],
 		reduced: [
 			"newRouteLog_gradeTypeSelect",
 			"newRouteLog_gradeSelect",
-			"newRouteLog_colourSelect"
+			"newRouteLog_colourSelect",
+			"newRouteLog_tickType"
 		]
 	},
 	startScreen : {
@@ -74,6 +77,26 @@ clLib.UI.elements = {
 				"newRouteLog_colourSelect" : {}
 			}
 		}
+	},
+	"newRouteLog_tickType" : {
+		"refreshHandler" : function($this) { 
+			clLib.populateSelectBox({
+				selectBoxElement : $this,
+				dataObj : [
+					"Red Point",
+					"Flash",
+					"Onsight",
+					"Attempt",
+					"Top Rope"
+				],
+				preserveCurrentValue : true,
+				additionalValue : clLib.UI.NOTSELECTED
+			});
+
+
+
+		}
+		,"refreshOnUpdate" : []
 	},
 	"newRouteLog_sectorSelect" : {
 		"refreshHandler" : function($this) { 
