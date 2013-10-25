@@ -435,21 +435,21 @@ clLib.addObjValue = function(anObj, pathArr, valueToAdd) {
     var anObj = anObj || {};
     var tmpObj = anObj;
 	for(var i = 0; i < pathArr.length -1; i++) {
-		alert("at path elemnt >" + pathArr[i]);
+		//alert("at path elemnt >" + pathArr[i]);
 		if(!tmpObj[pathArr[i]]) {
 			tmpObj[pathArr[i]] = {};
 		}
-		alert("new anObj " + JSON.stringify(anObj));
+		//alert("new anObj " + JSON.stringify(anObj));
         tmpObj = tmpObj[pathArr[i]];
 	}
 	tmpObj[pathArr[pathArr.length-1]] = valueToAdd;
-	alert("final tmpobj " + JSON.stringify(tmpObj));
-	alert("final anObj " + JSON.stringify(anObj));
+	//alert("final tmpobj " + JSON.stringify(tmpObj));
+	//alert("final anObj " + JSON.stringify(anObj));
     return anObj;
 }; 
 
 clLib.getChildObj = function(anObj, objKey) {
-	alert("getChildObj called for " + objKey);
+	//alert("getChildObj called for " + objKey);
 	if(!anObj[objKey]) {
 		anObj[objKey] = {};
 	}
@@ -771,11 +771,10 @@ clLib.localStorage.initStorage = function(storageName, storageObj) {
 	delete(storageCache[storageItemsKey]);
 
 
-	//alert("adding elements " + JSON.stringify(storageObj));
-	alert("adding elements " + Object.keys(storageObj).length + "->" + JSON.stringify(Object.keys(storageObj)));
+	//alert("adding elements " + Object.keys(storageObj).length + "->" + JSON.stringify(Object.keys(storageObj)));
 	var allItems = {};
 	for(var entityName in storageObj) {
-		alert("entity: " + entityName);
+		//alert("entity: " + entityName);
 		var entityItems = {};
 		for(var i = 0; i < storageObj[entityName].length; i++) {
 			entityItems[storageObj[entityName][i]["_id"]] = storageObj[entityName][i];
@@ -783,11 +782,11 @@ clLib.localStorage.initStorage = function(storageName, storageObj) {
 
 		// add UNSYNCED entries to cache	
 		var unsyncedStorage = clLib.localStorage.getStorageItems("UNSYNCED_" + storageName);
-		alert("currently unsynced items for entity >" + entityName + "< =>" + JSON.stringify(unsyncedStorage) + "<");
+		console.log("currently unsynced items for entity >" + entityName + "< =>" + JSON.stringify(unsyncedStorage) + "<");
 		if(unsyncedStorage) {
 			$.each(unsyncedStorage[entityName], function(dummyId) {
 				var entityInstance = unsyncedStorage[entityName][dummyId];
-				alert("add to storage items for >" + dummyId + "< bzw. >" + JSON.stringify(entityInstance) + "<");
+				//alert("add to storage items for >" + dummyId + "< bzw. >" + JSON.stringify(entityInstance) + "<");
 				entityItems[entityInstance["_id"]] = entityInstance;
 			});
 		}
@@ -920,7 +919,7 @@ clLib.localStorage.setStorageItems = function(storageName, storageItems) {
 };
 
 clLib.localStorage.addStorageItem = function(storageName, entity, newItem) {
-	alert("adding storage for storageName >" + storageName + "< and entity >" + entity + "<");
+	//alert("adding storage for storageName >" + storageName + "< and entity >" + entity + "<");
 	// storageItems => [entity][_id]
 	
 	// fetch storage items - NOT using the session cache
@@ -928,10 +927,10 @@ clLib.localStorage.addStorageItem = function(storageName, entity, newItem) {
 	var jsonItems = clLib.localStorage.getItem(storageItemsKey);
 	var storageItems = JSON.parse(jsonItems);
 	// add new item to localstorage 
-	alert("old storageitems: " + JSON.stringify(storageItems));
+	//alert("old storageitems: " + JSON.stringify(storageItems));
 	storageItems = clLib.addObjValue(storageItems, [entity, newItem["_id"]], newItem);
 
-	alert("new storageItems >" + JSON.stringify(storageItems));
+	//alert("new storageItems >" + JSON.stringify(storageItems));
 	clLib.localStorage.setStorageItems(storageName, storageItems);
 	clLib.localStorage.initCache(storageName, storageItems);
 };
@@ -1056,12 +1055,12 @@ Array.prototype.sortBy = function(sortBy, descSortFlag) {
 };
 
 clLib.localStorage.syncAllUp = function(entity, storageName) {
-	alert("syncing up all entities for >" + entity + "< in >" + storageName + "<");
+	console.log("syncing up all entities for >" + entity + "< in >" + storageName + "<");
 	var storage = clLib.localStorage.getStorageItems("UNSYNCED_" + storageName);
-	alert("currently unsynced items >" + JSON.stringify(storage) + "<");
+	console.log("currently unsynced items >" + JSON.stringify(storage) + "<");
 	$.each(storage[entity], function(dummyId) {
 		var entityInstance = storage[entity][dummyId];
-		alert("call syncup for >" + dummyId + "< bzw. >" + JSON.stringify(entityInstance) + "<");
+		console.log("call syncup for >" + dummyId + "< bzw. >" + JSON.stringify(entityInstance) + "<");
 
 		clLib.localStorage.syncUp(entity, entityInstance, storageName);
 	});
@@ -1077,14 +1076,14 @@ clLib.localStorage.syncUp = function(entity, entityInstance, storageName) {
 	
 	var dummyId = entityInstance["_id"];
 
-	alert("unsynced items:  >" + JSON.stringify(unsyncedStorage) + "<");
-	alert(">" + dummyId + "< in storagecache? >" + JSON.stringify(entityStorage[dummyId]) + "<");
+	//alert("unsynced items:  >" + JSON.stringify(unsyncedStorage) + "<");
+	//alert(">" + dummyId + "< in storagecache? >" + JSON.stringify(entityStorage[dummyId]) + "<");
 
 	delete(entityInstance["_id"]);
 	var realInstance = clLib.REST.storeEntity(entity, entityInstance);
 	entityInstance["_id"] = realInstance["_id"];	
 
-	alert("synced UP >" + dummyId + "<, new id is " + realInstance["_id"]);
+	console.log("synced UP >" + dummyId + "<, new id is " + realInstance["_id"]);
 	// delete dummy id
 	clLib.localStorage.removeStorageItem(storageName, entity, dummyId);
 	// delete from unsynced entries..
@@ -1109,15 +1108,17 @@ clLib.localStorage.addInstance = function(entity, entityInstance, storageName) {
 	clLib.localStorage.addStorageItem("UNSYNCED_" + storageName, entity, entityInstance);
 	
 	if(clLib.isOnline()) {
-		alert("online, syncing UP!!!");
+		console.log("online, syncing UP!!!");
 		//clLib.localStorage.syncUp(entity, entityInstance, storageName);
 		clLib.localStorage.syncAllUp(entity, storageName);
 	} else {
-		alert("offline, saving for later sync UP..");
+		console.log("offline, saving for later sync UP..");
 	}
 }
 
 clLib.isOnline = function() {
+	return navigator.onLine;
+/*
 	var currentlyOnline = localStorage.getItem("online");
 	alert("currentlyOnline? >" + currentlyOnline);
 	if(currentlyOnline != -1) {
@@ -1125,6 +1126,7 @@ clLib.isOnline = function() {
 	} else {
 		return false;
 	}
+*/
 };
 
 /*
@@ -1614,7 +1616,7 @@ clLib.populateSearchProposals = function($forElement, $inElement, dataObj, hideO
 	
 	//alert(JSON.stringify(dataObj));
 	if(hideOnSingleResult && dataObj.length == 1) {
-		alert("single element found (" + dataObj[0] + "), hiding results..");
+		//alert("single element found (" + dataObj[0] + "), hiding results..");
 		var result = $.trim(dataObj[0]);
 
 		console.log("seeting selectedresult to " + result);
@@ -1690,7 +1692,7 @@ clLib.UI.defaultSetSelectedValueHandler = function($element, changeOptions) {
 }
 	
 clLib.UI.setSelectedValueOnlyHandler = function($element, changeOptions) {
-	alert("solely changing value of .." + $element.attr("id") + " to " + JSON.stringify(changeOptions));
+	//alert("solely changing value of .." + $element.attr("id") + " to " + JSON.stringify(changeOptions));
 	// avoid default onChange handler..
 	clLib.UI.killEventHandlers($element, "change.clLib");
 	clLib.UI.killEventHandlers($element, "change.clLibColour");
@@ -2311,19 +2313,16 @@ clLib.UI.elements = {
 			});
 			
 			var currentRoute = clLib.localStorage.getEntities("Routes", where, "routeStorage");
-			alert("got route data for " + JSON.stringify(where) + " >" + JSON.stringify(currentRoute));
+			//alert("got route data for " + JSON.stringify(where) + " >" + JSON.stringify(currentRoute));
 			
 			if(currentRoute) {
 				clLib.UI.setSelectedValue($("#newRouteLog_sectorSelect"), currentRoute[0]["Sector"]);
-				alert("set selected value for sector");
 				clLib.UI.setSelectedValue($("#newRouteLog_lineSelect"), currentRoute[0]["Line"]);
-				alert("set selected value for line");
 				clLib.UI.setSelectedValue($("#newRouteLog_colourSelect"), currentRoute[0]["Colour"]);
-				alert("set selected value for colour");
 			} else {
 				alert("no route for name >" + changeOptions["value"] + "< found.");
 			}
-			alert("done with setselectedvalue handler for searchroute..");
+			//alert("done with setselectedvalue handler for searchroute..");
 		}
 		,"refreshOnUpdate" : []
 	},

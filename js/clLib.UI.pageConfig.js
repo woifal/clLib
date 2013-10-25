@@ -379,19 +379,16 @@ clLib.UI.elements = {
 			});
 			
 			var currentRoute = clLib.localStorage.getEntities("Routes", where, "routeStorage");
-			alert("got route data for " + JSON.stringify(where) + " >" + JSON.stringify(currentRoute));
+			//alert("got route data for " + JSON.stringify(where) + " >" + JSON.stringify(currentRoute));
 			
 			if(currentRoute) {
 				clLib.UI.setSelectedValue($("#newRouteLog_sectorSelect"), currentRoute[0]["Sector"]);
-				alert("set selected value for sector");
 				clLib.UI.setSelectedValue($("#newRouteLog_lineSelect"), currentRoute[0]["Line"]);
-				alert("set selected value for line");
 				clLib.UI.setSelectedValue($("#newRouteLog_colourSelect"), currentRoute[0]["Colour"]);
-				alert("set selected value for colour");
 			} else {
 				alert("no route for name >" + changeOptions["value"] + "< found.");
 			}
-			alert("done with setselectedvalue handler for searchroute..");
+			//alert("done with setselectedvalue handler for searchroute..");
 		}
 		,"refreshOnUpdate" : []
 	},

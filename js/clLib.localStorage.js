@@ -40,11 +40,10 @@ clLib.localStorage.initStorage = function(storageName, storageObj) {
 	delete(storageCache[storageItemsKey]);
 
 
-	//alert("adding elements " + JSON.stringify(storageObj));
-	alert("adding elements " + Object.keys(storageObj).length + "->" + JSON.stringify(Object.keys(storageObj)));
+	//alert("adding elements " + Object.keys(storageObj).length + "->" + JSON.stringify(Object.keys(storageObj)));
 	var allItems = {};
 	for(var entityName in storageObj) {
-		alert("entity: " + entityName);
+		//alert("entity: " + entityName);
 		var entityItems = {};
 		for(var i = 0; i < storageObj[entityName].length; i++) {
 			entityItems[storageObj[entityName][i]["_id"]] = storageObj[entityName][i];
@@ -52,11 +51,11 @@ clLib.localStorage.initStorage = function(storageName, storageObj) {
 
 		// add UNSYNCED entries to cache	
 		var unsyncedStorage = clLib.localStorage.getStorageItems("UNSYNCED_" + storageName);
-		alert("currently unsynced items for entity >" + entityName + "< =>" + JSON.stringify(unsyncedStorage) + "<");
+		console.log("currently unsynced items for entity >" + entityName + "< =>" + JSON.stringify(unsyncedStorage) + "<");
 		if(unsyncedStorage) {
 			$.each(unsyncedStorage[entityName], function(dummyId) {
 				var entityInstance = unsyncedStorage[entityName][dummyId];
-				alert("add to storage items for >" + dummyId + "< bzw. >" + JSON.stringify(entityInstance) + "<");
+				//alert("add to storage items for >" + dummyId + "< bzw. >" + JSON.stringify(entityInstance) + "<");
 				entityItems[entityInstance["_id"]] = entityInstance;
 			});
 		}
@@ -189,7 +188,7 @@ clLib.localStorage.setStorageItems = function(storageName, storageItems) {
 };
 
 clLib.localStorage.addStorageItem = function(storageName, entity, newItem) {
-	alert("adding storage for storageName >" + storageName + "< and entity >" + entity + "<");
+	//alert("adding storage for storageName >" + storageName + "< and entity >" + entity + "<");
 	// storageItems => [entity][_id]
 	
 	// fetch storage items - NOT using the session cache
@@ -197,10 +196,10 @@ clLib.localStorage.addStorageItem = function(storageName, entity, newItem) {
 	var jsonItems = clLib.localStorage.getItem(storageItemsKey);
 	var storageItems = JSON.parse(jsonItems);
 	// add new item to localstorage 
-	alert("old storageitems: " + JSON.stringify(storageItems));
+	//alert("old storageitems: " + JSON.stringify(storageItems));
 	storageItems = clLib.addObjValue(storageItems, [entity, newItem["_id"]], newItem);
 
-	alert("new storageItems >" + JSON.stringify(storageItems));
+	//alert("new storageItems >" + JSON.stringify(storageItems));
 	clLib.localStorage.setStorageItems(storageName, storageItems);
 	clLib.localStorage.initCache(storageName, storageItems);
 };
@@ -325,12 +324,12 @@ Array.prototype.sortBy = function(sortBy, descSortFlag) {
 };
 
 clLib.localStorage.syncAllUp = function(entity, storageName) {
-	alert("syncing up all entities for >" + entity + "< in >" + storageName + "<");
+	console.log("syncing up all entities for >" + entity + "< in >" + storageName + "<");
 	var storage = clLib.localStorage.getStorageItems("UNSYNCED_" + storageName);
-	alert("currently unsynced items >" + JSON.stringify(storage) + "<");
+	console.log("currently unsynced items >" + JSON.stringify(storage) + "<");
 	$.each(storage[entity], function(dummyId) {
 		var entityInstance = storage[entity][dummyId];
-		alert("call syncup for >" + dummyId + "< bzw. >" + JSON.stringify(entityInstance) + "<");
+		console.log("call syncup for >" + dummyId + "< bzw. >" + JSON.stringify(entityInstance) + "<");
 
 		clLib.localStorage.syncUp(entity, entityInstance, storageName);
 	});
@@ -346,14 +345,14 @@ clLib.localStorage.syncUp = function(entity, entityInstance, storageName) {
 	
 	var dummyId = entityInstance["_id"];
 
-	alert("unsynced items:  >" + JSON.stringify(unsyncedStorage) + "<");
-	alert(">" + dummyId + "< in storagecache? >" + JSON.stringify(entityStorage[dummyId]) + "<");
+	//alert("unsynced items:  >" + JSON.stringify(unsyncedStorage) + "<");
+	//alert(">" + dummyId + "< in storagecache? >" + JSON.stringify(entityStorage[dummyId]) + "<");
 
 	delete(entityInstance["_id"]);
 	var realInstance = clLib.REST.storeEntity(entity, entityInstance);
 	entityInstance["_id"] = realInstance["_id"];	
 
-	alert("synced UP >" + dummyId + "<, new id is " + realInstance["_id"]);
+	console.log("synced UP >" + dummyId + "<, new id is " + realInstance["_id"]);
 	// delete dummy id
 	clLib.localStorage.removeStorageItem(storageName, entity, dummyId);
 	// delete from unsynced entries..
@@ -378,15 +377,17 @@ clLib.localStorage.addInstance = function(entity, entityInstance, storageName) {
 	clLib.localStorage.addStorageItem("UNSYNCED_" + storageName, entity, entityInstance);
 	
 	if(clLib.isOnline()) {
-		alert("online, syncing UP!!!");
+		console.log("online, syncing UP!!!");
 		//clLib.localStorage.syncUp(entity, entityInstance, storageName);
 		clLib.localStorage.syncAllUp(entity, storageName);
 	} else {
-		alert("offline, saving for later sync UP..");
+		console.log("offline, saving for later sync UP..");
 	}
 }
 
 clLib.isOnline = function() {
+	return navigator.onLine;
+/*
 	var currentlyOnline = localStorage.getItem("online");
 	alert("currentlyOnline? >" + currentlyOnline);
 	if(currentlyOnline != -1) {
@@ -394,6 +395,7 @@ clLib.isOnline = function() {
 	} else {
 		return false;
 	}
+*/
 };
 
 /*

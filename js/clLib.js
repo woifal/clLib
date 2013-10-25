@@ -435,21 +435,21 @@ clLib.addObjValue = function(anObj, pathArr, valueToAdd) {
     var anObj = anObj || {};
     var tmpObj = anObj;
 	for(var i = 0; i < pathArr.length -1; i++) {
-		alert("at path elemnt >" + pathArr[i]);
+		//alert("at path elemnt >" + pathArr[i]);
 		if(!tmpObj[pathArr[i]]) {
 			tmpObj[pathArr[i]] = {};
 		}
-		alert("new anObj " + JSON.stringify(anObj));
+		//alert("new anObj " + JSON.stringify(anObj));
         tmpObj = tmpObj[pathArr[i]];
 	}
 	tmpObj[pathArr[pathArr.length-1]] = valueToAdd;
-	alert("final tmpobj " + JSON.stringify(tmpObj));
-	alert("final anObj " + JSON.stringify(anObj));
+	//alert("final tmpobj " + JSON.stringify(tmpObj));
+	//alert("final anObj " + JSON.stringify(anObj));
     return anObj;
 }; 
 
 clLib.getChildObj = function(anObj, objKey) {
-	alert("getChildObj called for " + objKey);
+	//alert("getChildObj called for " + objKey);
 	if(!anObj[objKey]) {
 		anObj[objKey] = {};
 	}

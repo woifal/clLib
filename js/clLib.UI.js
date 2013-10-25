@@ -156,7 +156,7 @@ clLib.populateSearchProposals = function($forElement, $inElement, dataObj, hideO
 	
 	//alert(JSON.stringify(dataObj));
 	if(hideOnSingleResult && dataObj.length == 1) {
-		alert("single element found (" + dataObj[0] + "), hiding results..");
+		//alert("single element found (" + dataObj[0] + "), hiding results..");
 		var result = $.trim(dataObj[0]);
 
 		console.log("seeting selectedresult to " + result);
@@ -232,7 +232,7 @@ clLib.UI.defaultSetSelectedValueHandler = function($element, changeOptions) {
 }
 	
 clLib.UI.setSelectedValueOnlyHandler = function($element, changeOptions) {
-	alert("solely changing value of .." + $element.attr("id") + " to " + JSON.stringify(changeOptions));
+	//alert("solely changing value of .." + $element.attr("id") + " to " + JSON.stringify(changeOptions));
 	// avoid default onChange handler..
 	clLib.UI.killEventHandlers($element, "change.clLib");
 	clLib.UI.killEventHandlers($element, "change.clLibColour");
