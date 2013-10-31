@@ -35,13 +35,13 @@ clLib.populateGradeTypes = function($gradeTypeSelect, preselectedGradeType){
 *   Populates a select box with available grades in a certain gradeType.
 */
 clLib.populateGrades = function($gradeSelect, selectedGradeType) {
-	console.log("refreshing grades for gradetype " + selectedGradeType);
+	clLib.loggi("refreshing grades for gradetype " + selectedGradeType);
 	//clLib.populateSelectBox($gradeSelect, Object.keys(clLib.gradeConfig[selectedGradeType]["grades"]), clLib.gradeConfig[selectedGradeType]["defaultGrade"]);
 
 	clLib.populateSelectBox({
 		selectBoxElement : $gradeSelect,
 		dataObj : Object.keys(clLib.gradeConfig[selectedGradeType]["grades"]),
-		selectedValue : clLib.gradeConfig[selectedGradeType]["defaultGrade"]
+		selectedValue : localStorage.getItem("defaultGrade") || clLib.gradeConfig[selectedGradeType]["defaultGrade"]
 	});
 	
 };
@@ -55,7 +55,7 @@ clLib.calculateScore = function(routeLogs) {
 		var routeLog = routeLogs[i];
 		totalScore += clLib.computeScore(routeLog);
 	}
-	console.log("Total score is " + totalScore);
+	clLib.loggi("Total score is " + totalScore);
     return totalScore;
 };
 
@@ -64,16 +64,16 @@ clLib.calculateScore = function(routeLogs) {
 */ 
 clLib.computeScore = function(routeLogObj) {
 	if(!(routeLogObj.GradeSystem in clLib.gradeConfig)) {
-		console.log("unknown gradeType " + routeLogObj.GradeSystem);
+		clLib.loggi("unknown gradeType " + routeLogObj.GradeSystem);
 		return 0;
 	}
 	var gradeTypeScore = clLib.gradeConfig[routeLogObj.GradeSystem];
 	if(!(routeLogObj.Grade in gradeTypeScore.grades)) {
-		console.log("unknown grade " + routeLogObj.Grade);
+		clLib.loggi("unknown grade " + routeLogObj.Grade);
 		return 0;
 	}
 	if(!(routeLogObj.TickType in gradeTypeScore.tickTypeFactors)) {
-		console.log("unknown ticktype " + routeLogObj.TickType);
+		clLib.loggi("unknown ticktype " + routeLogObj.TickType);
 		return 0;
 	}
 	
@@ -83,7 +83,7 @@ clLib.computeScore = function(routeLogObj) {
 	// allow for flexible tick type factors a eval-able expressions...
 	score = eval(score + gradeTypeScore["tickTypeFactors"][routeLogObj.TickType]);
 	;
-	console.log("computed score >" + score + "< for route " + JSON.stringify(routeLogObj));
+	clLib.loggi("computed score >" + score + "< for route " + JSON.stringify(routeLogObj));
 	return score;
 };
 
@@ -117,7 +117,7 @@ clLib.tomorrow = function() {
 *
 */
 clLib.addColorBackground = function(targetId) {
-	//console.log("adding colors to " + targetId);
+	//clLib.loggi("adding colors to " + targetId);
 	var $targetEl = $('#' + targetId);
 	clLib.UI.killEventHandlers($targetEl, "change.clLibColour");
 	
@@ -127,7 +127,7 @@ clLib.addColorBackground = function(targetId) {
         // fetch current option element
         var entry = $('#' + targetId + '-menu').find('[data-option-index=' + ind + ']');
         // set corresponding css class
-        //console.log("adding class" + entry.find("a").html());
+        //clLib.loggi("adding class" + entry.find("a").html());
         entry
             .addClass("clColorBg")
             .addClass(entry.find("a").html());
@@ -178,7 +178,7 @@ clLib.addColorBackground = function(targetId) {
 clLib.buildSimpleWhere = function(whereCol, whereVal) {
     var whereObj = {};
 	whereObj[whereCol] = whereVal;
-    console.log("returning where " + JSON.stringify(whereObj));
+    clLib.loggi("returning where " + JSON.stringify(whereObj));
 	return JSON.stringify(whereObj);
 };
 
@@ -457,7 +457,7 @@ clLib.getChildObj = function(anObj, objKey) {
 } 
 
 clLib.getChildArr = function(anObj, objKey) {
-	//console.log("getChildArr called for " + objKey);
+	//clLib.loggi("getChildArr called for " + objKey);
 	if(!anObj[objKey]) {
 		anObj[objKey] = [];
 	}
@@ -499,7 +499,16 @@ Array.prototype.hasValue = function(needle) {
 
 
 
-
+clLib.loggi = function(text, priority) {
+	priority = priority || 0;
+	if(priority) {
+		if(priority == 1) {
+			alert(text);
+		} else {
+			clLib.loggi(text);
+		}
+	}
+};
 
 
 

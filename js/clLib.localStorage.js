@@ -51,7 +51,7 @@ clLib.localStorage.initStorage = function(storageName, storageObj) {
 
 		// add UNSYNCED entries to cache	
 		var unsyncedStorage = clLib.localStorage.getStorageItems("UNSYNCED_" + storageName);
-		console.log("currently unsynced items for entity >" + entityName + "< =>" + JSON.stringify(unsyncedStorage) + "<");
+		clLib.loggi("currently unsynced items for entity >" + entityName + "< =>" + JSON.stringify(unsyncedStorage) + "<");
 		if(unsyncedStorage) {
 			$.each(unsyncedStorage[entityName], function(dummyId) {
 				var entityInstance = unsyncedStorage[entityName][dummyId];
@@ -67,29 +67,29 @@ clLib.localStorage.initStorage = function(storageName, storageObj) {
 
 
 
-	console.log("storing items");
+	clLib.loggi("storing items");
 	clLib.localStorage.setStorageItems(storageName, allItems);
-	console.log("items stored");
+	clLib.loggi("items stored");
 	
 /*
 	var storageItems = clLib.localStorage.getStorageItems(storageName);
 	var indexedEntities = clLib.localStorage.indexes;
 	var indexedItems = {};
 	
-	console.log("indexItems: " + tojson(indexedEntities));
-	//console.log("allitems " + tojson(storageItems));
+	clLib.loggi("indexItems: " + tojson(indexedEntities));
+	//clLib.loggi("allitems " + tojson(storageItems));
 	// check all entities in storageObj for configured indexs..
 	for(var entityName in indexedEntities) {
 	//$.each(indexedEntities, function(entityName) {
-		//console.log("working on indexedentity " + entityName);
+		//clLib.loggi("working on indexedentity " + entityName);
 		
 		// iterate indexed entities from storageObj
 		var currentEntityIndexes = indexedEntities[entityName];
 		var currentEntityItems = storageItems[entityName];
 		var currentEntityIdxItems = {};
-		//console.log("working on currententityitems " + tojson(currentEntityItems));
+		//clLib.loggi("working on currententityitems " + tojson(currentEntityItems));
 		if(!currentEntityItems) {
-			//console.log("no items for " + entityName + " in current collection..");
+			//clLib.loggi("no items for " + entityName + " in current collection..");
 			return;
 		}
 		// Iterate all items of current entity(routes, areas, etc..)
@@ -99,7 +99,7 @@ clLib.localStorage.initStorage = function(storageName, storageObj) {
 			// Resolve every index for current item
 			for(var indexedCol in currentEntityIndexes) {
 			//$.each(currentEntityIndexes, function(idx, indexedCol) {
-				//console.log("!!Checking indexed column " + indexedCol);
+				//clLib.loggi("!!Checking indexed column " + indexedCol);
 				var currentIdxKey = currentItem[indexedCol];
 				clLib.addObjArr(
 					currentEntityIdxItems, 
@@ -117,10 +117,10 @@ clLib.localStorage.initStorage = function(storageName, storageObj) {
 				
 			}
 			//);
-			//console.log("3after adding row it is" + tojson(currentEntityIdxItems));
+			//clLib.loggi("3after adding row it is" + tojson(currentEntityIdxItems));
 		//}
 		});
-		//console.log("setting index to " + tojson(currentEntityIdxItems));
+		//clLib.loggi("setting index to " + tojson(currentEntityIdxItems));
 		//
 		// Store indexed for current entity
 		//
@@ -130,9 +130,9 @@ clLib.localStorage.initStorage = function(storageName, storageObj) {
 	//);
 	*/
 	
-	//console.log("initialized storage " + storageName);
-	//console.log("storage now is " + JSON.stringify(clLib.localStorage.getItem(storageName + "_items")));
-	//console.log("index now is " + JSON.stringify(clLib.localStorage.getItem(storageName + "_index_" + "routes")));
+	//clLib.loggi("initialized storage " + storageName);
+	//clLib.loggi("storage now is " + JSON.stringify(clLib.localStorage.getItem(storageName + "_items")));
+	//clLib.loggi("index now is " + JSON.stringify(clLib.localStorage.getItem(storageName + "_index_" + "routes")));
 	//alert("local storage after init " + JSON.stringify(localStorage));
 };
 
@@ -324,12 +324,12 @@ Array.prototype.sortBy = function(sortBy, descSortFlag) {
 };
 
 clLib.localStorage.syncAllUp = function(entity, storageName) {
-	console.log("syncing up all entities for >" + entity + "< in >" + storageName + "<");
+	clLib.loggi("syncing up all entities for >" + entity + "< in >" + storageName + "<");
 	var storage = clLib.localStorage.getStorageItems("UNSYNCED_" + storageName);
-	console.log("currently unsynced items >" + JSON.stringify(storage) + "<");
+	clLib.loggi("currently unsynced items >" + JSON.stringify(storage) + "<");
 	$.each(storage[entity], function(dummyId) {
 		var entityInstance = storage[entity][dummyId];
-		console.log("call syncup for >" + dummyId + "< bzw. >" + JSON.stringify(entityInstance) + "<");
+		clLib.loggi("call syncup for >" + dummyId + "< bzw. >" + JSON.stringify(entityInstance) + "<");
 
 		clLib.localStorage.syncUp(entity, entityInstance, storageName);
 	});
@@ -352,7 +352,7 @@ clLib.localStorage.syncUp = function(entity, entityInstance, storageName) {
 	var realInstance = clLib.REST.storeEntity(entity, entityInstance);
 	entityInstance["_id"] = realInstance["_id"];	
 
-	console.log("synced UP >" + dummyId + "<, new id is " + realInstance["_id"]);
+	clLib.loggi("synced UP >" + dummyId + "<, new id is " + realInstance["_id"]);
 	// delete dummy id
 	clLib.localStorage.removeStorageItem(storageName, entity, dummyId);
 	// delete from unsynced entries..
@@ -377,11 +377,11 @@ clLib.localStorage.addInstance = function(entity, entityInstance, storageName) {
 	clLib.localStorage.addStorageItem("UNSYNCED_" + storageName, entity, entityInstance);
 	
 	if(clLib.isOnline()) {
-		console.log("online, syncing UP!!!");
+		clLib.loggi("online, syncing UP!!!");
 		//clLib.localStorage.syncUp(entity, entityInstance, storageName);
 		clLib.localStorage.syncAllUp(entity, storageName);
 	} else {
-		console.log("offline, saving for later sync UP..");
+		clLib.loggi("offline, saving for later sync UP..");
 	}
 }
 
@@ -420,20 +420,20 @@ clLib.localStorage.getEntities = function(entity, whereObj, storageName, sortKey
 		//alert("entity storage: " + JSON.stringify(storage));
 		
 	}
-	//console.log("storage keys: "+ Object.keys(storage));
+	//clLib.loggi("storage keys: "+ Object.keys(storage));
 	
 	// Indexes?
 /*
 	var indexes = clLib.localStorage.getStorageIndexes(storageName, entity);
-	//console.log("Indexes for queried entity: " + JSON.stringify(indexes));
+	//clLib.loggi("Indexes for queried entity: " + JSON.stringify(indexes));
 	var remainingWhereObj = {};
 	var foundIds = [];
 	var indexFound = false;
 	if(Object.keys(clLib.localStorage.indexes[entity]) > 0) {
 		$.each(whereObj, function(keyName, condition) {
-			console.log("check for index entries with key " + keyName + " in (" + typeof(clLib.localStorage.indexes[entity]) + ") " + JSON.stringify(clLib.localStorage.indexes[entity]));
+			clLib.loggi("check for index entries with key " + keyName + " in (" + typeof(clLib.localStorage.indexes[entity]) + ") " + JSON.stringify(clLib.localStorage.indexes[entity]));
 			if(Object.keys(clLib.localStorage.indexes[entity]).indexOf(keyName) > -1) {
-				//console.log("   found!");
+				//clLib.loggi("   found!");
 				//foundIds.push.apply(foundIds, indexes[keyName][condition]);
 				if(indexFound) {
 					//foundIds = indexes[keyName][condition].items;
@@ -444,13 +444,13 @@ clLib.localStorage.getEntities = function(entity, whereObj, storageName, sortKey
 				indexFound = true;
 			} else {
 				remainingWhereObj[keyName] = condition;
-				//console.log("   not found!");
+				//clLib.loggi("   not found!");
 			}
 		});
 	}
 	//foundIds = foundIds.getUnique();
-	//console.log("got unique ids " + JSON.stringify(foundIds));
-	//console.log("remaining where clause " + JSON.stringify(remainingWhereObj));
+	//clLib.loggi("got unique ids " + JSON.stringify(foundIds));
+	//clLib.loggi("remaining where clause " + JSON.stringify(remainingWhereObj));
 	
 	var remainingIdsToQuery = Object.keys(storage[entity]);
 	if(indexFound) {
@@ -466,9 +466,9 @@ clLib.localStorage.getEntities = function(entity, whereObj, storageName, sortKey
 	var remainingIdsToQuery = Object.keys(storage[entity]);
 	
 	$.each(remainingIdsToQuery, function(index, id) {
-		//console.log("remainigni items!!");
+		//clLib.loggi("remainigni items!!");
 		var currentItem = storage[entity][id];
-		//console.log("iterating id(" + index + ") " + id + " item " + JSON.stringify(currentItem));
+		//clLib.loggi("iterating id(" + index + ") " + id + " item " + JSON.stringify(currentItem));
 		
 		var eligible = true;
 		if(	
@@ -516,46 +516,46 @@ clLib.localStorage.getEntities = function(entity, whereObj, storageName, sortKey
 clLib.localStorage.getDistinct = function(entity, whereObj, colName, storageName) {
 	var resultsObj = {};
 	var storage = clLib.localStorage.getStorageItems(storageName);
-	//console.log("storage keys: "+ Object.keys(storage));
+	//clLib.loggi("storage keys: "+ Object.keys(storage));
 	
 /*
 	// indexes?
 	var indexes = clLib.localStorage.getStorageIndexes(storageName, entity);
-	//console.log("Indexes for queried entity: " + JSON.stringify(indexes));
+	//clLib.loggi("Indexes for queried entity: " + JSON.stringify(indexes));
 
 	var remainingWhereObj = {};
 	var foundValues = [];
 	var indexFound = false;
 	
-	//console.log("Iterating where " + JSON.stringify(whereObj));
+	//clLib.loggi("Iterating where " + JSON.stringify(whereObj));
 	$.each(whereObj, function(keyName, condition) {
 		// Is there an index for the current where-column?
-		//console.log("Checking for " + keyName + " in " + JSON.stringify(clLib.localStorage.indexes[entity]));
+		//clLib.loggi("Checking for " + keyName + " in " + JSON.stringify(clLib.localStorage.indexes[entity]));
 		if(
 			clLib.localStorage.indexes[entity][keyName] &&
 			clLib.localStorage.indexes[entity][keyName]["distinct"] &&
 			clLib.localStorage.indexes[entity][keyName]["distinct"].indexOf(colName) > -1
 		) {
-			//console.log("   found!");
+			//clLib.loggi("   found!");
 			if(indexFound) {
 				foundValues = foundValues.getIntersect(
 					Object.keys(indexes[keyName][condition]["distinct"][colName])
 				);
 			} else{
-				//console.log("indexsxxx" + JSON.stringify(indexes));
-				//console.log("indeasfdas" + JSON.stringify(indexes[keyName][condition]["distinct"][colName]));
+				//clLib.loggi("indexsxxx" + JSON.stringify(indexes));
+				//clLib.loggi("indeasfdas" + JSON.stringify(indexes[keyName][condition]["distinct"][colName]));
 				foundValues = Object.keys(indexes[keyName][condition]["distinct"][colName]);
 			}
 			indexFound = true;
 	
 		} else {
 			remainingWhereObj[keyName] = condition;
-			console.log("   not found!");
+			clLib.loggi("   not found!");
 		}
 	});
 	//foundValues = foundValues.getUnique();
-	//console.log("got unique ids " + JSON.stringify(foundValues));
-	//console.log("remaining where clause " + JSON.stringify(remainingWhereObj));
+	//clLib.loggi("got unique ids " + JSON.stringify(foundValues));
+	//clLib.loggi("remaining where clause " + JSON.stringify(remainingWhereObj));
 	
 	if(Object.keys(remainingWhereObj).length == 0) {
 		return foundValues;
@@ -590,7 +590,7 @@ clLib.localStorage.getDistinct = function(entity, whereObj, colName, storageName
 		}
 */		
 		var currentItem = storage[entity][id];
-		//console.log("iterating id(" + index + ") " + id + " item " + JSON.stringify(currentItem));
+		//clLib.loggi("iterating id(" + index + ") " + id + " item " + JSON.stringify(currentItem));
 		
 		var eligible = true;
 		
@@ -609,7 +609,7 @@ clLib.localStorage.getDistinct = function(entity, whereObj, colName, storageName
 			}
 		}
 	});
-	console.log("Got resultsobj" + JSON.stringify(resultsObj));
+	clLib.loggi("Got resultsobj" + JSON.stringify(resultsObj));
 /*	if(Object.keys(foundValues).length > 0) {
 		return foundValues.getIntersect(
 			Object.keys(resultsObj));
@@ -638,7 +638,7 @@ clLib.localStorage.evalCondition = function(valueToTest, condition) {
 	// remove leading/trailing whitespace..
 	valueToTest = $.trim(valueToTest);
 
-	//console.log("checking " + valueToTest + " against " + JSON.stringify(condition));
+	//clLib.loggi("checking " + valueToTest + " against " + JSON.stringify(condition));
 	if(!valueToTest) {
 		return false;
 	}
@@ -652,7 +652,7 @@ clLib.localStorage.evalCondition = function(valueToTest, condition) {
 		}
 	}
 	else {
-		//console.log("object condition, comparing advanced values");
+		//clLib.loggi("object condition, comparing advanced values");
 		//alert("evaling conditions " + JSON.stringify(condition));
 		$.each(condition, function(operator, compValue) {
 			//alert("evaling condition " + JSON.stringify(operator));
@@ -685,14 +685,14 @@ clLib.localStorage.evalCondition = function(valueToTest, condition) {
 				if(!(valueToTest.indexOf(compValue) > -1)) {
 					eligible = false;
 				} else {
-					//console.log("found match!!" + valueToTest);
+					//clLib.loggi("found match!!" + valueToTest);
 				}
 			} 
 			if(operator == "$starts-with"){
 				if(!(valueToTest.indexOf(compValue) == 0)) {
 					eligible = false;
 				} else {
-					//console.log("found starting match!!" + valueToTest);
+					//clLib.loggi("found starting match!!" + valueToTest);
 				}
 			} 
 		});

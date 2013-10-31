@@ -49,16 +49,16 @@ clLib.populateSelectBox = function(options) {
 	$.extend(defaultOptions, options);
 
 /*
-	var oldEventHandler = function() {console.log("undefined event handler");};
-	console.log("oldEventHandler = " + options.selectBoxElement.attr("id") + ">" + JSON.stringify(options.selectBoxElement.data("events")));
+	var oldEventHandler = function() {clLib.loggi("undefined event handler");};
+	clLib.loggi("oldEventHandler = " + options.selectBoxElement.attr("id") + ">" + JSON.stringify(options.selectBoxElement.data("events")));
 	// remember current onChange Handler
 	if(options.selectBoxElement.data("events")) {
 		oldEventHandler = options.selectBoxElement.data("events")['change.clLib'][0].handler;
-		console.log("oldEventHandler " + JSON.stringify(oldEventHandler));
+		clLib.loggi("oldEventHandler " + JSON.stringify(oldEventHandler));
 */
 		// disable current onChange handler
 	var selectBoxId = options.selectBoxElement.attr('id');
-	console.log("killing event handlers for  " + selectBoxId);
+	clLib.loggi("killing event handlers for  " + selectBoxId);
 
 	clLib.UI.killEventHandlers(options.selectBoxElement, "change.clLib");
 /*
@@ -74,7 +74,7 @@ clLib.populateSelectBox = function(options) {
 
 	var customChangeHandler = clLib.UI.elements[selectBoxId]["changeHandler"];
 	if(customChangeHandler) {
-		//console.log("custom event handler for " + selectBoxId + "found.." + customChangeHandler);
+		//clLib.loggi("custom event handler for " + selectBoxId + "found.." + customChangeHandler);
 	}
 	var changeHandler = customChangeHandler || clLib.UI.defaultChangeHandler;
 
@@ -93,7 +93,7 @@ clLib.populateSelectBox_plain = function($selectBox, dataObj, selectedValue, pre
 	var oldValue = $selectBox.val();
 	var oldValueFound = true;
 	if(preserveCurrentValue && oldValue) {
-		//console.log("preserving >" + oldValue + "<");
+		//clLib.loggi("preserving >" + oldValue + "<");
 		selectedValue = oldValue;
 		oldValueFound = false;
 	}
@@ -114,22 +114,22 @@ clLib.populateSelectBox_plain = function($selectBox, dataObj, selectedValue, pre
 	}
 	
 	if(dataObj instanceof Array && dataObj.length == 1) {
-		console.log("Yes, array...take first element.." + JSON.stringify(dataObj));
+		clLib.loggi("Yes, array...take first element.." + JSON.stringify(dataObj));
 		selectedValue = dataObj[0];
 	} else if(dataObj instanceof Object && Object.keys(dataObj).length == 1) {
-		console.log("Yes, object...take first element.." + JSON.stringify(dataObj));
+		clLib.loggi("Yes, object...take first element.." + JSON.stringify(dataObj));
 		selectedValue = Object.keys(dataObj)[0];
 	}
 
 	var i = 0;
 	$.each(dataObj, function(index, value) {
-		//console.log("adding option " + value);
+		//clLib.loggi("adding option " + value);
 		var $option = $('<option></option>')
                 .val(dataObj instanceof Array ? value : index)
                 .html(value);
-		//console.log("comp " + value + " + against " + selectedValue);
+		//clLib.loggi("comp " + value + " + against " + selectedValue);
 		if(value == selectedValue) {
-			console.log("Found old value..");
+			clLib.loggi("Found old value..");
 			$option.attr("selected", "selected");
 			oldValueFound = true;
 		}
@@ -145,7 +145,7 @@ clLib.populateSelectBox_plain = function($selectBox, dataObj, selectedValue, pre
 
 	// need to refresh
 	return true;
-	//console.log("Previous value >" + oldValue + "< is no longer present in the select list.");
+	//clLib.loggi("Previous value >" + oldValue + "< is no longer present in the select list.");
 
 };
 
@@ -159,7 +159,7 @@ clLib.populateSearchProposals = function($forElement, $inElement, dataObj, hideO
 		//alert("single element found (" + dataObj[0] + "), hiding results..");
 		var result = $.trim(dataObj[0]);
 
-		console.log("seeting selectedresult to " + result);
+		clLib.loggi("seeting selectedresult to " + result);
 		$inElement.hide();
 		$forElement.trigger("setSelectedValue.clLib", {"value": result, noDependentRefresh : true});
 		return;
@@ -171,19 +171,19 @@ clLib.populateSearchProposals = function($forElement, $inElement, dataObj, hideO
 
 	$inElement.attr("data-theme", "c");
 	$inElement.show();
-	console.log("shown" + $inElement.children().length);
+	clLib.loggi("shown" + $inElement.children().length);
 
 	$inElement.children().click(function() {
-        console.log("this child;" + $(this).html());
+        clLib.loggi("this child;" + $(this).html());
 		var result = $.trim($(this).html());
-		console.log("seeting selectedresult to " + result);
+		clLib.loggi("seeting selectedresult to " + result);
 
-		console.log("forElement is " + $forElement.attr("id"));
+		clLib.loggi("forElement is " + $forElement.attr("id"));
 		$forElement.trigger("setSelectedValue.clLib", {"value": result});
 		//$forElement.val(result);
 
 		$(this).parent().hide();
-		console.log("hidden");
+		clLib.loggi("hidden");
 		//$("#startScreen_mobilefooter1").html(result);
 	});
 };
@@ -193,18 +193,18 @@ clLib.UI.defaultChangeHandler = function($element, changeOptions) {
 	$element.data("clLib.currentValue", $element.val());
 	//alert($element.attr("id") + " was changed to: >" + $element.data("clLib.currentValue") + "<" + JSON.stringify(changeOptions));
 	var elementConfig = clLib.UI.elements[$element.attr("id")];
-	//console.log("elementConfig for " + $element.attr("id") + " is " + JSON.stringify(elementConfig));
+	//clLib.loggi("elementConfig for " + $element.attr("id") + " is " + JSON.stringify(elementConfig));
 	
 	//
 	// consider currently chosen layout from now on..
 	//
 	var currentLayout = localStorage.getItem("currentLayout");
-	console.log("current layout is >" +  currentLayout  + "<");
+	clLib.loggi("current layout is >" +  currentLayout  + "<");
 	var refreshTargets = elementConfig.refreshOnUpdate;
 	if(
 		currentLayout in elementConfig.refreshOnUpdate
 	) {
-		console.log(currentLayout + ">>" + JSON.stringify(refreshTargets));
+		clLib.loggi(currentLayout + ">>" + JSON.stringify(refreshTargets));
 		refreshTargets = elementConfig.refreshOnUpdate[currentLayout];
 	} else {
 		refreshTargets = elementConfig.refreshOnUpdate["default"] || {};
@@ -212,9 +212,9 @@ clLib.UI.defaultChangeHandler = function($element, changeOptions) {
 
 	//	$.each(elementConfig.refreshOnUpdate, function(refreshTargetName, refreshOptions) {
 	$.each(refreshTargets, function(refreshTargetName, refreshOptions) {
-		console.log("refreshing dependent element " + refreshTargetName);
+		clLib.loggi("refreshing dependent element " + refreshTargetName);
 		if(!$("#" + refreshTargetName)) {
-			console.log("element " + "#" + refreshTargetName + " not found!");
+			clLib.loggi("element " + "#" + refreshTargetName + " not found!");
 		}
 
 		$.extend(refreshOptions, changeOptions);
@@ -264,7 +264,7 @@ clLib.UI.resetUIelements = function(pageName) {
 };
 	
 clLib.UI.hideUIElement = function($element) {
-	console.log("hiding element >" + $element.attr("id") + "< of type " + $element.prop("tagName") + ", display is >" + $element.css("display") + "<");
+	clLib.loggi("hiding element >" + $element.attr("id") + "< of type " + $element.prop("tagName") + ", display is >" + $element.css("display") + "<");
 
 	$element.css('display', 'none').parent('div').parent('.ui-select').css('display', 'none');
 	if($element.attr("tagName") == 'SELECT') {
@@ -274,7 +274,7 @@ clLib.UI.hideUIElement = function($element) {
 };
 
 clLib.UI.showUIElement = function($element) {
-	console.log("showing element of type " + $element.prop("tagName") + ", display is >" + $element.css("display") + "<");
+	clLib.loggi("showing element of type " + $element.prop("tagName") + ", display is >" + $element.css("display") + "<");
 
 	$element.css('display', 'block').parent('div').parent().css('display', 'block');
 	if($element.attr("tagName") == 'SELECT') {
@@ -294,34 +294,34 @@ clLib.UI.fillUIelements = function(pageName) {
 	// no special layout to apply? use default layout..
 	var layout = localStorage.getItem("currentLayout") || "default";
 
-	console.log("populating UI elements for page >" + pageName + "< and layout >" + layout + "<");
+	clLib.loggi("populating UI elements for page >" + pageName + "< and layout >" + layout + "<");
 
 	if(!(layout in clLib.UI.pageElements[pageName])) {
-		console.log("layout does not exists for page, using default layout..");
+		clLib.loggi("layout does not exists for page, using default layout..");
 		layout = "default";
 	}
 	
 	
 	$.each(clLib.UI.pageElements[pageName]["default"], function(idx, elementName) {
-		console.log(elementName + " in " + JSON.stringify(clLib.UI.pageElements[pageName][layout])+ "?" + 
+		clLib.loggi(elementName + " in " + JSON.stringify(clLib.UI.pageElements[pageName][layout])+ "?" + 
 			(clLib.UI.pageElements[pageName][layout].hasValue(elementName))
 		);
 		if(!(clLib.UI.pageElements[pageName][layout].hasValue(elementName))) {
 			var $element = $("#" + elementName);
-			console.log("element is >" + $element.attr("id") + "<, hide it");
+			clLib.loggi("element is >" + $element.attr("id") + "<, hide it");
 	
 			// hide elements per default..
 			clLib.UI.hideUIElement($element);
 		} else {
 			var $element = $("#" + elementName);
-			console.log("element is >" + $element.attr("id") + "<, SHOW it");
+			clLib.loggi("element is >" + $element.attr("id") + "<, SHOW it");
 	
 			// hide elements per default..
 			clLib.UI.showUIElement($element);
 		}
 	});
 
-	console.log("elements for page >" + pageName + "< hidden..");
+	clLib.loggi("elements for page >" + pageName + "< hidden..");
 	//alert("populating UI elements for page >" + pageName + "<");
 	$.each(clLib.UI.pageElements[pageName][layout], function(idx, elementName) {
 		var elementConfig = clLib.UI.elements[elementName];
@@ -331,7 +331,7 @@ clLib.UI.fillUIelements = function(pageName) {
 			return;
 		}
 
-		console.log("adding events for  element >" + elementName + "<");
+		clLib.loggi("adding events for  element >" + elementName + "<");
 		var $element = $("#" + elementName);
 
 		// Re-attach event handlers
@@ -358,9 +358,9 @@ clLib.UI.fillUIelements = function(pageName) {
 				typeof(additionalOptions) !== "undefined" &&
 				additionalOptions["noRefreshOn"] == elementName
 			) {
-				console.log("not refreshing element " + elementName);
+				clLib.loggi("not refreshing element " + elementName);
 			}
-			console.log("refresh element " + $(this).attr("id") + " with elementConfig " + JSON.stringify(elementConfig));
+			clLib.loggi("refresh element " + $(this).attr("id") + " with elementConfig " + JSON.stringify(elementConfig));
 			elementConfig.refreshHandler($element, additionalOptions);
 			$(this).trigger("change.clLib", additionalOptions);
 		});
@@ -472,4 +472,23 @@ clLib.UI.buildRatingRadio = function($element) {
 ""
 	);
 
+};
+
+clLib.UI.buildWhereIfVisible = function(whereKeys2Elements) {
+	var whereObj = {};
+	$.each(whereKeys2Elements, function(key, $element) {
+		clLib.loggi("$element is " + JSON.stringify($element));
+		if(
+			$element instanceof Object &&
+			$element.is(":visible")
+		) {
+			whereObj[key] = $element.val();
+		} else if(
+		 	!($element instanceof Object) &&
+			$element
+		) {
+			whereObj[key] = $element;
+		}
+	});
+	return whereObj;
 };

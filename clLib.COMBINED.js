@@ -35,13 +35,13 @@ clLib.populateGradeTypes = function($gradeTypeSelect, preselectedGradeType){
 *   Populates a select box with available grades in a certain gradeType.
 */
 clLib.populateGrades = function($gradeSelect, selectedGradeType) {
-	console.log("refreshing grades for gradetype " + selectedGradeType);
+	clLib.loggi("refreshing grades for gradetype " + selectedGradeType);
 	//clLib.populateSelectBox($gradeSelect, Object.keys(clLib.gradeConfig[selectedGradeType]["grades"]), clLib.gradeConfig[selectedGradeType]["defaultGrade"]);
 
 	clLib.populateSelectBox({
 		selectBoxElement : $gradeSelect,
 		dataObj : Object.keys(clLib.gradeConfig[selectedGradeType]["grades"]),
-		selectedValue : clLib.gradeConfig[selectedGradeType]["defaultGrade"]
+		selectedValue : localStorage.getItem("defaultGrade") || clLib.gradeConfig[selectedGradeType]["defaultGrade"]
 	});
 	
 };
@@ -55,7 +55,7 @@ clLib.calculateScore = function(routeLogs) {
 		var routeLog = routeLogs[i];
 		totalScore += clLib.computeScore(routeLog);
 	}
-	console.log("Total score is " + totalScore);
+	clLib.loggi("Total score is " + totalScore);
     return totalScore;
 };
 
@@ -64,16 +64,16 @@ clLib.calculateScore = function(routeLogs) {
 */ 
 clLib.computeScore = function(routeLogObj) {
 	if(!(routeLogObj.GradeSystem in clLib.gradeConfig)) {
-		console.log("unknown gradeType " + routeLogObj.GradeSystem);
+		clLib.loggi("unknown gradeType " + routeLogObj.GradeSystem);
 		return 0;
 	}
 	var gradeTypeScore = clLib.gradeConfig[routeLogObj.GradeSystem];
 	if(!(routeLogObj.Grade in gradeTypeScore.grades)) {
-		console.log("unknown grade " + routeLogObj.Grade);
+		clLib.loggi("unknown grade " + routeLogObj.Grade);
 		return 0;
 	}
 	if(!(routeLogObj.TickType in gradeTypeScore.tickTypeFactors)) {
-		console.log("unknown ticktype " + routeLogObj.TickType);
+		clLib.loggi("unknown ticktype " + routeLogObj.TickType);
 		return 0;
 	}
 	
@@ -83,7 +83,7 @@ clLib.computeScore = function(routeLogObj) {
 	// allow for flexible tick type factors a eval-able expressions...
 	score = eval(score + gradeTypeScore["tickTypeFactors"][routeLogObj.TickType]);
 	;
-	console.log("computed score >" + score + "< for route " + JSON.stringify(routeLogObj));
+	clLib.loggi("computed score >" + score + "< for route " + JSON.stringify(routeLogObj));
 	return score;
 };
 
@@ -117,7 +117,7 @@ clLib.tomorrow = function() {
 *
 */
 clLib.addColorBackground = function(targetId) {
-	//console.log("adding colors to " + targetId);
+	//clLib.loggi("adding colors to " + targetId);
 	var $targetEl = $('#' + targetId);
 	clLib.UI.killEventHandlers($targetEl, "change.clLibColour");
 	
@@ -127,7 +127,7 @@ clLib.addColorBackground = function(targetId) {
         // fetch current option element
         var entry = $('#' + targetId + '-menu').find('[data-option-index=' + ind + ']');
         // set corresponding css class
-        //console.log("adding class" + entry.find("a").html());
+        //clLib.loggi("adding class" + entry.find("a").html());
         entry
             .addClass("clColorBg")
             .addClass(entry.find("a").html());
@@ -178,7 +178,7 @@ clLib.addColorBackground = function(targetId) {
 clLib.buildSimpleWhere = function(whereCol, whereVal) {
     var whereObj = {};
 	whereObj[whereCol] = whereVal;
-    console.log("returning where " + JSON.stringify(whereObj));
+    clLib.loggi("returning where " + JSON.stringify(whereObj));
 	return JSON.stringify(whereObj);
 };
 
@@ -457,7 +457,7 @@ clLib.getChildObj = function(anObj, objKey) {
 } 
 
 clLib.getChildArr = function(anObj, objKey) {
-	//console.log("getChildArr called for " + objKey);
+	//clLib.loggi("getChildArr called for " + objKey);
 	if(!anObj[objKey]) {
 		anObj[objKey] = [];
 	}
@@ -499,7 +499,16 @@ Array.prototype.hasValue = function(needle) {
 
 
 
-
+clLib.loggi = function(text, priority) {
+	priority = priority || 0;
+	if(priority) {
+		if(priority == 1) {
+			alert(text);
+		} else {
+			clLib.loggi(text);
+		}
+	}
+};
 
 
 
@@ -782,7 +791,7 @@ clLib.localStorage.initStorage = function(storageName, storageObj) {
 
 		// add UNSYNCED entries to cache	
 		var unsyncedStorage = clLib.localStorage.getStorageItems("UNSYNCED_" + storageName);
-		console.log("currently unsynced items for entity >" + entityName + "< =>" + JSON.stringify(unsyncedStorage) + "<");
+		clLib.loggi("currently unsynced items for entity >" + entityName + "< =>" + JSON.stringify(unsyncedStorage) + "<");
 		if(unsyncedStorage) {
 			$.each(unsyncedStorage[entityName], function(dummyId) {
 				var entityInstance = unsyncedStorage[entityName][dummyId];
@@ -798,29 +807,29 @@ clLib.localStorage.initStorage = function(storageName, storageObj) {
 
 
 
-	console.log("storing items");
+	clLib.loggi("storing items");
 	clLib.localStorage.setStorageItems(storageName, allItems);
-	console.log("items stored");
+	clLib.loggi("items stored");
 	
 /*
 	var storageItems = clLib.localStorage.getStorageItems(storageName);
 	var indexedEntities = clLib.localStorage.indexes;
 	var indexedItems = {};
 	
-	console.log("indexItems: " + tojson(indexedEntities));
-	//console.log("allitems " + tojson(storageItems));
+	clLib.loggi("indexItems: " + tojson(indexedEntities));
+	//clLib.loggi("allitems " + tojson(storageItems));
 	// check all entities in storageObj for configured indexs..
 	for(var entityName in indexedEntities) {
 	//$.each(indexedEntities, function(entityName) {
-		//console.log("working on indexedentity " + entityName);
+		//clLib.loggi("working on indexedentity " + entityName);
 		
 		// iterate indexed entities from storageObj
 		var currentEntityIndexes = indexedEntities[entityName];
 		var currentEntityItems = storageItems[entityName];
 		var currentEntityIdxItems = {};
-		//console.log("working on currententityitems " + tojson(currentEntityItems));
+		//clLib.loggi("working on currententityitems " + tojson(currentEntityItems));
 		if(!currentEntityItems) {
-			//console.log("no items for " + entityName + " in current collection..");
+			//clLib.loggi("no items for " + entityName + " in current collection..");
 			return;
 		}
 		// Iterate all items of current entity(routes, areas, etc..)
@@ -830,7 +839,7 @@ clLib.localStorage.initStorage = function(storageName, storageObj) {
 			// Resolve every index for current item
 			for(var indexedCol in currentEntityIndexes) {
 			//$.each(currentEntityIndexes, function(idx, indexedCol) {
-				//console.log("!!Checking indexed column " + indexedCol);
+				//clLib.loggi("!!Checking indexed column " + indexedCol);
 				var currentIdxKey = currentItem[indexedCol];
 				clLib.addObjArr(
 					currentEntityIdxItems, 
@@ -848,10 +857,10 @@ clLib.localStorage.initStorage = function(storageName, storageObj) {
 				
 			}
 			//);
-			//console.log("3after adding row it is" + tojson(currentEntityIdxItems));
+			//clLib.loggi("3after adding row it is" + tojson(currentEntityIdxItems));
 		//}
 		});
-		//console.log("setting index to " + tojson(currentEntityIdxItems));
+		//clLib.loggi("setting index to " + tojson(currentEntityIdxItems));
 		//
 		// Store indexed for current entity
 		//
@@ -861,9 +870,9 @@ clLib.localStorage.initStorage = function(storageName, storageObj) {
 	//);
 	*/
 	
-	//console.log("initialized storage " + storageName);
-	//console.log("storage now is " + JSON.stringify(clLib.localStorage.getItem(storageName + "_items")));
-	//console.log("index now is " + JSON.stringify(clLib.localStorage.getItem(storageName + "_index_" + "routes")));
+	//clLib.loggi("initialized storage " + storageName);
+	//clLib.loggi("storage now is " + JSON.stringify(clLib.localStorage.getItem(storageName + "_items")));
+	//clLib.loggi("index now is " + JSON.stringify(clLib.localStorage.getItem(storageName + "_index_" + "routes")));
 	//alert("local storage after init " + JSON.stringify(localStorage));
 };
 
@@ -1055,12 +1064,12 @@ Array.prototype.sortBy = function(sortBy, descSortFlag) {
 };
 
 clLib.localStorage.syncAllUp = function(entity, storageName) {
-	console.log("syncing up all entities for >" + entity + "< in >" + storageName + "<");
+	clLib.loggi("syncing up all entities for >" + entity + "< in >" + storageName + "<");
 	var storage = clLib.localStorage.getStorageItems("UNSYNCED_" + storageName);
-	console.log("currently unsynced items >" + JSON.stringify(storage) + "<");
+	clLib.loggi("currently unsynced items >" + JSON.stringify(storage) + "<");
 	$.each(storage[entity], function(dummyId) {
 		var entityInstance = storage[entity][dummyId];
-		console.log("call syncup for >" + dummyId + "< bzw. >" + JSON.stringify(entityInstance) + "<");
+		clLib.loggi("call syncup for >" + dummyId + "< bzw. >" + JSON.stringify(entityInstance) + "<");
 
 		clLib.localStorage.syncUp(entity, entityInstance, storageName);
 	});
@@ -1083,7 +1092,7 @@ clLib.localStorage.syncUp = function(entity, entityInstance, storageName) {
 	var realInstance = clLib.REST.storeEntity(entity, entityInstance);
 	entityInstance["_id"] = realInstance["_id"];	
 
-	console.log("synced UP >" + dummyId + "<, new id is " + realInstance["_id"]);
+	clLib.loggi("synced UP >" + dummyId + "<, new id is " + realInstance["_id"]);
 	// delete dummy id
 	clLib.localStorage.removeStorageItem(storageName, entity, dummyId);
 	// delete from unsynced entries..
@@ -1108,11 +1117,11 @@ clLib.localStorage.addInstance = function(entity, entityInstance, storageName) {
 	clLib.localStorage.addStorageItem("UNSYNCED_" + storageName, entity, entityInstance);
 	
 	if(clLib.isOnline()) {
-		console.log("online, syncing UP!!!");
+		clLib.loggi("online, syncing UP!!!");
 		//clLib.localStorage.syncUp(entity, entityInstance, storageName);
 		clLib.localStorage.syncAllUp(entity, storageName);
 	} else {
-		console.log("offline, saving for later sync UP..");
+		clLib.loggi("offline, saving for later sync UP..");
 	}
 }
 
@@ -1151,20 +1160,20 @@ clLib.localStorage.getEntities = function(entity, whereObj, storageName, sortKey
 		//alert("entity storage: " + JSON.stringify(storage));
 		
 	}
-	//console.log("storage keys: "+ Object.keys(storage));
+	//clLib.loggi("storage keys: "+ Object.keys(storage));
 	
 	// Indexes?
 /*
 	var indexes = clLib.localStorage.getStorageIndexes(storageName, entity);
-	//console.log("Indexes for queried entity: " + JSON.stringify(indexes));
+	//clLib.loggi("Indexes for queried entity: " + JSON.stringify(indexes));
 	var remainingWhereObj = {};
 	var foundIds = [];
 	var indexFound = false;
 	if(Object.keys(clLib.localStorage.indexes[entity]) > 0) {
 		$.each(whereObj, function(keyName, condition) {
-			console.log("check for index entries with key " + keyName + " in (" + typeof(clLib.localStorage.indexes[entity]) + ") " + JSON.stringify(clLib.localStorage.indexes[entity]));
+			clLib.loggi("check for index entries with key " + keyName + " in (" + typeof(clLib.localStorage.indexes[entity]) + ") " + JSON.stringify(clLib.localStorage.indexes[entity]));
 			if(Object.keys(clLib.localStorage.indexes[entity]).indexOf(keyName) > -1) {
-				//console.log("   found!");
+				//clLib.loggi("   found!");
 				//foundIds.push.apply(foundIds, indexes[keyName][condition]);
 				if(indexFound) {
 					//foundIds = indexes[keyName][condition].items;
@@ -1175,13 +1184,13 @@ clLib.localStorage.getEntities = function(entity, whereObj, storageName, sortKey
 				indexFound = true;
 			} else {
 				remainingWhereObj[keyName] = condition;
-				//console.log("   not found!");
+				//clLib.loggi("   not found!");
 			}
 		});
 	}
 	//foundIds = foundIds.getUnique();
-	//console.log("got unique ids " + JSON.stringify(foundIds));
-	//console.log("remaining where clause " + JSON.stringify(remainingWhereObj));
+	//clLib.loggi("got unique ids " + JSON.stringify(foundIds));
+	//clLib.loggi("remaining where clause " + JSON.stringify(remainingWhereObj));
 	
 	var remainingIdsToQuery = Object.keys(storage[entity]);
 	if(indexFound) {
@@ -1197,9 +1206,9 @@ clLib.localStorage.getEntities = function(entity, whereObj, storageName, sortKey
 	var remainingIdsToQuery = Object.keys(storage[entity]);
 	
 	$.each(remainingIdsToQuery, function(index, id) {
-		//console.log("remainigni items!!");
+		//clLib.loggi("remainigni items!!");
 		var currentItem = storage[entity][id];
-		//console.log("iterating id(" + index + ") " + id + " item " + JSON.stringify(currentItem));
+		//clLib.loggi("iterating id(" + index + ") " + id + " item " + JSON.stringify(currentItem));
 		
 		var eligible = true;
 		if(	
@@ -1247,46 +1256,46 @@ clLib.localStorage.getEntities = function(entity, whereObj, storageName, sortKey
 clLib.localStorage.getDistinct = function(entity, whereObj, colName, storageName) {
 	var resultsObj = {};
 	var storage = clLib.localStorage.getStorageItems(storageName);
-	//console.log("storage keys: "+ Object.keys(storage));
+	//clLib.loggi("storage keys: "+ Object.keys(storage));
 	
 /*
 	// indexes?
 	var indexes = clLib.localStorage.getStorageIndexes(storageName, entity);
-	//console.log("Indexes for queried entity: " + JSON.stringify(indexes));
+	//clLib.loggi("Indexes for queried entity: " + JSON.stringify(indexes));
 
 	var remainingWhereObj = {};
 	var foundValues = [];
 	var indexFound = false;
 	
-	//console.log("Iterating where " + JSON.stringify(whereObj));
+	//clLib.loggi("Iterating where " + JSON.stringify(whereObj));
 	$.each(whereObj, function(keyName, condition) {
 		// Is there an index for the current where-column?
-		//console.log("Checking for " + keyName + " in " + JSON.stringify(clLib.localStorage.indexes[entity]));
+		//clLib.loggi("Checking for " + keyName + " in " + JSON.stringify(clLib.localStorage.indexes[entity]));
 		if(
 			clLib.localStorage.indexes[entity][keyName] &&
 			clLib.localStorage.indexes[entity][keyName]["distinct"] &&
 			clLib.localStorage.indexes[entity][keyName]["distinct"].indexOf(colName) > -1
 		) {
-			//console.log("   found!");
+			//clLib.loggi("   found!");
 			if(indexFound) {
 				foundValues = foundValues.getIntersect(
 					Object.keys(indexes[keyName][condition]["distinct"][colName])
 				);
 			} else{
-				//console.log("indexsxxx" + JSON.stringify(indexes));
-				//console.log("indeasfdas" + JSON.stringify(indexes[keyName][condition]["distinct"][colName]));
+				//clLib.loggi("indexsxxx" + JSON.stringify(indexes));
+				//clLib.loggi("indeasfdas" + JSON.stringify(indexes[keyName][condition]["distinct"][colName]));
 				foundValues = Object.keys(indexes[keyName][condition]["distinct"][colName]);
 			}
 			indexFound = true;
 	
 		} else {
 			remainingWhereObj[keyName] = condition;
-			console.log("   not found!");
+			clLib.loggi("   not found!");
 		}
 	});
 	//foundValues = foundValues.getUnique();
-	//console.log("got unique ids " + JSON.stringify(foundValues));
-	//console.log("remaining where clause " + JSON.stringify(remainingWhereObj));
+	//clLib.loggi("got unique ids " + JSON.stringify(foundValues));
+	//clLib.loggi("remaining where clause " + JSON.stringify(remainingWhereObj));
 	
 	if(Object.keys(remainingWhereObj).length == 0) {
 		return foundValues;
@@ -1321,7 +1330,7 @@ clLib.localStorage.getDistinct = function(entity, whereObj, colName, storageName
 		}
 */		
 		var currentItem = storage[entity][id];
-		//console.log("iterating id(" + index + ") " + id + " item " + JSON.stringify(currentItem));
+		//clLib.loggi("iterating id(" + index + ") " + id + " item " + JSON.stringify(currentItem));
 		
 		var eligible = true;
 		
@@ -1340,7 +1349,7 @@ clLib.localStorage.getDistinct = function(entity, whereObj, colName, storageName
 			}
 		}
 	});
-	console.log("Got resultsobj" + JSON.stringify(resultsObj));
+	clLib.loggi("Got resultsobj" + JSON.stringify(resultsObj));
 /*	if(Object.keys(foundValues).length > 0) {
 		return foundValues.getIntersect(
 			Object.keys(resultsObj));
@@ -1369,7 +1378,7 @@ clLib.localStorage.evalCondition = function(valueToTest, condition) {
 	// remove leading/trailing whitespace..
 	valueToTest = $.trim(valueToTest);
 
-	//console.log("checking " + valueToTest + " against " + JSON.stringify(condition));
+	//clLib.loggi("checking " + valueToTest + " against " + JSON.stringify(condition));
 	if(!valueToTest) {
 		return false;
 	}
@@ -1383,7 +1392,7 @@ clLib.localStorage.evalCondition = function(valueToTest, condition) {
 		}
 	}
 	else {
-		//console.log("object condition, comparing advanced values");
+		//clLib.loggi("object condition, comparing advanced values");
 		//alert("evaling conditions " + JSON.stringify(condition));
 		$.each(condition, function(operator, compValue) {
 			//alert("evaling condition " + JSON.stringify(operator));
@@ -1416,14 +1425,14 @@ clLib.localStorage.evalCondition = function(valueToTest, condition) {
 				if(!(valueToTest.indexOf(compValue) > -1)) {
 					eligible = false;
 				} else {
-					//console.log("found match!!" + valueToTest);
+					//clLib.loggi("found match!!" + valueToTest);
 				}
 			} 
 			if(operator == "$starts-with"){
 				if(!(valueToTest.indexOf(compValue) == 0)) {
 					eligible = false;
 				} else {
-					//console.log("found starting match!!" + valueToTest);
+					//clLib.loggi("found starting match!!" + valueToTest);
 				}
 			} 
 		});
@@ -1509,16 +1518,16 @@ clLib.populateSelectBox = function(options) {
 	$.extend(defaultOptions, options);
 
 /*
-	var oldEventHandler = function() {console.log("undefined event handler");};
-	console.log("oldEventHandler = " + options.selectBoxElement.attr("id") + ">" + JSON.stringify(options.selectBoxElement.data("events")));
+	var oldEventHandler = function() {clLib.loggi("undefined event handler");};
+	clLib.loggi("oldEventHandler = " + options.selectBoxElement.attr("id") + ">" + JSON.stringify(options.selectBoxElement.data("events")));
 	// remember current onChange Handler
 	if(options.selectBoxElement.data("events")) {
 		oldEventHandler = options.selectBoxElement.data("events")['change.clLib'][0].handler;
-		console.log("oldEventHandler " + JSON.stringify(oldEventHandler));
+		clLib.loggi("oldEventHandler " + JSON.stringify(oldEventHandler));
 */
 		// disable current onChange handler
 	var selectBoxId = options.selectBoxElement.attr('id');
-	console.log("killing event handlers for  " + selectBoxId);
+	clLib.loggi("killing event handlers for  " + selectBoxId);
 
 	clLib.UI.killEventHandlers(options.selectBoxElement, "change.clLib");
 /*
@@ -1534,7 +1543,7 @@ clLib.populateSelectBox = function(options) {
 
 	var customChangeHandler = clLib.UI.elements[selectBoxId]["changeHandler"];
 	if(customChangeHandler) {
-		//console.log("custom event handler for " + selectBoxId + "found.." + customChangeHandler);
+		//clLib.loggi("custom event handler for " + selectBoxId + "found.." + customChangeHandler);
 	}
 	var changeHandler = customChangeHandler || clLib.UI.defaultChangeHandler;
 
@@ -1553,7 +1562,7 @@ clLib.populateSelectBox_plain = function($selectBox, dataObj, selectedValue, pre
 	var oldValue = $selectBox.val();
 	var oldValueFound = true;
 	if(preserveCurrentValue && oldValue) {
-		//console.log("preserving >" + oldValue + "<");
+		//clLib.loggi("preserving >" + oldValue + "<");
 		selectedValue = oldValue;
 		oldValueFound = false;
 	}
@@ -1574,22 +1583,22 @@ clLib.populateSelectBox_plain = function($selectBox, dataObj, selectedValue, pre
 	}
 	
 	if(dataObj instanceof Array && dataObj.length == 1) {
-		console.log("Yes, array...take first element.." + JSON.stringify(dataObj));
+		clLib.loggi("Yes, array...take first element.." + JSON.stringify(dataObj));
 		selectedValue = dataObj[0];
 	} else if(dataObj instanceof Object && Object.keys(dataObj).length == 1) {
-		console.log("Yes, object...take first element.." + JSON.stringify(dataObj));
+		clLib.loggi("Yes, object...take first element.." + JSON.stringify(dataObj));
 		selectedValue = Object.keys(dataObj)[0];
 	}
 
 	var i = 0;
 	$.each(dataObj, function(index, value) {
-		//console.log("adding option " + value);
+		//clLib.loggi("adding option " + value);
 		var $option = $('<option></option>')
                 .val(dataObj instanceof Array ? value : index)
                 .html(value);
-		//console.log("comp " + value + " + against " + selectedValue);
+		//clLib.loggi("comp " + value + " + against " + selectedValue);
 		if(value == selectedValue) {
-			console.log("Found old value..");
+			clLib.loggi("Found old value..");
 			$option.attr("selected", "selected");
 			oldValueFound = true;
 		}
@@ -1605,7 +1614,7 @@ clLib.populateSelectBox_plain = function($selectBox, dataObj, selectedValue, pre
 
 	// need to refresh
 	return true;
-	//console.log("Previous value >" + oldValue + "< is no longer present in the select list.");
+	//clLib.loggi("Previous value >" + oldValue + "< is no longer present in the select list.");
 
 };
 
@@ -1619,7 +1628,7 @@ clLib.populateSearchProposals = function($forElement, $inElement, dataObj, hideO
 		//alert("single element found (" + dataObj[0] + "), hiding results..");
 		var result = $.trim(dataObj[0]);
 
-		console.log("seeting selectedresult to " + result);
+		clLib.loggi("seeting selectedresult to " + result);
 		$inElement.hide();
 		$forElement.trigger("setSelectedValue.clLib", {"value": result, noDependentRefresh : true});
 		return;
@@ -1631,19 +1640,19 @@ clLib.populateSearchProposals = function($forElement, $inElement, dataObj, hideO
 
 	$inElement.attr("data-theme", "c");
 	$inElement.show();
-	console.log("shown" + $inElement.children().length);
+	clLib.loggi("shown" + $inElement.children().length);
 
 	$inElement.children().click(function() {
-        console.log("this child;" + $(this).html());
+        clLib.loggi("this child;" + $(this).html());
 		var result = $.trim($(this).html());
-		console.log("seeting selectedresult to " + result);
+		clLib.loggi("seeting selectedresult to " + result);
 
-		console.log("forElement is " + $forElement.attr("id"));
+		clLib.loggi("forElement is " + $forElement.attr("id"));
 		$forElement.trigger("setSelectedValue.clLib", {"value": result});
 		//$forElement.val(result);
 
 		$(this).parent().hide();
-		console.log("hidden");
+		clLib.loggi("hidden");
 		//$("#startScreen_mobilefooter1").html(result);
 	});
 };
@@ -1653,18 +1662,18 @@ clLib.UI.defaultChangeHandler = function($element, changeOptions) {
 	$element.data("clLib.currentValue", $element.val());
 	//alert($element.attr("id") + " was changed to: >" + $element.data("clLib.currentValue") + "<" + JSON.stringify(changeOptions));
 	var elementConfig = clLib.UI.elements[$element.attr("id")];
-	//console.log("elementConfig for " + $element.attr("id") + " is " + JSON.stringify(elementConfig));
+	//clLib.loggi("elementConfig for " + $element.attr("id") + " is " + JSON.stringify(elementConfig));
 	
 	//
 	// consider currently chosen layout from now on..
 	//
 	var currentLayout = localStorage.getItem("currentLayout");
-	console.log("current layout is >" +  currentLayout  + "<");
+	clLib.loggi("current layout is >" +  currentLayout  + "<");
 	var refreshTargets = elementConfig.refreshOnUpdate;
 	if(
 		currentLayout in elementConfig.refreshOnUpdate
 	) {
-		console.log(currentLayout + ">>" + JSON.stringify(refreshTargets));
+		clLib.loggi(currentLayout + ">>" + JSON.stringify(refreshTargets));
 		refreshTargets = elementConfig.refreshOnUpdate[currentLayout];
 	} else {
 		refreshTargets = elementConfig.refreshOnUpdate["default"] || {};
@@ -1672,9 +1681,9 @@ clLib.UI.defaultChangeHandler = function($element, changeOptions) {
 
 	//	$.each(elementConfig.refreshOnUpdate, function(refreshTargetName, refreshOptions) {
 	$.each(refreshTargets, function(refreshTargetName, refreshOptions) {
-		console.log("refreshing dependent element " + refreshTargetName);
+		clLib.loggi("refreshing dependent element " + refreshTargetName);
 		if(!$("#" + refreshTargetName)) {
-			console.log("element " + "#" + refreshTargetName + " not found!");
+			clLib.loggi("element " + "#" + refreshTargetName + " not found!");
 		}
 
 		$.extend(refreshOptions, changeOptions);
@@ -1724,7 +1733,7 @@ clLib.UI.resetUIelements = function(pageName) {
 };
 	
 clLib.UI.hideUIElement = function($element) {
-	console.log("hiding element >" + $element.attr("id") + "< of type " + $element.prop("tagName") + ", display is >" + $element.css("display") + "<");
+	clLib.loggi("hiding element >" + $element.attr("id") + "< of type " + $element.prop("tagName") + ", display is >" + $element.css("display") + "<");
 
 	$element.css('display', 'none').parent('div').parent('.ui-select').css('display', 'none');
 	if($element.attr("tagName") == 'SELECT') {
@@ -1734,7 +1743,7 @@ clLib.UI.hideUIElement = function($element) {
 };
 
 clLib.UI.showUIElement = function($element) {
-	console.log("showing element of type " + $element.prop("tagName") + ", display is >" + $element.css("display") + "<");
+	clLib.loggi("showing element of type " + $element.prop("tagName") + ", display is >" + $element.css("display") + "<");
 
 	$element.css('display', 'block').parent('div').parent().css('display', 'block');
 	if($element.attr("tagName") == 'SELECT') {
@@ -1754,34 +1763,34 @@ clLib.UI.fillUIelements = function(pageName) {
 	// no special layout to apply? use default layout..
 	var layout = localStorage.getItem("currentLayout") || "default";
 
-	console.log("populating UI elements for page >" + pageName + "< and layout >" + layout + "<");
+	clLib.loggi("populating UI elements for page >" + pageName + "< and layout >" + layout + "<");
 
 	if(!(layout in clLib.UI.pageElements[pageName])) {
-		console.log("layout does not exists for page, using default layout..");
+		clLib.loggi("layout does not exists for page, using default layout..");
 		layout = "default";
 	}
 	
 	
 	$.each(clLib.UI.pageElements[pageName]["default"], function(idx, elementName) {
-		console.log(elementName + " in " + JSON.stringify(clLib.UI.pageElements[pageName][layout])+ "?" + 
+		clLib.loggi(elementName + " in " + JSON.stringify(clLib.UI.pageElements[pageName][layout])+ "?" + 
 			(clLib.UI.pageElements[pageName][layout].hasValue(elementName))
 		);
 		if(!(clLib.UI.pageElements[pageName][layout].hasValue(elementName))) {
 			var $element = $("#" + elementName);
-			console.log("element is >" + $element.attr("id") + "<, hide it");
+			clLib.loggi("element is >" + $element.attr("id") + "<, hide it");
 	
 			// hide elements per default..
 			clLib.UI.hideUIElement($element);
 		} else {
 			var $element = $("#" + elementName);
-			console.log("element is >" + $element.attr("id") + "<, SHOW it");
+			clLib.loggi("element is >" + $element.attr("id") + "<, SHOW it");
 	
 			// hide elements per default..
 			clLib.UI.showUIElement($element);
 		}
 	});
 
-	console.log("elements for page >" + pageName + "< hidden..");
+	clLib.loggi("elements for page >" + pageName + "< hidden..");
 	//alert("populating UI elements for page >" + pageName + "<");
 	$.each(clLib.UI.pageElements[pageName][layout], function(idx, elementName) {
 		var elementConfig = clLib.UI.elements[elementName];
@@ -1791,7 +1800,7 @@ clLib.UI.fillUIelements = function(pageName) {
 			return;
 		}
 
-		console.log("adding events for  element >" + elementName + "<");
+		clLib.loggi("adding events for  element >" + elementName + "<");
 		var $element = $("#" + elementName);
 
 		// Re-attach event handlers
@@ -1818,9 +1827,9 @@ clLib.UI.fillUIelements = function(pageName) {
 				typeof(additionalOptions) !== "undefined" &&
 				additionalOptions["noRefreshOn"] == elementName
 			) {
-				console.log("not refreshing element " + elementName);
+				clLib.loggi("not refreshing element " + elementName);
 			}
-			console.log("refresh element " + $(this).attr("id") + " with elementConfig " + JSON.stringify(elementConfig));
+			clLib.loggi("refresh element " + $(this).attr("id") + " with elementConfig " + JSON.stringify(elementConfig));
 			elementConfig.refreshHandler($element, additionalOptions);
 			$(this).trigger("change.clLib", additionalOptions);
 		});
@@ -1932,6 +1941,25 @@ clLib.UI.buildRatingRadio = function($element) {
 ""
 	);
 
+};
+
+clLib.UI.buildWhereIfVisible = function(whereKeys2Elements) {
+	var whereObj = {};
+	$.each(whereKeys2Elements, function(key, $element) {
+		clLib.loggi("$element is " + JSON.stringify($element));
+		if(
+			$element instanceof Object &&
+			$element.is(":visible")
+		) {
+			whereObj[key] = $element.val();
+		} else if(
+		 	!($element instanceof Object) &&
+			$element
+		) {
+			whereObj[key] = $element;
+		}
+	});
+	return whereObj;
 };"use strict";
 
 clLib.UI.autoLoad = {
@@ -1992,7 +2020,7 @@ clLib.UI.pageElements = {
 clLib.UI.elements = {
 	"newRouteLog_gradeTypeSelect" : {
 		"refreshHandler" : function($this) { 
-			clLib.populateGradeTypes($this, "UIAA") },
+			clLib.populateGradeTypes($this, localStorage.getItem("defaultGradeType") || "UIAA") },
 		"refreshOnUpdate" : {
 			default: {
 				"newRouteLog_gradeSelect" : { }
@@ -2051,7 +2079,7 @@ clLib.UI.elements = {
 	},
 	"newRouteLog_sectorSelect" : {
 		"refreshHandler" : function($this) { 
-			//console.log("handling content for sector.." + $this.val());
+			//clLib.loggi("handling content for sector.." + $this.val());
 
 			var distinctColumn, where, results;
 			distinctColumn = "Sector";
@@ -2063,7 +2091,7 @@ clLib.UI.elements = {
 			});
 			
 			results = clLib.localStorage.getDistinct("Routes", where, distinctColumn, "routeStorage");
-			console.log("got sectors for " + JSON.stringify(where) + ",>" + JSON.stringify(results));
+			clLib.loggi("got sectors for " + JSON.stringify(where) + ",>" + JSON.stringify(results));
 
 			clLib.populateSelectBox({
 				selectBoxElement : $this,
@@ -2087,19 +2115,19 @@ clLib.UI.elements = {
 			});
 			
 			results = clLib.localStorage.getDistinct("Routes", where, distinctColumn, "routeStorage");
-			console.log("got LINE sectors for " + JSON.stringify(where) + ", " + results[0] + " +, >" + JSON.stringify(results));
+			clLib.loggi("got LINE sectors for " + JSON.stringify(where) + ", " + results[0] + " +, >" + JSON.stringify(results));
 			
 			if(results.length == 1) {
 				$sectorSelect.val(results[0]);
 				$sectorSelect.selectmenu('refresh', true);
 
-				console.log("sectorselect changed to " + results[0]);
+				clLib.loggi("sectorselect changed to " + results[0]);
 			} else {
 				if(
 					$("#newRouteLog_lineSelect").val() != clLib.UI.NOTSELECTED.value &&
 					$("#newRouteLog_lineSelect").val() != ""
 				) {
-					console.log("2013-10-07-WTF!?!?!? multiple sectors for line " + $("#newRouteLog_lineSelect").val() + " found - setting sector to the one of first result...");
+					clLib.loggi("2013-10-07-WTF!?!?!? multiple sectors for line " + $("#newRouteLog_lineSelect").val() + " found - setting sector to the one of first result...");
 					alert("setting sector to the one of first result...");
 					$sectorSelect.val(results[0]);     
 				}
@@ -2122,7 +2150,7 @@ clLib.UI.elements = {
 	},
 	"newRouteLog_lineSelect" : {
 		"refreshHandler" : function($this) { 
-			console.log("getting lines");
+			clLib.loggi("getting lines");
 			var distinctColumn, where, results;
 			distinctColumn = "Line";
 			where = clLib.getRoutesWhere({
@@ -2158,13 +2186,13 @@ clLib.UI.elements = {
 			});
 			
 			results = clLib.localStorage.getDistinct("Routes", where, distinctColumn, "routeStorage");
-			console.log("got LINE sectors for " + JSON.stringify(where) + ", " + results[0] + " +, >" + JSON.stringify(results));
+			clLib.loggi("got LINE sectors for " + JSON.stringify(where) + ", " + results[0] + " +, >" + JSON.stringify(results));
 			
 			if(results.length == 1) {
 				$sectorSelect.val(results[0]);
 				$sectorSelect.selectmenu('refresh', true);
 
-				console.log("sectorselect changed to " + results[0]);
+				clLib.loggi("sectorselect changed to " + results[0]);
 			} else {
 				if($("#newRouteLog_lineSelect").val() != clLib.UI.NOTSELECTED.value) {
 					//alert("2013-10-07-WTF!?!?!? multiple sectors for line " + $("#newRouteLog_lineSelect").val() + " found - setting sector to the one of first result...");
@@ -2191,20 +2219,30 @@ clLib.UI.elements = {
 	},
 	"newRouteLog_colourSelect": {
 		"refreshHandler" : function($this) { 
-			console.log("getting colours");
+			clLib.loggi("getting colours");
 			var distinctColumn, where, results;
 			distinctColumn = "Colour";
-			where = clLib.getRoutesWhere({
-				"GradeType" : $("#newRouteLog_gradeTypeSelect").val(),
-				"Grade" : $("#newRouteLog_gradeSelect").val(),
-				"Area" : localStorage.getItem("currentlySelectedArea"),
-				"Sector" : $("#newRouteLog_sectorSelect").val(),
-				"Line" : $("#newRouteLog_lineSelect").val()
-			});
-			//console.log("Getting routese for " + JSON.stringify(where));
+			var routeWhereObj = {};
+			
+			var baseWhereObj;
+			var currentLayout = localStorage.getItem("currentLayout");
+			if(currentLayout == 'reduced') {
+				// for reduced layout get ALL available colours..
+				baseWhereObj = {};
+			} else {
+				baseWhereObj = clLib.UI.buildWhereIfVisible({
+					"GradeType" : $("#newRouteLog_gradeTypeSelect"),
+					"Grade" : $("#newRouteLog_gradeSelect"),
+					"Area" : localStorage.getItem("currentlySelectedArea"),
+					"Sector" : $("#newRouteLog_sectorSelect"),
+					"Line" : $("#newRouteLog_lineSelect")
+				});
+			}
+			where = clLib.getRoutesWhere(baseWhereObj);
+			clLib.loggi("(colour:) Getting routes for " + JSON.stringify(where));
 
 			results = clLib.localStorage.getDistinct("Routes", where, distinctColumn, "routeStorage");
-			console.log("got colours for " + JSON.stringify(where) + ",>" + JSON.stringify(results));
+			clLib.loggi("got colours for " + JSON.stringify(where) + ",>" + JSON.stringify(results));
 
 			clLib.populateSelectBox({
 				selectBoxElement : $this,
@@ -2237,7 +2275,7 @@ clLib.UI.elements = {
 	"newRouteLog_searchRouteResults" : {
 		"refreshHandler" : function($this, options) { 
 			options = options || {};
-			console.log("refreshing searchrouteresults with options " + JSON.stringify(options));
+			clLib.loggi("refreshing searchrouteresults with options " + JSON.stringify(options));
 			var $inElement = $this;
 			var $forElement = $("#newRouteLog_searchRoute");
 			;
@@ -2255,29 +2293,29 @@ clLib.UI.elements = {
 			where["Name"] = {
 				"$starts-with" : $forElement.val()	
 			}
-			console.log("Getting routes for " + JSON.stringify(where));
+			clLib.loggi("Getting routes for " + JSON.stringify(where));
 			results = clLib.localStorage.getDistinct("Routes", where, distinctColumn, "routeStorage");
 			
-			console.log("got routes " + JSON.stringify(results));
+			clLib.loggi("got routes " + JSON.stringify(results));
 
 
-			//console.log("adding results from " + $forElement.attr("id") + " to " + $inElement.attr("id"));
+			//clLib.loggi("adding results from " + $forElement.attr("id") + " to " + $inElement.attr("id"));
 			clLib.populateSearchProposals($forElement, $inElement, results, options["hideOnSingleResult"]);
 		}
 		,"refreshOnUpdate" : []
 	},
 	"newRouteLog_searchRoute" : {
 		"refreshHandler" : function($this, options) { 
-			console.log("binding to keyup events...");
+			clLib.loggi("binding to keyup events...");
 			$this.bind("keyup.clLib", function() {
-				console.log("keyup, refresh search proposals!!!");
+				clLib.loggi("keyup, refresh search proposals!!!");
 				$("#newRouteLog_searchRouteResults").trigger(
 					"refresh.clLib", 
 					clLib.UI.addObjArr(options || {}, ["eventSourcePath"], $this.attr("id"))
 				);
 			});
 			$this.bind("click.clLib", function() {
-				console.log("click, refresh search proposals!!!");
+				clLib.loggi("click, refresh search proposals!!!");
 				$("#newRouteLog_searchRouteResults").trigger(
 					"refresh.clLib", 
 					clLib.UI.addObjArr(options || {}, ["eventSourcePath"], $this.attr("id"))
@@ -2294,7 +2332,7 @@ clLib.UI.elements = {
 			//alert(">>>" + $this.attr("id") + "," + JSON.stringify(changeOptions));
 
 			if(changeOptions["value"] == clLib.UI.NOTSELECTED.value) {
-				console.log("empty out search route field..");
+				clLib.loggi("empty out search route field..");
 				$this.val("");
 				return;
 			}
@@ -2366,14 +2404,14 @@ clLib.UI.elements = {
 	},
 	"startScreen_areaSelect" : {
 		"refreshHandler" : function($this) { 
-			console.log("handling content for area..");
+			clLib.loggi("handling content for area..");
 			var distinctColumn, where, results;
 			distinctColumn = "Area";
 			//alert("building where");
 			where = clLib.getRoutesWhere("UIAA", "VIII");
 			//alert("where=" + JSON.stringify(where));
 			results = clLib.localStorage.getDistinct("Routes", where, distinctColumn, "routeStorage");
-			console.log("got areas for " + JSON.stringify(where) + ",>" + JSON.stringify(results));
+			clLib.loggi("got areas for " + JSON.stringify(where) + ",>" + JSON.stringify(results));
 			
 			clLib.populateSelectBox({
 				selectBoxElement : $this,

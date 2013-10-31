@@ -58,7 +58,7 @@ clLib.UI.pageElements = {
 clLib.UI.elements = {
 	"newRouteLog_gradeTypeSelect" : {
 		"refreshHandler" : function($this) { 
-			clLib.populateGradeTypes($this, "UIAA") },
+			clLib.populateGradeTypes($this, localStorage.getItem("defaultGradeType") || "UIAA") },
 		"refreshOnUpdate" : {
 			default: {
 				"newRouteLog_gradeSelect" : { }
@@ -117,7 +117,7 @@ clLib.UI.elements = {
 	},
 	"newRouteLog_sectorSelect" : {
 		"refreshHandler" : function($this) { 
-			//console.log("handling content for sector.." + $this.val());
+			//clLib.loggi("handling content for sector.." + $this.val());
 
 			var distinctColumn, where, results;
 			distinctColumn = "Sector";
@@ -129,7 +129,7 @@ clLib.UI.elements = {
 			});
 			
 			results = clLib.localStorage.getDistinct("Routes", where, distinctColumn, "routeStorage");
-			console.log("got sectors for " + JSON.stringify(where) + ",>" + JSON.stringify(results));
+			clLib.loggi("got sectors for " + JSON.stringify(where) + ",>" + JSON.stringify(results));
 
 			clLib.populateSelectBox({
 				selectBoxElement : $this,
@@ -153,19 +153,19 @@ clLib.UI.elements = {
 			});
 			
 			results = clLib.localStorage.getDistinct("Routes", where, distinctColumn, "routeStorage");
-			console.log("got LINE sectors for " + JSON.stringify(where) + ", " + results[0] + " +, >" + JSON.stringify(results));
+			clLib.loggi("got LINE sectors for " + JSON.stringify(where) + ", " + results[0] + " +, >" + JSON.stringify(results));
 			
 			if(results.length == 1) {
 				$sectorSelect.val(results[0]);
 				$sectorSelect.selectmenu('refresh', true);
 
-				console.log("sectorselect changed to " + results[0]);
+				clLib.loggi("sectorselect changed to " + results[0]);
 			} else {
 				if(
 					$("#newRouteLog_lineSelect").val() != clLib.UI.NOTSELECTED.value &&
 					$("#newRouteLog_lineSelect").val() != ""
 				) {
-					console.log("2013-10-07-WTF!?!?!? multiple sectors for line " + $("#newRouteLog_lineSelect").val() + " found - setting sector to the one of first result...");
+					clLib.loggi("2013-10-07-WTF!?!?!? multiple sectors for line " + $("#newRouteLog_lineSelect").val() + " found - setting sector to the one of first result...");
 					alert("setting sector to the one of first result...");
 					$sectorSelect.val(results[0]);     
 				}
@@ -188,7 +188,7 @@ clLib.UI.elements = {
 	},
 	"newRouteLog_lineSelect" : {
 		"refreshHandler" : function($this) { 
-			console.log("getting lines");
+			clLib.loggi("getting lines");
 			var distinctColumn, where, results;
 			distinctColumn = "Line";
 			where = clLib.getRoutesWhere({
@@ -224,13 +224,13 @@ clLib.UI.elements = {
 			});
 			
 			results = clLib.localStorage.getDistinct("Routes", where, distinctColumn, "routeStorage");
-			console.log("got LINE sectors for " + JSON.stringify(where) + ", " + results[0] + " +, >" + JSON.stringify(results));
+			clLib.loggi("got LINE sectors for " + JSON.stringify(where) + ", " + results[0] + " +, >" + JSON.stringify(results));
 			
 			if(results.length == 1) {
 				$sectorSelect.val(results[0]);
 				$sectorSelect.selectmenu('refresh', true);
 
-				console.log("sectorselect changed to " + results[0]);
+				clLib.loggi("sectorselect changed to " + results[0]);
 			} else {
 				if($("#newRouteLog_lineSelect").val() != clLib.UI.NOTSELECTED.value) {
 					//alert("2013-10-07-WTF!?!?!? multiple sectors for line " + $("#newRouteLog_lineSelect").val() + " found - setting sector to the one of first result...");
@@ -257,20 +257,30 @@ clLib.UI.elements = {
 	},
 	"newRouteLog_colourSelect": {
 		"refreshHandler" : function($this) { 
-			console.log("getting colours");
+			clLib.loggi("getting colours");
 			var distinctColumn, where, results;
 			distinctColumn = "Colour";
-			where = clLib.getRoutesWhere({
-				"GradeType" : $("#newRouteLog_gradeTypeSelect").val(),
-				"Grade" : $("#newRouteLog_gradeSelect").val(),
-				"Area" : localStorage.getItem("currentlySelectedArea"),
-				"Sector" : $("#newRouteLog_sectorSelect").val(),
-				"Line" : $("#newRouteLog_lineSelect").val()
-			});
-			//console.log("Getting routese for " + JSON.stringify(where));
+			var routeWhereObj = {};
+			
+			var baseWhereObj;
+			var currentLayout = localStorage.getItem("currentLayout");
+			if(currentLayout == 'reduced') {
+				// for reduced layout get ALL available colours..
+				baseWhereObj = {};
+			} else {
+				baseWhereObj = clLib.UI.buildWhereIfVisible({
+					"GradeType" : $("#newRouteLog_gradeTypeSelect"),
+					"Grade" : $("#newRouteLog_gradeSelect"),
+					"Area" : localStorage.getItem("currentlySelectedArea"),
+					"Sector" : $("#newRouteLog_sectorSelect"),
+					"Line" : $("#newRouteLog_lineSelect")
+				});
+			}
+			where = clLib.getRoutesWhere(baseWhereObj);
+			clLib.loggi("(colour:) Getting routes for " + JSON.stringify(where));
 
 			results = clLib.localStorage.getDistinct("Routes", where, distinctColumn, "routeStorage");
-			console.log("got colours for " + JSON.stringify(where) + ",>" + JSON.stringify(results));
+			clLib.loggi("got colours for " + JSON.stringify(where) + ",>" + JSON.stringify(results));
 
 			clLib.populateSelectBox({
 				selectBoxElement : $this,
@@ -303,7 +313,7 @@ clLib.UI.elements = {
 	"newRouteLog_searchRouteResults" : {
 		"refreshHandler" : function($this, options) { 
 			options = options || {};
-			console.log("refreshing searchrouteresults with options " + JSON.stringify(options));
+			clLib.loggi("refreshing searchrouteresults with options " + JSON.stringify(options));
 			var $inElement = $this;
 			var $forElement = $("#newRouteLog_searchRoute");
 			;
@@ -321,29 +331,29 @@ clLib.UI.elements = {
 			where["Name"] = {
 				"$starts-with" : $forElement.val()	
 			}
-			console.log("Getting routes for " + JSON.stringify(where));
+			clLib.loggi("Getting routes for " + JSON.stringify(where));
 			results = clLib.localStorage.getDistinct("Routes", where, distinctColumn, "routeStorage");
 			
-			console.log("got routes " + JSON.stringify(results));
+			clLib.loggi("got routes " + JSON.stringify(results));
 
 
-			//console.log("adding results from " + $forElement.attr("id") + " to " + $inElement.attr("id"));
+			//clLib.loggi("adding results from " + $forElement.attr("id") + " to " + $inElement.attr("id"));
 			clLib.populateSearchProposals($forElement, $inElement, results, options["hideOnSingleResult"]);
 		}
 		,"refreshOnUpdate" : []
 	},
 	"newRouteLog_searchRoute" : {
 		"refreshHandler" : function($this, options) { 
-			console.log("binding to keyup events...");
+			clLib.loggi("binding to keyup events...");
 			$this.bind("keyup.clLib", function() {
-				console.log("keyup, refresh search proposals!!!");
+				clLib.loggi("keyup, refresh search proposals!!!");
 				$("#newRouteLog_searchRouteResults").trigger(
 					"refresh.clLib", 
 					clLib.UI.addObjArr(options || {}, ["eventSourcePath"], $this.attr("id"))
 				);
 			});
 			$this.bind("click.clLib", function() {
-				console.log("click, refresh search proposals!!!");
+				clLib.loggi("click, refresh search proposals!!!");
 				$("#newRouteLog_searchRouteResults").trigger(
 					"refresh.clLib", 
 					clLib.UI.addObjArr(options || {}, ["eventSourcePath"], $this.attr("id"))
@@ -360,7 +370,7 @@ clLib.UI.elements = {
 			//alert(">>>" + $this.attr("id") + "," + JSON.stringify(changeOptions));
 
 			if(changeOptions["value"] == clLib.UI.NOTSELECTED.value) {
-				console.log("empty out search route field..");
+				clLib.loggi("empty out search route field..");
 				$this.val("");
 				return;
 			}
@@ -432,14 +442,14 @@ clLib.UI.elements = {
 	},
 	"startScreen_areaSelect" : {
 		"refreshHandler" : function($this) { 
-			console.log("handling content for area..");
+			clLib.loggi("handling content for area..");
 			var distinctColumn, where, results;
 			distinctColumn = "Area";
 			//alert("building where");
 			where = clLib.getRoutesWhere("UIAA", "VIII");
 			//alert("where=" + JSON.stringify(where));
 			results = clLib.localStorage.getDistinct("Routes", where, distinctColumn, "routeStorage");
-			console.log("got areas for " + JSON.stringify(where) + ",>" + JSON.stringify(results));
+			clLib.loggi("got areas for " + JSON.stringify(where) + ",>" + JSON.stringify(results));
 			
 			clLib.populateSelectBox({
 				selectBoxElement : $this,
