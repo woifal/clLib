@@ -1770,7 +1770,8 @@ clLib.UI.fillUIelements = function(pageName) {
 		layout = "default";
 	}
 	
-	
+// disabling of element not working on appery - disabling for now..
+/*	
 	$.each(clLib.UI.pageElements[pageName]["default"], function(idx, elementName) {
 		clLib.loggi(elementName + " in " + JSON.stringify(clLib.UI.pageElements[pageName][layout])+ "?" + 
 			(clLib.UI.pageElements[pageName][layout].hasValue(elementName))
@@ -1789,7 +1790,7 @@ clLib.UI.fillUIelements = function(pageName) {
 			clLib.UI.showUIElement($element);
 		}
 	});
-
+*/
 	clLib.loggi("elements for page >" + pageName + "< hidden..");
 	//alert("populating UI elements for page >" + pageName + "<");
 	$.each(clLib.UI.pageElements[pageName][layout], function(idx, elementName) {
