@@ -204,7 +204,7 @@ clLib.UI.defaultChangeHandler = function($element, changeOptions) {
 	if(
 		currentLayout in elementConfig.refreshOnUpdate
 	) {
-		clLib.loggi(currentLayout + ">>" + JSON.stringify(refreshTargets));
+		clLib.loggi($element.attr("id") + ", refreshing >>" + JSON.stringify(Object.keys(refreshTargets[currentLayout])));
 		refreshTargets = elementConfig.refreshOnUpdate[currentLayout];
 	} else {
 		refreshTargets = elementConfig.refreshOnUpdate["default"] || {};
@@ -384,16 +384,19 @@ clLib.UI.addObjArr = function(anObj, pathArray, objValue) {
 }
 
 clLib.UI.showLoading = function(text, html) {
+//alert("shwoing..");
 	$.mobile.loading( 'show', {
-		text: 'foo',
+		text: text,
 		textVisible: true,
 		//theme: 'z',
 		html: html
 	});
+	//alert("showed..");
+
 };
 
 clLib.UI.hideLoading = function() {
-	$.mobile.hidePageLoadingMsg();
+	$.mobile.loading( "hide");
 };
 
 
@@ -490,6 +493,9 @@ clLib.UI.buildWhereIfVisible = function(whereKeys2Elements) {
 		) {
 			whereObj[key] = $element;
 		}
+		clLib.loggi("whereObj is now " + JSON.stringify(whereObj));
+
 	});
 	return whereObj;
 };
+

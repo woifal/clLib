@@ -284,7 +284,7 @@ $( document ).live("pageinit", function() {
 		clLib.UI.fillUIelements("newRouteLog");
 
 		//alert("filled...");
-});
+	});
 
 $( document ).live("change.clLib", function(e) {
 //		alert("changed..." + JSON.stringify($(e.target).attr("id")) + " with data " + JSON.stringify(e.data));
@@ -329,7 +329,9 @@ $( document ).bind("refresh.clLib", function(e, options) {
 	});
 
 	$("#newRouteLog_save_tick").bind("click.clLib", function(e) {
-		var selValue = 
+		clLib.UI.showLoading();
+
+	var selValue = 
 		console.log("rating:" + selValue);
 //		clLib.UI.buildRatingRadio($("#newRouteLog_ratingSelectWrapper"));
 		

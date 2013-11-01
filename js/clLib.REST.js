@@ -78,6 +78,6 @@ clLib.REST.storeEntity = function(entityName, entityInstance) {
 	ajaxrequest.done(function(data) {
 		returnObj = data;
 	});
-	alert("returning(storeEntity) " + JSON.stringify(returnObj));
+	clLib.loggi("returning(storeEntity) " + JSON.stringify(returnObj));
 	return returnObj;
 }

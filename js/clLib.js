@@ -38,6 +38,7 @@ clLib.populateGrades = function($gradeSelect, selectedGradeType) {
 	clLib.loggi("refreshing grades for gradetype " + selectedGradeType);
 	//clLib.populateSelectBox($gradeSelect, Object.keys(clLib.gradeConfig[selectedGradeType]["grades"]), clLib.gradeConfig[selectedGradeType]["defaultGrade"]);
 
+	clLib.loggi("default grade " + localStorage.getItem("defaultGrade") + "||+ " + clLib.gradeConfig[selectedGradeType]["defaultGrade"]);
 	clLib.populateSelectBox({
 		selectBoxElement : $gradeSelect,
 		dataObj : Object.keys(clLib.gradeConfig[selectedGradeType]["grades"]),
