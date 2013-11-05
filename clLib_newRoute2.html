@@ -276,12 +276,12 @@ $( document ).live("pageinit", function() {
 		//alert("filling...");
 		clLib.UI.buildRatingRadio($("#newRouteLog_ratingSelectWrapper"));
 
-		clLib.UI.fillUIelements("startScreen");
+		clLib.UI.fillUIelements("startScreen", "startScreen");
 		$("#startScreen_layoutSelect").val(localStorage.getItem("currentLayout"));
 		$("#startScreen_layoutSelect").selectmenu("refresh");
 		
 
-		clLib.UI.fillUIelements("newRouteLog");
+		clLib.UI.fillUIelements("newRouteLog", "newRouteLog");
 
 		//alert("filled...");
 	});

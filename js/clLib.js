@@ -506,7 +506,7 @@ clLib.loggi = function(text, priority) {
 		if(priority == 1) {
 			alert(text);
 		} else {
-			clLib.loggi(text);
+			console.log(text);
 		}
 	}
 };

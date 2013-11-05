@@ -16,7 +16,7 @@ clLib.UI.killEventHandlers = function($element, eventName) {
 
 
 clLib.UI.setSelectedValue = function($element, newValue) {
-	//alert("triggering setSelectedValue.clLib on " + $element.attr("id") + " with value " + JSON.stringify(newValue));
+	//clLib.loggi("triggering setSelectedValue.clLib on " + $element.attr("id") + " with value " + JSON.stringify(newValue));
 	$element.trigger("setSelectedValue.clLib", 
 		{ "value": newValue }
 	);
@@ -57,8 +57,8 @@ clLib.populateSelectBox = function(options) {
 		clLib.loggi("oldEventHandler " + JSON.stringify(oldEventHandler));
 */
 		// disable current onChange handler
-	var selectBoxId = options.selectBoxElement.attr('id');
-	clLib.loggi("killing event handlers for  " + selectBoxId);
+	var elementName = clLib.UI.elementNameFromId(options.selectBoxElement.attr("id"));
+	clLib.loggi("killing event handlers for  " + elementName + "," + options.selectBoxElement.attr("id"), 2);
 
 	clLib.UI.killEventHandlers(options.selectBoxElement, "change.clLib");
 /*
@@ -72,9 +72,9 @@ clLib.populateSelectBox = function(options) {
 		options.additionalValue
 	);
 
-	var customChangeHandler = clLib.UI.elements[selectBoxId]["changeHandler"];
+	var customChangeHandler = clLib.UI.elements[elementName]["changeHandler"];
 	if(customChangeHandler) {
-		//clLib.loggi("custom event handler for " + selectBoxId + "found.." + customChangeHandler);
+		//clLib.loggi("custom event handler for " + elementName + "found.." + customChangeHandler);
 	}
 	var changeHandler = customChangeHandler || clLib.UI.defaultChangeHandler;
 
@@ -84,6 +84,7 @@ clLib.populateSelectBox = function(options) {
 
 	
 	if(needRefresh) {
+		clLib.loggi("trigger change on " + options.selectBoxElement.attr("id"));
 		options.selectBoxElement.trigger("change.clLib", options.changeOptions);
 	}
 
@@ -138,6 +139,7 @@ clLib.populateSelectBox_plain = function($selectBox, dataObj, selectedValue, pre
 	
 	$selectBox.selectmenu('refresh', true);
 
+	clLib.loggi("oldValueFound? " + oldValueFound);
 	if(oldValueFound) {
 		// no refresh necessary..
 		return false;
@@ -154,9 +156,9 @@ clLib.populateSelectBox_plain = function($selectBox, dataObj, selectedValue, pre
 // $forElement = Appery("nameSearchField");
 clLib.populateSearchProposals = function($forElement, $inElement, dataObj, hideOnSingleResult) {
 	
-	//alert(JSON.stringify(dataObj));
+	//clLib.loggi(JSON.stringify(dataObj));
 	if(hideOnSingleResult && dataObj.length == 1) {
-		//alert("single element found (" + dataObj[0] + "), hiding results..");
+		//clLib.loggi("single element found (" + dataObj[0] + "), hiding results..");
 		var result = $.trim(dataObj[0]);
 
 		clLib.loggi("seeting selectedresult to " + result);
@@ -191,8 +193,8 @@ clLib.populateSearchProposals = function($forElement, $inElement, dataObj, hideO
 clLib.UI.defaultChangeHandler = function($element, changeOptions) {
 	// Store current value
 	$element.data("clLib.currentValue", $element.val());
-	//alert($element.attr("id") + " was changed to: >" + $element.data("clLib.currentValue") + "<" + JSON.stringify(changeOptions));
-	var elementConfig = clLib.UI.elements[$element.attr("id")];
+	//clLib.loggi($element.attr("id") + " was changed to: >" + $element.data("clLib.currentValue") + "<" + JSON.stringify(changeOptions));
+	var elementConfig = clLib.UI.elements[clLib.UI.elementNameFromId($element.attr("id"))];
 	//clLib.loggi("elementConfig for " + $element.attr("id") + " is " + JSON.stringify(elementConfig));
 	
 	//
@@ -210,18 +212,20 @@ clLib.UI.defaultChangeHandler = function($element, changeOptions) {
 		refreshTargets = elementConfig.refreshOnUpdate["default"] || {};
 	}
 
+	clLib.loggi("refreshing dependent " + JSON.stringify(refreshTargets));
 	//	$.each(elementConfig.refreshOnUpdate, function(refreshTargetName, refreshOptions) {
 	$.each(refreshTargets, function(refreshTargetName, refreshOptions) {
 		clLib.loggi("refreshing dependent element " + refreshTargetName);
-		if(!$("#" + refreshTargetName)) {
+		var $refreshTarget = clLib.UI.byId$(refreshTargetName);
+		if(!$refreshTarget[0]) {
 			clLib.loggi("element " + "#" + refreshTargetName + " not found!");
 		}
 
 		$.extend(refreshOptions, changeOptions);
 		
-		$("#" + refreshTargetName)
+		$refreshTarget
 			.trigger("refresh.clLib", 
-				clLib.UI.addObjArr(refreshOptions, ["eventSourcePath"], $element.attr("id"))
+				clLib.UI.addObjArr(refreshOptions, ["eventSourcePath"], clLib.UI.elementNameFromId($element.attr("id")))
 		);
 	});
 
@@ -232,7 +236,7 @@ clLib.UI.defaultSetSelectedValueHandler = function($element, changeOptions) {
 }
 	
 clLib.UI.setSelectedValueOnlyHandler = function($element, changeOptions) {
-	//alert("solely changing value of .." + $element.attr("id") + " to " + JSON.stringify(changeOptions));
+	//clLib.loggi("solely changing value of .." + $element.attr("id") + " to " + JSON.stringify(changeOptions));
 	// avoid default onChange handler..
 	clLib.UI.killEventHandlers($element, "change.clLib");
 	clLib.UI.killEventHandlers($element, "change.clLibColour");
@@ -243,7 +247,7 @@ clLib.UI.setSelectedValueOnlyHandler = function($element, changeOptions) {
 	$element.val(newValue);
 	$element.selectmenu('refresh', true);
 	// restore onChange handler for further changes..
-	var customChangeHandler = clLib.UI.elements[$element.attr("id")]["changeHandler"];
+	var customChangeHandler = clLib.UI.elements[clLib.UI.elementNameFromId($element.attr("id"))]["changeHandler"];
 	var changeHandler = customChangeHandler || clLib.UI.defaultChangeHandler;
 	$element.bind("change.clLib", function(event, changeOptions) {
 		changeHandler($element, changeOptions);
@@ -255,8 +259,8 @@ clLib.UI.resetUIelements = function(pageName) {
 
 	// populate autoload elements
 	$.each(clLib.UI.elementsToReset[pageName], function(idx, elementName) {
-		//alert("triggering reset/refresh for " + elementName);
-		var $element = $("#" + elementName);
+		//clLib.loggi("triggering reset/refresh for " + elementName);
+		var $element = clLib.UI.byId$(elementName);
 		clLib.UI.setSelectedValue($element, clLib.UI.NOTSELECTED.value);
 	});
 	
@@ -290,14 +294,16 @@ clLib.UI.showUIElement = function($element) {
 * The "refresh.clLib" event can (and should) be used to re-populate such elements using the defined "refreshHandler" function.
 *
 */
-clLib.UI.fillUIelements = function(pageName) {
+clLib.UI.fillUIelements = function(pageName, currentJqmSlide) {
+	localStorage.setItem("currentJqmSlide", currentJqmSlide);
+		
 	// no special layout to apply? use default layout..
 	var layout = localStorage.getItem("currentLayout") || "default";
 
-	clLib.loggi("populating UI elements for page >" + pageName + "< and layout >" + layout + "<");
+	clLib.loggi("populating UI elements for page >" + pageName + "< and layout >" + layout + "<", 2);
 
 	if(!(layout in clLib.UI.pageElements[pageName])) {
-		clLib.loggi("layout does not exists for page, using default layout..");
+		clLib.loggi("layout does not exists for page, using default layout..", 2);
 		layout = "default";
 	}
 	
@@ -323,38 +329,42 @@ clLib.UI.fillUIelements = function(pageName) {
 	});
 */
 	clLib.loggi("elements for page >" + pageName + "< hidden..");
-	//alert("populating UI elements for page >" + pageName + "<");
+	//clLib.loggi("populating UI elements for page >" + pageName + "<");
 	$.each(clLib.UI.pageElements[pageName][layout], function(idx, elementName) {
 		var elementConfig = clLib.UI.elements[elementName];
 
 		if(!elementConfig) {
-			//alert("Can't find element >" + elementName + "<, breaking loop..");
+			clLib.loggi("Can't find element >" + elementName + "<, breaking loop..");
 			return;
 		}
 
-		clLib.loggi("adding events for  element >" + elementName + "<");
-		var $element = $("#" + elementName);
-
+		clLib.loggi("!!adding events for  element >" + elementName + "<", 2);
+		clLib.loggi("elementConfig >" + JSON.stringify(elementConfig) + "<", 2);
+		var $element = clLib.UI.byId$(elementName);
+		clLib.loggi("element is " + $element.attr("id") + "<", 2);
+		
 		// Re-attach event handlers
 		clLib.UI.killEventHandlers($element, "change.clLib");
 		clLib.UI.killEventHandlers($element, "refresh.clLib");
 		clLib.UI.killEventHandlers($element, "setSelectedValue.clLib");
 		var changeHandler = elementConfig["changeHandler"] || clLib.UI.defaultChangeHandler;
 		$element.bind("change.clLib", function() {
+			clLib.loggi($(this).attr("id") + "was changed!");
 			changeHandler($element);
 		});
 
 		var setSelectedValueHandler = elementConfig["setSelectedValueHandler"] || clLib.UI.defaultSetSelectedValueHandler;
-		//alert("setting setSelectedValueHandle for " + $element.attr("id"));
+		//clLib.loggi("setting setSelectedValueHandle for " + $element.attr("id"));
 		$element.bind("setSelectedValue.clLib", function(event, changeOptions) {
-			//alert("executing setSelectedValue handler for "+ $element.attr("id") + ">>>>" + JSON.stringify(changeOptions));
+			//clLib.loggi("executing setSelectedValue handler for "+ $element.attr("id") + ">>>>" + JSON.stringify(changeOptions));
 			setSelectedValueHandler($element, changeOptions);
 		});
 
 		// populate current element..
 		$element.bind("refresh.clLib", function(event, additionalOptions) {
+			clLib.loggi("refreshing " + $(this).attr("id"));
 			if(!additionalOptions) additionalOptions = {};
-			//alert("refreshing element " + elementName + " with " +  JSON.stringify(additionalOptions));
+			//clLib.loggi("refreshing element " + elementName + " with " +  JSON.stringify(additionalOptions));
 			if(
 				typeof(additionalOptions) !== "undefined" &&
 				additionalOptions["noRefreshOn"] == elementName
@@ -369,10 +379,10 @@ clLib.UI.fillUIelements = function(pageName) {
 
 	// populate autoload elements
 	$.each(clLib.UI.autoLoad[pageName], function(idx, elementName) {
-		//alert("triggering autoload for " + elementName);
-		//alert($("#" + elementName).html());
+		clLib.loggi("triggering autoload for " + elementName, 2);
+		clLib.loggi("html:" + clLib.UI.byId$(elementName).html(), 2);
 		var optionObj = {};
-		$("#" + elementName).trigger("refresh.clLib", 
+		clLib.UI.byId$(elementName).trigger("refresh.clLib", 
 			clLib.UI.addObjArr(optionObj,["eventSourcePath"], "AUTOLOAD")
 		);
 	});
@@ -384,14 +394,14 @@ clLib.UI.addObjArr = function(anObj, pathArray, objValue) {
 }
 
 clLib.UI.showLoading = function(text, html) {
-//alert("shwoing..");
+//clLib.loggi("shwoing..");
 	$.mobile.loading( 'show', {
 		text: text,
 		textVisible: true,
 		//theme: 'z',
 		html: html
 	});
-	//alert("showed..");
+	//clLib.loggi("showed..");
 
 };
 
@@ -402,7 +412,7 @@ clLib.UI.hideLoading = function() {
 
 
 clLib.UI.showAllTodayScores = function(buddyNames, targetElement) {
-	//alert("buddies changed..refreshing todaysscore..");
+	//clLib.loggi("buddies changed..refreshing todaysscore..");
 
 	var allTodaysScores = [];
 	var buddyArray = (buddyNames && buddyNames.split(",")) || [];
@@ -416,11 +426,11 @@ clLib.UI.showAllTodayScores = function(buddyNames, targetElement) {
 			true, 10);
 		// calculate today's score
 		var buddyTodaysTopScore = clLib.calculateScore(buddyTodaysTopRouteLogs);
-		//alert("buddys todays score(top10)" + buddyTodaysTopScore);
+		//clLib.loggi("buddys todays score(top10)" + buddyTodaysTopScore);
 		var buddyTodayStr = buddyName + " => " + buddyTodaysTopScore;
 		allTodaysScores.push(buddyTodayStr);
 	});
-	//alert("allTodaysTopScore: " + JSON.stringify(allTodaysScores));
+	//clLib.loggi("allTodaysTopScore: " + JSON.stringify(allTodaysScores));
 	// show buddies todays' score
 	clLib.populateListView(targetElement, allTodaysScores);
 };
@@ -499,3 +509,16 @@ clLib.UI.buildWhereIfVisible = function(whereKeys2Elements) {
 	return whereObj;
 };
 
+clLib.UI.byId$ = function(id) {
+	var currentJqmSlide = localStorage.getItem("currentJqmSlide");
+	var newSelector = "#" + currentJqmSlide + "_" + id;
+	clLib.loggi("returning selector >" + newSelector + "<");
+	return $(newSelector);
+};
+
+
+clLib.UI.elementNameFromId = function(id) {
+	var currentJqmSlide = localStorage.getItem("currentJqmSlide");
+	var newId = id.replace(currentJqmSlide + "_", "");
+	return newId;
+};

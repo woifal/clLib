@@ -2,24 +2,24 @@
 
 clLib.UI.autoLoad = {
 	newRouteLog : [
-		"newRouteLog_gradeTypeSelect",
-		"newRouteLog_searchRoute",
-		"newRouteLog_ratingSelect",
-		"newRouteLog_tickType",
-		"newRouteLog_character"
+		"gradeTypeSelect",
+		"searchRoute",
+		"ratingSelect",
+		"tickType",
+		"character"
 	],
 	startScreen : [
-		"startScreen_areaSelect"
+		"areaSelect"
 	]
 };
 
 clLib.UI.elementsToReset = {
 	newRouteLog : [
-		"newRouteLog_lineSelect",
-		"newRouteLog_sectorSelect",
-		"newRouteLog_colourSelect",
-		"newRouteLog_ratingSelect",
-		"newRouteLog_searchRouteResults"
+		"lineSelect",
+		"sectorSelect",
+		"colourSelect",
+		"ratingSelect",
+		"searchRouteResults"
 	],
 	startScreen : [
 	]
@@ -28,63 +28,66 @@ clLib.UI.elementsToReset = {
 clLib.UI.pageElements = {
 	newRouteLog : {
 		default: [
-			"newRouteLog_gradeTypeSelect",
-			"newRouteLog_gradeSelect",
-			"newRouteLog_sectorSelect",
-			"newRouteLog_colourSelect",
-			"newRouteLog_lineSelect",
-			"newRouteLog_searchRouteResults",
-			"newRouteLog_searchRoute",
-			"newRouteLog_commentText",
-			"newRouteLog_ratingSelect",
-			"newRouteLog_tickType",
-			"newRouteLog_character"
+			"gradeTypeSelect",
+			"gradeSelect",
+			"sectorSelect",
+			"colourSelect",
+			"lineSelect",
+			"searchRouteResults",
+			"searchRoute",
+			"commentText",
+			"ratingSelect",
+			"tickType",
+			"character"
 		],
 		reduced: [
-			"newRouteLog_gradeTypeSelect",
-			"newRouteLog_gradeSelect",
-			"newRouteLog_colourSelect",
-			"newRouteLog_tickType",
-			"newRouteLog_character"
+			"gradeTypeSelect",
+			"gradeSelect",
+			"colourSelect",
+			"tickType",
+			"character"
 		]
 	},
 	startScreen : {
 		default: [
-			"startScreen_areaSelect",
-			"startScreen_selectedArea"
+			"areaSelect",
+			"selectedArea"
 		]
 	}
 };
 
+
 clLib.UI.elements = {
-	"newRouteLog_gradeTypeSelect" : {
+	"gradeTypeSelect" : {
 		"refreshHandler" : function($this) { 
 			clLib.populateGradeTypes($this, localStorage.getItem("defaultGradeType") || "UIAA") },
 		"refreshOnUpdate" : {
 			default: {
-				"newRouteLog_gradeSelect" : { }
+				"gradeSelect" : { }
 			}
 		}
 	},
-	"newRouteLog_gradeSelect" : {
+	"gradeSelect" : {
 		"refreshHandler" : function($this) { 
+			var $gradeTypeSelect = clLib.UI.byId$("gradeTypeSelect");
+			clLib.loggi("populating grades in " + $gradeTypeSelect.attr("id"));
 			clLib.populateGrades($this, 
-				$("#newRouteLog_gradeTypeSelect").val()
+				gradeTypeSelect.val()
 			); 
-			//alert("Grades populated to " +$("#newRouteLog_gradeSelect").val());
+			//clLib.loggi("Grades populated to " +$(this).val());
 		},
 		"refreshOnUpdate" : {
 			default: {
-				"newRouteLog_sectorSelect" : {}
-				//,"newRouteLog_colourSelect" : {}
-				,"newRouteLog_lineSelect": {}
+				"sectorSelect" : {}
+				//,"colourSelect" : {}
+				,"lineSelect": {}
 			},
 			reduced: {
-				"newRouteLog_colourSelect" : {}
+				"colourSelect" : {}
 			}
 		}
 	},
-	"newRouteLog_tickType" : {
+	"tickType" : {
 		"refreshHandler" : function($this) { 
 			clLib.populateSelectBox({
 				selectBoxElement : $this,
@@ -101,7 +104,7 @@ clLib.UI.elements = {
 		}
 		,"refreshOnUpdate" : []
 	},
-	"newRouteLog_character" : {
+	"character" : {
 		"refreshHandler" : function($this) { 
 			clLib.populateSelectBox({
 				selectBoxElement : $this,
@@ -118,17 +121,17 @@ clLib.UI.elements = {
 		}
 		,"refreshOnUpdate" : []
 	},
-	"newRouteLog_sectorSelect" : {
+	"sectorSelect" : {
 		"refreshHandler" : function($this) { 
 			//clLib.loggi("handling content for sector.." + $this.val());
 
 			var distinctColumn, where, results;
 			distinctColumn = "Sector";
 			where = clLib.getRoutesWhere({
-				"GradeType" : $("#newRouteLog_gradeTypeSelect").val(),
-				"Grade" : $("#newRouteLog_gradeSelect").val(),
+				"GradeType" : clLib.UI.byId$("gradeTypeSelect").val(),
+				"Grade" : clLib.UI.byId$("gradeSelect").val(),
 				"Area" : localStorage.getItem("currentlySelectedArea")
-				,"Line" : $("#newRouteLog_lineSelect").val()
+				,"Line" : clLib.UI.byId$("lineSelect").val()
 			});
 			
 			results = clLib.localStorage.getDistinct("Routes", where, distinctColumn, "routeStorage");
@@ -143,19 +146,19 @@ clLib.UI.elements = {
 		}
 		,"setSelectedValueHandler" : function($this, changeOptions) { return clLib.UI.setSelectedValueOnlyHandler($this, changeOptions); }
 		,"changeHandler" : function($this, changeOptions) {
-			clLib.UI.setSelectedValue($("#newRouteLog_lineSelect"), clLib.UI.NOTSELECTED);
+			clLib.UI.setSelectedValue(clLib.UI.byId$("lineSelect"), clLib.UI.NOTSELECTED);
 
-			//alert("sector change handler!!");
+			//clLib.loggi("sector change handler!!");
 /*
-			var $sectorSelect = $("#newRouteLog_sectorSelect");
+			var $sectorSelect = clLib.UI.byId$("sectorSelect");
 			
 			var distinctColumn, where, results;
 			distinctColumn = "Sector";
 			where = clLib.getRoutesWhere({
-				"GradeType" : $("#newRouteLog_gradeTypeSelect").val(),
-				"Grade" : $("#newRouteLog_gradeSelect").val(),
+				"GradeType" : clLib.UI.byId$("gradeTypeSelect").val(),
+				"Grade" : clLib.UI.byId$("gradeSelect").val(),
 				"Area" : localStorage.getItem("currentlySelectedArea"),
-				"Line" : $("#newRouteLog_lineSelect").val()
+				"Line" : clLib.UI.byId$("lineSelect").val()
 			});
 			
 			results = clLib.localStorage.getDistinct("Routes", where, distinctColumn, "routeStorage");
@@ -169,11 +172,11 @@ clLib.UI.elements = {
 				clLib.loggi("sectorselect changed to " + results[0]);
 			} else {
 				if(
-					$("#newRouteLog_lineSelect").val() != clLib.UI.NOTSELECTED.value &&
-					$("#newRouteLog_lineSelect").val() != ""
+					clLib.UI.byId$("lineSelect").val() != clLib.UI.NOTSELECTED.value &&
+					clLib.UI.byId$("lineSelect").val() != ""
 				) {
-					clLib.loggi("2013-10-07-WTF!?!?!? multiple sectors for line " + $("#newRouteLog_lineSelect").val() + " found - setting sector to the one of first result...");
-					alert("setting sector to the one of first result...");
+					clLib.loggi("2013-10-07-WTF!?!?!? multiple sectors for line " + clLib.UI.byId$("lineSelect").val() + " found - setting sector to the one of first result...");
+					clLib.loggi("setting sector to the one of first result...");
 					$sectorSelect.val(results[0]);     
 				}
 
@@ -188,27 +191,27 @@ clLib.UI.elements = {
 
 		"refreshOnUpdate" : {
 			default: {
-				"newRouteLog_colourSelect" : {}
-				,"newRouteLog_lineSelect" : {}
+				"colourSelect" : {}
+				,"lineSelect" : {}
 			}
 		}
 	},
-	"newRouteLog_lineSelect" : {
+	"lineSelect" : {
 		"refreshHandler" : function($this) { 
 			clLib.loggi("getting lines");
 			var distinctColumn, where, results;
 			distinctColumn = "Line";
 			where = clLib.getRoutesWhere({
-				"GradeType" : $("#newRouteLog_gradeTypeSelect").val(),
-				"Grade" : $("#newRouteLog_gradeSelect").val(),
+				"GradeType" : clLib.UI.byId$("gradeTypeSelect").val(),
+				"Grade" : clLib.UI.byId$("gradeSelect").val(),
 				"Area" : localStorage.getItem("currentlySelectedArea"),
-				"Sector" : $("#newRouteLog_sectorSelect").val(),
-				"Colour" : $("#newRouteLog_colourSelect").val()
+				"Sector" : clLib.UI.byId$("sectorSelect").val(),
+				"Colour" : clLib.UI.byId$("colourSelect").val()
 			});
-			//alert("Getting lines for " + JSON.stringify(where));
+			//clLib.loggi("Getting lines for " + JSON.stringify(where));
 
 			results = clLib.localStorage.getDistinct("Routes", where, distinctColumn, "routeStorage");
-			//alert("got lines for " + JSON.stringify(where) + ",>" + JSON.stringify(results));
+			//clLib.loggi("got lines for " + JSON.stringify(where) + ",>" + JSON.stringify(results));
 
 			clLib.populateSelectBox({
 				selectBoxElement : $this,
@@ -219,15 +222,15 @@ clLib.UI.elements = {
 		}
 		,"setSelectedValueHandler" : function($this, changeOptions) { return clLib.UI.setSelectedValueOnlyHandler($this, changeOptions); }
 		,"changeHandler" : function($this, changeOptions) {
-			var $sectorSelect = $("#newRouteLog_sectorSelect");
+			var $sectorSelect = clLib.UI.byId$("sectorSelect");
 			
 			var distinctColumn, where, results;
 			distinctColumn = "Sector";
 			where = clLib.getRoutesWhere({
-				"GradeType" : $("#newRouteLog_gradeTypeSelect").val(),
-				"Grade" : $("#newRouteLog_gradeSelect").val(),
+				"GradeType" : clLib.UI.byId$("gradeTypeSelect").val(),
+				"Grade" : clLib.UI.byId$("gradeSelect").val(),
 				"Area" : localStorage.getItem("currentlySelectedArea"),
-				"Line" : $("#newRouteLog_lineSelect").val()
+				"Line" : clLib.UI.byId$("lineSelect").val()
 			});
 			
 			results = clLib.localStorage.getDistinct("Routes", where, distinctColumn, "routeStorage");
@@ -239,8 +242,9 @@ clLib.UI.elements = {
 
 				clLib.loggi("sectorselect changed to " + results[0]);
 			} else {
-				if($("#newRouteLog_lineSelect").val() != clLib.UI.NOTSELECTED.value) {
-					//alert("2013-10-07-WTF!?!?!? multiple sectors for line " + $("#newRouteLog_lineSelect").val() + " found - setting sector to the one of first result...");
+				var $lineSelect = clLib.UI.byId$("lineSelect");
+				if($lineSelect.val() != clLib.UI.NOTSELECTED.value) {
+					//clLib.loggi("2013-10-07-WTF!?!?!? multiple sectors for line " + $lineSelect.val() + " found - setting sector to the one of first result...");
 					clLib.UI.setSelectedValue($sectorSelect, results[0]);
 				}
 
@@ -251,28 +255,28 @@ clLib.UI.elements = {
 		}
 		,"refreshOnUpdate" : {
 			default: {
-	/*			"newRouteLog_sectorSelect" : {
-					noRefreshOn : "newRouteLog_lineSelect"
+	/*			"sectorSelect" : {
+					noRefreshOn : "lineSelect"
 				}*/
-	/*			,"newRouteLog_searchRouteResults" : {
+	/*			,"searchRouteResults" : {
 					hideOnSingleResult : true
 				}
 	*/
-				"newRouteLog_colourSelect" : {}
+				"colourSelect" : {}
 			}
 		}
 	},
-	"newRouteLog_colourSelect": {
+	"colourSelect": {
 		"refreshHandler" : function($this) { 
 			clLib.loggi("getting colours");
-			//alert("gettting colours for grades populated to " +$("#newRouteLog_gradeSelect").val());
-/*alert("gettting colours for ALL :" + JSON.stringify(
+			//clLib.loggi("gettting colours for grades populated to " +clLib.UI.byId$("gradeSelect").val());
+/*clLib.loggi("gettting colours for ALL :" + JSON.stringify(
 			{
-					"GradeType" : $("#newRouteLog_gradeTypeSelect").val(),
-					"Grade" : $("#newRouteLog_gradeSelect").val(),
+					"GradeType" : clLib.UI.byId$("gradeTypeSelect").val(),
+					"Grade" : clLib.UI.byId$("gradeSelect").val(),
 					"Area" : localStorage.getItem("currentlySelectedArea"),
-					"Sector" : $("#newRouteLog_sectorSelect").val(),
-					"Line" : $("#newRouteLog_lineSelect").val()
+					"Sector" : clLib.UI.byId$("sectorSelect").val(),
+					"Line" : clLib.UI.byId$("lineSelect").val()
 				}));
 */
 			var distinctColumn, where, results;
@@ -280,17 +284,17 @@ clLib.UI.elements = {
 			var routeWhereObj = {};
 			
 			var baseWhereObj;
-			var currentLayout = localStorage.getItem("currentLayout");
+			var currentLayout = localStorage.getItem("currentLayout") || "default";
 			if(currentLayout == 'reduced') {
 				// for reduced layout get ALL available colours..
 				baseWhereObj = {};
 			} else {
 				baseWhereObj = {
-					"GradeType" : $("#newRouteLog_gradeTypeSelect").val(),
-					"Grade" : $("#newRouteLog_gradeSelect").val(),
+					"GradeType" : clLib.UI.byId$("gradeTypeSelect").val(),
+					"Grade" : clLib.UI.byId$("gradeSelect").val(),
 					"Area" : localStorage.getItem("currentlySelectedArea"),
-					"Sector" : $("#newRouteLog_sectorSelect").val(),
-					"Line" : $("#newRouteLog_lineSelect")
+					"Sector" : clLib.UI.byId$("sectorSelect").val(),
+					"Line" : clLib.UI.byId$("lineSelect").val()
 				};
 			}
 			where = clLib.getRoutesWhere(baseWhereObj);
@@ -305,7 +309,7 @@ clLib.UI.elements = {
 				preserveCurrentValue : false,
 				additionalValue : clLib.UI.NOTSELECTED
 			});
-			clLib.addColorBackground("newRouteLog_colourSelect"); 
+			clLib.addColorBackground("colourSelect"); 
 			
 		}
 		,"setSelectedValueHandler" : function($this, changeOptions) { 
@@ -314,36 +318,36 @@ clLib.UI.elements = {
 		}
 		,"refreshOnUpdate" : {
 			default: {
-				"newRouteLog_searchRouteResults" : {
+				"searchRouteResults" : {
 					hideOnSingleResult : true
 				}
 			}
 		}
 		,"changeHandler" : function($this, changeOptions) {
-			var $forElement = $("#newRouteLog_searchRoute");
+			var $forElement = clLib.UI.byId$("searchRoute");
 			$forElement.val("");
-			//alert("searchRoute set to ''");
+			//clLib.loggi("searchRoute set to ''");
 
 			clLib.UI.defaultChangeHandler($this, changeOptions);
 		}
 	},
-	"newRouteLog_searchRouteResults" : {
+	"searchRouteResults" : {
 		"refreshHandler" : function($this, options) { 
 			options = options || {};
 			clLib.loggi("refreshing searchrouteresults with options " + JSON.stringify(options));
 			var $inElement = $this;
-			var $forElement = $("#newRouteLog_searchRoute");
+			var $forElement = clLib.UI.byId$("searchRoute");
 			;
 			
 			var distinctColumn, where, results;
 			distinctColumn = "Name";
 			where = clLib.getRoutesWhere({
-				"GradeType" : $("#newRouteLog_gradeTypeSelect").val(),
-				"Grade": $("#newRouteLog_gradeSelect").val(),
+				"GradeType" : clLib.UI.byId$("gradeTypeSelect").val(),
+				"Grade": clLib.UI.byId$("gradeSelect").val(),
 				"Area" : localStorage.getItem("currentlySelectedArea"),
-				"Sector" : $("#newRouteLog_sectorSelect").val(),
-				"Colour" : $("#newRouteLog_colourSelect").val(),
-				"Line" : $("#newRouteLog_lineSelect").val()
+				"Sector" : clLib.UI.byId$("sectorSelect").val(),
+				"Colour" : clLib.UI.byId$("colourSelect").val(),
+				"Line" : clLib.UI.byId$("lineSelect").val()
 			});
 			where["Name"] = {
 				"$starts-with" : $forElement.val()	
@@ -359,19 +363,19 @@ clLib.UI.elements = {
 		}
 		,"refreshOnUpdate" : []
 	},
-	"newRouteLog_searchRoute" : {
+	"searchRoute" : {
 		"refreshHandler" : function($this, options) { 
 			clLib.loggi("binding to keyup events...");
 			$this.bind("keyup.clLib", function() {
 				clLib.loggi("keyup, refresh search proposals!!!");
-				$("#newRouteLog_searchRouteResults").trigger(
+				clLib.UI.byId$("searchRouteResults").trigger(
 					"refresh.clLib", 
 					clLib.UI.addObjArr(options || {}, ["eventSourcePath"], $this.attr("id"))
 				);
 			});
 			$this.bind("click.clLib", function() {
 				clLib.loggi("click, refresh search proposals!!!");
-				$("#newRouteLog_searchRouteResults").trigger(
+				clLib.UI.byId$("searchRouteResults").trigger(
 					"refresh.clLib", 
 					clLib.UI.addObjArr(options || {}, ["eventSourcePath"], $this.attr("id"))
 				);
@@ -383,8 +387,8 @@ clLib.UI.elements = {
 		
 		}
 		,"setSelectedValueHandler" : function($this, changeOptions) {
-			//alert("searchRoute changed, refresh all other elements!!!");
-			//alert(">>>" + $this.attr("id") + "," + JSON.stringify(changeOptions));
+			//clLib.loggi("searchRoute changed, refresh all other elements!!!");
+			//clLib.loggi(">>>" + $this.attr("id") + "," + JSON.stringify(changeOptions));
 
 			if(changeOptions["value"] == clLib.UI.NOTSELECTED.value) {
 				clLib.loggi("empty out search route field..");
@@ -400,36 +404,36 @@ clLib.UI.elements = {
 			//
 			var distinctColumn, where, results;
 			where = clLib.getRoutesWhere({
-				"GradeType" : $("#newRouteLog_gradeTypeSelect").val(),
-				"Grade" : $("#newRouteLog_gradeSelect").val(),
+				"GradeType" : clLib.UI.byId$("gradeTypeSelect").val(),
+				"Grade" : clLib.UI.byId$("gradeSelect").val(),
 				"Name": changeOptions["value"]
 			});
 			
 			var currentRoute = clLib.localStorage.getEntities("Routes", where, "routeStorage");
-			//alert("got route data for " + JSON.stringify(where) + " >" + JSON.stringify(currentRoute));
+			//clLib.loggi("got route data for " + JSON.stringify(where) + " >" + JSON.stringify(currentRoute));
 			
 			if(currentRoute) {
-				clLib.UI.setSelectedValue($("#newRouteLog_sectorSelect"), currentRoute[0]["Sector"]);
-				clLib.UI.setSelectedValue($("#newRouteLog_lineSelect"), currentRoute[0]["Line"]);
-				clLib.UI.setSelectedValue($("#newRouteLog_colourSelect"), currentRoute[0]["Colour"]);
+				clLib.UI.setSelectedValue(clLib.UI.byId$("sectorSelect"), currentRoute[0]["Sector"]);
+				clLib.UI.setSelectedValue(clLib.UI.byId$("lineSelect"), currentRoute[0]["Line"]);
+				clLib.UI.setSelectedValue(clLib.UI.byId$("colourSelect"), currentRoute[0]["Colour"]);
 			} else {
-				alert("no route for name >" + changeOptions["value"] + "< found.");
+				clLib.loggi("no route for name >" + changeOptions["value"] + "< found.");
 			}
-			//alert("done with setselectedvalue handler for searchroute..");
+			//clLib.loggi("done with setselectedvalue handler for searchroute..");
 		}
 		,"refreshOnUpdate" : []
 	},
-	"newRouteLog_ratingSelect" : {
+	"ratingSelect" : {
 		"refreshHandler" : function($this, options) { 
-			//alert("refreshign ratingselec.t..");
+			//clLib.loggi("refreshign ratingselec.t..");
 			$("input[type='radio']", $this).each(function() {
 				$(this).addClass("unrated");
 			});
-//			alert("onclicking ratingselec.t..");
+//			clLib.loggi("onclicking ratingselec.t..");
 			clLib.UI.killEventHandlers($("input[type='radio']", $this), "click.clLib");
 
 			$("input[type='radio']", $this).bind("click.clLib", function(e) {
-				//alert("radio clicked!" + $(this).val());
+				//clLib.loggi("radio clicked!" + $(this).val());
 				var $label = $(this).parent();
 
 				$label.nextAll().addClass("unrated");
@@ -439,12 +443,12 @@ clLib.UI.elements = {
 				$label.prevAll().removeClass("unrated");
 				$label.removeClass("unrated");
 			});
-//			alert("inclicked ratingselec.t..");
+//			clLib.loggi("inclicked ratingselec.t..");
 		},
 		"refreshOnUpdate" : []
 		,"setSelectedValueHandler" : function($this, changeOptions) { 
-			//alert("setting rating select to " + JSON.stringify(changeOptions));
-//			clLib.UI.buildRatingRadio($("#newRouteLog_ratingSelectWrapper"));
+			//clLib.loggi("setting rating select to " + JSON.stringify(changeOptions));
+//			clLib.UI.buildRatingRadio(clLib.UI.byId$("ratingSelectWrapper"));
 
 			if(changeOptions && changeOptions["value"] == clLib.UI.NOTSELECTED.value) {
 				$this.children().addClass("unrated");
@@ -457,14 +461,14 @@ clLib.UI.elements = {
 		}
 		,"changeHandler" : function($this, changeOptions) {}
 	},
-	"startScreen_areaSelect" : {
+	"areaSelect" : {
 		"refreshHandler" : function($this) { 
 			clLib.loggi("handling content for area..");
 			var distinctColumn, where, results;
 			distinctColumn = "Area";
-			//alert("building where");
+			//clLib.loggi("building where");
 			where = clLib.getRoutesWhere("UIAA", "VIII");
-			//alert("where=" + JSON.stringify(where));
+			//clLib.loggi("where=" + JSON.stringify(where));
 			results = clLib.localStorage.getDistinct("Routes", where, distinctColumn, "routeStorage");
 			clLib.loggi("got areas for " + JSON.stringify(where) + ",>" + JSON.stringify(results));
 			
@@ -476,13 +480,13 @@ clLib.UI.elements = {
 		},
 		"refreshOnUpdate" : {
 			default: {
-				"startScreen_selectedArea" : {}
+				"selectedArea" : {}
 			}
 		}
 	},
-	"startScreen_selectedArea" : {
+	"selectedArea" : {
 		"refreshHandler" : function($this) { 
-			localStorage.setItem("currentlySelectedArea", $("#startScreen_areaSelect").val());
+			localStorage.setItem("currentlySelectedArea", clLib.UI.byId$("areaSelect").val());
 //			clLib.UI.fillUIelements("newRouteLog");
 		},
 		"refreshOnUpdate" : {}
