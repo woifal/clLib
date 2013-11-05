@@ -72,7 +72,7 @@ clLib.UI.elements = {
 			var $gradeTypeSelect = clLib.UI.byId$("gradeTypeSelect");
 			clLib.loggi("populating grades in " + $gradeTypeSelect.attr("id"));
 			clLib.populateGrades($this, 
-				gradeTypeSelect.val()
+				$gradeTypeSelect.val()
 			); 
 			//clLib.loggi("Grades populated to " +$(this).val());
 		},
