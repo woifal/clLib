@@ -108,60 +108,6 @@ clLib.tomorrow = function() {
 
 
 
-/*
-*  Adds css classes (with the same name as the _values_) to the options
-*  from the specified select box (with id _targetId_).
-*  Currently selected option(=color) is set as class of the currently selected
-*  element.
-*
-*  _targetId_ is expected to be a select menu rendered by jqm.
-*
-*/
-clLib.addColorBackground = function(targetId) {
-	//clLib.loggi("adding colors to " + targetId);
-	var $targetEl = $('#' + targetId);
-	clLib.UI.killEventHandlers($targetEl, "change.clLibColour");
-	
-	// Add css class named option.value for every entry in #targetId
-    $('option', $targetEl).each(function () {
-        var ind = $(this).index();
-        // fetch current option element
-        var entry = $('#' + targetId + '-menu').find('[data-option-index=' + ind + ']');
-        // set corresponding css class
-        //clLib.loggi("adding class" + entry.find("a").html());
-        entry
-            .addClass("clColorBg")
-            .addClass(entry.find("a").html());
-    });
-    
-	// Set currently selected color in collapsed select menu 
-    var last_style; // remembers last color chosen
-    
-	$targetEl.on('change.clLibColour', function () {
-		var last_style = $(this).data("cllast_style");
-
-		// Get currently selected element
-        var selection = $(this).find(':selected').html();
-
-        //alert("last_style " + last_style + ",changing to " + selection);
-
-        // Remove CSS class for previously selected color
-        if (last_style) {
-            $(this).closest('.ui-select').find('.ui-btn').removeClass(last_style);
-        }
-        // Set currently selected color
-        $(this).closest('.ui-select').find('.ui-btn').addClass(selection);
-        // Remember currently selected color
-        $(this).data("cllast_style", selection);
-        //alert("remembering last_style " + selection);
-		//$(this).change();
-    });
-
-	// Update jqm generated widget
-	$('#' + targetId).trigger('change.clLibColour');
-//	$('#' + targetId).trigger('change');
- 	
-};
 
 
 
@@ -260,8 +206,8 @@ clLib.getRoutesWhere = function(gradeType, grade, area, sector, colour, line) {
 clLib.getRoutesWhere_plain = function(gradeType, grade, area, sector, colour, line) {
 	var restrictionObj = {};
 	//alert("building restrictionobj" + JSON.stringify(line));
-	if(restrictionObj["GradeType"]) {
-		restrictionObj["GradeType"] = gradeType;
+	if(restrictionObj["GradeSystem"]) {
+		restrictionObj["GradeSystem"] = gradeType;
 		restrictionObj["Grade"] = grade;
 	}
 	clLib.extendIfDefined(restrictionObj, "Area", area);
@@ -275,9 +221,9 @@ clLib.getRoutesWhere_plain = function(gradeType, grade, area, sector, colour, li
 
 clLib.getRoutesWhere_obj = function(restrictionObj) {
 	var gradeType, grade;
-	gradeType = restrictionObj["GradeType"];
+	gradeType = restrictionObj["GradeSystem"];
 	grade = restrictionObj["Grade"];
-	delete restrictionObj["GradeType"];
+	delete restrictionObj["GradeSystem"];
 	delete restrictionObj["Grade"];
 	
 	if(gradeType) {
@@ -1090,18 +1036,23 @@ clLib.localStorage.syncUp = function(entity, entityInstance, storageName) {
 	//alert(">" + dummyId + "< in storagecache? >" + JSON.stringify(entityStorage[dummyId]) + "<");
 
 	delete(entityInstance["_id"]);
-	var realInstance = clLib.REST.storeEntity(entity, entityInstance);
-	entityInstance["_id"] = realInstance["_id"];	
-
-	clLib.loggi("synced UP >" + dummyId + "<, new id is " + realInstance["_id"]);
-	// delete dummy id
-	clLib.localStorage.removeStorageItem(storageName, entity, dummyId);
-	// delete from unsynced entries..
-	clLib.localStorage.removeStorageItem("UNSYNCED_" + storageName, entity, dummyId);
-
-	// store real id
-	clLib.localStorage.addStorageItem(storageName, entity, entityInstance);
+	try {
+		var realInstance = clLib.REST.storeEntity(entity, entityInstance);
 	
+		entityInstance["_id"] = realInstance["_id"];	
+
+		clLib.loggi("synced UP >" + dummyId + "<, new id is " + realInstance["_id"]);
+		// delete dummy id
+		clLib.localStorage.removeStorageItem(storageName, entity, dummyId);
+		// delete from unsynced entries..
+		clLib.localStorage.removeStorageItem("UNSYNCED_" + storageName, entity, dummyId);
+
+		// store real id
+		clLib.localStorage.addStorageItem(storageName, entity, entityInstance);
+
+	} catch (e) {
+		alert("could not sync item due to:" + e.name + " + (" + e.message);
+	}
 }
 
 
@@ -1518,22 +1469,12 @@ clLib.populateSelectBox = function(options) {
 	};
 	$.extend(defaultOptions, options);
 
-/*
-	var oldEventHandler = function() {clLib.loggi("undefined event handler");};
-	clLib.loggi("oldEventHandler = " + options.selectBoxElement.attr("id") + ">" + JSON.stringify(options.selectBoxElement.data("events")));
-	// remember current onChange Handler
-	if(options.selectBoxElement.data("events")) {
-		oldEventHandler = options.selectBoxElement.data("events")['change.clLib'][0].handler;
-		clLib.loggi("oldEventHandler " + JSON.stringify(oldEventHandler));
-*/
-		// disable current onChange handler
+	// disable current onChange handler
 	var elementName = clLib.UI.elementNameFromId(options.selectBoxElement.attr("id"));
 	clLib.loggi("killing event handlers for  " + elementName + "," + options.selectBoxElement.attr("id"), 2);
 
 	clLib.UI.killEventHandlers(options.selectBoxElement, "change.clLib");
-/*
-	}
-*/
+
 	var needRefresh = clLib.populateSelectBox_plain(
 		options.selectBoxElement,
 		options.dataObj,
@@ -1648,9 +1589,9 @@ clLib.populateSearchProposals = function($forElement, $inElement, dataObj, hideO
 	$inElement.children().click(function() {
         clLib.loggi("this child;" + $(this).html());
 		var result = $.trim($(this).html());
-		clLib.loggi("seeting selectedresult to " + result);
+		//alert("seeting selectedresult to " + result);
 
-		clLib.loggi("forElement is " + $forElement.attr("id"));
+		//alert("forElement is " + $forElement.attr("id"));
 		$forElement.trigger("setSelectedValue.clLib", {"value": result});
 		//$forElement.val(result);
 
@@ -1665,21 +1606,22 @@ clLib.UI.defaultChangeHandler = function($element, changeOptions) {
 	$element.data("clLib.currentValue", $element.val());
 	//clLib.loggi($element.attr("id") + " was changed to: >" + $element.data("clLib.currentValue") + "<" + JSON.stringify(changeOptions));
 	var elementConfig = clLib.UI.elements[clLib.UI.elementNameFromId($element.attr("id"))];
-	//clLib.loggi("elementConfig for " + $element.attr("id") + " is " + JSON.stringify(elementConfig));
+	//alert("elementConfig for " + $element.attr("id") + "(" + clLib.UI.elementNameFromId($element.attr("id")) + ") is " + JSON.stringify(elementConfig));
 	
 	//
 	// consider currently chosen layout from now on..
 	//
 	var currentLayout = localStorage.getItem("currentLayout");
 	clLib.loggi("current layout is >" +  currentLayout  + "<");
-	var refreshTargets = elementConfig.refreshOnUpdate;
+	var refreshTargets = elementConfig["refreshOnUpdate"];
 	if(
-		currentLayout in elementConfig.refreshOnUpdate
+		refreshTargets &&
+		currentLayout in refreshTargets
 	) {
 		clLib.loggi($element.attr("id") + ", refreshing >>" + JSON.stringify(Object.keys(refreshTargets[currentLayout])));
-		refreshTargets = elementConfig.refreshOnUpdate[currentLayout];
+		refreshTargets = refreshTargets[currentLayout];
 	} else {
-		refreshTargets = elementConfig.refreshOnUpdate["default"] || {};
+		refreshTargets = refreshTargets && refreshTargets["default"] || {};
 	}
 
 	clLib.loggi("refreshing dependent " + JSON.stringify(refreshTargets));
@@ -1706,14 +1648,16 @@ clLib.UI.defaultSetSelectedValueHandler = function($element, changeOptions) {
 }
 	
 clLib.UI.setSelectedValueOnlyHandler = function($element, changeOptions) {
-	//clLib.loggi("solely changing value of .." + $element.attr("id") + " to " + JSON.stringify(changeOptions));
+	//alert("solely changing value of .." + $element.attr("id") + " to " + JSON.stringify(changeOptions));
 	// avoid default onChange handler..
 	clLib.UI.killEventHandlers($element, "change.clLib");
 	clLib.UI.killEventHandlers($element, "change.clLibColour");
+	clLib.UI.killEventHandlers($element, "change.clLibCSSBackground");
 	var newValue = changeOptions["value"];
 	
 	delete(changeOptions["value"]);
 	// set desired value
+	//alert("setting element " + $element.attr("id") + " to " + JSON.stringify(newValue));
 	$element.val(newValue);
 	$element.selectmenu('refresh', true);
 	// restore onChange handler for further changes..
@@ -1725,13 +1669,22 @@ clLib.UI.setSelectedValueOnlyHandler = function($element, changeOptions) {
 }
 	
 
-clLib.UI.resetUIelements = function(pageName) {
-
+clLib.UI.resetUIelements = function(pageName, currentJqmSlide) {
+	localStorage.setItem("currentJqmSlide", currentJqmSlide);
 	// populate autoload elements
 	$.each(clLib.UI.elementsToReset[pageName], function(idx, elementName) {
-		//clLib.loggi("triggering reset/refresh for " + elementName);
 		var $element = clLib.UI.byId$(elementName);
-		clLib.UI.setSelectedValue($element, clLib.UI.NOTSELECTED.value);
+		//alert(elementName + "->" + $element.attr("id"));
+		if($element[0]) {
+			var elementType = $element[0].tagName;
+		}
+		//alert("triggering reset/refresh for " + elementName + ", type:" + elementType);
+//		if(elementType == "SELECT") {
+			clLib.UI.setSelectedValue($element, clLib.UI.NOTSELECTED.value);
+//		} else {
+//			$element.val("");
+//		}
+		
 	});
 	
 	$("#newRouteLog_commentText").val('');
@@ -1778,26 +1731,25 @@ clLib.UI.fillUIelements = function(pageName, currentJqmSlide) {
 	}
 	
 // disabling of element not working on appery - disabling for now..
-/*	
-	$.each(clLib.UI.pageElements[pageName]["default"], function(idx, elementName) {
-		clLib.loggi(elementName + " in " + JSON.stringify(clLib.UI.pageElements[pageName][layout])+ "?" + 
-			(clLib.UI.pageElements[pageName][layout].hasValue(elementName))
-		);
-		if(!(clLib.UI.pageElements[pageName][layout].hasValue(elementName))) {
-			var $element = $("#" + elementName);
-			clLib.loggi("element is >" + $element.attr("id") + "<, hide it");
-	
-			// hide elements per default..
-			clLib.UI.hideUIElement($element);
-		} else {
-			var $element = $("#" + elementName);
-			clLib.loggi("element is >" + $element.attr("id") + "<, SHOW it");
-	
-			// hide elements per default..
-			clLib.UI.showUIElement($element);
-		}
-	});
-*/
+//	$.each(clLib.UI.pageElements[pageName]["default"], function(idx, elementName) {
+//		clLib.loggi(elementName + " in " + JSON.stringify(clLib.UI.pageElements[pageName][layout])+ "?" + 
+//			(clLib.UI.pageElements[pageName][layout].hasValue(elementName))
+//		);
+//		if(!(clLib.UI.pageElements[pageName][layout].hasValue(elementName))) {
+//			var $element = $("#" + elementName);
+//			clLib.loggi("element is >" + $element.attr("id") + "<, hide it");
+//	
+//			// hide elements per default..
+//			clLib.UI.hideUIElement($element);
+//		} else {
+//			var $element = $("#" + elementName);
+//			clLib.loggi("element is >" + $element.attr("id") + "<, SHOW it");
+//	
+//			// hide elements per default..
+//			clLib.UI.showUIElement($element);
+//		}
+//	});
+//
 	clLib.loggi("elements for page >" + pageName + "< hidden..");
 	//clLib.loggi("populating UI elements for page >" + pageName + "<");
 	$.each(clLib.UI.pageElements[pageName][layout], function(idx, elementName) {
@@ -1979,10 +1931,16 @@ clLib.UI.buildWhereIfVisible = function(whereKeys2Elements) {
 	return whereObj;
 };
 
-clLib.UI.byId$ = function(id) {
+
+clLib.UI.getId$ = function(elementName) {
 	var currentJqmSlide = localStorage.getItem("currentJqmSlide");
-	var newSelector = "#" + currentJqmSlide + "_" + id;
-	clLib.loggi("returning selector >" + newSelector + "<");
+	var newSelector = "#" + currentJqmSlide + "_" + elementName;
+	return newSelector;
+};
+
+clLib.UI.byId$ = function(elementName) {
+	var newSelector = clLib.UI.getId$(elementName);
+	//alert("returning selector >" + newSelector + "<");
 	return $(newSelector);
 };
 
@@ -1991,7 +1949,159 @@ clLib.UI.elementNameFromId = function(id) {
 	var currentJqmSlide = localStorage.getItem("currentJqmSlide");
 	var newId = id.replace(currentJqmSlide + "_", "");
 	return newId;
-};"use strict";
+};
+
+clLib.UI.defaultRefreshHandler = function($element, additionalSelectBoxOptions) {
+	//alert("refreshing " + $element.attr("id"));
+	var currentLayout = localStorage.getItem("currentLayout") || "default";
+	var elementConfig = clLib.UI.elements[clLib.UI.elementNameFromId($element.attr("id"))];
+
+	var dependingPageElements = elementConfig["dependingOn"][currentLayout];
+	var resultColName = elementConfig["dbField"];
+
+	var results = clLib.UI.defaultEntitySearch(resultColName, dependingPageElements, true); //, additionalWhere);
+	//alert("got results: " + JSON.stringify(results));
+
+	var selectBoxOptions = {
+		selectBoxElement : $element,
+		dataObj : results,
+		preserveCurrentValue : true,
+		additionalValue : clLib.UI.NOTSELECTED
+	};
+	$.extend(selectBoxOptions, additionalSelectBoxOptions);
+	clLib.populateSelectBox(selectBoxOptions);
+}
+
+clLib.UI.defaultRefreshHandler_old = function($element, resultColName, dependentPageElements) {
+
+	results = clLib.UI.defaultEntitySearch(resultColName, dependentPageElements, true);
+	clLib.loggi("got results for " + JSON.stringify(where) + ",>" + JSON.stringify(results));
+
+	clLib.populateSelectBox({
+		selectBoxElement : $element,
+		dataObj : results,
+		preserveCurrentValue : true,
+		additionalValue : clLib.UI.NOTSELECTED
+	});
+}
+
+clLib.UI.defaultEntitySearch = function(resultColName, dependentPageElements, distinctFlag, additionalWhereObj) {
+	var baseWhere = {}, where, results, getFunc;
+	$.each(dependentPageElements, function(idx, elementName) {
+		var elementConfig = clLib.UI.elements[elementName];
+		//alert("eaching " + idx + "," + elementName + "=>" + elementConfig["dbField"] + " to " + clLib.UI.getVal(elementName));
+		baseWhere[elementConfig["dbField"]] = clLib.UI.getVal(elementName);
+	});
+	//alert("basewhere1 = " + JSON.stringify(baseWhere));
+	if(additionalWhereObj) {
+		$.extend(baseWhere, additionalWhereObj);
+	}
+	//alert("basewhere2 = " + JSON.stringify(baseWhere));
+	where = clLib.getRoutesWhere(baseWhere);
+	//alert("where = " + JSON.stringify(where));
+
+	if(distinctFlag) {
+		getFunc = clLib.localStorage.getDistinct;
+		results = getFunc("Routes", where, resultColName, "routeStorage");
+	} else {
+		results = clLib.localStorage.getEntities("Routes", where, "routeStorage");
+	}
+	return results;
+
+}
+
+
+clLib.UI.getVal = function(elementName) {
+	var elementConfig = clLib.UI.elements[elementName];
+	var elementValue;
+	if(elementConfig["customVal"]) {
+		elementValue = elementConfig["customVal"]();
+	} else {
+		elementValue = clLib.UI.byId$(elementName).val();
+	}
+	return elementValue;
+}
+
+clLib.UI.defaultSaveHandler = function(currentJqmSlide, currentLayout) {
+	var saveObj = {};
+	if(!currentJqmSlide) {
+		currentJqmSlide = localStorage.getItem("currentJqmSlide");
+	}
+	if(!currentLayout) {
+		currentLayout = localStorage.getItem("currentLayout");
+	} 
+	
+	$.each(clLib.UI.pageElements[currentJqmSlide][currentLayout], function(idx, elementName) {
+		//alert("eaching " + idx + " and " + elementName);
+		var elementConfig = clLib.UI.elements[elementName];
+		if(!elementConfig) {
+			alert("will not save " + elementName + ", no config found!");
+		} else {
+			saveObj[elementConfig["dbField"]] = clLib.UI.getVal(elementName);
+		}
+	});
+	//alert("saveObj is " + JSON.stringify(saveObj));
+	clLib.localStorage.addInstance("RouteLog", saveObj, "routeLogStorage");
+}
+
+
+
+
+/*
+*  Adds css classes (with the same name as the _values_) to the options
+*  from the specified select box (with id _targetId_).
+*  Currently selected option(=color) is set as class of the currently selected
+*  element.
+*
+*  _targetId_ is expected to be a select menu rendered by jqm.
+*
+*/
+clLib.addCSSBackground = function(targetId) {
+	//clLib.loggi("adding CSS bg to " + targetId);
+	var $targetEl = $('#' + targetId);
+	clLib.UI.killEventHandlers($targetEl, "change.clLibCSSBackground");
+	
+	// Add css class named option.value for every entry in #targetId
+    $('option', $targetEl).each(function () {
+        var ind = $(this).index();
+        // fetch current option element
+        var entry = $('#' + targetId + '-menu').find('[data-option-index=' + ind + ']');
+        // set corresponding css class
+        //clLib.loggi("adding class" + entry.find("a").html());
+        entry
+            .addClass("clCSSBg")
+            .addClass(entry.find("a").html());
+    });
+    
+	// Set currently selected color in collapsed select menu 
+    var last_style; // remembers last color chosen
+    
+	$targetEl.on('change.clLibCSSBackground', function () {
+		var last_style = $(this).data("cllast_style");
+		// Get currently selected element
+        var selection = $(this).find(':selected').html();
+        //alert("last_style " + last_style + ",changing to " + selection);
+
+        // Remove CSS class for previously selected color
+        if (last_style) {
+            $(this).closest('.ui-select').find('.ui-btn').removeClass(last_style);
+        }
+        // Set currently selected color
+        $(this).closest('.ui-select').find('.ui-btn').addClass(selection);
+        // Remember currently selected color
+        $(this).data("cllast_style", selection);
+        //alert("remembering last_style " + selection);
+		//$(this).change();
+    });
+
+	// Update jqm generated widget
+	$('#' + targetId).trigger('change.clLibCSSBackground');
+//	$('#' + targetId).trigger('change');
+ 	
+};
+
+
+"use strict";
 
 clLib.UI.autoLoad = {
 	newRouteLog : [
@@ -1999,7 +2109,7 @@ clLib.UI.autoLoad = {
 		"searchRoute",
 		"ratingSelect",
 		"tickType",
-		"character"
+		"characterSelect"
 	],
 	startScreen : [
 		"areaSelect"
@@ -2012,7 +2122,8 @@ clLib.UI.elementsToReset = {
 		"sectorSelect",
 		"colourSelect",
 		"ratingSelect",
-		"searchRouteResults"
+		"searchRouteResults",
+		"searchRoute"
 	],
 	startScreen : [
 	]
@@ -2031,14 +2142,17 @@ clLib.UI.pageElements = {
 			"commentText",
 			"ratingSelect",
 			"tickType",
-			"character"
+			"characterSelect",
+			"selectedArea",
+			"currentUser",
+			"currentDate"
 		],
 		reduced: [
 			"gradeTypeSelect",
 			"gradeSelect",
 			"colourSelect",
 			"tickType",
-			"character"
+			"characterSelect"
 		]
 	},
 	startScreen : {
@@ -2049,30 +2163,29 @@ clLib.UI.pageElements = {
 	}
 };
 
-
 clLib.UI.elements = {
 	"gradeTypeSelect" : {
-		"refreshHandler" : function($this) { 
-			clLib.populateGradeTypes($this, localStorage.getItem("defaultGradeType") || "UIAA") },
-		"refreshOnUpdate" : {
+		"dbField" : "GradeSystem"
+		,"refreshHandler" : function($this) { 
+			clLib.populateGradeTypes($this, localStorage.getItem("defaultGradeType") || "UIAA") 
+		}
+		,"refreshOnUpdate" : {
 			default: {
 				"gradeSelect" : { }
 			}
 		}
 	},
 	"gradeSelect" : {
-		"refreshHandler" : function($this) { 
+		"dbField" : "Grade"
+		,"refreshHandler" : function($this) { 
 			var $gradeTypeSelect = clLib.UI.byId$("gradeTypeSelect");
-			clLib.loggi("populating grades in " + $gradeTypeSelect.attr("id"));
 			clLib.populateGrades($this, 
-				gradeTypeSelect.val()
+				$gradeTypeSelect.val()
 			); 
-			//clLib.loggi("Grades populated to " +$(this).val());
-		},
-		"refreshOnUpdate" : {
+		}
+		,"refreshOnUpdate" : {
 			default: {
 				"sectorSelect" : {}
-				//,"colourSelect" : {}
 				,"lineSelect": {}
 			},
 			reduced: {
@@ -2081,108 +2194,37 @@ clLib.UI.elements = {
 		}
 	},
 	"tickType" : {
-		"refreshHandler" : function($this) { 
+		"dbField" : "TickType"
+		,"refreshHandler" : function($this) { 
 			clLib.populateSelectBox({
-				selectBoxElement : $this,
-				dataObj : [
+				selectBoxElement : $this
+				,dataObj : [
 					"Red Point",
 					"Flash",
 					"Onsight",
 					"Attempt",
 					"Top Rope"
-				],
-				preserveCurrentValue : true,
-				additionalValue : clLib.UI.NOTSELECTED
+				]
+				,preserveCurrentValue : true
+				,additionalValue : clLib.UI.NOTSELECTED
+				,selectedValue : "Red Point"
 			});
 		}
-		,"refreshOnUpdate" : []
-	},
-	"character" : {
-		"refreshHandler" : function($this) { 
-			clLib.populateSelectBox({
-				selectBoxElement : $this,
-				dataObj : [
-					"Platte",
-					"Senkrecht",
-					"Leicht überhängend",
-					"Starkt überhängend",
-					"Dach"
-				],
-				preserveCurrentValue : true,
-				additionalValue : clLib.UI.NOTSELECTED
-			});
-		}
-		,"refreshOnUpdate" : []
 	},
 	"sectorSelect" : {
-		"refreshHandler" : function($this) { 
-			//clLib.loggi("handling content for sector.." + $this.val());
-
-			var distinctColumn, where, results;
-			distinctColumn = "Sector";
-			where = clLib.getRoutesWhere({
-				"GradeType" : clLib.UI.byId$("gradeTypeSelect").val(),
-				"Grade" : clLib.UI.byId$("gradeSelect").val(),
-				"Area" : localStorage.getItem("currentlySelectedArea")
-				,"Line" : clLib.UI.byId$("lineSelect").val()
-			});
-			
-			results = clLib.localStorage.getDistinct("Routes", where, distinctColumn, "routeStorage");
-			clLib.loggi("got sectors for " + JSON.stringify(where) + ",>" + JSON.stringify(results));
-
-			clLib.populateSelectBox({
-				selectBoxElement : $this,
-				dataObj : results,
-				preserveCurrentValue : true,
-				additionalValue : clLib.UI.NOTSELECTED
-			});
+		"dbField" : "Sector"
+		,"dependingOn": {
+			default: [
+				"gradeTypeSelect", "gradeSelect", "selectedArea", "lineSelect"
+			],
 		}
+		,"refreshHandler" : function($this) { return clLib.UI.defaultRefreshHandler($this); }
 		,"setSelectedValueHandler" : function($this, changeOptions) { return clLib.UI.setSelectedValueOnlyHandler($this, changeOptions); }
 		,"changeHandler" : function($this, changeOptions) {
 			clLib.UI.setSelectedValue(clLib.UI.byId$("lineSelect"), clLib.UI.NOTSELECTED);
-
-			//clLib.loggi("sector change handler!!");
-/*
-			var $sectorSelect = clLib.UI.byId$("sectorSelect");
-			
-			var distinctColumn, where, results;
-			distinctColumn = "Sector";
-			where = clLib.getRoutesWhere({
-				"GradeType" : clLib.UI.byId$("gradeTypeSelect").val(),
-				"Grade" : clLib.UI.byId$("gradeSelect").val(),
-				"Area" : localStorage.getItem("currentlySelectedArea"),
-				"Line" : clLib.UI.byId$("lineSelect").val()
-			});
-			
-			results = clLib.localStorage.getDistinct("Routes", where, distinctColumn, "routeStorage");
-			clLib.loggi("got LINE sectors for " + JSON.stringify(where) + ", " + results[0] + " +, >" + JSON.stringify(results));
-*/		
-/*
-			if(results.length == 1) {
-				$sectorSelect.val(results[0]);
-				$sectorSelect.selectmenu('refresh', true);
-
-				clLib.loggi("sectorselect changed to " + results[0]);
-			} else {
-				if(
-					clLib.UI.byId$("lineSelect").val() != clLib.UI.NOTSELECTED.value &&
-					clLib.UI.byId$("lineSelect").val() != ""
-				) {
-					clLib.loggi("2013-10-07-WTF!?!?!? multiple sectors for line " + clLib.UI.byId$("lineSelect").val() + " found - setting sector to the one of first result...");
-					clLib.loggi("setting sector to the one of first result...");
-					$sectorSelect.val(results[0]);     
-				}
-
-				$sectorSelect.selectmenu('refresh', true);
-			}
-*/
 			clLib.UI.defaultChangeHandler($this, changeOptions);
-		},
-
-
-
-
-		"refreshOnUpdate" : {
+		}
+		,"refreshOnUpdate" : {
 			default: {
 				"colourSelect" : {}
 				,"lineSelect" : {}
@@ -2190,50 +2232,24 @@ clLib.UI.elements = {
 		}
 	},
 	"lineSelect" : {
-		"refreshHandler" : function($this) { 
-			clLib.loggi("getting lines");
-			var distinctColumn, where, results;
-			distinctColumn = "Line";
-			where = clLib.getRoutesWhere({
-				"GradeType" : clLib.UI.byId$("gradeTypeSelect").val(),
-				"Grade" : clLib.UI.byId$("gradeSelect").val(),
-				"Area" : localStorage.getItem("currentlySelectedArea"),
-				"Sector" : clLib.UI.byId$("sectorSelect").val(),
-				"Colour" : clLib.UI.byId$("colourSelect").val()
-			});
-			//clLib.loggi("Getting lines for " + JSON.stringify(where));
-
-			results = clLib.localStorage.getDistinct("Routes", where, distinctColumn, "routeStorage");
-			//clLib.loggi("got lines for " + JSON.stringify(where) + ",>" + JSON.stringify(results));
-
-			clLib.populateSelectBox({
-				selectBoxElement : $this,
-				dataObj : results,
-				preserveCurrentValue : false,
-				additionalValue : clLib.UI.NOTSELECTED
-			});
+		"dbField" : "Line"
+		,"dependingOn" : {
+			default: [
+				"gradeTypeSelect", "gradeSelect", "selectedArea", "sectorSelect", "colourSelect"
+			]
+		}
+		,"refreshHandler" : function($this) { 
+			return clLib.UI.defaultRefreshHandler($this, { preserveCurrentValue: false });
 		}
 		,"setSelectedValueHandler" : function($this, changeOptions) { return clLib.UI.setSelectedValueOnlyHandler($this, changeOptions); }
 		,"changeHandler" : function($this, changeOptions) {
 			var $sectorSelect = clLib.UI.byId$("sectorSelect");
 			
-			var distinctColumn, where, results;
-			distinctColumn = "Sector";
-			where = clLib.getRoutesWhere({
-				"GradeType" : clLib.UI.byId$("gradeTypeSelect").val(),
-				"Grade" : clLib.UI.byId$("gradeSelect").val(),
-				"Area" : localStorage.getItem("currentlySelectedArea"),
-				"Line" : clLib.UI.byId$("lineSelect").val()
-			});
-			
-			results = clLib.localStorage.getDistinct("Routes", where, distinctColumn, "routeStorage");
-			clLib.loggi("got LINE sectors for " + JSON.stringify(where) + ", " + results[0] + " +, >" + JSON.stringify(results));
+			var results = clLib.UI.defaultEntitySearch("Sector", ["gradeTypeSelect", "gradeSelect", "selectedArea", "lineSelect"], true);
 			
 			if(results.length == 1) {
 				clLib.UI.setSelectedValue($sectorSelect, results[0]);
 				$sectorSelect.selectmenu('refresh', true);
-
-				clLib.loggi("sectorselect changed to " + results[0]);
 			} else {
 				var $lineSelect = clLib.UI.byId$("lineSelect");
 				if($lineSelect.val() != clLib.UI.NOTSELECTED.value) {
@@ -2248,66 +2264,24 @@ clLib.UI.elements = {
 		}
 		,"refreshOnUpdate" : {
 			default: {
-	/*			"sectorSelect" : {
-					noRefreshOn : "lineSelect"
-				}*/
-	/*			,"searchRouteResults" : {
-					hideOnSingleResult : true
-				}
-	*/
 				"colourSelect" : {}
 			}
 		}
 	},
 	"colourSelect": {
-		"refreshHandler" : function($this) { 
-			clLib.loggi("getting colours");
-			//clLib.loggi("gettting colours for grades populated to " +clLib.UI.byId$("gradeSelect").val());
-/*clLib.loggi("gettting colours for ALL :" + JSON.stringify(
-			{
-					"GradeType" : clLib.UI.byId$("gradeTypeSelect").val(),
-					"Grade" : clLib.UI.byId$("gradeSelect").val(),
-					"Area" : localStorage.getItem("currentlySelectedArea"),
-					"Sector" : clLib.UI.byId$("sectorSelect").val(),
-					"Line" : clLib.UI.byId$("lineSelect").val()
-				}));
-*/
-			var distinctColumn, where, results;
-			distinctColumn = "Colour";
-			var routeWhereObj = {};
-			
-			var baseWhereObj;
-			var currentLayout = localStorage.getItem("currentLayout") || "default";
-			if(currentLayout == 'reduced') {
-				// for reduced layout get ALL available colours..
-				baseWhereObj = {};
-			} else {
-				baseWhereObj = {
-					"GradeType" : clLib.UI.byId$("gradeTypeSelect").val(),
-					"Grade" : clLib.UI.byId$("gradeSelect").val(),
-					"Area" : localStorage.getItem("currentlySelectedArea"),
-					"Sector" : clLib.UI.byId$("sectorSelect").val(),
-					"Line" : clLib.UI.byId$("lineSelect").val()
-				};
-			}
-			where = clLib.getRoutesWhere(baseWhereObj);
-			clLib.loggi("Getting colours for " + JSON.stringify(where));
-
-			results = clLib.localStorage.getDistinct("Routes", where, distinctColumn, "routeStorage");
-			clLib.loggi("got colours for " + JSON.stringify(where) + ",>" + JSON.stringify(results));
-
-			clLib.populateSelectBox({
-				selectBoxElement : $this,
-				dataObj : results,
-				preserveCurrentValue : false,
-				additionalValue : clLib.UI.NOTSELECTED
-			});
-			clLib.addColorBackground("colourSelect"); 
-			
+		"dbField" : "Colour"
+		,"dependingOn" : {
+			default: [
+				"gradeTypeSelect", "gradeSelect", "selectedArea", "sectorSelect", "colourSelect"
+			]
+		}
+		,"refreshHandler" : function($this) { 
+			clLib.UI.defaultRefreshHandler($this, { preserveCurrentValue: false });
+			clLib.addCSSBackground($this.attr("id")); 
 		}
 		,"setSelectedValueHandler" : function($this, changeOptions) { 
 			clLib.UI.setSelectedValueOnlyHandler($this, changeOptions);
-			clLib.addColorBackground($this.attr("id")); 
+			clLib.addCSSBackground($this.attr("id")); 
 		}
 		,"refreshOnUpdate" : {
 			default: {
@@ -2319,55 +2293,36 @@ clLib.UI.elements = {
 		,"changeHandler" : function($this, changeOptions) {
 			var $forElement = clLib.UI.byId$("searchRoute");
 			$forElement.val("");
-			//clLib.loggi("searchRoute set to ''");
-
 			clLib.UI.defaultChangeHandler($this, changeOptions);
 		}
 	},
 	"searchRouteResults" : {
 		"refreshHandler" : function($this, options) { 
 			options = options || {};
-			clLib.loggi("refreshing searchrouteresults with options " + JSON.stringify(options));
 			var $inElement = $this;
 			var $forElement = clLib.UI.byId$("searchRoute");
 			;
 			
-			var distinctColumn, where, results;
-			distinctColumn = "Name";
-			where = clLib.getRoutesWhere({
-				"GradeType" : clLib.UI.byId$("gradeTypeSelect").val(),
-				"Grade": clLib.UI.byId$("gradeSelect").val(),
-				"Area" : localStorage.getItem("currentlySelectedArea"),
-				"Sector" : clLib.UI.byId$("sectorSelect").val(),
-				"Colour" : clLib.UI.byId$("colourSelect").val(),
-				"Line" : clLib.UI.byId$("lineSelect").val()
-			});
-			where["Name"] = {
-				"$starts-with" : $forElement.val()	
-			}
-			clLib.loggi("Getting routes for " + JSON.stringify(where));
-			results = clLib.localStorage.getDistinct("Routes", where, distinctColumn, "routeStorage");
+			var results= clLib.UI.defaultEntitySearch(
+				"Name", 
+				["gradeTypeSelect", "gradeSelect", "selectedArea", "sectorSelect", "colourSelect", "lineSelect"], 
+				true, 
+				{"Name": { "$starts-with" : $forElement.val() }}
+			);
 			
-			clLib.loggi("got routes " + JSON.stringify(results));
-
-
-			//clLib.loggi("adding results from " + $forElement.attr("id") + " to " + $inElement.attr("id"));
 			clLib.populateSearchProposals($forElement, $inElement, results, options["hideOnSingleResult"]);
 		}
-		,"refreshOnUpdate" : []
 	},
 	"searchRoute" : {
-		"refreshHandler" : function($this, options) { 
-			clLib.loggi("binding to keyup events...");
+		"dbField" : "RouteName"
+		,"refreshHandler" : function($this, options) { 
 			$this.bind("keyup.clLib", function() {
-				clLib.loggi("keyup, refresh search proposals!!!");
 				clLib.UI.byId$("searchRouteResults").trigger(
 					"refresh.clLib", 
 					clLib.UI.addObjArr(options || {}, ["eventSourcePath"], $this.attr("id"))
 				);
 			});
 			$this.bind("click.clLib", function() {
-				clLib.loggi("click, refresh search proposals!!!");
 				clLib.UI.byId$("searchRouteResults").trigger(
 					"refresh.clLib", 
 					clLib.UI.addObjArr(options || {}, ["eventSourcePath"], $this.attr("id"))
@@ -2380,31 +2335,24 @@ clLib.UI.elements = {
 		
 		}
 		,"setSelectedValueHandler" : function($this, changeOptions) {
-			//clLib.loggi("searchRoute changed, refresh all other elements!!!");
-			//clLib.loggi(">>>" + $this.attr("id") + "," + JSON.stringify(changeOptions));
-
 			if(changeOptions["value"] == clLib.UI.NOTSELECTED.value) {
-				clLib.loggi("empty out search route field..");
 				$this.val("");
 				return;
 			}
-
+			//alert("setting search result ");
 			$this.val(changeOptions["value"]);
 			
 			
 			//
 			//	set all other elements to the one of the currently selected route..
 			//
-			var distinctColumn, where, results;
-			where = clLib.getRoutesWhere({
-				"GradeType" : clLib.UI.byId$("gradeTypeSelect").val(),
-				"Grade" : clLib.UI.byId$("gradeSelect").val(),
-				"Name": changeOptions["value"]
-			});
-			
-			var currentRoute = clLib.localStorage.getEntities("Routes", where, "routeStorage");
-			//clLib.loggi("got route data for " + JSON.stringify(where) + " >" + JSON.stringify(currentRoute));
-			
+			var currentRoute = clLib.UI.defaultEntitySearch(
+				"Sector", 
+				["gradeTypeSelect", "gradeSelect"], 
+				false, 
+				{"Name": changeOptions["value"]})
+			;
+			//alert("got current route" + JSON.stringify(currentRoute));
 			if(currentRoute) {
 				clLib.UI.setSelectedValue(clLib.UI.byId$("sectorSelect"), currentRoute[0]["Sector"]);
 				clLib.UI.setSelectedValue(clLib.UI.byId$("lineSelect"), currentRoute[0]["Line"]);
@@ -2412,21 +2360,17 @@ clLib.UI.elements = {
 			} else {
 				clLib.loggi("no route for name >" + changeOptions["value"] + "< found.");
 			}
-			//clLib.loggi("done with setselectedvalue handler for searchroute..");
 		}
-		,"refreshOnUpdate" : []
 	},
 	"ratingSelect" : {
-		"refreshHandler" : function($this, options) { 
-			//clLib.loggi("refreshign ratingselec.t..");
+		"dbField" : "Rating"
+		,"refreshHandler" : function($this, options) { 
 			$("input[type='radio']", $this).each(function() {
 				$(this).addClass("unrated");
 			});
-//			clLib.loggi("onclicking ratingselec.t..");
 			clLib.UI.killEventHandlers($("input[type='radio']", $this), "click.clLib");
 
 			$("input[type='radio']", $this).bind("click.clLib", function(e) {
-				//clLib.loggi("radio clicked!" + $(this).val());
 				var $label = $(this).parent();
 
 				$label.nextAll().addClass("unrated");
@@ -2436,11 +2380,8 @@ clLib.UI.elements = {
 				$label.prevAll().removeClass("unrated");
 				$label.removeClass("unrated");
 			});
-//			clLib.loggi("inclicked ratingselec.t..");
-		},
-		"refreshOnUpdate" : []
+		}
 		,"setSelectedValueHandler" : function($this, changeOptions) { 
-			//clLib.loggi("setting rating select to " + JSON.stringify(changeOptions));
 //			clLib.UI.buildRatingRadio(clLib.UI.byId$("ratingSelectWrapper"));
 
 			if(changeOptions && changeOptions["value"] == clLib.UI.NOTSELECTED.value) {
@@ -2453,36 +2394,85 @@ clLib.UI.elements = {
 
 		}
 		,"changeHandler" : function($this, changeOptions) {}
-	},
+		,"customVal": function() {
+			alert(clLib.UI.getId$("ratingSelect") + ":checked");
+			return $(clLib.UI.getId$("ratingSelectRadio") + ":checked").val();
+		}
+
+		
+		
+		
+		},
 	"areaSelect" : {
 		"refreshHandler" : function($this) { 
-			clLib.loggi("handling content for area..");
 			var distinctColumn, where, results;
 			distinctColumn = "Area";
-			//clLib.loggi("building where");
-			where = clLib.getRoutesWhere("UIAA", "VIII");
-			//clLib.loggi("where=" + JSON.stringify(where));
+			where = clLib.getRoutesWhere();
 			results = clLib.localStorage.getDistinct("Routes", where, distinctColumn, "routeStorage");
-			clLib.loggi("got areas for " + JSON.stringify(where) + ",>" + JSON.stringify(results));
 			
 			clLib.populateSelectBox({
 				selectBoxElement : $this,
 				dataObj : results,
-				preserveCurrentValue : true
+				preserveCurrentValue : true,
+				selectedValue : localStorage.getItem("defaultArea")
 			});
-		},
-		"refreshOnUpdate" : {
+		}
+		,"changeHandler" : function($this, changeOptions) {
+			localStorage.setItem("currentlySelectedArea", $this.val());
+		}
+		,"refreshOnUpdate" : {
 			default: {
 				"selectedArea" : {}
 			}
 		}
-	},
-	"selectedArea" : {
-		"refreshHandler" : function($this) { 
-			localStorage.setItem("currentlySelectedArea", clLib.UI.byId$("areaSelect").val());
-//			clLib.UI.fillUIelements("newRouteLog");
-		},
-		"refreshOnUpdate" : {}
+	}
+	,"characterSelect": {
+		"dbField" : "character"
+		,"dependingOn" : {
+			default: [
+				"gradeTypeSelect", "gradeSelect", "selectedArea", "sectorSelect", "colourSelect"
+			]
+		}
+		,"refreshHandler" : function($this) { 
+			clLib.populateSelectBox({
+				selectBoxElement : $this,
+				dataObj : [
+					"Platte",
+					"Senkrecht",
+					"Leicht-Ueberhaengend",
+					"Stark-Ueberhaengend",
+					"Dach"
+				],
+				preserveCurrentValue : true,
+				additionalValue : clLib.UI.NOTSELECTED
+			});
+			clLib.addCSSBackground($this.attr("id")); 
+		}
+		,"setSelectedValueHandler" : function($this, changeOptions) { 
+			clLib.UI.setSelectedValueOnlyHandler($this, changeOptions);
+			clLib.addCSSBackground($this.attr("id")); 
+		}
+	}
+	,"selectedArea" : {
+		"dbField" : "Area"
+		,"customVal": function() {
+			return localStorage.getItem("currentlySelectedArea"); //"KletterHalle Wien"; //
+		}
+	}
+	,"currentUser" : {
+		"dbField" : "userName"
+		,"customVal": function() {
+			return localStorage.getItem("currentUser");
+		}
+	}
+	,"currentDate" : {
+		"dbField" : "Date"
+		,"customVal": function() {
+			return new Date();
+		}
+	}
+	,"commentText" : {
+		"dbField" : "Comment"
 	}
 };
 
@@ -2490,6 +2480,12 @@ clLib.UI.elements = {
 
 clLib.REST = {};
 
+clLib.clException= function(name, message) {
+   this.message = message;
+   this.name = name;
+};
+
+clLib.REST.baseURI = "https://api.appery.io/rest/1/db/collections/";
 
 /*
 *	retrieve => need to encode where string
@@ -2499,18 +2495,41 @@ clLib.REST.executeRetrieve = function(uri, method, whereObj) {
 	if(whereObj) {
 		whereObj = "where=" + encodeURIComponent(JSON.stringify(whereObj));
 	}
-	return clLib.REST.execute(uri, method, whereObj);
+	var returnObj = clLib.REST.execAJAXRequest(uri, method, whereObj);
+	return returnObj;
 }
+	
 
 clLib.REST.executeInsert = function(uri, method, objData) {
 	if(objData) {
 		objData = JSON.stringify(objData);
 	}
-	return clLib.REST.execute(uri, method, objData);
+	var returnObj = clLib.REST.execAJAXRequest(uri, method, objData);
+	return returnObj;
 }
+		
+clLib.REST.execAJAXRequest = function(uri, method, params) {
+	var request = clLib.REST.buildAJAXRequest(uri, method, params);
 
+	var returnObj = {};
+	$.ajax(request)
+		.done(function(data) {
+			clLib.loggi("ajax done " + JSON.stringify(data));
+			returnObj = data;
+		})
+		.error(function(data) {
+			throw new clLib.clException("AJAX", JSON.stringify(data));
+			returnObj = null;
+		})
+	;
 
-clLib.REST.execute = function(uri, method, getParams) {
+	clLib.loggi("returing returoIbj of " + JSON.stringify(returnObj));
+	return returnObj;
+	
+};
+
+		
+clLib.REST.buildAJAXRequest = function(uri, method, getParams) {
 	var request = {
 		async: false,
 		url: uri,
@@ -2537,35 +2556,27 @@ clLib.REST.execute = function(uri, method, getParams) {
 			xhr.setRequestHeader("X-Appery-Database-Id", "52093c91e4b04c2d0a027d7f");
 		},
 		error: function(jqXHR) {
-			alert("ajax error " + jqXHR.status);
+			clLib.loggi("ajax error " + jqXHR.status);
 		}
 	};
-	return $.ajax(request);
+	return request;
 }
 
 clLib.REST.getEntities = function(entityName, whereObj) {
-	var uri = "https://api.appery.io/rest/1/db/collections/" + entityName;
+	var uri = clLib.REST.baseURI + entityName;
 	//clLib.UI.showLoading("Loading " + entityName + " from server...", "xyxyx");
-	var ajaxrequest = clLib.REST.executeRetrieve(uri, 'GET', whereObj);
 	var returnObj = {};
-	ajaxrequest.done(function(data) {
-		//alert("retrieved data " + JSON.stringify(data));
-		//clLib.UI.hideLoading();
-		returnObj[entityName] = data;//.responseText;
-		//alert("returning " + JSON.stringify(returnObj));
-	});
-	//alert("2returning " + JSON.stringify(returnObj));
+	returnObj[entityName] = clLib.REST.executeRetrieve(uri, 'GET', whereObj);
+
+	clLib.loggi("returning(getEntities) " + JSON.stringify(returnObj));
 	return returnObj;
 }
 
 clLib.REST.storeEntity = function(entityName, entityInstance) {
-	var uri = "https://api.appery.io/rest/1/db/collections/" + entityName;
+	var uri = clLib.REST.baseURI + entityName;
 	//clLib.UI.showLoading("Loading " + entityName + " from server...", "xyxyx");
-	var ajaxrequest = clLib.REST.executeInsert(uri, 'POST', entityInstance);
-	var returnObj = {};
-	ajaxrequest.done(function(data) {
-		returnObj = data;
-	});
+	var returnObj = clLib.REST.executeInsert(uri, 'POST', entityInstance);
+
 	clLib.loggi("returning(storeEntity) " + JSON.stringify(returnObj));
 	return returnObj;
 }
