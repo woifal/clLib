@@ -625,6 +625,16 @@ clLib.UI.defaultSaveHandler = function(currentJqmSlide, currentLayout) {
 
 
 
+
+/*
+*  Adds css classes (with the same name as the _values_) to the options
+*  from the specified select box (with id _targetId_).
+*  Currently selected option(=color) is set as class of the currently selected
+*  element.
+*
+*  _targetId_ is expected to be a select menu rendered by jqm.
+*
+*/
 clLib.addCSSBackground = function(targetId) {
 	//clLib.loggi("adding CSS bg to " + targetId);
 	var $targetEl = $('#' + targetId);

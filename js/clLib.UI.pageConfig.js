@@ -174,11 +174,11 @@ clLib.UI.elements = {
 		}
 		,"refreshHandler" : function($this) { 
 			clLib.UI.defaultRefreshHandler($this, { preserveCurrentValue: false });
-			clLib.addColorBackground("colourSelect"); 
+			clLib.addCSSBackground($this.attr("id")); 
 		}
 		,"setSelectedValueHandler" : function($this, changeOptions) { 
 			clLib.UI.setSelectedValueOnlyHandler($this, changeOptions);
-			clLib.addColorBackground($this.attr("id")); 
+			clLib.addCSSBackground($this.attr("id")); 
 		}
 		,"refreshOnUpdate" : {
 			default: {
