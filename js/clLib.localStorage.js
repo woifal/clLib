@@ -349,18 +349,23 @@ clLib.localStorage.syncUp = function(entity, entityInstance, storageName) {
 	//alert(">" + dummyId + "< in storagecache? >" + JSON.stringify(entityStorage[dummyId]) + "<");
 
 	delete(entityInstance["_id"]);
-	var realInstance = clLib.REST.storeEntity(entity, entityInstance);
-	entityInstance["_id"] = realInstance["_id"];	
-
-	clLib.loggi("synced UP >" + dummyId + "<, new id is " + realInstance["_id"]);
-	// delete dummy id
-	clLib.localStorage.removeStorageItem(storageName, entity, dummyId);
-	// delete from unsynced entries..
-	clLib.localStorage.removeStorageItem("UNSYNCED_" + storageName, entity, dummyId);
-
-	// store real id
-	clLib.localStorage.addStorageItem(storageName, entity, entityInstance);
+	try {
+		var realInstance = clLib.REST.storeEntity(entity, entityInstance);
 	
+		entityInstance["_id"] = realInstance["_id"];	
+
+		clLib.loggi("synced UP >" + dummyId + "<, new id is " + realInstance["_id"]);
+		// delete dummy id
+		clLib.localStorage.removeStorageItem(storageName, entity, dummyId);
+		// delete from unsynced entries..
+		clLib.localStorage.removeStorageItem("UNSYNCED_" + storageName, entity, dummyId);
+
+		// store real id
+		clLib.localStorage.addStorageItem(storageName, entity, entityInstance);
+
+	} catch (e) {
+		alert("could not sync item due to:" + e.name + " + (" + e.message);
+	}
 }
 
 

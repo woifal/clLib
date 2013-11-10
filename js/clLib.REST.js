@@ -2,6 +2,12 @@
 
 clLib.REST = {};
 
+clLib.clException= function(name, message) {
+   this.message = message;
+   this.name = name;
+};
+
+clLib.REST.baseURI = "https://api.appery.io/rest/1/db/collections/";
 
 /*
 *	retrieve => need to encode where string
@@ -11,18 +17,41 @@ clLib.REST.executeRetrieve = function(uri, method, whereObj) {
 	if(whereObj) {
 		whereObj = "where=" + encodeURIComponent(JSON.stringify(whereObj));
 	}
-	return clLib.REST.execute(uri, method, whereObj);
+	var returnObj = clLib.REST.execAJAXRequest(uri, method, whereObj);
+	return returnObj;
 }
+	
 
 clLib.REST.executeInsert = function(uri, method, objData) {
 	if(objData) {
 		objData = JSON.stringify(objData);
 	}
-	return clLib.REST.execute(uri, method, objData);
+	var returnObj = clLib.REST.execAJAXRequest(uri, method, objData);
+	return returnObj;
 }
+		
+clLib.REST.execAJAXRequest = function(uri, method, params) {
+	var request = clLib.REST.buildAJAXRequest(uri, method, params);
 
+	var returnObj = {};
+	$.ajax(request)
+		.done(function(data) {
+			clLib.loggi("ajax done " + JSON.stringify(data));
+			returnObj = data;
+		})
+		.error(function(data) {
+			throw new clLib.clException("AJAX", JSON.stringify(data));
+			returnObj = null;
+		})
+	;
 
-clLib.REST.execute = function(uri, method, getParams) {
+	clLib.loggi("returing returoIbj of " + JSON.stringify(returnObj));
+	return returnObj;
+	
+};
+
+		
+clLib.REST.buildAJAXRequest = function(uri, method, getParams) {
 	var request = {
 		async: false,
 		url: uri,
@@ -49,35 +78,27 @@ clLib.REST.execute = function(uri, method, getParams) {
 			xhr.setRequestHeader("X-Appery-Database-Id", "52093c91e4b04c2d0a027d7f");
 		},
 		error: function(jqXHR) {
-			alert("ajax error " + jqXHR.status);
+			clLib.loggi("ajax error " + jqXHR.status);
 		}
 	};
-	return $.ajax(request);
+	return request;
 }
 
 clLib.REST.getEntities = function(entityName, whereObj) {
-	var uri = "https://api.appery.io/rest/1/db/collections/" + entityName;
+	var uri = clLib.REST.baseURI + entityName;
 	//clLib.UI.showLoading("Loading " + entityName + " from server...", "xyxyx");
-	var ajaxrequest = clLib.REST.executeRetrieve(uri, 'GET', whereObj);
 	var returnObj = {};
-	ajaxrequest.done(function(data) {
-		//alert("retrieved data " + JSON.stringify(data));
-		//clLib.UI.hideLoading();
-		returnObj[entityName] = data;//.responseText;
-		//alert("returning " + JSON.stringify(returnObj));
-	});
-	//alert("2returning " + JSON.stringify(returnObj));
+	returnObj[entityName] = clLib.REST.executeRetrieve(uri, 'GET', whereObj);
+
+	clLib.loggi("returning(getEntities) " + JSON.stringify(returnObj));
 	return returnObj;
 }
 
 clLib.REST.storeEntity = function(entityName, entityInstance) {
-	var uri = "https://api.appery.io/rest/1/db/collections/" + entityName;
+	var uri = clLib.REST.baseURI + entityName;
 	//clLib.UI.showLoading("Loading " + entityName + " from server...", "xyxyx");
-	var ajaxrequest = clLib.REST.executeInsert(uri, 'POST', entityInstance);
-	var returnObj = {};
-	ajaxrequest.done(function(data) {
-		returnObj = data;
-	});
+	var returnObj = clLib.REST.executeInsert(uri, 'POST', entityInstance);
+
 	clLib.loggi("returning(storeEntity) " + JSON.stringify(returnObj));
 	return returnObj;
 }

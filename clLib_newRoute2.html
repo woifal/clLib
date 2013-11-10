@@ -97,7 +97,7 @@
 -->
 					</select>
                 </div>
-				<div id="startScreen_selectedArea">pfusch</div>
+				<div id="newRouteLog_selectedArea">pfusch</div>
                 <!-- mobilegrid_30 -->
                 <div class="newRouteLog_mobilegrid_30_wrapper">
                     <table id="newRouteLog_mobilegrid_30" class=" newRouteLog_mobilegrid_30" dsid="mobilegrid_30"
@@ -213,7 +213,18 @@
                         </tr>
                     </table>
                 </div>
-                <!-- searchRoute -->
+                <!-- characterSelect -->
+				<div data-role="fieldcontain" class="newRouteLog_characterSelect clHighButton">
+					<select name="characterSelect" id="newRouteLog_characterSelect" dsid="characterSelect" data-theme="a"
+					data-inline="false" data-mini="false" data-icon="arrow-d" data-iconpos="right" data-native-menu="false"
+					tabIndex="6" appery-class="newRouteLog_characterSelect">
+						<option value="" reRender="characterSelect" dsid="characterSelect-0" selected="selected">
+							character
+						</option>
+					</select>
+				</div>
+
+				<!-- searchRoute -->
                 <div data-role="fieldcontain" class="newRouteLog_searchRoute ">
                     <div id="newRouteLog_searchRoute-cover-div">
                         <img id="newRouteLog_searchRoute-cover-img" src="files/resources/image/icon-search-cover.png"
@@ -238,8 +249,7 @@
                 <!-- commentText -->
                 <div data-role="fieldcontain" class="newRouteLog_commentText ">
                     <textarea name="commentText" id="newRouteLog_commentText" tabIndex="9"
-                    dsid="commentText" data-theme="a" class=' newRouteLog_commentText '>asdfasdf
-</textarea>
+                    dsid="commentText" data-theme="a" class=' newRouteLog_commentText '></textarea>
                 </div>
 				
                 <!-- save_tick -->
@@ -307,13 +317,13 @@ $( document ).bind("refresh.clLib", function(e, options) {
 		clLib.localStorage.initStorage("routeLogStorage", userRouteLogs);
 		alert("new refresh:" + clLib.localStorage.getLastRefreshDate("routeStorage"));
 
-		clLib.UI.fillUIelements("startScreen");
+		clLib.UI.fillUIelements("startScreen", "startScreen");
 
 	});
 
 
 	$("#loadNewRouteLog").click(function() {
-		clLib.UI.fillUIelements("newRouteLog");
+		clLib.UI.fillUIelements("newRouteLog", "newRouteLog");
 	});
 	$("#showpageloading").live("click", function() {
 			$.mobile.loading( 'show', {
@@ -329,13 +339,14 @@ $( document ).bind("refresh.clLib", function(e, options) {
 	});
 
 	$("#newRouteLog_save_tick").bind("click.clLib", function(e) {
+		//alert("SAVING!!!");
+		localStorage.setItem("currentJqmSlide", "newRouteLog");
+		localStorage.setItem("currentLayout", "default");
 		clLib.UI.showLoading();
 
-	var selValue = 
-		console.log("rating:" + selValue);
-//		clLib.UI.buildRatingRadio($("#newRouteLog_ratingSelectWrapper"));
-		
-		var saveObj= {
+		clLib.UI.defaultSaveHandler();
+/*
+	var saveObj= {
 			"Area": localStorage.getItem("currentlySelectedArea"),
 			"GradeSystem": $("#newRouteLog_gradeTypeSelect").val(),
 			"Grade": $("#newRouteLog_gradeSelect").val(),
@@ -351,9 +362,11 @@ $( document ).bind("refresh.clLib", function(e, options) {
 //		clLib.REST.storeEntity("RouteLog", saveObj);
 
 		clLib.localStorage.addInstance("RouteLog", saveObj, "routeLogStorage");
+*/
 
-		clLib.UI.fillUIelements("startScreen");
-		clLib.UI.resetUIelements("newRouteLog");
+		clLib.UI.fillUIelements("startScreen", "startScreen");
+		clLib.UI.resetUIelements("newRouteLog", "newRouteLog");
+		clLib.UI.hideLoading();
 	});
 
 	$("#addRouteButton").bind("click", function(e) {

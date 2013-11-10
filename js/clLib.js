@@ -139,10 +139,8 @@ clLib.addColorBackground = function(targetId) {
     
 	$targetEl.on('change.clLibColour', function () {
 		var last_style = $(this).data("cllast_style");
-
 		// Get currently selected element
         var selection = $(this).find(':selected').html();
-
         //alert("last_style " + last_style + ",changing to " + selection);
 
         // Remove CSS class for previously selected color
@@ -260,8 +258,8 @@ clLib.getRoutesWhere = function(gradeType, grade, area, sector, colour, line) {
 clLib.getRoutesWhere_plain = function(gradeType, grade, area, sector, colour, line) {
 	var restrictionObj = {};
 	//alert("building restrictionobj" + JSON.stringify(line));
-	if(restrictionObj["GradeType"]) {
-		restrictionObj["GradeType"] = gradeType;
+	if(restrictionObj["GradeSystem"]) {
+		restrictionObj["GradeSystem"] = gradeType;
 		restrictionObj["Grade"] = grade;
 	}
 	clLib.extendIfDefined(restrictionObj, "Area", area);
@@ -275,9 +273,9 @@ clLib.getRoutesWhere_plain = function(gradeType, grade, area, sector, colour, li
 
 clLib.getRoutesWhere_obj = function(restrictionObj) {
 	var gradeType, grade;
-	gradeType = restrictionObj["GradeType"];
+	gradeType = restrictionObj["GradeSystem"];
 	grade = restrictionObj["Grade"];
-	delete restrictionObj["GradeType"];
+	delete restrictionObj["GradeSystem"];
 	delete restrictionObj["Grade"];
 	
 	if(gradeType) {

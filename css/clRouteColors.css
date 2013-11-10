@@ -1,3 +1,54 @@
+.clCSSBg {
+    background-repeat: no-repeat;
+    background-position: 0px 0px;
+    padding-left: 0px; /*8%;*/
+	/*background-image: none;*/
+    background-image: URL('https://cdn2.iconfinder.com/data/icons/flat-ui-icons-24-px/24/lock-24-48.png');
+    background-size: 100%;
+}
+/*
+					"Platte",
+					"Senkrecht",
+					"Leicht-Ueberhaengend",
+					"Stark-Ueberhaengend",
+					"Dach":
+*/
+.Platte {
+    background-repeat: no-repeat;
+    background-position: 0px 0px;
+    padding-left: 0px; /*8%;*/
+	/*background-image: none;*/
+    background-image: URL('../files/views/assets/image/Platte.png');
+}
+.Senkrecht {
+    background-repeat: no-repeat;
+    background-position: 0px 0px;
+    padding-left: 0px; /*8%;*/
+	/*background-image: none;*/
+    background-image: URL('../files/views/assets/image/Senkrecht.png');
+}
+.Leicht-Ueberhaengend {
+    background-repeat: no-repeat;
+    background-position: 0px 0px;
+    padding-left: 0px; /*8%;*/
+	/*background-image: none;*/
+    background-image: URL('../files/views/assets/image/Leicht-Ueberhaengend.png');
+}
+.Stark-Ueberhaengend {
+    background-repeat: no-repeat;
+    background-position: 0px 0px;
+    padding-left: 0px; /*8%;*/
+	/*background-image: none;*/
+    background-image: URL('../files/views/assets/image/Stark-Ueberhaengend.png');
+}
+.Dach{
+    background-repeat: no-repeat;
+    background-position: 0px 0px;
+    padding-left: 0px; /*8%;*/
+	/*background-image: none;*/
+    background-image: URL('../files/views/assets/image/Dach.png');
+}
+
 .clColorBg {
     background-repeat: no-repeat;
     background-position: 0px 0px;

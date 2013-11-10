@@ -48,22 +48,12 @@ clLib.populateSelectBox = function(options) {
 	};
 	$.extend(defaultOptions, options);
 
-/*
-	var oldEventHandler = function() {clLib.loggi("undefined event handler");};
-	clLib.loggi("oldEventHandler = " + options.selectBoxElement.attr("id") + ">" + JSON.stringify(options.selectBoxElement.data("events")));
-	// remember current onChange Handler
-	if(options.selectBoxElement.data("events")) {
-		oldEventHandler = options.selectBoxElement.data("events")['change.clLib'][0].handler;
-		clLib.loggi("oldEventHandler " + JSON.stringify(oldEventHandler));
-*/
-		// disable current onChange handler
+	// disable current onChange handler
 	var elementName = clLib.UI.elementNameFromId(options.selectBoxElement.attr("id"));
 	clLib.loggi("killing event handlers for  " + elementName + "," + options.selectBoxElement.attr("id"), 2);
 
 	clLib.UI.killEventHandlers(options.selectBoxElement, "change.clLib");
-/*
-	}
-*/
+
 	var needRefresh = clLib.populateSelectBox_plain(
 		options.selectBoxElement,
 		options.dataObj,
@@ -178,9 +168,9 @@ clLib.populateSearchProposals = function($forElement, $inElement, dataObj, hideO
 	$inElement.children().click(function() {
         clLib.loggi("this child;" + $(this).html());
 		var result = $.trim($(this).html());
-		clLib.loggi("seeting selectedresult to " + result);
+		//alert("seeting selectedresult to " + result);
 
-		clLib.loggi("forElement is " + $forElement.attr("id"));
+		//alert("forElement is " + $forElement.attr("id"));
 		$forElement.trigger("setSelectedValue.clLib", {"value": result});
 		//$forElement.val(result);
 
@@ -195,21 +185,22 @@ clLib.UI.defaultChangeHandler = function($element, changeOptions) {
 	$element.data("clLib.currentValue", $element.val());
 	//clLib.loggi($element.attr("id") + " was changed to: >" + $element.data("clLib.currentValue") + "<" + JSON.stringify(changeOptions));
 	var elementConfig = clLib.UI.elements[clLib.UI.elementNameFromId($element.attr("id"))];
-	//clLib.loggi("elementConfig for " + $element.attr("id") + " is " + JSON.stringify(elementConfig));
+	//alert("elementConfig for " + $element.attr("id") + "(" + clLib.UI.elementNameFromId($element.attr("id")) + ") is " + JSON.stringify(elementConfig));
 	
 	//
 	// consider currently chosen layout from now on..
 	//
 	var currentLayout = localStorage.getItem("currentLayout");
 	clLib.loggi("current layout is >" +  currentLayout  + "<");
-	var refreshTargets = elementConfig.refreshOnUpdate;
+	var refreshTargets = elementConfig["refreshOnUpdate"];
 	if(
-		currentLayout in elementConfig.refreshOnUpdate
+		refreshTargets &&
+		currentLayout in refreshTargets
 	) {
 		clLib.loggi($element.attr("id") + ", refreshing >>" + JSON.stringify(Object.keys(refreshTargets[currentLayout])));
-		refreshTargets = elementConfig.refreshOnUpdate[currentLayout];
+		refreshTargets = refreshTargets[currentLayout];
 	} else {
-		refreshTargets = elementConfig.refreshOnUpdate["default"] || {};
+		refreshTargets = refreshTargets && refreshTargets["default"] || {};
 	}
 
 	clLib.loggi("refreshing dependent " + JSON.stringify(refreshTargets));
@@ -236,14 +227,16 @@ clLib.UI.defaultSetSelectedValueHandler = function($element, changeOptions) {
 }
 	
 clLib.UI.setSelectedValueOnlyHandler = function($element, changeOptions) {
-	//clLib.loggi("solely changing value of .." + $element.attr("id") + " to " + JSON.stringify(changeOptions));
+	//alert("solely changing value of .." + $element.attr("id") + " to " + JSON.stringify(changeOptions));
 	// avoid default onChange handler..
 	clLib.UI.killEventHandlers($element, "change.clLib");
 	clLib.UI.killEventHandlers($element, "change.clLibColour");
+	clLib.UI.killEventHandlers($element, "change.clLibCSSBackground");
 	var newValue = changeOptions["value"];
 	
 	delete(changeOptions["value"]);
 	// set desired value
+	//alert("setting element " + $element.attr("id") + " to " + JSON.stringify(newValue));
 	$element.val(newValue);
 	$element.selectmenu('refresh', true);
 	// restore onChange handler for further changes..
@@ -255,13 +248,22 @@ clLib.UI.setSelectedValueOnlyHandler = function($element, changeOptions) {
 }
 	
 
-clLib.UI.resetUIelements = function(pageName) {
-
+clLib.UI.resetUIelements = function(pageName, currentJqmSlide) {
+	localStorage.setItem("currentJqmSlide", currentJqmSlide);
 	// populate autoload elements
 	$.each(clLib.UI.elementsToReset[pageName], function(idx, elementName) {
-		//clLib.loggi("triggering reset/refresh for " + elementName);
 		var $element = clLib.UI.byId$(elementName);
-		clLib.UI.setSelectedValue($element, clLib.UI.NOTSELECTED.value);
+		//alert(elementName + "->" + $element.attr("id"));
+		if($element[0]) {
+			var elementType = $element[0].tagName;
+		}
+		//alert("triggering reset/refresh for " + elementName + ", type:" + elementType);
+//		if(elementType == "SELECT") {
+			clLib.UI.setSelectedValue($element, clLib.UI.NOTSELECTED.value);
+//		} else {
+//			$element.val("");
+//		}
+		
 	});
 	
 	$("#newRouteLog_commentText").val('');
@@ -308,26 +310,25 @@ clLib.UI.fillUIelements = function(pageName, currentJqmSlide) {
 	}
 	
 // disabling of element not working on appery - disabling for now..
-/*	
-	$.each(clLib.UI.pageElements[pageName]["default"], function(idx, elementName) {
-		clLib.loggi(elementName + " in " + JSON.stringify(clLib.UI.pageElements[pageName][layout])+ "?" + 
-			(clLib.UI.pageElements[pageName][layout].hasValue(elementName))
-		);
-		if(!(clLib.UI.pageElements[pageName][layout].hasValue(elementName))) {
-			var $element = $("#" + elementName);
-			clLib.loggi("element is >" + $element.attr("id") + "<, hide it");
-	
-			// hide elements per default..
-			clLib.UI.hideUIElement($element);
-		} else {
-			var $element = $("#" + elementName);
-			clLib.loggi("element is >" + $element.attr("id") + "<, SHOW it");
-	
-			// hide elements per default..
-			clLib.UI.showUIElement($element);
-		}
-	});
-*/
+//	$.each(clLib.UI.pageElements[pageName]["default"], function(idx, elementName) {
+//		clLib.loggi(elementName + " in " + JSON.stringify(clLib.UI.pageElements[pageName][layout])+ "?" + 
+//			(clLib.UI.pageElements[pageName][layout].hasValue(elementName))
+//		);
+//		if(!(clLib.UI.pageElements[pageName][layout].hasValue(elementName))) {
+//			var $element = $("#" + elementName);
+//			clLib.loggi("element is >" + $element.attr("id") + "<, hide it");
+//	
+//			// hide elements per default..
+//			clLib.UI.hideUIElement($element);
+//		} else {
+//			var $element = $("#" + elementName);
+//			clLib.loggi("element is >" + $element.attr("id") + "<, SHOW it");
+//	
+//			// hide elements per default..
+//			clLib.UI.showUIElement($element);
+//		}
+//	});
+//
 	clLib.loggi("elements for page >" + pageName + "< hidden..");
 	//clLib.loggi("populating UI elements for page >" + pageName + "<");
 	$.each(clLib.UI.pageElements[pageName][layout], function(idx, elementName) {
@@ -509,10 +510,16 @@ clLib.UI.buildWhereIfVisible = function(whereKeys2Elements) {
 	return whereObj;
 };
 
-clLib.UI.byId$ = function(id) {
+
+clLib.UI.getId$ = function(elementName) {
 	var currentJqmSlide = localStorage.getItem("currentJqmSlide");
-	var newSelector = "#" + currentJqmSlide + "_" + id;
-	clLib.loggi("returning selector >" + newSelector + "<");
+	var newSelector = "#" + currentJqmSlide + "_" + elementName;
+	return newSelector;
+};
+
+clLib.UI.byId$ = function(elementName) {
+	var newSelector = clLib.UI.getId$(elementName);
+	//alert("returning selector >" + newSelector + "<");
 	return $(newSelector);
 };
 
@@ -522,3 +529,144 @@ clLib.UI.elementNameFromId = function(id) {
 	var newId = id.replace(currentJqmSlide + "_", "");
 	return newId;
 };
+
+clLib.UI.defaultRefreshHandler = function($element, additionalSelectBoxOptions) {
+	//alert("refreshing " + $element.attr("id"));
+	var currentLayout = localStorage.getItem("currentLayout") || "default";
+	var elementConfig = clLib.UI.elements[clLib.UI.elementNameFromId($element.attr("id"))];
+
+	var dependingPageElements = elementConfig["dependingOn"][currentLayout];
+	var resultColName = elementConfig["dbField"];
+
+	var results = clLib.UI.defaultEntitySearch(resultColName, dependingPageElements, true); //, additionalWhere);
+	//alert("got results: " + JSON.stringify(results));
+
+	var selectBoxOptions = {
+		selectBoxElement : $element,
+		dataObj : results,
+		preserveCurrentValue : true,
+		additionalValue : clLib.UI.NOTSELECTED
+	};
+	$.extend(selectBoxOptions, additionalSelectBoxOptions);
+	clLib.populateSelectBox(selectBoxOptions);
+}
+
+clLib.UI.defaultRefreshHandler_old = function($element, resultColName, dependentPageElements) {
+
+	results = clLib.UI.defaultEntitySearch(resultColName, dependentPageElements, true);
+	clLib.loggi("got results for " + JSON.stringify(where) + ",>" + JSON.stringify(results));
+
+	clLib.populateSelectBox({
+		selectBoxElement : $element,
+		dataObj : results,
+		preserveCurrentValue : true,
+		additionalValue : clLib.UI.NOTSELECTED
+	});
+}
+
+clLib.UI.defaultEntitySearch = function(resultColName, dependentPageElements, distinctFlag, additionalWhereObj) {
+	var baseWhere = {}, where, results, getFunc;
+	$.each(dependentPageElements, function(idx, elementName) {
+		var elementConfig = clLib.UI.elements[elementName];
+		//alert("eaching " + idx + "," + elementName + "=>" + elementConfig["dbField"] + " to " + clLib.UI.getVal(elementName));
+		baseWhere[elementConfig["dbField"]] = clLib.UI.getVal(elementName);
+	});
+	//alert("basewhere1 = " + JSON.stringify(baseWhere));
+	if(additionalWhereObj) {
+		$.extend(baseWhere, additionalWhereObj);
+	}
+	//alert("basewhere2 = " + JSON.stringify(baseWhere));
+	where = clLib.getRoutesWhere(baseWhere);
+	//alert("where = " + JSON.stringify(where));
+
+	if(distinctFlag) {
+		getFunc = clLib.localStorage.getDistinct;
+		results = getFunc("Routes", where, resultColName, "routeStorage");
+	} else {
+		results = clLib.localStorage.getEntities("Routes", where, "routeStorage");
+	}
+	return results;
+
+}
+
+
+clLib.UI.getVal = function(elementName) {
+	var elementConfig = clLib.UI.elements[elementName];
+	var elementValue;
+	if(elementConfig["customVal"]) {
+		elementValue = elementConfig["customVal"]();
+	} else {
+		elementValue = clLib.UI.byId$(elementName).val();
+	}
+	return elementValue;
+}
+
+clLib.UI.defaultSaveHandler = function(currentJqmSlide, currentLayout) {
+	var saveObj = {};
+	if(!currentJqmSlide) {
+		currentJqmSlide = localStorage.getItem("currentJqmSlide");
+	}
+	if(!currentLayout) {
+		currentLayout = localStorage.getItem("currentLayout");
+	} 
+	
+	$.each(clLib.UI.pageElements[currentJqmSlide][currentLayout], function(idx, elementName) {
+		//alert("eaching " + idx + " and " + elementName);
+		var elementConfig = clLib.UI.elements[elementName];
+		if(!elementConfig) {
+			alert("will not save " + elementName + ", no config found!");
+		} else {
+			saveObj[elementConfig["dbField"]] = clLib.UI.getVal(elementName);
+		}
+	});
+	//alert("saveObj is " + JSON.stringify(saveObj));
+	clLib.localStorage.addInstance("RouteLog", saveObj, "routeLogStorage");
+}
+
+
+
+clLib.addCSSBackground = function(targetId) {
+	//clLib.loggi("adding CSS bg to " + targetId);
+	var $targetEl = $('#' + targetId);
+	clLib.UI.killEventHandlers($targetEl, "change.clLibCSSBackground");
+	
+	// Add css class named option.value for every entry in #targetId
+    $('option', $targetEl).each(function () {
+        var ind = $(this).index();
+        // fetch current option element
+        var entry = $('#' + targetId + '-menu').find('[data-option-index=' + ind + ']');
+        // set corresponding css class
+        //clLib.loggi("adding class" + entry.find("a").html());
+        entry
+            .addClass("clCSSBg")
+            .addClass(entry.find("a").html());
+    });
+    
+	// Set currently selected color in collapsed select menu 
+    var last_style; // remembers last color chosen
+    
+	$targetEl.on('change.clLibCSSBackground', function () {
+		var last_style = $(this).data("cllast_style");
+		// Get currently selected element
+        var selection = $(this).find(':selected').html();
+        //alert("last_style " + last_style + ",changing to " + selection);
+
+        // Remove CSS class for previously selected color
+        if (last_style) {
+            $(this).closest('.ui-select').find('.ui-btn').removeClass(last_style);
+        }
+        // Set currently selected color
+        $(this).closest('.ui-select').find('.ui-btn').addClass(selection);
+        // Remember currently selected color
+        $(this).data("cllast_style", selection);
+        //alert("remembering last_style " + selection);
+		//$(this).change();
+    });
+
+	// Update jqm generated widget
+	$('#' + targetId).trigger('change.clLibCSSBackground');
+//	$('#' + targetId).trigger('change');
+ 	
+};
+
+
