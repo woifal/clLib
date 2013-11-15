@@ -1,0 +1,318 @@
+﻿<!DOCTYPE html> 
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1"> 
+	<title>clLib Test</title> 
+<!--	<link rel="stylesheet" href="http://code.jquery.com/mobile/1.3.0/jquery.mobile-1.3.0.min.css" />-->
+		<link rel="stylesheet" href="css/jquery.mobile-1.3.0.min.css" />
+		<link rel="stylesheet" href="css/clRouteColors.css" />
+
+		<script type="text/javascript" src="js/clLib.js"></script>
+		<script type="text/javascript" src="js/clLib.gradeConfig.js"></script>
+		<script type="text/javascript" src="js/clLib.localStorage.js"></script>
+		<script type="text/javascript" src="js/clLib.localStorage.indexes.js"></script>
+		<script type="text/javascript" src="js/clLib.UI.js"></script>
+		<script type="text/javascript" src="js/clLib.UI.pageConfig.js"></script>
+		<script type="text/javascript" src="js/clLib.REST.js"></script>
+<!--		<script type="text/javascript" src="clLib.COMBINED.js"></script>-->
+
+<!--
+		<script type="text/javascript" src="sampledata/routeLogSample.js"></script>
+		<script type="text/javascript" src="sampledata/routeSample_big.js"></script>
+-->
+<!--
+		<script type="text/javascript" src="http://codeorigin.jquery.com/jquery-1.8.2.js"></script>
+        <script type="text/javascript" src="http://codeorigin.jquery.com/mobile/1.3.0/jquery.mobile-1.3.0.js"></script>
+-->
+		<script type="text/javascript" src="js/jquery-1.8.2.js"></script>
+        <script type="text/javascript" src="js/jquery.mobile-1.3.0.js"></script>
+
+		<link rel="stylesheet" href="css/clLib.css" />
+</head> 
+
+<body> 
+
+<div data-role="page" style="width: 400px; min-height:480px;" dsid="newRouteLog" id="newRouteLog" class="type-interior"
+        data-theme="a" data-add-back-btn="false" data-back-btn-text="Back">
+
+		<div id="routeLogContainer" style="margin: 0px 0px 0px 0px; padding: 0px 0px 0px 0px ;" data-role="collapsible-set" data-theme="b" data-content-theme="d">
+				<div data-role="collapsible" data-collapsed="false" >
+					<h2>Score: <strong>2125</strong></h2>
+					<ul data-role="listview" data-theme="d" data-divider-theme="d">
+<!--
+						<li data-role="list-divider">VI+ <span class="ui-li-count">252</span></li>
+						<li>
+                            <a href="javascript:alert('page to expand on')">
+        						<h3>Die oage Route</h3>
+		    					<p><strong>Sector: </strong>Südturm</p>
+		    					<p><strong>Line: </strong>--</p>
+		    					<p><strong>Colour: </strong>yellow/white</p>
+			    				<p><strong>Comment: </strong></p>
+								<p>Schwere Route, aber mit Superman-Kräften geht es grad noch.</p>
+				    			<p class="ui-li-aside"><strong>UIAA</strong> (Top Rope)</p>
+						    </a>
+                        </li>
+-->
+					</ul>
+				</div>
+</div>
+<script>
+	"use strict";
+	
+	
+	
+(function(){
+var printi = function(text) {
+	$("<p>").html(text).appendTo("#foo");
+
+};
+
+
+$( document ).live("pageinit", function() {
+//	window.setTimeout(function() {$("#addlink").click()}, 2000);
+//	;
+});
+
+$( document ).live("mobileinit", function() {
+	addItems(2);
+});
+$(document).on('pagebeforeshow', function() {
+	addItems(2);
+
+});
+var dataObj2 = [];
+
+var dataObj = [
+	{
+		Name: "First route"
+		,"GradeSystem": "UIAA"
+		,"Grade": "VI+"
+		,"TickType": "Top Rope"
+		,Sector: "Suedturm"
+		,Line: "23"
+		,Colour: "white"
+		,Comment: "some comment"
+		,Score: 100
+	}
+	,{
+		Name: "Second route"
+		,"GradeSystem": "UIAA"
+		,"Grade": "VI+"
+		,"TickType": "Top Rope"
+		,Sector: "Suedturm"
+		,Line: "23"
+		,Colour: "white"
+		,Comment: "some comment"
+		,Score: 200
+	}
+	,{
+		Name: "Third route"
+		,"GradeSystem": "UIAA"
+		,"Grade": "VI+"
+		,"TickType": "Top Rope"
+		,Sector: "Suedturm"
+		,Line: "23"
+		,Colour: "white"
+		,Comment: "some comment"
+		,Score: 300
+	}
+	,{
+		Name: "Fourth route"
+		,"GradeSystem": "UIAA"
+		,"Grade": "VI+"
+		,"TickType": "Top Rope"
+		,Sector: "Suedturm"
+		,Line: "23"
+		,Colour: "white"
+		,Comment: "some comment"
+		,Score: 200
+	}
+	,{
+		Name: "Fifth route"
+		,"GradeSystem": "UIAA"
+		,"Grade": "VI+"
+		,"TickType": "Top Rope"
+		,Sector: "Suedturm"
+		,Line: "23"
+		,Colour: "white"
+		,Comment: "some comment"
+		,Score: 300
+	}
+	,{
+		Name: "Sixth route"
+		,"GradeSystem": "UIAA"
+		,"Grade": "VI+"
+		,"TickType": "Top Rope"
+		,Sector: "Suedturm"
+		,Line: "23"
+		,Colour: "white"
+		,Comment: "some comment"
+		,Score: 200
+	}
+	,{
+		Name: "Seventh route"
+		,"GradeSystem": "UIAA"
+		,"Grade": "VI+"
+		,"TickType": "Top Rope"
+		,Sector: "Suedturm"
+		,Line: "23"
+		,Colour: "white"
+		,Comment: "some comment"
+		,Score: 300
+	}
+	,{
+		Name: "Eigth route"
+		,"GradeSystem": "UIAA"
+		,"Grade": "VI+"
+		,"TickType": "Top Rope"
+		,Sector: "Suedturm"
+		,Line: "23"
+		,Colour: "white"
+		,Comment: "some comment"
+		,Score: 200
+	}
+	,{
+		Name: "Ninth route"
+		,"GradeSystem": "UIAA"
+		,"Grade": "VI+"
+		,"TickType": "Top Rope"
+		,Sector: "Suedturm"
+		,Line: "23"
+		,Colour: "white"
+		,Comment: "some comment"
+		,Score: 300
+	}
+];
+var dataFormat = {
+	header: ["GradeSystem", "Grade", "TickType"]
+	,bubble: "Score"
+	,body: {
+		header: "Name",
+		items: ["Sector", "Line", "Colour", "Comment"]
+	}
+}
+
+
+function addItems(count) {
+	/*var $list2 = $("#routeLogContainer").children("div").first().find("ul").first();
+	alert($list2.html());
+	*/
+
+	//$container.collapsibleset( "refresh" );
+	//alert($list.html());
+
+	//$list.empty();
+	var $container = $("#routeLogContainer");
+	var $list;
+	$list = $container.first().children("ul").first();
+	$list = $container.children("div").first().find("ul").first();
+
+	var itemsShown = $list.data("itemsShown") || 0;
+	//alert("old count: " + itemsShown);
+
+	$.each(dataObj.slice(itemsShown, itemsShown + count), function(index, dataRow) {
+		//alert(JSON.stringify(dataRow));
+		var headerText = [], $score, $headerItem, $bodyItem, $bodyHeader;
+
+		/* 
+			Clickable header item
+		*/
+		$.each(dataFormat["header"], function(index, keyName) {
+			headerText.push(dataRow[keyName]);
+		});
+		headerText = headerText.join(" / ", headerText);
+		
+		$score = $("<span>")
+			.addClass("ui-li-count")
+			.append(dataRow[dataFormat["bubble"]])
+		;
+
+		$headerItem = $("<li>")
+			.attr("data-role", "list-divider")
+			.append(headerText)
+			.append($score)
+		;
+		$list.append($headerItem);
+
+		/* 
+			Body contents..
+		*/
+		$bodyHeader = $("<h1>")
+			.html(dataRow[dataFormat["body"]["header"]])
+		;
+
+		$bodyItem = $("<li>")
+			.append($bodyHeader);
+		;
+
+		$.each(dataFormat["body"]["items"], function(index, keyName) {
+			var $someStrong = $("<strong>")
+				.html(keyName + ": ");
+			var $someP = $("<p>")
+				.append($someStrong)
+				.append(dataRow[keyName])
+			;
+			$bodyItem
+				.append($someP)
+			;
+
+		});
+
+
+		// Hide body initially
+		$bodyItem.hide();
+		
+		// Show body on header click
+		$headerItem.click(function() {
+			$bodyItem.toggle();
+		});
+
+		/* 
+			Add item to listview..
+		*/
+		$list.append($bodyItem);
+
+		
+	});
+
+	var $addMoreElement = $list.find(".addMore").remove();
+	$addMoreElement = $("<li>")
+		.addClass("addMore")
+		.attr("data-role", "list-divider")
+		.attr("data-theme", "c")
+		.append("...")
+		.css("text-align", "center")
+		.click(function() {
+			addItems(2);
+		})
+	;
+	if(itemsShown + count < dataObj.length) {
+		$list.append($addMoreElement);
+	}
+	
+	$list.listview('refresh', false);
+
+	$list
+		.data(
+			"itemsShown", 
+			itemsShown + count
+		)
+	;
+	//alert("new count: " + $list.data("itemsShown"));
+
+
+
+
+};
+
+	
+})(jQuery);
+
+   </script>
+	
+</body>
+
+  
+</html>
