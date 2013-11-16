@@ -1,4 +1,4 @@
-<!DOCTYPE html> 
+﻿<!DOCTYPE html> 
 <html>
 
 <head>
@@ -34,160 +34,133 @@
 
 <body> 
 
-<div data-role="page" style="width: 400px; min-height:480px;" dsid="newRouteLog" id="newRouteLog" class="type-interior"
+<div data-role="page" style="min-height:480px; max-width:600px;"  id="newRouteLog" class="type-interior"
         data-theme="a" data-add-back-btn="false" data-back-btn-text="Back">
-		<!-- mobileheader1 -->
-            <div data-role="header" data-position="fixed" data-theme="a" name="mobileheader1"
-            id="newRouteLog_mobileheader1" class=' newRouteLog_mobileheader1 '>
-                <h1 dsid="mobileheader1">
-                    New Route
-                </h1>
-                <!-- mobilebutton_229 -->
-                <a data-role="button" name="mobilebutton_229" dsid="mobilebutton_229" class='ui-btn-right   newRouteLog_mobilebutton_229'
-                style='min-height:20px; ' id="newRouteLog_mobilebutton_229" data-corners="true" data-icon="refresh"
-                data-iconpos="notext" data-inline='true' data-mini='true' data-theme="a" tabIndex="27">
+
+
+	<div data-role="header" data-position="fixed" data-theme="a" id="newRouteLog_mobileheader1">
+		<h1>
+			New Route
+		</h1>
+		<!-- mobilebutton_229 -->
+                <!-- preferencesButton -->
+                <a data-role="button" name="preferencesButton" dsid="preferencesButton" class='ui-btn-right   startScreen_preferencesButton'
+                style='min-height:20px; ' id="startScreen_preferencesButton" data-corners="true"
+                data-icon="gear" data-iconpos="notext" x-apple-data-detectors="false" data-inline='true'
+                data-mini='true' data-theme="a" tabindex="11">
                 Button
                 </a>
-            </div>
-            <!-- mobilecontainer1 -->
-            <div data-role="content" id="newRouteLog_mobilecontainer1" name="mobilecontainer1"
-            class=" newRouteLog_mobilecontainer1" dsid="mobilecontainer1" data-theme="">
+                <!-- refreshRouteStorageButton -->
+                <a data-role="button" name="refreshRouteStorageButton" dsid="refreshRouteStorageButton"
+                class='ui-btn-left   startScreen_refreshRouteStorageButton' style='min-height:20px; '
+                id="startScreen_refreshRouteStorageButton" data-corners="true" data-icon="refresh"
+                data-iconpos="notext" x-apple-data-detectors="false" data-inline='true' data-mini='true'
+                data-theme="a" tabindex="5">
+                Refresh!
+                </a>
+		<select>
+			<option value="newRouteLog">newRouteLog</option>
+			<option value="newRouteLog_reduced">newRouteLog_reduced</option>
+		</select>
 
+	</div>
+            
+			
+	<div data-role="content" id="newRouteLog_mobilecontainer1"  data-theme="">
 
-
-			<div date-role="none" id="newRouteLog_ratingSelectWrapper">
+			<div data-role="none" id="newRouteLog_ratingSelectWrapper">
 			asdfasfd
 			</div>
 			
 
-				<div data-role="fieldcontain">
-					<button id="refreshStartScreen">refresh local date..</button>
-				</div>
-				
 				<div>
 					<a id="addRouteButton" href="#"><img src="files/views/assets/image/add_button.png"/></a>
 				</div>
-				
-				<!-- area -->
-                <div data-role="fieldcontain" class="startScreen_layoutSelect clHighButton">
-                    <select name="layoutSelect" id="startScreen_layoutSelect" dsid="layoutSelect" data-theme="a" data-inline="false"
-                    data-mini="false" data-icon="arrow-d" data-iconpos="right" data-native-menu="true"
-                    tabIndex="4" appery-class="startScreen_layoutSelect">
-						<option value="" reRender="layoutSelect" dsid="layoutSelect-0">
-                            -- select layout --
-                        </option>
-						<option value="default" reRender="layoutSelect" dsid="layoutSelect-0">
-                            default
-                        </option>
-						<option value="reduced" reRender="layoutSelect" dsid="layoutSelect-0">
-                            reduced
-                        </option>
-					</select>
-                </div>
 
 				<!-- area -->
-                <div data-role="fieldcontain" class="startScreen_areaSelect clHighButton">
-                    <select name="areaSelect" id="startScreen_areaSelect" dsid="areaSelect" data-theme="a" data-inline="false"
-                    data-mini="false" data-icon="arrow-d" data-iconpos="right" data-native-menu="true"
-                    tabIndex="4" appery-class="startScreen_areaSelect">
+                <div>
+                    <select  id="startScreen_areaSelect"  data-theme="a" 
+                    
+                    tabIndex="4">
 <!--                
-						<option value="" reRender="areaSelect" dsid="areaSelect-0" selected="selected">
+						<option value="" reRender="areaSelect"  selected="selected">
                             areaSelect
                         </option>
 -->
 					</select>
                 </div>
-				<div id="newRouteLog_selectedArea">pfusch</div>
-                <!-- mobilegrid_30 -->
-                <div class="newRouteLog_mobilegrid_30_wrapper">
-                    <table id="newRouteLog_mobilegrid_30" class=" newRouteLog_mobilegrid_30" dsid="mobilegrid_30"
-                    name="mobilegrid_30" cellpadding=0 cellspacing=0>
-                        <col style="width:auto;" />
-                        <col style="width:auto;" />
-                        <tr class="newRouteLog_mobilegrid_30_row_0">
+
+				<div>
+					<button id="refreshStartScreen">refresh local date..</button>
+				</div>
+
+                <div>
+                    <table id="newRouteLog_mobilegrid_30"  
+                     cellpadding=0 cellspacing=0 style="width: 100%"
+					>
+                        <col style="width:50%;" />
+                        <col style="width:50%;" />
+                        <tr>
                             <!-- grade_option_cell -->
-                            <td id="newRouteLog_grade_option_cell" name="grade_option_cell" class="newRouteLog_grade_option_cell"
-                            colspan=1 rowspan=1>
-                                <div class="cell-wrapper">
+                            <td>
                                     <!-- gradeTypeSelect -->
-                                    <div data-role="fieldcontain" class="newRouteLog_gradeTypeSelect clHighButton">
-                                        <select name="gradeTypeSelect" id="newRouteLog_gradeTypeSelect" dsid="gradeTypeSelect"
+                                    <div>
+                                        <select  id="newRouteLog_gradeTypeSelect" 
                                         data-theme="a" data-inline="false" data-mini="false" data-icon="arrow-d" data-iconpos="right"
-                                        data-native-menu="true" tabIndex="16" width="150px" height="30px" appery-class="newRouteLog_gradeTypeSelect">
-<!--                                            <option value="UIAA" reRender="gradeTypeSelect" dsid="gradeTypeSelect-0"
-                                            selected="selected">
-                                                UIAA
-                                            </option>
-                                            <option value="French" reRender="gradeTypeSelect" dsid="gradeTypeSelect-1">
-                                                French
-                                            </option>
-                                            <option value="Bleau" reRender="gradeTypeSelect" dsid="gradeTypeSelect-2">
-                                                Bleau
-                                            </option>
-                                            <option value="USA" reRender="gradeTypeSelect" dsid="gradeTypeSelect-3">
-                                                USA
-                                            </option>
--->
-											</select>
+                                        data-native-menu="true" tabIndex="16">
+										</select>
                                     </div>
-                                </div>
                             </td>
                             <!-- mobilegridcell_167 -->
-                            <td id="newRouteLog_mobilegridcell_167" name="mobilegridcell_167" class="newRouteLog_mobilegridcell_167"
-                            colspan=1 rowspan=1>
-                                <div class="cell-wrapper">
+                            <td>
                                     <!-- gradeSelect -->
-                                    <div data-role="fieldcontain" class="newRouteLog_gradeSelect grade_class clHighButton">
-                                        <select name="gradeSelect" id="newRouteLog_gradeSelect" dsid="gradeSelect"
+                                    <div>
+                                        <select  id="newRouteLog_gradeSelect" 
                                         data-theme="a" data-inline="false" data-mini="false" data-icon="arrow-d" data-iconpos="right"
-                                        data-native-menu="true" tabIndex="2" appery-class="newRouteLog_gradeSelect">
-                                            <option value="" reRender="gradeSelect" dsid="gradeSelect-0" selected="selected">
-                                                Grade
-                                            </option>
+                                        data-native-menu="true" tabIndex="2">
                                         </select>
                                     </div>
-                                </div>
                             </td>
                         </tr>
                     </table>
                 </div>
                 <!-- sectorSelect -->
-                <div data-role="fieldcontain" class="newRouteLog_sectorSelect clHighButton">
-                    <select name="sectorSelect" id="newRouteLog_sectorSelect" dsid="sectorSelect" data-theme="a" data-inline="false"
+                <div >
+                    <select  id="newRouteLog_sectorSelect"  data-theme="a" data-inline="false"
                     data-mini="false" data-icon="arrow-d" data-iconpos="right" data-native-menu="true"
-                    tabIndex="5" appery-class="newRouteLog_sectorSelect">
-                        <option value="" reRender="sectorSelect" dsid="sectorSelect-0" selected="selected">
+                    tabIndex="5">
+                        <option value="" reRender="sectorSelect"  selected="selected">
                             sectorSelect
                         </option>
                     </select>
                 </div>
                 <!-- lineSelect -->
-                <div data-role="fieldcontain" class="newRouteLog_lineSelect clHighButton">
-                    <select name="lineSelect" id="newRouteLog_lineSelect" dsid="lineSelect" data-theme="a" data-inline="false"
+                <div >
+                    <select  id="newRouteLog_lineSelect"  data-theme="a" data-inline="false"
                     data-mini="false" data-icon="arrow-d" data-iconpos="right" data-native-menu="true"
-                    tabIndex="5" appery-class="newRouteLog_lineSelect">
-                        <option value="" reRender="lineSelect" dsid="lineSelect-0" selected="selected">
+                    tabIndex="5">
+                        <option value="" reRender="lineSelect"  selected="selected">
                             lineSelect
                         </option>
                     </select>
                 </div>
                 <!-- mobilegrid_217 -->
-                <div class="newRouteLog_mobilegrid_217_wrapper">
-                    <table id="newRouteLog_mobilegrid_217" class=" newRouteLog_mobilegrid_217" dsid="mobilegrid_217"
-                    name="mobilegrid_217" cellpadding=0 cellspacing=0>
-                        <col style="width:auto;" />
-                        <col style="width:auto;" />
-                        <tr class="newRouteLog_mobilegrid_217_row_0">
+                <div>
+                    <table style="width: 100%"
+                     cellpadding=0 cellspacing=0>
+                        <col style="width:50%;" />
+                        <col style="width:50%;" />
+                        <tr>
                             <!-- mobilegridcell_218 -->
-                            <td id="newRouteLog_mobilegridcell_218" name="mobilegridcell_218" class="newRouteLog_mobilegridcell_218"
+                            <td
                             colspan=1 rowspan=1>
-                                <div class="cell-wrapper">
+                                <div>
                                     <!-- ticktypes -->
-                                    <div data-role="fieldcontain" class="newRouteLog_tickType clHighButton">
-                                        <select name="ticktypes" id="newRouteLog_tickType" dsid="ticktypes" data-theme="a"
+                                    <div >
+                                        <select  id="newRouteLog_tickType"  data-theme="a"
                                         data-inline="false" data-mini="false" data-icon="arrow-d" data-iconpos="right" data-native-menu="true"
-                                        tabIndex="3" appery-class="newRouteLog_tickType">
-                                            <option value="" reRender="ticktypes" dsid="ticktypes-0" selected="selected">
+                                        tabIndex="3">
+                                            <option value="" reRender="ticktypes"  selected="selected">
                                                 Tick Type
                                             </option>
                                         </select>
@@ -195,15 +168,15 @@
                                 </div>
                             </td>
                             <!-- mobilegridcell_219 -->
-                            <td id="newRouteLog_mobilegridcell_219" name="mobilegridcell_219" class="newRouteLog_mobilegridcell_219"
+                            <td
                             colspan=1 rowspan=1>
-                                <div class="cell-wrapper">
+                                <div>
                                     <!-- colourSelect -->
-                                    <div data-role="fieldcontain" class="newRouteLog_colourSelect clHighButton">
-                                        <select name="colourSelect" id="newRouteLog_colourSelect" dsid="colourSelect" data-theme="a"
+                                    <div>
+                                        <select  id="newRouteLog_colourSelect"  data-theme="a"
                                         data-inline="false" data-mini="false" data-icon="arrow-d" data-iconpos="right" data-native-menu="false"
-                                        tabIndex="6" appery-class="newRouteLog_colourSelect">
-                                            <option value="" reRender="colourSelect" dsid="colourSelect-0" selected="selected">
+                                        tabIndex="6">
+                                            <option value="" reRender="colourSelect"  selected="selected">
                                                 Colour
                                             </option>
                                         </select>
@@ -214,59 +187,67 @@
                     </table>
                 </div>
                 <!-- characterSelect -->
-				<div data-role="fieldcontain" class="newRouteLog_characterSelect clHighButton">
-					<select name="characterSelect" id="newRouteLog_characterSelect" dsid="characterSelect" data-theme="a"
+				<div >
+					<select  id="newRouteLog_characterSelect"  data-theme="a"
 					data-inline="false" data-mini="false" data-icon="arrow-d" data-iconpos="right" data-native-menu="false"
-					tabIndex="6" appery-class="newRouteLog_characterSelect">
-						<option value="" reRender="characterSelect" dsid="characterSelect-0" selected="selected">
+					tabIndex="6">
+						<option value="" reRender="characterSelect"  selected="selected">
 							character
 						</option>
 					</select>
 				</div>
 
 				<!-- searchRoute -->
-                <div data-role="fieldcontain" class="newRouteLog_searchRoute ">
+                <div>
                     <div id="newRouteLog_searchRoute-cover-div">
                         <img id="newRouteLog_searchRoute-cover-img" src="files/resources/image/icon-search-cover.png"
                         />
                     </div>
-                    <input type="search" name="searchRoute" id="newRouteLog_searchRoute" dsid="searchRoute"
-                    value="" placeholder="Search Route Name" data-theme="a" tabIndex="7" class=' newRouteLog_searchRoute '
+                    <input type="search"  id="newRouteLog_searchRoute" 
+                    value="" placeholder="Search Route Name" data-theme="a" tabIndex="7" 
                     />
                 </div>
                 <!-- searchRouteResults -->
-                <ul data-role="listview" id="newRouteLog_searchRouteResults" class=' newRouteLog_searchRouteResults '
-                name="searchRouteResults" dsid="searchRouteResults" data-inset="true" data-theme="d"
+                <ul data-role="listview" id="newRouteLog_searchRouteResults" 
+                  data-inset="true" data-theme="d"
                 data-divider-theme="b" data-count-theme="b" style="">
                     <!-- searchRouteResult -->
-                    <li class=' newRouteLog_searchRouteResult '>
-                        <a id="newRouteLog_searchRouteResult" name="searchRouteResult" dsid="searchRouteResult"
-                        tabIndex="18" class=' newRouteLog_searchRouteResult '>
+                    <li>
+                        <a id="newRouteLog_searchRouteResult"  
+                        tabIndex="18">
                         <h3>Item 1</h3>
                         </a>
                     </li>
                 </ul>
                 <!-- commentText -->
-                <div data-role="fieldcontain" class="newRouteLog_commentText ">
-                    <textarea name="commentText" id="newRouteLog_commentText" tabIndex="9"
-                    dsid="commentText" data-theme="a" class=' newRouteLog_commentText '></textarea>
+                <div>
+                    <textarea  id="newRouteLog_commentText" tabIndex="9"
+                     data-theme="a"></textarea>
                 </div>
 				
                 <!-- save_tick -->
-                <a data-role="button" name="save_tick" dsid="save_tick" class=' clHighButton newRouteLog_save_tick'
+                <a data-role="button"   
                 id="newRouteLog_save_tick" data-corners="true" data-icon="check" data-iconpos="right"
                 data-mini="false" data-theme="a" tabIndex="8">
                 Save Tick!
                 </a>
-		
+
+		<div id="newRouteLog_routeLogContainer" style="margin: 0px 0px 0px 0px; padding: 0px 0px 0px 0px ;" data-role="collapsible-set" data-theme="b" data-content-theme="d">
+				<div data-role="collapsible" data-collapsed="true">
+					<h2 style="text-align: end">????</h2>
+					<ul data-role="listview" data-theme="d" data-divider-theme="d">
+					</ul>
+				</div>
+		</div>
+				
 	
 		<input type="button" id="loadNewRouteLog" value="load newRouteLog elements"/>
 		<input type="button" id="showpageloading" value="page loading"/>
 	<input type="button" id="hidepageloading" value="no page loading"/>
 				</div>
             <!-- mobilefooter1 -->
-            <div data-role="footer" data-position="fixed" class=" newRouteLog_mobilefooter1" name="mobilefooter1"
-            dsid="mobilefooter1" id="newRouteLog_mobilefooter1" data-theme="a">
+            <div data-role="footer" data-position="fixed" 
+             id="newRouteLog_mobilefooter1" data-theme="a">
             </div>
         </div>
 <script>
@@ -377,7 +358,7 @@ $( document ).bind("refresh.clLib", function(e, options) {
 
 	$("#startScreen_layoutSelect").change(function() {
 		var currentLayout = $(this).val();
-		//alert("setting layout to >" + currentLayout);
+		//alert("setting layout to>" + currentLayout);
 		localStorage.setItem("currentLayout", currentLayout || "default");
 		location.reload();
 	});
