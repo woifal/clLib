@@ -6,7 +6,7 @@ clLib.UI = {
 		value : "__UNKNOWN__"
 	}
 };
-
+clLib.UI.list = {};
 
 clLib.UI.killEventHandlers = function($element, eventName) {
 	$element.die(eventName);
@@ -23,22 +23,139 @@ clLib.UI.setSelectedValue = function($element, newValue) {
 };
 
 
+clLib.UI.addListItems = function($list, dataObj, createItemFunc, count, startWithEmptyList) {
+	clLib.loggi("adding list items >" + JSON.stringify(dataObj) + "<");
+	if(startWithEmptyList) {
+		$list.empty();
+		$list.data("itemsShown", 0);
+	}
+	createItemFunc = createItemFunc || clLib.UI.list.formatStandardRow;
+	count = count || 2;
+	var itemsShown = $list.data("itemsShown") || 0;
+	//alert("old count: " + itemsShown);
 
-clLib.populateListView = function($list, dataObj, formatFunc){
-	$list.empty();
-	$.each(dataObj, function(index, value) {
-		var itemValue;
-		if(formatFunc) {
-			itemValue = formatFunc(value);
+	$.each(dataObj.slice(itemsShown, itemsShown + count), function(index, dataRow) {
+		var $itemsToAdd = createItemFunc(dataRow);
+
+		/* 
+			Add item to listview..
+		*/
+		if($itemsToAdd instanceof Array) {
+			$.each($itemsToAdd, function(index, $item) {
+				$list.append($item);
+			});
+		} else {
+			$list.append($itemsToAdd);
 		}
-		else {
-			itemValue = value;
-		}
-		var $listItem = $('<li></li>')
-                .html(itemValue);
-		$list.append($listItem);
 	});
-	$list.listview('refresh', true);
+
+	var $addMoreElement = $list.find(".addMore").remove();
+	$addMoreElement = $("<li>")
+		.addClass("addMore")
+		.attr("data-role", "list-divider")
+		.attr("data-theme", "c")
+		.append("...")
+		.css("text-align", "center")
+		.click(function() {
+			clLib.UI.addListItems($list, dataObj, createItemFunc, count);
+		})
+	;
+	if(itemsShown + count < dataObj.length) {
+		$list.append($addMoreElement);
+	}
+	
+	$list.listview('refresh', false);
+
+	$list
+		.data(
+			"itemsShown", 
+			itemsShown + count
+		)
+	;
+	//alert("new count: " + $list.data("itemsShown"));
+
+};
+
+
+clLib.UI.list.formatStandardRow = function(dataRow) {
+	var $listItem = $('<li></li>')
+        .append(dataRow);
+	return $listItem;
+};
+clLib.UI.list.formatRouteLogRow = function(dataRow) {
+	var dataFormat = {
+		header: ["GradeSystem", "Grade", "TickType"]
+		,bubble: "Score"
+		,body: {
+			header: "RouteName",
+			items: ["Sector", "Line", "Colour", "Comment"]
+		}
+	};
+	
+	// compute score
+	dataRow.Score = clLib.computeScore(dataRow);
+	
+	//alert(JSON.stringify(dataRow));
+	var headerText = [], $bubble, $headerItem, $bodyItem, $bodyHeader;
+	var listItems = [];
+
+	/* 
+		Clickable header item
+	*/
+	$.each(dataFormat["header"], function(index, keyName) {
+		headerText.push(dataRow[keyName]);
+	});
+	headerText = headerText.join(" / ", headerText);
+	
+	$bubble = $("<span>")
+		.addClass("ui-li-count")
+		.append(dataRow[dataFormat["bubble"]])
+	;
+
+	$headerItem = $("<li>")
+		.attr("data-role", "list-divider")
+		.append(headerText)
+		.append($bubble)
+	;
+	listItems.push($headerItem);
+
+	/* 
+		Body contents..
+	*/
+	$bodyHeader = $("<h1>")
+		.html(dataRow[dataFormat["body"]["header"]])
+	;
+
+	$bodyItem = $("<li>")
+		.append($bodyHeader);
+	;
+
+	$.each(dataFormat["body"]["items"], function(index, keyName) {
+		var $someStrong = $("<strong>")
+			.html(keyName + ": ");
+		var $someP = $("<p>")
+			.append($someStrong)
+			.append(dataRow[keyName])
+		;
+		$bodyItem
+			.append($someP)
+		;
+
+	});
+
+
+	// Hide body initially
+	$bodyItem.hide();
+	
+	// Show body on header click
+	$headerItem.click(function() {
+		$bodyItem.toggle();
+	});
+	
+	listItems.push($bodyItem);
+	
+	return listItems;
+
 };
 
 
@@ -159,25 +276,31 @@ clLib.populateSearchProposals = function($forElement, $inElement, dataObj, hideO
 		//$forElement.val("");
 	}
 	
-	clLib.populateListView($inElement, dataObj);
-
 	$inElement.attr("data-theme", "c");
 	$inElement.show();
+
+	clLib.UI.addListItems($inElement, dataObj, function(dataRow) {
+		var $listItem = clLib.UI.list.formatStandardRow(dataRow);
+		$listItem.click(function() {
+			clLib.loggi("this child;" + $(this).html());
+			var result = $.trim($(this).html());
+			//alert("setting selectedresult to " + result);
+
+			//alert("forElement is " + $forElement.attr("id"));
+			$forElement.trigger("setSelectedValue.clLib", {"value": result});
+			//$forElement.val(result);
+
+			$(this).parent().hide();
+			clLib.loggi("hidden");
+		});
+		return $listItem;
+	},
+	2, 
+	true
+	);
+
 	clLib.loggi("shown" + $inElement.children().length);
 
-	$inElement.children().click(function() {
-        clLib.loggi("this child;" + $(this).html());
-		var result = $.trim($(this).html());
-		//alert("seeting selectedresult to " + result);
-
-		//alert("forElement is " + $forElement.attr("id"));
-		$forElement.trigger("setSelectedValue.clLib", {"value": result});
-		//$forElement.val(result);
-
-		$(this).parent().hide();
-		clLib.loggi("hidden");
-		//$("#startScreen_mobilefooter1").html(result);
-	});
 };
 
 clLib.UI.defaultChangeHandler = function($element, changeOptions) {
@@ -257,7 +380,7 @@ clLib.UI.resetUIelements = function(pageName, currentJqmSlide) {
 		if($element[0]) {
 			var elementType = $element[0].tagName;
 		}
-		//alert("triggering reset/refresh for " + elementName + ", type:" + elementType);
+		clLib.loggi("triggering reset/refresh for " + elementName + ", type:" + elementType);
 //		if(elementType == "SELECT") {
 			clLib.UI.setSelectedValue($element, clLib.UI.NOTSELECTED.value);
 //		} else {
@@ -433,7 +556,7 @@ clLib.UI.showAllTodayScores = function(buddyNames, targetElement) {
 	});
 	//clLib.loggi("allTodaysTopScore: " + JSON.stringify(allTodaysScores));
 	// show buddies todays' score
-	clLib.populateListView(targetElement, allTodaysScores);
+	clLib.UI.addListItems(targetElement, allTodaysScores);
 };
 
 
@@ -551,21 +674,9 @@ clLib.UI.defaultRefreshHandler = function($element, additionalSelectBoxOptions) 
 	clLib.populateSelectBox(selectBoxOptions);
 }
 
-clLib.UI.defaultRefreshHandler_old = function($element, resultColName, dependentPageElements) {
-
-	results = clLib.UI.defaultEntitySearch(resultColName, dependentPageElements, true);
-	clLib.loggi("got results for " + JSON.stringify(where) + ",>" + JSON.stringify(results));
-
-	clLib.populateSelectBox({
-		selectBoxElement : $element,
-		dataObj : results,
-		preserveCurrentValue : true,
-		additionalValue : clLib.UI.NOTSELECTED
-	});
-}
 
 clLib.UI.defaultEntitySearch = function(resultColName, dependentPageElements, distinctFlag, additionalWhereObj) {
-	var baseWhere = {}, where, results, getFunc;
+	var baseWhere = {}, where, results;
 	$.each(dependentPageElements, function(idx, elementName) {
 		var elementConfig = clLib.UI.elements[elementName];
 		//alert("eaching " + idx + "," + elementName + "=>" + elementConfig["dbField"] + " to " + clLib.UI.getVal(elementName));
@@ -580,8 +691,7 @@ clLib.UI.defaultEntitySearch = function(resultColName, dependentPageElements, di
 	//alert("where = " + JSON.stringify(where));
 
 	if(distinctFlag) {
-		getFunc = clLib.localStorage.getDistinct;
-		results = getFunc("Routes", where, resultColName, "routeStorage");
+		results = clLib.localStorage.getDistinct("Routes", where, resultColName, "routeStorage");
 	} else {
 		results = clLib.localStorage.getEntities("Routes", where, "routeStorage");
 	}

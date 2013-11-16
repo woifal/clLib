@@ -6,7 +6,8 @@ clLib.UI.autoLoad = {
 		"searchRoute",
 		"ratingSelect",
 		"tickType",
-		"characterSelect"
+		"characterSelect",
+		"routeLogContainer"
 	],
 	startScreen : [
 		"areaSelect"
@@ -20,7 +21,8 @@ clLib.UI.elementsToReset = {
 		"colourSelect",
 		"ratingSelect",
 		"searchRouteResults",
-		"searchRoute"
+		"searchRoute",
+		"routeLogContainer"
 	],
 	startScreen : [
 	]
@@ -42,7 +44,8 @@ clLib.UI.pageElements = {
 			"characterSelect",
 			"selectedArea",
 			"currentUser",
-			"currentDate"
+			"currentDate",
+			"routeLogContainer"
 		],
 		reduced: [
 			"gradeTypeSelect",
@@ -348,6 +351,37 @@ clLib.UI.elements = {
 		,"setSelectedValueHandler" : function($this, changeOptions) { 
 			clLib.UI.setSelectedValueOnlyHandler($this, changeOptions);
 			clLib.addCSSBackground($this.attr("id")); 
+		}
+	}
+	,"routeLogContainer": {
+		"setSelectedValueHandler" : function($this, changeOptions) { return $this.trigger("refresh.clLib"); }
+		,"refreshHandler" : function($this) { 
+			clLib.loggi("refreshing routelogs..");
+			var $container = $this;
+			var $list;
+			//$list = $container.first().children("ul").first();
+			$list = $container.children("div").first().find("ul").first();
+
+			// build where clause for today's routelogs
+			var where = clLib.getRouteLogWhereToday(clLib.getCurrentUserWhere());
+
+			// retrieve today's routelogs (sorted by Date)
+			var todaysRouteLogs = clLib.localStorage.getEntities(
+					"RouteLog", where, "routeLogStorage", "Date", true);
+			// retrieve today's 10 top scored routelogs
+			var todaysTopRouteLogs = clLib.localStorage.getEntities(
+					"RouteLog", where, "routeLogStorage", clLib.sortByScoreFunc, true, 10);
+			//alert("items retrieved(high-scored first) " + JSON.stringify(todaysTopRouteLogs));
+			//alert("items retrieved(latest first) " + JSON.stringify(todaysRouteLogs));
+
+			// calculate today's score
+			var todaysTopScore = clLib.calculateScore(todaysTopRouteLogs);
+
+			
+			var $collapsedItemText = $container.children("div").first().find("h2").first().find(".ui-btn-text");
+			$collapsedItemText.html("Score: <strong>" + todaysTopScore + "</strong>");
+			
+			clLib.UI.addListItems($list, todaysRouteLogs, clLib.UI.list.formatRouteLogRow, 2, true);
 		}
 	}
 	,"selectedArea" : {
