@@ -52,7 +52,7 @@ clLib.populateGrades = function($gradeSelect, selectedGradeType) {
 */ 
 clLib.calculateScore = function(routeLogs) {
 	var totalScore = 0;
-	for (var i = 0; i < routeLogs.length; i++) {
+	for (var i = 0; routeLogs && (i < routeLogs.length); i++) {
 		var routeLog = routeLogs[i];
 		totalScore += clLib.computeScore(routeLog);
 	}

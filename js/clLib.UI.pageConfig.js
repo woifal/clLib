@@ -8,9 +8,17 @@ clLib.UI.autoLoad = {
 		"tickType",
 		"characterSelect",
 		"routeLogContainer"
-	],
-	startScreen : [
+	]
+	, startScreen: [
 		"areaSelect"
+	]
+	,preferences : [
+		"currentUser"
+		, "buddiesStr"
+        , "showTopX"
+        , "defaultLayout"
+        , "defaultGradeType"
+        , "defaultGrade"
 	]
 };
 
@@ -31,40 +39,102 @@ clLib.UI.elementsToReset = {
 clLib.UI.pageElements = {
 	newRouteLog : {
 		default: [
-			"gradeTypeSelect",
-			"gradeSelect",
-			"sectorSelect",
-			"colourSelect",
-			"lineSelect",
-			"searchRouteResults",
-			"searchRoute",
-			"commentText",
-			"ratingSelect",
-			"tickType",
-			"characterSelect",
-			"selectedArea",
-			"currentUser",
-			"currentDate",
-			"routeLogContainer"
+            "currentLayout"
+            , "gradeTypeSelect"
+			, "gradeSelect"
+			, "sectorSelect"
+			, "colourSelect"
+			, "lineSelect"
+			, "searchRouteResults"
+			, "searchRoute"
+			, "commentText"
+			, "ratingSelect"
+			, "tickType"
+			, "characterSelect"
+			, "selectedArea"
+			, "currentUserPref"
+			, "currentDate"
+			, "routeLogContainer"
 		],
 		reduced: [
-			"gradeTypeSelect",
-			"gradeSelect",
-			"colourSelect",
-			"tickType",
-			"characterSelect"
-		]
-	},
-	startScreen : {
-		default: [
-			"areaSelect",
-			"selectedArea"
+            "currentLayout"
+            , "gradeTypeSelect"
+			, "gradeSelect"
+			, "colourSelect"
+			, "tickType"
+			, "characterSelect"
+			, "selectedArea"
+			, "currentUserPref"
+			, "currentDate"
+			, "routeLogContainer"
 		]
 	}
+	,startScreen: {
+	    default: [
+			"areaSelect",
+			"selectedArea"
+	    ]
+	}
+    ,preferences : {
+		default: [
+			"currentUser"
+			,"buddiesStr"
+            ,"showTopX"
+            ,"defaultLayout"
+            ,"defaultGradeType"
+            ,"defaultGrade"
+        ]
+    }
+};
+
+clLib.UI.defaultLocalVarElementConfig = {
+    "refreshHandler" : function($this) { 
+        var elementName = clLib.UI.elementNameFromId($this.attr("id"));
+        var localVarValue = localStorage.getItem(elementName);
+        $this.val(localVarValue);
+    }
+    ,"changeHandler" : function($this, changeOptions) { 
+        var elementName = clLib.UI.elementNameFromId($this.attr("id"));
+        var localVarValue = $this.val();
+        localStorage.setItem(elementName, $this.val());
+    }
 };
 
 clLib.UI.elements = {
-	"gradeTypeSelect" : {
+    "currentLayout": {
+        "refreshHandler": function ($this) {
+            var elementName = clLib.UI.elementNameFromId($this.attr("id"));
+            var localVarValue = localStorage.getItem(elementName);
+            $this.val(localVarValue);
+        }
+        , "changeHandler": function ($this, changeOptions) {
+            var elementName = clLib.UI.elementNameFromId($this.attr("id"));
+            var localVarValue = $this.val();
+            localStorage.setItem(elementName, $this.val());
+            location.reload();
+        }
+    }
+
+    ,"currentUser": clLib.UI.defaultLocalVarElementConfig
+    ,"buddiesStr" : clLib.UI.defaultLocalVarElementConfig
+    ,"showTopX" : clLib.UI.defaultLocalVarElementConfig
+    , "defaultLayout": {
+        "refreshHandler": function ($this) {
+            var elementName = clLib.UI.elementNameFromId($this.attr("id"));
+            var localVarValue = localStorage.getItem(elementName);
+            $this.val(localVarValue);
+        }
+        , "changeHandler": function ($this, changeOptions) {
+            var elementName = clLib.UI.elementNameFromId($this.attr("id"));
+            var localVarValue = $this.val();
+            localStorage.setItem(elementName, $this.val());
+            localStorage.setItem("currentLayout", $this.val());
+        }
+    }
+    ,"defaultGradeType" : clLib.UI.defaultLocalVarElementConfig
+    ,"defaultGrade" : clLib.UI.defaultLocalVarElementConfig
+
+    ,"gradeTypeSelect": {
 		"dbField" : "GradeSystem"
 		,"refreshHandler" : function($this) { 
 			clLib.populateGradeTypes($this, localStorage.getItem("defaultGradeType") || "UIAA") 
@@ -171,12 +241,12 @@ clLib.UI.elements = {
 	"colourSelect": {
 		"dbField" : "Colour"
 		,"dependingOn" : {
-			default: [
+		    default: [
 				"gradeTypeSelect", "gradeSelect", "selectedArea", "sectorSelect", "colourSelect"
-			]
+		    ]
 		}
 		,"refreshHandler" : function($this) { 
-			clLib.UI.defaultRefreshHandler($this, { preserveCurrentValue: false });
+		    clLib.UI.defaultRefreshHandler($this, { preserveCurrentValue: false });
 			clLib.addCSSBackground($this.attr("id")); 
 		}
 		,"setSelectedValueHandler" : function($this, changeOptions) { 
@@ -184,21 +254,21 @@ clLib.UI.elements = {
 			clLib.addCSSBackground($this.attr("id")); 
 		}
 		,"refreshOnUpdate" : {
-			default: {
-				"searchRouteResults" : {
-					hideOnSingleResult : true
-				}
-			}
-		}
+		    default: {
+		        "searchRouteResults": {
+		            hideOnSingleResult: true
+		        }
+		    }
+        }
 		,"changeHandler" : function($this, changeOptions) {
-			var $forElement = clLib.UI.byId$("searchRoute");
+		    var $forElement = clLib.UI.byId$("searchRoute");
 			$forElement.val("");
 			clLib.UI.defaultChangeHandler($this, changeOptions);
 		}
 	},
 	"searchRouteResults" : {
 		"refreshHandler" : function($this, options) { 
-			options = options || {};
+		    options = options || {};
 			var $inElement = $this;
 			var $forElement = clLib.UI.byId$("searchRoute");
 			;
@@ -209,7 +279,7 @@ clLib.UI.elements = {
 				true, 
 				{"Name": { "$starts-with" : $forElement.val() }}
 			);
-			
+
 			clLib.populateSearchProposals($forElement, $inElement, results, options["hideOnSingleResult"]);
 		}
 	},
@@ -295,7 +365,7 @@ clLib.UI.elements = {
 		}
 		,"changeHandler" : function($this, changeOptions) {}
 		,"customVal": function() {
-			alert(clLib.UI.getId$("ratingSelect") + ":checked");
+			//alert(clLib.UI.getId$("ratingSelect") + ":checked");
 			return $(clLib.UI.getId$("ratingSelectRadio") + ":checked").val();
 		}
 
@@ -314,7 +384,7 @@ clLib.UI.elements = {
 				selectBoxElement : $this,
 				dataObj : results,
 				preserveCurrentValue : true,
-				selectedValue : localStorage.getItem("defaultArea")
+				selectedValue : localStorage.getItem("currentlySelectedArea")
 			});
 		}
 		,"changeHandler" : function($this, changeOptions) {
@@ -365,10 +435,12 @@ clLib.UI.elements = {
 			// build where clause for today's routelogs
 			var where = clLib.getRouteLogWhereToday(clLib.getCurrentUserWhere());
 
-			// retrieve today's routelogs (sorted by Date)
+			//alert("getting today's route logs..");
+		    // retrieve today's routelogs (sorted by Date)
 			var todaysRouteLogs = clLib.localStorage.getEntities(
 					"RouteLog", where, "routeLogStorage", "Date", true);
 			// retrieve today's 10 top scored routelogs
+			//alert("getting today's top route logs..");
 			var todaysTopRouteLogs = clLib.localStorage.getEntities(
 					"RouteLog", where, "routeLogStorage", clLib.sortByScoreFunc, true, 10);
 			//alert("items retrieved(high-scored first) " + JSON.stringify(todaysTopRouteLogs));
@@ -376,12 +448,13 @@ clLib.UI.elements = {
 
 			// calculate today's score
 			var todaysTopScore = clLib.calculateScore(todaysTopRouteLogs);
-
+			//alert("Todays score is: " + todaysTopScore);
 			
 			var $collapsedItemText = $container.children("div").first().find("h2").first().find(".ui-btn-text");
 			$collapsedItemText.html("Score: <strong>" + todaysTopScore + "</strong>");
-			
+			//alert("adding list items..");
 			clLib.UI.addListItems($list, todaysRouteLogs, clLib.UI.list.formatRouteLogRow, 2, true);
+			//alert("added list items..");
 		}
 	}
 	,"selectedArea" : {
@@ -390,7 +463,7 @@ clLib.UI.elements = {
 			return localStorage.getItem("currentlySelectedArea"); //"KletterHalle Wien"; //
 		}
 	}
-	,"currentUser" : {
+	,"currentUserPref" : {
 		"dbField" : "userName"
 		,"customVal": function() {
 			return localStorage.getItem("currentUser");

@@ -1,0 +1,83 @@
+﻿<!DOCTYPE html> 
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1"> 
+	<title>clLib_preferences</title> 
+		<link rel="stylesheet" href="css/jquery.mobile-1.3.0.min.css" />
+		<link rel="stylesheet" href="css/clRouteColors.css" />
+
+		<script type="text/javascript" src="js/clLib.js"></script>
+		<script type="text/javascript" src="js/clLib.gradeConfig.js"></script>
+		<script type="text/javascript" src="js/clLib.localStorage.js"></script>
+		<script type="text/javascript" src="js/clLib.localStorage.indexes.js"></script>
+		<script type="text/javascript" src="js/clLib.UI.js"></script>
+		<script type="text/javascript" src="js/clLib.UI.pageConfig.js"></script>
+		<script type="text/javascript" src="js/clLib.REST.js"></script>
+<!--		<script type="text/javascript" src="clLib.COMBINED.js"></script>-->
+
+<!--
+		<script type="text/javascript" src="http://codeorigin.jquery.com/jquery-1.8.2.js"></script>
+        <script type="text/javascript" src="http://codeorigin.jquery.com/mobile/1.3.0/jquery.mobile-1.3.0.js"></script>
+-->
+		<script type="text/javascript" src="js/jquery-1.8.2.js"></script>
+        <script type="text/javascript" src="js/jquery.mobile-1.3.0.js"></script>
+        <script type="text/javascript" src="js/clLib.PAGES.js"></script>
+
+		<link rel="stylesheet" href="css/clLib.css" />
+</head> 
+
+<body> 
+
+    <div 
+         id="preferences" data-role="page" 
+         style="min-height:480px; max-width:600px;" 
+         data-theme="a" data-add-back-btn="true" data-back-btn-text="Back"
+    >
+        <div id="preferences_mobileHeader1" data-role="header"
+             data-position="fixed" data-theme="a">
+            <h1>
+                Preferences
+            </h1>
+        </div>
+        
+        <!-- mobilecontainer -->
+        <div 
+            id="preferences_mobilecontainer" data-role="content" 
+            data-theme=""
+        >
+            <!-- currentUser -->
+            <label for="currentUser">Username:</label>
+            <input id="preferences_currentUser"  type="text" name="currentUser" tabindex="1" data-theme="a"/>
+
+            <label for="buddiesStr">Buddies:</label>
+            <input id="preferences_buddiesStr" type="text" name="buddiesStr" tabindex="2" data-theme="a"/>
+    
+            <label for="showTopX"># of Top-routes:</label>
+            <input id="preferences_showTopX" type="text" name="showTopX" tabindex="3" data-theme="a"/>
+
+            <label for="defaultLayout">Default Layout:</label>
+            <select id="preferences_defaultLayout" name="defaultLayout" 
+                    data-theme="a" data-inline="false" data-mini="false" data-icon="arrow-d" data-iconpos="right"
+                    data-native-menu="false" tabindex="4"
+            >
+                <option value="default" selected="selected">default</option>
+                <option value="reduced">reduced</option>
+            </select>
+
+            <label for="defaultGradeType">Default GradeType:</label>
+            <input id="preferences_defaultGradeType" type="text" name="defaultGradeType"
+                   value="UIAA"
+                   tabindex="5" data-theme="a" />
+
+            <label for="defaultGrade">Default Grade:</label>
+            <input id="preferences_defaultGrade" type="text" name="defaultGrade"
+                   value="V+"
+                   tabindex="5" data-theme="a" />
+
+    </div>
+</body>
+
+  
+</html>

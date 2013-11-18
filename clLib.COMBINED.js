@@ -52,7 +52,7 @@ clLib.populateGrades = function($gradeSelect, selectedGradeType) {
 */ 
 clLib.calculateScore = function(routeLogs) {
 	var totalScore = 0;
-	for (var i = 0; i < routeLogs.length; i++) {
+	for (var i = 0; routeLogs && (i < routeLogs.length); i++) {
 		var routeLog = routeLogs[i];
 		totalScore += clLib.computeScore(routeLog);
 	}
@@ -1427,7 +1427,7 @@ clLib.UI = {
 		value : "__UNKNOWN__"
 	}
 };
-
+clLib.UI.list = {};
 
 clLib.UI.killEventHandlers = function($element, eventName) {
 	$element.die(eventName);
@@ -1444,22 +1444,142 @@ clLib.UI.setSelectedValue = function($element, newValue) {
 };
 
 
+clLib.UI.addListItems = function($list, dataObj, createItemFunc, count, startWithEmptyList) {
+	//alert("adding list items for " + $list.attr("id") + ">" + JSON.stringify(dataObj) + "<");
+	if(startWithEmptyList) {
+		$list.empty();
+		$list.data("itemsShown", 0);
+	}
+	createItemFunc = createItemFunc || clLib.UI.list.formatStandardRow;
+	count = count || 2;
+	var itemsShown = $list.data("itemsShown") || 0;
+	//alert("old count: " + itemsShown);
 
-clLib.populateListView = function($list, dataObj, formatFunc){
-	$list.empty();
-	$.each(dataObj, function(index, value) {
-		var itemValue;
-		if(formatFunc) {
-			itemValue = formatFunc(value);
+	if(!dataObj || Object.keys(dataObj).length == 0) {
+		dataObj = [];
+	}
+	$.each(dataObj.slice(itemsShown, itemsShown + count), function(index, dataRow) {
+		var $itemsToAdd = createItemFunc(dataRow);
+
+		/* 
+			Add item to listview..
+		*/
+		if($itemsToAdd instanceof Array) {
+			$.each($itemsToAdd, function(index, $item) {
+				$list.append($item);
+			});
+		} else {
+			$list.append($itemsToAdd);
 		}
-		else {
-			itemValue = value;
-		}
-		var $listItem = $('<li></li>')
-                .html(itemValue);
-		$list.append($listItem);
 	});
-	$list.listview('refresh', true);
+
+	var $addMoreElement = $list.find(".addMore").remove();
+	$addMoreElement = $("<li>")
+		.addClass("addMore")
+		.attr("data-role", "list-divider")
+		.attr("data-theme", "c")
+		.append("...")
+		.css("text-align", "center")
+		.click(function() {
+			clLib.UI.addListItems($list, dataObj, createItemFunc, count);
+		})
+	;
+	if(itemsShown + count < dataObj.length) {
+		$list.append($addMoreElement);
+	}
+	
+	$list.listview('refresh', false);
+
+	$list
+		.data(
+			"itemsShown", 
+			itemsShown + count
+		)
+	;
+	//alert("new count: " + $list.data("itemsShown"));
+
+};
+
+
+clLib.UI.list.formatStandardRow = function(dataRow) {
+	var $listItem = $('<li></li>')
+        .append(dataRow);
+	return $listItem;
+};
+clLib.UI.list.formatRouteLogRow = function(dataRow) {
+	var dataFormat = {
+		header: ["GradeSystem", "Grade", "TickType"]
+		,bubble: "Score"
+		,body: {
+			header: "RouteName",
+			items: ["Sector", "Line", "Colour", "Comment"]
+		}
+	};
+	
+	// compute score
+	dataRow.Score = clLib.computeScore(dataRow);
+	
+	//alert(JSON.stringify(dataRow));
+	var headerText = [], $bubble, $headerItem, $bodyItem, $bodyHeader;
+	var listItems = [];
+
+	/* 
+		Clickable header item
+	*/
+	$.each(dataFormat["header"], function(index, keyName) {
+		headerText.push(dataRow[keyName]);
+	});
+	headerText = headerText.join(" / ", headerText);
+	
+	$bubble = $("<span>")
+		.addClass("ui-li-count")
+		.append(dataRow[dataFormat["bubble"]])
+	;
+
+	$headerItem = $("<li>")
+		.attr("data-role", "list-divider")
+		.append(headerText)
+		.append($bubble)
+	;
+	listItems.push($headerItem);
+
+	/* 
+		Body contents..
+	*/
+	$bodyHeader = $("<h1>")
+		.html(dataRow[dataFormat["body"]["header"]])
+	;
+
+	$bodyItem = $("<li>")
+		.append($bodyHeader);
+	;
+
+	$.each(dataFormat["body"]["items"], function(index, keyName) {
+		var $someStrong = $("<strong>")
+			.html(keyName + ": ");
+		var $someP = $("<p>")
+			.append($someStrong)
+			.append(dataRow[keyName])
+		;
+		$bodyItem
+			.append($someP)
+		;
+
+	});
+
+
+	// Hide body initially
+	$bodyItem.hide();
+	
+	// Show body on header click
+	$headerItem.click(function() {
+		$bodyItem.toggle();
+	});
+	
+	listItems.push($bodyItem);
+	
+	return listItems;
+
 };
 
 
@@ -1580,25 +1700,32 @@ clLib.populateSearchProposals = function($forElement, $inElement, dataObj, hideO
 		//$forElement.val("");
 	}
 	
-	clLib.populateListView($inElement, dataObj);
-
 	$inElement.attr("data-theme", "c");
 	$inElement.show();
+
+
+	clLib.UI.addListItems($inElement, dataObj, function(dataRow) {
+		var $listItem = clLib.UI.list.formatStandardRow(dataRow);
+		$listItem.click(function() {
+			clLib.loggi("this child;" + $(this).html());
+			var result = $.trim($(this).html());
+			//alert("setting selectedresult to " + result);
+
+			//alert("forElement is " + $forElement.attr("id"));
+			$forElement.trigger("setSelectedValue.clLib", {"value": result});
+			//$forElement.val(result);
+
+			$(this).parent().hide();
+			clLib.loggi("hidden");
+		});
+		return $listItem;
+	},
+	2, 
+	true
+	);
+
 	clLib.loggi("shown" + $inElement.children().length);
 
-	$inElement.children().click(function() {
-        clLib.loggi("this child;" + $(this).html());
-		var result = $.trim($(this).html());
-		//alert("seeting selectedresult to " + result);
-
-		//alert("forElement is " + $forElement.attr("id"));
-		$forElement.trigger("setSelectedValue.clLib", {"value": result});
-		//$forElement.val(result);
-
-		$(this).parent().hide();
-		clLib.loggi("hidden");
-		//$("#startScreen_mobilefooter1").html(result);
-	});
 };
 
 clLib.UI.defaultChangeHandler = function($element, changeOptions) {
@@ -1614,28 +1741,35 @@ clLib.UI.defaultChangeHandler = function($element, changeOptions) {
 	var currentLayout = localStorage.getItem("currentLayout");
 	clLib.loggi("current layout is >" +  currentLayout  + "<");
 	var refreshTargets = elementConfig["refreshOnUpdate"];
-	if(
+	//alert("getting dependent " + JSON.stringify(refreshTargets));
+
+	if (
 		refreshTargets &&
 		currentLayout in refreshTargets
 	) {
 		clLib.loggi($element.attr("id") + ", refreshing >>" + JSON.stringify(Object.keys(refreshTargets[currentLayout])));
 		refreshTargets = refreshTargets[currentLayout];
 	} else {
-		refreshTargets = refreshTargets && refreshTargets["default"] || {};
+	    if (refreshTargets) {
+	        refreshTargets = refreshTargets["default"] || {};
+	    } else {
+    	    refreshTargets = {};
+	    }
 	}
 
-	clLib.loggi("refreshing dependent " + JSON.stringify(refreshTargets));
+	//alert("refreshing dependent " + JSON.stringify(refreshTargets));
 	//	$.each(elementConfig.refreshOnUpdate, function(refreshTargetName, refreshOptions) {
 	$.each(refreshTargets, function(refreshTargetName, refreshOptions) {
-		clLib.loggi("refreshing dependent element " + refreshTargetName);
+		//alert("refreshing dependent element " + refreshTargetName);
 		var $refreshTarget = clLib.UI.byId$(refreshTargetName);
 		if(!$refreshTarget[0]) {
-			clLib.loggi("element " + "#" + refreshTargetName + " not found!");
+			console.log("element " + "#" + refreshTargetName + " not found!");
 		}
 
 		$.extend(refreshOptions, changeOptions);
 		
-		$refreshTarget
+		//alert("triggering refresh on " + $refreshTarget.attr("id"));
+	    $refreshTarget
 			.trigger("refresh.clLib", 
 				clLib.UI.addObjArr(refreshOptions, ["eventSourcePath"], clLib.UI.elementNameFromId($element.attr("id")))
 		);
@@ -1678,7 +1812,7 @@ clLib.UI.resetUIelements = function(pageName, currentJqmSlide) {
 		if($element[0]) {
 			var elementType = $element[0].tagName;
 		}
-		//alert("triggering reset/refresh for " + elementName + ", type:" + elementType);
+		clLib.loggi("triggering reset/refresh for " + elementName + ", type:" + elementType);
 //		if(elementType == "SELECT") {
 			clLib.UI.setSelectedValue($element, clLib.UI.NOTSELECTED.value);
 //		} else {
@@ -1854,7 +1988,7 @@ clLib.UI.showAllTodayScores = function(buddyNames, targetElement) {
 	});
 	//clLib.loggi("allTodaysTopScore: " + JSON.stringify(allTodaysScores));
 	// show buddies todays' score
-	clLib.populateListView(targetElement, allTodaysScores);
+	clLib.UI.addListItems(targetElement, allTodaysScores);
 };
 
 
@@ -1956,7 +2090,7 @@ clLib.UI.defaultRefreshHandler = function($element, additionalSelectBoxOptions) 
 	var currentLayout = localStorage.getItem("currentLayout") || "default";
 	var elementConfig = clLib.UI.elements[clLib.UI.elementNameFromId($element.attr("id"))];
 
-	var dependingPageElements = elementConfig["dependingOn"][currentLayout];
+	var dependingPageElements = elementConfig["dependingOn"][currentLayout] || elementConfig["dependingOn"]["default"];
 	var resultColName = elementConfig["dbField"];
 
 	var results = clLib.UI.defaultEntitySearch(resultColName, dependingPageElements, true); //, additionalWhere);
@@ -1972,21 +2106,9 @@ clLib.UI.defaultRefreshHandler = function($element, additionalSelectBoxOptions) 
 	clLib.populateSelectBox(selectBoxOptions);
 }
 
-clLib.UI.defaultRefreshHandler_old = function($element, resultColName, dependentPageElements) {
-
-	results = clLib.UI.defaultEntitySearch(resultColName, dependentPageElements, true);
-	clLib.loggi("got results for " + JSON.stringify(where) + ",>" + JSON.stringify(results));
-
-	clLib.populateSelectBox({
-		selectBoxElement : $element,
-		dataObj : results,
-		preserveCurrentValue : true,
-		additionalValue : clLib.UI.NOTSELECTED
-	});
-}
 
 clLib.UI.defaultEntitySearch = function(resultColName, dependentPageElements, distinctFlag, additionalWhereObj) {
-	var baseWhere = {}, where, results, getFunc;
+	var baseWhere = {}, where, results;
 	$.each(dependentPageElements, function(idx, elementName) {
 		var elementConfig = clLib.UI.elements[elementName];
 		//alert("eaching " + idx + "," + elementName + "=>" + elementConfig["dbField"] + " to " + clLib.UI.getVal(elementName));
@@ -2001,8 +2123,7 @@ clLib.UI.defaultEntitySearch = function(resultColName, dependentPageElements, di
 	//alert("where = " + JSON.stringify(where));
 
 	if(distinctFlag) {
-		getFunc = clLib.localStorage.getDistinct;
-		results = getFunc("Routes", where, resultColName, "routeStorage");
+		results = clLib.localStorage.getDistinct("Routes", where, resultColName, "routeStorage");
 	} else {
 		results = clLib.localStorage.getEntities("Routes", where, "routeStorage");
 	}
@@ -2109,10 +2230,19 @@ clLib.UI.autoLoad = {
 		"searchRoute",
 		"ratingSelect",
 		"tickType",
-		"characterSelect"
-	],
-	startScreen : [
+		"characterSelect",
+		"routeLogContainer"
+	]
+	, startScreen: [
 		"areaSelect"
+	]
+	,preferences : [
+		"currentUser"
+		, "buddiesStr"
+        , "showTopX"
+        , "defaultLayout"
+        , "defaultGradeType"
+        , "defaultGrade"
 	]
 };
 
@@ -2123,7 +2253,8 @@ clLib.UI.elementsToReset = {
 		"colourSelect",
 		"ratingSelect",
 		"searchRouteResults",
-		"searchRoute"
+		"searchRoute",
+		"routeLogContainer"
 	],
 	startScreen : [
 	]
@@ -2132,39 +2263,102 @@ clLib.UI.elementsToReset = {
 clLib.UI.pageElements = {
 	newRouteLog : {
 		default: [
-			"gradeTypeSelect",
-			"gradeSelect",
-			"sectorSelect",
-			"colourSelect",
-			"lineSelect",
-			"searchRouteResults",
-			"searchRoute",
-			"commentText",
-			"ratingSelect",
-			"tickType",
-			"characterSelect",
-			"selectedArea",
-			"currentUser",
-			"currentDate"
+            "currentLayout"
+            , "gradeTypeSelect"
+			, "gradeSelect"
+			, "sectorSelect"
+			, "colourSelect"
+			, "lineSelect"
+			, "searchRouteResults"
+			, "searchRoute"
+			, "commentText"
+			, "ratingSelect"
+			, "tickType"
+			, "characterSelect"
+			, "selectedArea"
+			, "currentUserPref"
+			, "currentDate"
+			, "routeLogContainer"
 		],
 		reduced: [
-			"gradeTypeSelect",
-			"gradeSelect",
-			"colourSelect",
-			"tickType",
-			"characterSelect"
-		]
-	},
-	startScreen : {
-		default: [
-			"areaSelect",
-			"selectedArea"
+            "currentLayout"
+            , "gradeTypeSelect"
+			, "gradeSelect"
+			, "colourSelect"
+			, "tickType"
+			, "characterSelect"
+			, "selectedArea"
+			, "currentUserPref"
+			, "currentDate"
+			, "routeLogContainer"
 		]
 	}
+	,startScreen: {
+	    default: [
+			"areaSelect",
+			"selectedArea"
+	    ]
+	}
+    ,preferences : {
+		default: [
+			"currentUser"
+			,"buddiesStr"
+            ,"showTopX"
+            ,"defaultLayout"
+            ,"defaultGradeType"
+            ,"defaultGrade"
+        ]
+    }
+};
+
+clLib.UI.defaultLocalVarElementConfig = {
+    "refreshHandler" : function($this) { 
+        var elementName = clLib.UI.elementNameFromId($this.attr("id"));
+        var localVarValue = localStorage.getItem(elementName);
+        $this.val(localVarValue);
+    }
+    ,"changeHandler" : function($this, changeOptions) { 
+        var elementName = clLib.UI.elementNameFromId($this.attr("id"));
+        var localVarValue = $this.val();
+        localStorage.setItem(elementName, $this.val());
+    }
 };
 
 clLib.UI.elements = {
-	"gradeTypeSelect" : {
+    "currentLayout": {
+        "refreshHandler": function ($this) {
+            var elementName = clLib.UI.elementNameFromId($this.attr("id"));
+            var localVarValue = localStorage.getItem(elementName);
+            $this.val(localVarValue);
+        }
+        , "changeHandler": function ($this, changeOptions) {
+            var elementName = clLib.UI.elementNameFromId($this.attr("id"));
+            var localVarValue = $this.val();
+            localStorage.setItem(elementName, $this.val());
+            location.reload();
+        }
+    }
+
+    ,"currentUser": clLib.UI.defaultLocalVarElementConfig
+    ,"buddiesStr" : clLib.UI.defaultLocalVarElementConfig
+    ,"showTopX" : clLib.UI.defaultLocalVarElementConfig
+    , "defaultLayout": {
+        "refreshHandler": function ($this) {
+            var elementName = clLib.UI.elementNameFromId($this.attr("id"));
+            var localVarValue = localStorage.getItem(elementName);
+            $this.val(localVarValue);
+        }
+        , "changeHandler": function ($this, changeOptions) {
+            var elementName = clLib.UI.elementNameFromId($this.attr("id"));
+            var localVarValue = $this.val();
+            localStorage.setItem(elementName, $this.val());
+            localStorage.setItem("currentLayout", $this.val());
+        }
+    }
+    ,"defaultGradeType" : clLib.UI.defaultLocalVarElementConfig
+    ,"defaultGrade" : clLib.UI.defaultLocalVarElementConfig
+
+    ,"gradeTypeSelect": {
 		"dbField" : "GradeSystem"
 		,"refreshHandler" : function($this) { 
 			clLib.populateGradeTypes($this, localStorage.getItem("defaultGradeType") || "UIAA") 
@@ -2271,12 +2465,12 @@ clLib.UI.elements = {
 	"colourSelect": {
 		"dbField" : "Colour"
 		,"dependingOn" : {
-			default: [
+		    default: [
 				"gradeTypeSelect", "gradeSelect", "selectedArea", "sectorSelect", "colourSelect"
-			]
+		    ]
 		}
 		,"refreshHandler" : function($this) { 
-			clLib.UI.defaultRefreshHandler($this, { preserveCurrentValue: false });
+		    clLib.UI.defaultRefreshHandler($this, { preserveCurrentValue: false });
 			clLib.addCSSBackground($this.attr("id")); 
 		}
 		,"setSelectedValueHandler" : function($this, changeOptions) { 
@@ -2284,21 +2478,21 @@ clLib.UI.elements = {
 			clLib.addCSSBackground($this.attr("id")); 
 		}
 		,"refreshOnUpdate" : {
-			default: {
-				"searchRouteResults" : {
-					hideOnSingleResult : true
-				}
-			}
-		}
+		    default: {
+		        "searchRouteResults": {
+		            hideOnSingleResult: true
+		        }
+		    }
+        }
 		,"changeHandler" : function($this, changeOptions) {
-			var $forElement = clLib.UI.byId$("searchRoute");
+		    var $forElement = clLib.UI.byId$("searchRoute");
 			$forElement.val("");
 			clLib.UI.defaultChangeHandler($this, changeOptions);
 		}
 	},
 	"searchRouteResults" : {
 		"refreshHandler" : function($this, options) { 
-			options = options || {};
+		    options = options || {};
 			var $inElement = $this;
 			var $forElement = clLib.UI.byId$("searchRoute");
 			;
@@ -2309,7 +2503,7 @@ clLib.UI.elements = {
 				true, 
 				{"Name": { "$starts-with" : $forElement.val() }}
 			);
-			
+
 			clLib.populateSearchProposals($forElement, $inElement, results, options["hideOnSingleResult"]);
 		}
 	},
@@ -2395,7 +2589,7 @@ clLib.UI.elements = {
 		}
 		,"changeHandler" : function($this, changeOptions) {}
 		,"customVal": function() {
-			alert(clLib.UI.getId$("ratingSelect") + ":checked");
+			//alert(clLib.UI.getId$("ratingSelect") + ":checked");
 			return $(clLib.UI.getId$("ratingSelectRadio") + ":checked").val();
 		}
 
@@ -2414,7 +2608,7 @@ clLib.UI.elements = {
 				selectBoxElement : $this,
 				dataObj : results,
 				preserveCurrentValue : true,
-				selectedValue : localStorage.getItem("defaultArea")
+				selectedValue : localStorage.getItem("currentlySelectedArea")
 			});
 		}
 		,"changeHandler" : function($this, changeOptions) {
@@ -2453,13 +2647,47 @@ clLib.UI.elements = {
 			clLib.addCSSBackground($this.attr("id")); 
 		}
 	}
+	,"routeLogContainer": {
+		"setSelectedValueHandler" : function($this, changeOptions) { return $this.trigger("refresh.clLib"); }
+		,"refreshHandler" : function($this) { 
+			clLib.loggi("refreshing routelogs..");
+			var $container = $this;
+			var $list;
+			//$list = $container.first().children("ul").first();
+			$list = $container.children("div").first().find("ul").first();
+
+			// build where clause for today's routelogs
+			var where = clLib.getRouteLogWhereToday(clLib.getCurrentUserWhere());
+
+			//alert("getting today's route logs..");
+		    // retrieve today's routelogs (sorted by Date)
+			var todaysRouteLogs = clLib.localStorage.getEntities(
+					"RouteLog", where, "routeLogStorage", "Date", true);
+			// retrieve today's 10 top scored routelogs
+			//alert("getting today's top route logs..");
+			var todaysTopRouteLogs = clLib.localStorage.getEntities(
+					"RouteLog", where, "routeLogStorage", clLib.sortByScoreFunc, true, 10);
+			//alert("items retrieved(high-scored first) " + JSON.stringify(todaysTopRouteLogs));
+			//alert("items retrieved(latest first) " + JSON.stringify(todaysRouteLogs));
+
+			// calculate today's score
+			var todaysTopScore = clLib.calculateScore(todaysTopRouteLogs);
+			//alert("Todays score is: " + todaysTopScore);
+			
+			var $collapsedItemText = $container.children("div").first().find("h2").first().find(".ui-btn-text");
+			$collapsedItemText.html("Score: <strong>" + todaysTopScore + "</strong>");
+			//alert("adding list items..");
+			clLib.UI.addListItems($list, todaysRouteLogs, clLib.UI.list.formatRouteLogRow, 2, true);
+			//alert("added list items..");
+		}
+	}
 	,"selectedArea" : {
 		"dbField" : "Area"
 		,"customVal": function() {
 			return localStorage.getItem("currentlySelectedArea"); //"KletterHalle Wien"; //
 		}
 	}
-	,"currentUser" : {
+	,"currentUserPref" : {
 		"dbField" : "userName"
 		,"customVal": function() {
 			return localStorage.getItem("currentUser");
@@ -2579,4 +2807,118 @@ clLib.REST.storeEntity = function(entityName, entityInstance) {
 
 	clLib.loggi("returning(storeEntity) " + JSON.stringify(returnObj));
 	return returnObj;
-}
+}"use strict";
+clLib.PAGES = {};
+
+clLib.PAGES.handlers = {
+	"preferences": {
+		"init" : function() {
+			clLib.UI.fillUIelements("preferences", "preferences");
+		}
+	}
+	,"startScreen": {
+		"init" : function() {
+			// Fill UI elements..
+			//    $(document).live("pageshow", function () {
+	        clLib.UI.fillUIelements("startScreen", "startScreen");
+        	//    });
+
+			// Link to preferences page..
+		    $("#startScreen_preferencesButton").die("click").click(function() {
+		        $.mobile.navigate("clLib_preferences.html");
+	        });
+
+        	// Link to New Route page..
+			$("#addRouteButton").die("click").bind("click", function (e) {
+				var currentLayout = localStorage.getItem("currentLayout") || localStorage.getItem("defaultLayout") || "default";
+				var newRouteLogURL = "clLib_newRouteLog." + currentLayout + ".html";
+				
+				$.mobile.navigate(newRouteLogURL);
+			});
+
+        	// refresh button(=> in page header)..
+			$("#startScreen_refreshRouteStorageButton").die("click").click(function () {
+				clLib.UI.showLoading("refreshing from server..");
+
+		        //alert("previous refresh:" +clLib.localStorage.getLastRefreshDate("routeStorage"));
+
+				var userRoutes = clLib.REST.getEntities("Routes");
+				console.log("GOT: "  +JSON.stringify(userRoutes));
+				clLib.localStorage.initStorage("routeStorage", userRoutes);
+
+        		var userRouteLogs = clLib.REST.getEntities("RouteLog", clLib.getRouteLogWhereToday());
+				console.log("GOT: " +JSON.stringify(userRouteLogs));
+				clLib.localStorage.initStorage("routeLogStorage", userRouteLogs);
+
+				clLib.UI.fillUIelements("startScreen", "startScreen");
+
+				//alert("new refresh:" + clLib.localStorage.getLastRefreshDate("routeStorage"));
+				clLib.UI.hideLoading();
+			});
+		}
+	}
+	,"newRouteLog": {
+		"init" : function() {
+			//    $(document).on("pageshow", function () {
+			clLib.UI.buildRatingRadio($("#newRouteLog_ratingSelectWrapper"));
+			$("#newRouteLog_layoutSelect").val(localStorage.getItem("currentLayout"));
+			$("#newRouteLog_layoutSelect").selectmenu("refresh");
+			clLib.UI.fillUIelements("newRouteLog", "newRouteLog");
+			//    });
+
+			$("#newRouteLog_save_tick").die("click.clLib").bind("click.clLib", function(e) {
+        		//alert("SAVING!!!");
+				localStorage.setItem("currentJqmSlide", "newRouteLog");
+        		//		localStorage.setItem("currentLayout", "default");
+				clLib.UI.showLoading();
+
+				clLib.UI.defaultSaveHandler();
+				/*
+					var saveObj= {
+							"Area": localStorage.getItem("currentlySelectedArea"),
+							"GradeSystem": $("#newRouteLog_gradeTypeSelect").val(),
+							"Grade": $("#newRouteLog_gradeSelect").val(),
+							"Sector": $("#newRouteLog_sectorSelect").val(),
+							"Colour": $("#newRouteLog_colourSelect").val(),
+							"Line": $("#newRouteLog_lineSelect").val(),
+							"TickType": $("#newRouteLog_tickType").val(),
+							"RouteName": $("#newRouteLog_searchRoute").val(),
+							"userName": localStorage.getItem("currentUser"),
+							"Rating": $("#newRouteLog_ratingSelectRadio" + ":checked").val(),
+							"Date": new Date()
+						};
+				//		clLib.REST.storeEntity("RouteLog", saveObj);
+		
+						clLib.localStorage.addInstance("RouteLog", saveObj, "routeLogStorage");
+				*/
+				clLib.UI.resetUIelements("newRouteLog", "newRouteLog");
+				clLib.UI.hideLoading();
+			});
+		}
+	}
+};
+
+
+clLib.PAGES.initHandler = function(event) {
+	var pageId = $(event.target).attr("id");
+	//alert("INIT page >" + pageId + "<");
+	clLib.PAGES.handlers[pageId]["init"]();
+};
+
+$("#newRouteLog").die("pageinit").live("pageinit", function (event, ui) {
+	clLib.PAGES.initHandler(event);
+});
+
+$("#startScreen").die("pageinit").live("pageinit", function(event, ui) {
+	clLib.PAGES.initHandler(event);
+});
+$("#preferences").die("pageinit").live("pageinit", function (event, ui) {
+	clLib.PAGES.initHandler(event);
+});
+
+$("#startScreen").die("pageshow").live("pageshow", function(event, ui) {
+	console.log("SHOWING startScreen...")
+});
+
+
+

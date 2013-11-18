@@ -24,7 +24,7 @@ clLib.UI.setSelectedValue = function($element, newValue) {
 
 
 clLib.UI.addListItems = function($list, dataObj, createItemFunc, count, startWithEmptyList) {
-	clLib.loggi("adding list items >" + JSON.stringify(dataObj) + "<");
+	//alert("adding list items for " + $list.attr("id") + ">" + JSON.stringify(dataObj) + "<");
 	if(startWithEmptyList) {
 		$list.empty();
 		$list.data("itemsShown", 0);
@@ -34,6 +34,9 @@ clLib.UI.addListItems = function($list, dataObj, createItemFunc, count, startWit
 	var itemsShown = $list.data("itemsShown") || 0;
 	//alert("old count: " + itemsShown);
 
+	if(!dataObj || Object.keys(dataObj).length == 0) {
+		dataObj = [];
+	}
 	$.each(dataObj.slice(itemsShown, itemsShown + count), function(index, dataRow) {
 		var $itemsToAdd = createItemFunc(dataRow);
 
@@ -279,6 +282,7 @@ clLib.populateSearchProposals = function($forElement, $inElement, dataObj, hideO
 	$inElement.attr("data-theme", "c");
 	$inElement.show();
 
+
 	clLib.UI.addListItems($inElement, dataObj, function(dataRow) {
 		var $listItem = clLib.UI.list.formatStandardRow(dataRow);
 		$listItem.click(function() {
@@ -316,28 +320,35 @@ clLib.UI.defaultChangeHandler = function($element, changeOptions) {
 	var currentLayout = localStorage.getItem("currentLayout");
 	clLib.loggi("current layout is >" +  currentLayout  + "<");
 	var refreshTargets = elementConfig["refreshOnUpdate"];
-	if(
+	//alert("getting dependent " + JSON.stringify(refreshTargets));
+
+	if (
 		refreshTargets &&
 		currentLayout in refreshTargets
 	) {
 		clLib.loggi($element.attr("id") + ", refreshing >>" + JSON.stringify(Object.keys(refreshTargets[currentLayout])));
 		refreshTargets = refreshTargets[currentLayout];
 	} else {
-		refreshTargets = refreshTargets && refreshTargets["default"] || {};
+	    if (refreshTargets) {
+	        refreshTargets = refreshTargets["default"] || {};
+	    } else {
+    	    refreshTargets = {};
+	    }
 	}
 
-	clLib.loggi("refreshing dependent " + JSON.stringify(refreshTargets));
+	//alert("refreshing dependent " + JSON.stringify(refreshTargets));
 	//	$.each(elementConfig.refreshOnUpdate, function(refreshTargetName, refreshOptions) {
 	$.each(refreshTargets, function(refreshTargetName, refreshOptions) {
-		clLib.loggi("refreshing dependent element " + refreshTargetName);
+		//alert("refreshing dependent element " + refreshTargetName);
 		var $refreshTarget = clLib.UI.byId$(refreshTargetName);
 		if(!$refreshTarget[0]) {
-			clLib.loggi("element " + "#" + refreshTargetName + " not found!");
+			console.log("element " + "#" + refreshTargetName + " not found!");
 		}
 
 		$.extend(refreshOptions, changeOptions);
 		
-		$refreshTarget
+		//alert("triggering refresh on " + $refreshTarget.attr("id"));
+	    $refreshTarget
 			.trigger("refresh.clLib", 
 				clLib.UI.addObjArr(refreshOptions, ["eventSourcePath"], clLib.UI.elementNameFromId($element.attr("id")))
 		);
@@ -658,7 +669,7 @@ clLib.UI.defaultRefreshHandler = function($element, additionalSelectBoxOptions) 
 	var currentLayout = localStorage.getItem("currentLayout") || "default";
 	var elementConfig = clLib.UI.elements[clLib.UI.elementNameFromId($element.attr("id"))];
 
-	var dependingPageElements = elementConfig["dependingOn"][currentLayout];
+	var dependingPageElements = elementConfig["dependingOn"][currentLayout] || elementConfig["dependingOn"]["default"];
 	var resultColName = elementConfig["dbField"];
 
 	var results = clLib.UI.defaultEntitySearch(resultColName, dependingPageElements, true); //, additionalWhere);
