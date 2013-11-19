@@ -150,7 +150,7 @@ clLib.UI.elements = {
     ,"defaultGrade" : {
         "refreshHandler" : function($this) { 
             var defaultGradeType = localStorage.getItem("defaultGradeType");
-            alert("repopulating for gradetype " + defaultGradeType);
+            //alert("repopulating for gradetype " + defaultGradeType);
             clLib.populateGrades($this,
 				defaultGradeType
 			); 
