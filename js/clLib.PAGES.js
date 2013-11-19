@@ -64,24 +64,6 @@ clLib.PAGES.handlers = {
 				clLib.UI.showLoading();
 
 				clLib.UI.defaultSaveHandler();
-				/*
-					var saveObj= {
-							"Area": localStorage.getItem("currentlySelectedArea"),
-							"GradeSystem": $("#newRouteLog_gradeTypeSelect").val(),
-							"Grade": $("#newRouteLog_gradeSelect").val(),
-							"Sector": $("#newRouteLog_sectorSelect").val(),
-							"Colour": $("#newRouteLog_colourSelect").val(),
-							"Line": $("#newRouteLog_lineSelect").val(),
-							"TickType": $("#newRouteLog_tickType").val(),
-							"RouteName": $("#newRouteLog_searchRoute").val(),
-							"userName": localStorage.getItem("currentUser"),
-							"Rating": $("#newRouteLog_ratingSelectRadio" + ":checked").val(),
-							"Date": new Date()
-						};
-				//		clLib.REST.storeEntity("RouteLog", saveObj);
-		
-						clLib.localStorage.addInstance("RouteLog", saveObj, "routeLogStorage");
-				*/
 				clLib.UI.resetUIelements("newRouteLog", "newRouteLog");
 				clLib.UI.hideLoading();
 			});

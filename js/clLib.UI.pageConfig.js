@@ -131,8 +131,37 @@ clLib.UI.elements = {
             localStorage.setItem("currentLayout", $this.val());
         }
     }
-    ,"defaultGradeType" : clLib.UI.defaultLocalVarElementConfig
-    ,"defaultGrade" : clLib.UI.defaultLocalVarElementConfig
+    ,"defaultGradeType" : {
+        "refreshHandler" : function($this) { 
+            clLib.populateGradeTypes($this, localStorage.getItem("defaultGradeType") || "UIAA");
+        }
+        , "changeHandler": function ($this, changeOptions) {
+            var elementName = clLib.UI.elementNameFromId($this.attr("id"));
+            var localVarValue = $this.val();
+            localStorage.setItem(elementName, $this.val());
+            clLib.UI.defaultChangeHandler($this, changeOptions);
+        }
+		, "refreshOnUpdate": {
+		    default: {
+		        "defaultGrade": {}
+		    }
+		}
+    }
+    ,"defaultGrade" : {
+        "refreshHandler" : function($this) { 
+            var defaultGradeType = localStorage.getItem("defaultGradeType");
+            alert("repopulating for gradetype " + defaultGradeType);
+            clLib.populateGrades($this,
+				defaultGradeType
+			); 
+        }
+        , "changeHandler": function ($this, changeOptions) {
+            var elementName = clLib.UI.elementNameFromId($this.attr("id"));
+            var localVarValue = $this.val();
+            localStorage.setItem(elementName, $this.val());
+        }
+
+    }
 
     ,"gradeTypeSelect": {
 		"dbField" : "GradeSystem"
