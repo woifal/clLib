@@ -1,15 +1,44 @@
 "use strict";
 clLib.PAGES = {};
 
+clLib.prefsCompleteCheck = function() {
+};
+clLib.wasOnlineCheck = function () {
+};
+
+
+clLib.PAGES.defaultHandler = function (event) {
+    var pageId = $(event.target).attr("id");
+    //alert("SHOW page >" + pageId + "<");
+
+    var allTrue = false;
+    //alert("checking prerequisites for " + pageId);
+    $.each(clLib.UI.pageRequisites[pageId], function (index, checkFunc) {
+        //alert("executing " + index + " >" + JSON.stringify(checkFunc.name));
+        if (checkFunc()) {
+            allTrue = true;
+        } else {
+            allTrue = false;
+        }
+        if (!allTrue) {
+            return false;
+        }
+    });
+//    if (allTrue) {
+        clLib.PAGES.handlers[pageId]["init"]();
+//    }
+};
 clLib.PAGES.handlers = {
-	"preferences": {
+    "preferences": {
 		"init" : function() {
-			clLib.UI.fillUIelements("preferences", "preferences");
+//		    $("#preferences_mobileHeader1").load("clLib_HEADER.html");
+		    clLib.UI.fillUIelements("preferences", "preferences");
 		}
 	}
 	,"startScreen": {
 		"init" : function() {
-			// Fill UI elements..
+//		    $("#result").load("clLib.PAGES.html");
+		    // Fill UI elements..
 			//    $(document).live("pageshow", function () {
 	        clLib.UI.fillUIelements("startScreen", "startScreen");
         	//    });
@@ -29,23 +58,9 @@ clLib.PAGES.handlers = {
 
         	// refresh button(=> in page header)..
 			$("#startScreen_refreshRouteStorageButton").die("click").click(function () {
-				clLib.UI.showLoading("refreshing from server..");
-
-		        //alert("previous refresh:" +clLib.localStorage.getLastRefreshDate("routeStorage"));
-
-				var userRoutes = clLib.REST.getEntities("Routes");
-				console.log("GOT: "  +JSON.stringify(userRoutes));
-				clLib.localStorage.initStorage("routeStorage", userRoutes);
-
-        		var userRouteLogs = clLib.REST.getEntities("RouteLog", clLib.getRouteLogWhereToday());
-				console.log("GOT: " +JSON.stringify(userRouteLogs));
-				clLib.localStorage.initStorage("routeLogStorage", userRouteLogs);
-
-				clLib.UI.fillUIelements("startScreen", "startScreen");
-
-				//alert("new refresh:" + clLib.localStorage.getLastRefreshDate("routeStorage"));
-				clLib.UI.hideLoading();
+			    clLib.localStorage.refreshAllData();
 			});
+
 		}
 	}
 	,"newRouteLog": {
@@ -63,7 +78,7 @@ clLib.PAGES.handlers = {
         		//		localStorage.setItem("currentLayout", "default");
 				clLib.UI.showLoading();
 
-				clLib.UI.defaultSaveHandler();
+				clLib.UI.defaultSaveHandler(null,null,function () {});
 				clLib.UI.resetUIelements("newRouteLog", "newRouteLog");
 				clLib.UI.hideLoading();
 			});
@@ -72,26 +87,31 @@ clLib.PAGES.handlers = {
 };
 
 
-clLib.PAGES.initHandler = function(event) {
-	var pageId = $(event.target).attr("id");
-	//alert("INIT page >" + pageId + "<");
-	clLib.PAGES.handlers[pageId]["init"]();
+clLib.PAGES.initHandler = function (event) {
+    return clLib.PAGES.defaultHandler(event);
+};
+clLib.PAGES.showHandler = function (event) {
+    return clLib.PAGES.defaultHandler(event);
 };
 
-$("#newRouteLog").die("pageinit").live("pageinit", function (event, ui) {
-	clLib.PAGES.initHandler(event);
+/*$("#newRouteLog").die("pageinit").live("pageinit", function (event, ui) {
+    clLib.PAGES.initHandler(event);
 });
 
-$("#startScreen").die("pageinit").live("pageinit", function(event, ui) {
-	clLib.PAGES.initHandler(event);
+$("#startScreen").die("pageinit").live("pageinit", function (event, ui) {
+    clLib.PAGES.initHandler(event);
 });
 $("#preferences").die("pageinit").live("pageinit", function (event, ui) {
-	clLib.PAGES.initHandler(event);
+    clLib.PAGES.initHandler(event);
+});*/
+$("#newRouteLog").die("pageshow").live("pageshow", function (event, ui) {
+    clLib.PAGES.showHandler(event);
 });
-
-$("#startScreen").die("pageshow").live("pageshow", function(event, ui) {
-	console.log("SHOWING startScreen...")
+$("#startScreen").die("pageshow").live("pageshow", function (event, ui) {
+    clLib.PAGES.showHandler(event);
 });
-
+$("#preferences").die("pageshow").live("pageshow", function (event, ui) {
+    clLib.PAGES.showHandler(event);
+});
 
 

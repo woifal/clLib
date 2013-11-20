@@ -722,7 +722,7 @@ clLib.UI.getVal = function(elementName) {
 	return elementValue;
 }
 
-clLib.UI.defaultSaveHandler = function(currentJqmSlide, currentLayout) {
+clLib.UI.defaultSaveHandler = function(currentJqmSlide, currentLayout, successHandler) {
 	var saveObj = {};
 	if(!currentJqmSlide) {
 		currentJqmSlide = localStorage.getItem("currentJqmSlide");
@@ -742,6 +742,7 @@ clLib.UI.defaultSaveHandler = function(currentJqmSlide, currentLayout) {
 	});
 	//alert("saveObj is " + JSON.stringify(saveObj));
 	clLib.localStorage.addInstance("RouteLog", saveObj, "routeLogStorage");
+	successHandler();
 }
 
 

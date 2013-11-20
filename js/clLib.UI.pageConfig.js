@@ -1,4 +1,38 @@
 "use strict";
+clLib.prefsCompleteCheck = function () {
+    var prefsComplete = false;
+    if (localStorage.getItem("currentUser")) {
+        prefsComplete = true;
+    }
+    if (!prefsComplete) {
+        alert("Specify local settings first!");
+        $.mobile.navigate("clLib_preferences.html");
+    }
+    return prefsComplete;
+
+};
+
+clLib.wasOnlineCheck = function () {
+    var wasOnline = false;
+    //alert("last refresh:" + clLib.localStorage.getLastRefreshDate("routeStorage"));
+    if (clLib.localStorage.getLastRefreshDate("routeStorage")) {
+        wasOnline = true;
+    }
+    if (!wasOnline) {
+        if(!clLib.localStorage.refreshAllData()) {
+            alert("You need to go online once to get initial Route(Log) data!");
+            $.mobile.navigate("clLib_startScreen.html");
+        }
+    }
+};
+
+
+
+clLib.UI.pageRequisites = {
+    "startScreen": [clLib.prefsCompleteCheck, clLib.wasOnlineCheck]
+    , "preferences": []
+    , "newRouteLog": [clLib.prefsCompleteCheck, clLib.wasOnlineCheck]
+};
 
 clLib.UI.autoLoad = {
 	newRouteLog : [
@@ -82,7 +116,8 @@ clLib.UI.pageElements = {
             ,"showTopX"
             ,"defaultLayout"
             ,"defaultGradeType"
-            ,"defaultGrade"
+            , "defaultGrade"
+            , "onlineMode"
         ]
     }
 };
@@ -91,12 +126,17 @@ clLib.UI.defaultLocalVarElementConfig = {
     "refreshHandler" : function($this) { 
         var elementName = clLib.UI.elementNameFromId($this.attr("id"));
         var localVarValue = localStorage.getItem(elementName);
+        //$this.val(localVarValue).attr('selected', true).siblings('option').removeAttr('selected');
+        //$this.selectmenu("refresh", true);
         $this.val(localVarValue);
+        //alert("set value to " + localVarValue);
     }
     ,"changeHandler" : function($this, changeOptions) { 
+        //alert("changed " + $this.attr("id"));
         var elementName = clLib.UI.elementNameFromId($this.attr("id"));
         var localVarValue = $this.val();
-        localStorage.setItem(elementName, $this.val());
+        localStorage.setItem(elementName, localVarValue);
+        //clLib.UI.setSelectedValue($this, localVarValue);
     }
 };
 
@@ -115,9 +155,10 @@ clLib.UI.elements = {
         }
     }
 
-    ,"currentUser": clLib.UI.defaultLocalVarElementConfig
-    ,"buddiesStr" : clLib.UI.defaultLocalVarElementConfig
-    ,"showTopX" : clLib.UI.defaultLocalVarElementConfig
+    , "currentUser": clLib.UI.defaultLocalVarElementConfig
+    , "buddiesStr" : clLib.UI.defaultLocalVarElementConfig
+    , "showTopX": clLib.UI.defaultLocalVarElementConfig
+    , "onlineMode" : clLib.UI.defaultLocalVarElementConfig
     , "defaultLayout": {
         "refreshHandler": function ($this) {
             var elementName = clLib.UI.elementNameFromId($this.attr("id"));

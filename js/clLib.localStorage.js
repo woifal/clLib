@@ -184,7 +184,7 @@ clLib.localStorage.setStorageItems = function(storageName, storageItems) {
 	var storageName = storageName || clLib.localStorage.getItem("defaultStorage");
 	var storageItemsKey = storageName + "_items";
 	clLib.localStorage.setItem(storageItemsKey, tojson(storageItems));
-	clLib.localStorage.setItem(storageName + "_createdAt", tojson(new Date()));
+	clLib.localStorage.setLastRefreshDate(storageName);
 };
 
 clLib.localStorage.addStorageItem = function(storageName, entity, newItem) {
@@ -246,9 +246,16 @@ clLib.localStorage.getStorageIndexes = function(storageName, entityName) {
 
 
 
-clLib.localStorage.getLastRefreshDate = function(storageName) {
-	return clLib.localStorage.getItem(storageName + "_createdAt");
+clLib.localStorage.getLastRefreshDate = function (storageName) {
+    return clLib.localStorage.getItem(storageName + "_createdAt");
 };
+
+clLib.localStorage.setLastRefreshDate = function (storageName) {
+    //alert("seeting last refresh of " + storageName + " to " + tojson(new Date()));
+    clLib.localStorage.setItem(storageName + "_createdAt", tojson(new Date()));
+};
+
+
 
 clLib.localStorage.setStorageIndexes = function(storageName, entityName, indexItems) {
 	var storageName = storageName || clLib.localStorage.getItem("defaultStorage");
@@ -388,19 +395,17 @@ clLib.localStorage.addInstance = function(entity, entityInstance, storageName) {
 	} else {
 		clLib.loggi("offline, saving for later sync UP..");
 	}
+	alert(entity + " saved!");
 }
 
 clLib.isOnline = function() {
-	return navigator.onLine;
-/*
-	var currentlyOnline = localStorage.getItem("online");
-	alert("currentlyOnline? >" + currentlyOnline);
-	if(currentlyOnline != -1) {
-		return true;
+	var currentlyOnline = localStorage.getItem("onlineMode");
+	clLib.loggi("currentlyOnline? >" + currentlyOnline);
+	if(!(currentlyOnline == 0)) {
+	    return navigator.onLine;
 	} else {
 		return false;
 	}
-*/
 };
 
 /*
@@ -707,4 +712,30 @@ clLib.localStorage.evalCondition = function(valueToTest, condition) {
 	}
 	return eligible;
 	
+};
+
+
+clLib.localStorage.refreshAllData = function () {
+    if (clLib.isOnline()) {
+        clLib.UI.showLoading("refreshing from server..");
+
+        //alert("previous refresh:" +clLib.localStorage.getLastRefreshDate("routeStorage"));
+
+        var userRoutes = clLib.REST.getEntities("Routes");
+        console.log("GOT: " + JSON.stringify(userRoutes));
+        clLib.localStorage.initStorage("routeStorage", userRoutes);
+
+        var userRouteLogs = clLib.REST.getEntities("RouteLog", clLib.getRouteLogWhereToday());
+        console.log("GOT: " + JSON.stringify(userRouteLogs));
+        clLib.localStorage.initStorage("routeLogStorage", userRouteLogs);
+
+        clLib.UI.fillUIelements("startScreen", "startScreen");
+
+        //alert("new refresh:" + clLib.localStorage.getLastRefreshDate("routeStorage"));
+        clLib.UI.hideLoading();
+        return true;
+    } else {
+        clLib.alert("Not online!");
+        return false;
+    }
 };

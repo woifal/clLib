@@ -457,6 +457,20 @@ clLib.loggi = function(text, priority) {
 	}
 };
 
+clLib.alert = function (text, html) {
+    /*
+    $.mobile.loading('show', {
+        text: text,
+        textVisible: true,
+        //theme: 'z',
+        html: html
+    });
+    setTimeout(function () {
+        $.mobile.loading('hide');
+    }, 10000);
+    */
+    alert(":) " + text);
+};
 
 
 
