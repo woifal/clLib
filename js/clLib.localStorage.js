@@ -336,7 +336,7 @@ clLib.localStorage.syncAllUp = function(entity, storageName) {
 	clLib.loggi("currently unsynced items >" + JSON.stringify(storage) + "<");
 	$.each(storage[entity], function(dummyId) {
 		var entityInstance = storage[entity][dummyId];
-		clLib.loggi("call syncup for >" + dummyId + "< bzw. >" + JSON.stringify(entityInstance) + "<");
+		//alert("call syncup for >" + dummyId + "< bzw. >" + JSON.stringify(entityInstance) + "<");
 
 		clLib.localStorage.syncUp(entity, entityInstance, storageName);
 	});
@@ -361,7 +361,7 @@ clLib.localStorage.syncUp = function(entity, entityInstance, storageName) {
 	
 		entityInstance["_id"] = realInstance["_id"];	
 
-		clLib.loggi("synced UP >" + dummyId + "<, new id is " + realInstance["_id"]);
+		//alert("synced UP >" + dummyId + "<, new id is " + realInstance["_id"]);
 		// delete dummy id
 		clLib.localStorage.removeStorageItem(storageName, entity, dummyId);
 		// delete from unsynced entries..
@@ -378,7 +378,8 @@ clLib.localStorage.syncUp = function(entity, entityInstance, storageName) {
 
 
 clLib.localStorage.addInstance = function(entity, entityInstance, storageName) {
-	var storage = clLib.localStorage.getStorageItems(storageName);
+    //alert("addinstance called!");
+    var storage = clLib.localStorage.getStorageItems(storageName);
 	
 	var dummyId = "DUMMY" + new Date().getTime();
 	entityInstance["_id"] = dummyId;
