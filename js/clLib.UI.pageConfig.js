@@ -479,8 +479,7 @@ clLib.UI.elements = {
 				dataObj : [
 					"Platte",
 					"Senkrecht",
-					"Leicht-Ueberhaengend",
-					"Stark-Ueberhaengend",
+					"Ueberhaengend",
 					"Dach"
 				],
 				preserveCurrentValue : true,
