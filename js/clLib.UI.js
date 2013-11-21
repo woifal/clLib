@@ -91,7 +91,7 @@ clLib.UI.list.formatRouteLogRow = function(dataRow) {
 		,bubble: "Score"
 		,body: {
 			header: "RouteName",
-			items: ["Sector", "Line", "Colour", "Comment"]
+			items: ["Date", "Sector", "Line", "Colour", "Comment"]
 		}
 	};
 	
@@ -431,7 +431,7 @@ clLib.UI.showUIElement = function($element) {
 *
 */
 clLib.UI.fillUIelements = function(pageName, currentJqmSlide) {
-	localStorage.setItem("currentJqmSlide", currentJqmSlide);
+    localStorage.setItem("currentJqmSlide", currentJqmSlide);
 		
 	// no special layout to apply? use default layout..
 	var layout = localStorage.getItem("currentLayout") || "default";
@@ -443,26 +443,6 @@ clLib.UI.fillUIelements = function(pageName, currentJqmSlide) {
 		layout = "default";
 	}
 	
-// disabling of element not working on appery - disabling for now..
-//	$.each(clLib.UI.pageElements[pageName]["default"], function(idx, elementName) {
-//		clLib.loggi(elementName + " in " + JSON.stringify(clLib.UI.pageElements[pageName][layout])+ "?" + 
-//			(clLib.UI.pageElements[pageName][layout].hasValue(elementName))
-//		);
-//		if(!(clLib.UI.pageElements[pageName][layout].hasValue(elementName))) {
-//			var $element = $("#" + elementName);
-//			clLib.loggi("element is >" + $element.attr("id") + "<, hide it");
-//	
-//			// hide elements per default..
-//			clLib.UI.hideUIElement($element);
-//		} else {
-//			var $element = $("#" + elementName);
-//			clLib.loggi("element is >" + $element.attr("id") + "<, SHOW it");
-//	
-//			// hide elements per default..
-//			clLib.UI.showUIElement($element);
-//		}
-//	});
-//
 	clLib.loggi("elements for page >" + pageName + "< hidden..");
 	//clLib.loggi("populating UI elements for page >" + pageName + "<");
 	$.each(clLib.UI.pageElements[pageName][layout], function(idx, elementName) {
@@ -761,7 +741,18 @@ clLib.addCSSBackground = function(targetId) {
 	//clLib.loggi("adding CSS bg to " + targetId);
 	var $targetEl = $('#' + targetId);
 	clLib.UI.killEventHandlers($targetEl, "change.clLibCSSBackground");
-	
+
+	var classForText = null;
+	var elName = clLib.UI.elementNameFromId(targetId);
+	if (clLib.UI.cssBackgrounds[elName]) {
+	    classForText = {};
+	    $.each(clLib.UI.cssBackgrounds[elName], function (text, className) {
+	        //alert("adding class " + className + " for text " + text);
+	        classForText[text] = className;
+	    });
+	}
+
+
 	// Add css class named option.value for every entry in #targetId
     $('option', $targetEl).each(function () {
         var ind = $(this).index();
@@ -769,9 +760,15 @@ clLib.addCSSBackground = function(targetId) {
         var entry = $('#' + targetId + '-menu').find('[data-option-index=' + ind + ']');
         // set corresponding css class
         //clLib.loggi("adding class" + entry.find("a").html());
+        var className = entry.find("a").html();
+        //alert("checking for class for text " + entry.find("a").html());
+
+        if (classForText && classForText[entry.find("a").html()]) {
+            className = classForText[entry.find("a").html()];
+        }
         entry
             .addClass("clCSSBg")
-            .addClass(entry.find("a").html());
+            .addClass(className);
     });
     
 	// Set currently selected color in collapsed select menu 
@@ -802,3 +799,9 @@ clLib.addCSSBackground = function(targetId) {
 };
 
 
+clLib.UI.preloadImages = function (imageURLs) {
+    $.each(imageURLs, function (idx, imageURL) {
+        var img = new Image();
+        img.src = imageURL;
+    });
+};

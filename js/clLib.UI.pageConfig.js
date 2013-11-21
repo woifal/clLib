@@ -1,4 +1,16 @@
 "use strict";
+clLib.UI.cssBackgrounds = {
+    "colourSelect": {
+        "white/green/blue" : "white-green-blue"
+        , "white/yellow/black" : "white-yellow-black"
+    }
+    , "characterSelect": {
+        "Ueberhaengend": "Ueberhaengend"
+    }
+};
+
+
+
 clLib.prefsCompleteCheck = function () {
     var prefsComplete = false;
     if (localStorage.getItem("currentUser")) {
@@ -317,11 +329,11 @@ clLib.UI.elements = {
 		}
 		,"refreshHandler" : function($this) { 
 		    clLib.UI.defaultRefreshHandler($this, { preserveCurrentValue: false });
-			clLib.addCSSBackground($this.attr("id")); 
+		    clLib.addCSSBackground($this.attr("id"));
 		}
 		,"setSelectedValueHandler" : function($this, changeOptions) { 
 			clLib.UI.setSelectedValueOnlyHandler($this, changeOptions);
-			clLib.addCSSBackground($this.attr("id")); 
+			clLib.addCSSBackground($this.attr("id"));
 		}
 		,"refreshOnUpdate" : {
 		    default: {
@@ -485,6 +497,8 @@ clLib.UI.elements = {
 				preserveCurrentValue : true,
 				additionalValue : clLib.UI.NOTSELECTED
 			});
+
+			
 			clLib.addCSSBackground($this.attr("id")); 
 		}
 		,"setSelectedValueHandler" : function($this, changeOptions) { 
