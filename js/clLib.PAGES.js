@@ -1,6 +1,12 @@
 "use strict";
 clLib.PAGES = {};
 
+clLib.UI.preloadImages([
+    "files/views/assets/image/star_rated.png"
+    , "files/views/assets/image/star_unrated.png"
+]);
+
+
 clLib.prefsCompleteCheck = function() {
 };
 clLib.wasOnlineCheck = function () {
@@ -8,11 +14,6 @@ clLib.wasOnlineCheck = function () {
 
 
 clLib.PAGES.defaultHandler = function (event, eventName) {
-    clLib.UI.preloadImages([
-        "files/views/assets/image/star_rated.png"
-        , "files/views/assets/image/star_unrated.png"
-    ]);
-
     var pageId = $(event.target).attr("id");
     //alert("SHOW page >" + pageId + "<");
 
@@ -45,25 +46,38 @@ clLib.PAGES.handlers = {
 	}
 	,"startScreen": {
 	    "init": function () {
+	        setTimeout(function () { clLib.UI.showLoading("Starting....") }, 5);
+	        // pre-fetch newRouteLog page..
+//	        $.mobile.loadPage("clLib_newRouteLog.default.html");
+
 	        // Link to preferences page..
 	        $("#startScreen_preferencesButton").die("click").click(function () {
 	            $.mobile.navigate("clLib_preferences.html");
 	        });
 
 	        // Link to New Route page..
-	        $("#addRouteButton").die("click").bind("click", function (e) {
-	            clLib.UI.showLoading("Loading page..");
-	            var currentLayout = localStorage.getItem("currentLayout") || localStorage.getItem("defaultLayout") || "default";
-	            var newRouteLogURL = "clLib_newRouteLog." + currentLayout + ".html";
+	        $("#addRouteButton").on("click", function (e) {
+//	            alert("loading page..");
+	            setTimeout(function () {
+	                alert("1");
+	                setTimeout(function () { clLib.UI.showLoading("Loading page.."); }, 5);
+	                setTimeout(function () {
+	                    //	            alert("loading page2..");
+	                    var currentLayout = localStorage.getItem("currentLayout") || localStorage.getItem("defaultLayout") || "default";
+	                    var newRouteLogURL = "clLib_newRouteLog." + currentLayout + ".html";
 
-	            $.mobile.navigate(newRouteLogURL);
-
+	                    $.mobile.navigate(newRouteLogURL);
+	                }, 5);
+	            }, 1);
 	        });
 
 	        // refresh button(=> in page header)..
-	        $("#startScreen_refreshRouteStorageButton").die("click").click(function () {
+	        $("#startScreen_refreshRouteStorageButton").on("click", function () {
 	            clLib.localStorage.refreshAllData();
 	        });
+	        setTimeout(function () { clLib.UI.showLoading("Ready!");  setTimeout(function() { clLib.UI.hideLoading(); }, 500) }, 5);
+	        
+
 	    }
         , "show" : function() {
             // Fill UI elements..
@@ -72,27 +86,30 @@ clLib.PAGES.handlers = {
 	}
 	,"newRouteLog": {
 	    "init": function () {
+
+	        clLib.UI.buildRatingRadio($("#newRouteLog_ratingSelectWrapper"));
+	        $("#newRouteLog_layoutSelect").val(localStorage.getItem("currentLayout"));
+	        $("#newRouteLog_layoutSelect").selectmenu("refresh");
+
+	        //alert("444isave handler..");
+	        $("#newRouteLog_save_tick").on("click", function () {
+	            //alert(1);
+	            setTimeout(function () { clLib.UI.showLoading("9999Saving route log(s)..."); }, 1);
+
+	            setTimeout(function () {
+	                localStorage.setItem("currentJqmSlide", "newRouteLog");
+	                clLib.UI.defaultSaveHandler(null, null, function () { });
+	                clLib.UI.resetUIelements("newRouteLog", "newRouteLog");
+	                //clLib.UI.showLoading("Route log(s) saved!");
+	                setTimeout(function () { clLib.UI.hideLoading(); }, 1500);
+	            });
+	        });
+	        $("#foobut").on("click", function () {
+	            clLib.UI.showLoading("33TEST LOADING!!!!");
+	        });
 	    }
         , "show": function () {
-	            //alert("hiding");
-		    clLib.UI.hideLoading();
-		    //    $(document).on("pageshow", function () {
-			clLib.UI.buildRatingRadio($("#newRouteLog_ratingSelectWrapper"));
-			$("#newRouteLog_layoutSelect").val(localStorage.getItem("currentLayout"));
-			$("#newRouteLog_layoutSelect").selectmenu("refresh");
-			clLib.UI.fillUIelements("newRouteLog", "newRouteLog");
-			//    });
-
-			$("#newRouteLog_save_tick").die("click.clLib").bind("click.clLib", function(e) {
-        		//alert("SAVING!!!");
-				localStorage.setItem("currentJqmSlide", "newRouteLog");
-        		//		localStorage.setItem("currentLayout", "default");
-				clLib.UI.showLoading();
-
-				clLib.UI.defaultSaveHandler(null,null,function () {});
-				clLib.UI.resetUIelements("newRouteLog", "newRouteLog");
-				clLib.UI.hideLoading();
-			});
+            clLib.UI.fillUIelements("newRouteLog", "newRouteLog");
 		}
 	}
 };
@@ -116,7 +133,7 @@ $("#preferences").die("pageinit").live("pageinit", function (event, ui) {
     clLib.PAGES.initHandler(event);
 });*/
 
-$("#newRouteLog").die("pagesbeforehow").live("pagebeforeshow", function (event, ui) {
+$("#newRouteLog").die("pagebeforehow").live("pagebeforeshow", function (event, ui) {
     clLib.PAGES.showHandler(event);
 });
 $("#startScreen").die("pagebeforeshow").live("pagebeforeshow", function (event, ui) {
@@ -131,6 +148,9 @@ $("#startScreen").die("pageinit").live("pageinit", function (event, ui) {
     clLib.PAGES.initHandler(event);
 });
 $("#preferences").die("pageinit").live("pageinit", function (event, ui) {
+    clLib.PAGES.initHandler(event);
+});
+$("#newRouteLog").die("pageinit").live("pageinit", function (event, ui) {
     clLib.PAGES.initHandler(event);
 });
 

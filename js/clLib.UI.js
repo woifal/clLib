@@ -509,15 +509,14 @@ clLib.UI.addObjArr = function(anObj, pathArray, objValue) {
 }
 
 clLib.UI.showLoading = function(text, html) {
-//clLib.loggi("shwoing..");
-	$.mobile.loading( 'show', {
-		text: text,
-		textVisible: true,
-		//theme: 'z',
-		html: html
-	});
-	//clLib.loggi("showed..");
-
+        //clLib.loggi("shwoing..");
+        $.mobile.loading('show', {
+            text: text,
+            textVisible: true,
+            theme: 'e',
+            html: html
+        });
+        //clLib.loggi("showed..");
 };
 
 clLib.UI.hideLoading = function() {
@@ -702,8 +701,11 @@ clLib.UI.getVal = function(elementName) {
 	return elementValue;
 }
 
-clLib.UI.defaultSaveHandler = function(currentJqmSlide, currentLayout, successHandler) {
-	var saveObj = {};
+clLib.UI.defaultSaveHandler = function (currentJqmSlide, currentLayout, successHandler) {
+//    alert("showing page load...");
+//    clLib.UI.showLoading("Saving route log(s)...");
+//    alert("showed page load...");
+    var saveObj = {};
 	if(!currentJqmSlide) {
 		currentJqmSlide = localStorage.getItem("currentJqmSlide");
 	}
@@ -722,7 +724,7 @@ clLib.UI.defaultSaveHandler = function(currentJqmSlide, currentLayout, successHa
 	});
 	//alert("saveObj is " + JSON.stringify(saveObj));
 	clLib.localStorage.addInstance("RouteLog", saveObj, "routeLogStorage");
-	successHandler();
+//	successHandler();
 }
 
 

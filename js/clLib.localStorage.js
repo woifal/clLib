@@ -378,6 +378,7 @@ clLib.localStorage.syncUp = function(entity, entityInstance, storageName) {
 
 
 clLib.localStorage.addInstance = function(entity, entityInstance, storageName) {
+    //clLib.UI.showLoading("addInstance called..");
     //alert("addinstance called!");
     var storage = clLib.localStorage.getStorageItems(storageName);
 	
@@ -396,7 +397,7 @@ clLib.localStorage.addInstance = function(entity, entityInstance, storageName) {
 	} else {
 		clLib.loggi("offline, saving for later sync UP..");
 	}
-	alert(entity + " saved!");
+	//clLib.UI.showLoading(entity + " saved!");
 }
 
 clLib.isOnline = function() {
