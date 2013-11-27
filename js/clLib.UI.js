@@ -7,6 +7,7 @@ clLib.UI = {
 	}
 };
 clLib.UI.list = {};
+clLib.UI.elementConfig= {};
 
 clLib.UI.killEventHandlers = function($element, eventName) {
 	$element.die(eventName);
@@ -446,7 +447,7 @@ clLib.UI.fillUIelements = function(pageName, currentJqmSlide) {
 	clLib.loggi("elements for page >" + pageName + "< hidden..");
 	//clLib.loggi("populating UI elements for page >" + pageName + "<");
 	$.each(clLib.UI.pageElements[pageName][layout], function(idx, elementName) {
-		var elementConfig = clLib.UI.elements[elementName];
+	    var elementConfig = clLib.UI.elements[elementName];
 
 		if(!elementConfig) {
 			clLib.loggi("Can't find element >" + elementName + "<, breaking loop..");
@@ -701,33 +702,78 @@ clLib.UI.getVal = function(elementName) {
 	return elementValue;
 }
 
-clLib.UI.defaultSaveHandler = function (currentJqmSlide, currentLayout, successHandler) {
-//    alert("showing page load...");
-//    clLib.UI.showLoading("Saving route log(s)...");
-//    alert("showed page load...");
-    var saveObj = {};
-	if(!currentJqmSlide) {
-		currentJqmSlide = localStorage.getItem("currentJqmSlide");
-	}
-	if(!currentLayout) {
-		currentLayout = localStorage.getItem("currentLayout");
-	} 
-	
-	$.each(clLib.UI.pageElements[currentJqmSlide][currentLayout], function(idx, elementName) {
-		//alert("eaching " + idx + " and " + elementName);
-		var elementConfig = clLib.UI.elements[elementName];
-		if(!elementConfig) {
-			alert("will not save " + elementName + ", no config found!");
-		} else {
-			saveObj[elementConfig["dbField"]] = clLib.UI.getVal(elementName);
-		}
-	});
-	//alert("saveObj is " + JSON.stringify(saveObj));
-	clLib.localStorage.addInstance("RouteLog", saveObj, "routeLogStorage");
-//	successHandler();
+clLib.UI.save = function (currentJqmSlide, currentLayout, successHandler) {
+    var saveHandler;
+
+    if (!currentJqmSlide) {
+        currentJqmSlide = localStorage.getItem("currentJqmSlide");
+    }
+
+    if (!(saveHandler = clLib.UI.saveHandlers[currentJqmSlide])) {
+        alert("no save handler defined for page >" + currentJqmSlide + "<");
+        return;
+    }
+
+    saveHandler(currentJqmSlide, currentLayout, successHandler);
 }
 
 
+
+clLib.UI.localStorageSaveHandler = function (currentJqmSlide, currentLayout, successHandler) {
+    //    alert("showing page load...");
+    //    clLib.UI.showLoading("Saving route log(s)...");
+    //    alert("showed page load...");
+    var saveObj = {};
+    if (!currentJqmSlide) {
+        currentJqmSlide = localStorage.getItem("currentJqmSlide");
+    }
+    if (!currentLayout) {
+        currentLayout = localStorage.getItem("currentLayout");
+    }
+
+    $.each(clLib.UI.pageElements[currentJqmSlide][currentLayout], function (idx, elementName) {
+        //alert("eaching " + idx + " and " + elementName);
+        var elementConfig = clLib.UI.elements[elementName];
+        if (!elementConfig) {
+            alert("will not save " + elementName + ", no config found!");
+        } else {
+            localStorage.setItem(
+                elementConfig["dbField"] || elementName, 
+                clLib.UI.getVal(elementName)
+            );
+        }
+    });
+    //alert("local storage updated!");
+    //	successHandler();
+}
+
+
+
+clLib.UI.RESTSaveHandler = function (currentJqmSlide, currentLayout, successHandler) {
+    //    alert("showing page load...");
+    //    clLib.UI.showLoading("Saving route log(s)...");
+    //    alert("showed page load...");
+    var saveObj = {};
+    if (!currentJqmSlide) {
+        currentJqmSlide = localStorage.getItem("currentJqmSlide");
+    }
+    if (!currentLayout) {
+        currentLayout = localStorage.getItem("currentLayout");
+    }
+
+    $.each(clLib.UI.pageElements[currentJqmSlide][currentLayout], function (idx, elementName) {
+        //alert("eaching " + idx + " and " + elementName);
+        var elementConfig = clLib.UI.elements[elementName];
+        if (!elementConfig) {
+            alert("will not save " + elementName + ", no config found!");
+        } else {
+            saveObj[elementConfig["dbField"]] = clLib.UI.getVal(elementName);
+        }
+    });
+    //alert("saveObj is " + JSON.stringify(saveObj));
+    clLib.localStorage.addInstance("RouteLog", saveObj, "routeLogStorage");
+    //	successHandler();
+}
 
 
 /*
@@ -806,4 +852,64 @@ clLib.UI.preloadImages = function (imageURLs) {
         var img = new Image();
         img.src = imageURL;
     });
+};
+
+
+
+clLib.UI.elementConfig.localVarSaveImmediately = {
+    "refreshHandler": function ($this) {
+        var elementName = clLib.UI.elementNameFromId($this.attr("id"));
+        var localVarValue = localStorage.getItem(elementName);
+        //$this.val(localVarValue).attr('selected', true).siblings('option').removeAttr('selected');
+        //$this.selectmenu("refresh", true);
+        $this.val(localVarValue);
+        //alert("set value to " + localVarValue);
+    }
+    , "changeHandler": function ($this, changeOptions) {
+        //alert("changed " + $this.attr("id"));
+        var elementName = clLib.UI.elementNameFromId($this.attr("id"));
+        var localVarValue = $this.val();
+        localStorage.setItem(elementName, localVarValue);
+        //clLib.UI.setSelectedValue($this, localVarValue);
+    }
+};
+
+clLib.UI.elementConfig.localVar = {
+    "refreshHandler": function ($this) {
+        var elementName = clLib.UI.elementNameFromId($this.attr("id"));
+        var localVarValue = localStorage.getItem(elementName);
+        //$this.val(localVarValue).attr('selected', true).siblings('option').removeAttr('selected');
+        //$this.selectmenu("refresh", true);
+        $this.val(localVarValue);
+        //alert("set value to " + localVarValue);
+    }
+};
+
+
+
+clLib.prefsCompleteCheck = function () {
+    var prefsComplete = false;
+    if (localStorage.getItem("currentUser")) {
+        prefsComplete = true;
+    }
+    if (!prefsComplete) {
+        alert("Specify local settings first!");
+        $.mobile.navigate("clLib_preferences.html");
+    }
+    return prefsComplete;
+
+};
+
+clLib.wasOnlineCheck = function () {
+    var wasOnline = false;
+    //alert("last refresh:" + clLib.localStorage.getLastRefreshDate("routeStorage"));
+    if (clLib.localStorage.getLastRefreshDate("routeStorage")) {
+        wasOnline = true;
+    }
+    if (!wasOnline) {
+        if (!clLib.localStorage.refreshAllData()) {
+            alert("You need to go online once to get initial Route(Log) data!");
+            $.mobile.navigate("clLib_startScreen.html");
+        }
+    }
 };

@@ -11,39 +11,17 @@ clLib.UI.cssBackgrounds = {
 
 
 
-clLib.prefsCompleteCheck = function () {
-    var prefsComplete = false;
-    if (localStorage.getItem("currentUser")) {
-        prefsComplete = true;
-    }
-    if (!prefsComplete) {
-        alert("Specify local settings first!");
-        $.mobile.navigate("clLib_preferences.html");
-    }
-    return prefsComplete;
-
-};
-
-clLib.wasOnlineCheck = function () {
-    var wasOnline = false;
-    //alert("last refresh:" + clLib.localStorage.getLastRefreshDate("routeStorage"));
-    if (clLib.localStorage.getLastRefreshDate("routeStorage")) {
-        wasOnline = true;
-    }
-    if (!wasOnline) {
-        if(!clLib.localStorage.refreshAllData()) {
-            alert("You need to go online once to get initial Route(Log) data!");
-            $.mobile.navigate("clLib_startScreen.html");
-        }
-    }
-};
-
-
-
 clLib.UI.pageRequisites = {
     "startScreen": [clLib.prefsCompleteCheck, clLib.wasOnlineCheck]
     , "preferences": []
     , "newRouteLog": [clLib.prefsCompleteCheck, clLib.wasOnlineCheck]
+};
+
+
+clLib.UI.saveHandlers= {
+      "preferences": clLib.UI.localStorageSaveHandler
+    , "newRouteLog": clLib.UI.RESTSaveHandler
+    , "startScreen": clLib.UI.RESTSaveHandler
 };
 
 clLib.UI.autoLoad = {
@@ -77,9 +55,17 @@ clLib.UI.elementsToReset = {
 		"searchRouteResults",
 		"searchRoute",
 		"routeLogContainer"
-	],
-	startScreen : [
 	]
+	, startScreen : []
+    , preferences: [
+		"currentUser"
+		, "buddiesStr"
+        , "showTopX"
+        , "defaultLayout"
+        , "defaultGradeType"
+        , "defaultGrade"
+    	]
+
 };
 
 clLib.UI.pageElements = {
@@ -134,26 +120,55 @@ clLib.UI.pageElements = {
     }
 };
 
-clLib.UI.defaultLocalVarElementConfig = {
-    "refreshHandler" : function($this) { 
-        var elementName = clLib.UI.elementNameFromId($this.attr("id"));
-        var localVarValue = localStorage.getItem(elementName);
-        //$this.val(localVarValue).attr('selected', true).siblings('option').removeAttr('selected');
-        //$this.selectmenu("refresh", true);
-        $this.val(localVarValue);
-        //alert("set value to " + localVarValue);
-    }
-    ,"changeHandler" : function($this, changeOptions) { 
-        //alert("changed " + $this.attr("id"));
-        var elementName = clLib.UI.elementNameFromId($this.attr("id"));
-        var localVarValue = $this.val();
-        localStorage.setItem(elementName, localVarValue);
-        //clLib.UI.setSelectedValue($this, localVarValue);
-    }
-};
+
 
 clLib.UI.elements = {
-    "currentLayout": {
+    "currentUser": $.extend({}, {
+        "changeHandler": function ($this, changeOptions) {
+//            alert("CHANGED currentUser..");
+        }
+    }, clLib.UI.elementConfig.localVar)
+    , "buddiesStr":     clLib.UI.elementConfig.localVar
+    , "showTopX":       clLib.UI.elementConfig.localVar
+    , "onlineMode":     clLib.UI.elementConfig.localVar
+    , "defaultLayout":  clLib.UI.elementConfig.localVar
+/*        "changeHandler": function ($this, changeOptions) {
+            var elementName = clLib.UI.elementNameFromId($this.attr("id"));
+            var localVarValue = $this.val();
+            localStorage.setItem(elementName, $this.val());
+            localStorage.setItem("currentLayout", $this.val());
+        }*/
+    , "defaultGradeType" : {
+        "refreshHandler" : function($this) { 
+            clLib.populateGradeTypes($this, localStorage.getItem("defaultGradeType") || "UIAA");
+        }
+		, "refreshOnUpdate": {
+		    default: {
+		        "defaultGrade": {}
+		    }
+		}
+    }
+    , "defaultGrade": {
+        "refreshHandler": function ($this) {
+            var defaultGradeType = clLib.UI.byId$("defaultGradeType").val();
+            //alert("repopulating for gradetype " + defaultGradeType);
+            clLib.populateGrades($this,
+				defaultGradeType
+			);
+/*            var selectBoxOptions = {
+                selectBoxElement: $this,
+                dataObj: ["aa", "bb", "aa", "bb", "aa", "bb", "aa", "bb", "aa", "bb", "aa", "bb", "aa", "bb", "aa", "bb", "aa", "bb", "aa", "bb", "aa", "bb", "aa", "bb", "aa", "bb", "aa", "bb", "cc"],
+                preserveCurrentValue: true,
+                additionalValue: clLib.UI.NOTSELECTED
+            };
+            clLib.populateSelectBox(selectBoxOptions);
+*/
+        }
+        , "changeHandler": function ($this, changeOptions) {
+//            alert("CHANGED defaultGrade..");
+        }
+    }
+    , "currentLayout": {
         "refreshHandler": function ($this) {
             var elementName = clLib.UI.elementNameFromId($this.attr("id"));
             var localVarValue = localStorage.getItem(elementName);
@@ -165,58 +180,8 @@ clLib.UI.elements = {
             localStorage.setItem(elementName, $this.val());
             location.reload();
         }
-    }
-
-    , "currentUser": clLib.UI.defaultLocalVarElementConfig
-    , "buddiesStr" : clLib.UI.defaultLocalVarElementConfig
-    , "showTopX": clLib.UI.defaultLocalVarElementConfig
-    , "onlineMode" : clLib.UI.defaultLocalVarElementConfig
-    , "defaultLayout": {
-        "refreshHandler": function ($this) {
-            var elementName = clLib.UI.elementNameFromId($this.attr("id"));
-            var localVarValue = localStorage.getItem(elementName);
-            $this.val(localVarValue);
-        }
-        , "changeHandler": function ($this, changeOptions) {
-            var elementName = clLib.UI.elementNameFromId($this.attr("id"));
-            var localVarValue = $this.val();
-            localStorage.setItem(elementName, $this.val());
-            localStorage.setItem("currentLayout", $this.val());
-        }
-    }
-    ,"defaultGradeType" : {
-        "refreshHandler" : function($this) { 
-            clLib.populateGradeTypes($this, localStorage.getItem("defaultGradeType") || "UIAA");
-        }
-        , "changeHandler": function ($this, changeOptions) {
-            var elementName = clLib.UI.elementNameFromId($this.attr("id"));
-            var localVarValue = $this.val();
-            localStorage.setItem(elementName, $this.val());
-            clLib.UI.defaultChangeHandler($this, changeOptions);
-        }
-		, "refreshOnUpdate": {
-		    default: {
-		        "defaultGrade": {}
-		    }
-		}
-    }
-    ,"defaultGrade" : {
-        "refreshHandler" : function($this) { 
-            var defaultGradeType = localStorage.getItem("defaultGradeType");
-            //alert("repopulating for gradetype " + defaultGradeType);
-            clLib.populateGrades($this,
-				defaultGradeType
-			); 
-        }
-        , "changeHandler": function ($this, changeOptions) {
-            var elementName = clLib.UI.elementNameFromId($this.attr("id"));
-            var localVarValue = $this.val();
-            localStorage.setItem(elementName, $this.val());
-        }
-
-    }
-
-    ,"gradeTypeSelect": {
+    }   
+    , "gradeTypeSelect": {
 		"dbField" : "GradeSystem"
 		,"refreshHandler" : function($this) { 
 			clLib.populateGradeTypes($this, localStorage.getItem("defaultGradeType") || "UIAA") 

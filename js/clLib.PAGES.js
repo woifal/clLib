@@ -13,7 +13,7 @@ clLib.wasOnlineCheck = function () {
 };
 
 
-clLib.PAGES.defaultHandler = function (event, eventName) {
+clLib.PAGES.defaultHandler = function (event, ui, eventName) {
     var pageId = $(event.target).attr("id");
     //alert("SHOW page >" + pageId + "<");
 
@@ -32,23 +32,42 @@ clLib.PAGES.defaultHandler = function (event, eventName) {
     });
 //    if (allTrue) {
         clLib.loggi("calling " + pageId + " and " + eventName);
-        clLib.PAGES.handlers[pageId][eventName]();
+        clLib.PAGES.handlers[pageId][eventName](event, ui);
 //    }
 };
 clLib.PAGES.handlers = {
     "preferences": {
         "init": function() {
+            //alert("444isave handler..");
+            $("#preferences_cancelButton").on("click", function () {
+                clLib.UI.fillUIelements("preferences", "preferences");
+//                alert("reset!");
+                history.back();
+            });
+
+            $("#preferences_saveButton").on("click", function () {
+                //alert(1);
+                setTimeout(function () { clLib.UI.showLoading("11Saving preference(s)..."); }, 1);
+
+                setTimeout(function () {
+                    localStorage.setItem("currentJqmSlide", "preferences");
+                    clLib.UI.save();
+                    clLib.UI.resetUIelements("newRouteLog", "preferences");
+                    setTimeout(function () { clLib.UI.hideLoading(); history.back(); }, 1500);
+                });
+            });
+
+            clLib.UI.fillUIelements("preferences", "preferences");
         }
-        , "show": function () {
-//		    $("#preferences_mobileHeader1").load("clLib_HEADER.html");
-		    clLib.UI.fillUIelements("preferences", "preferences");
+        , "show": function (e, ui) {
+//            alert("showing page!(prev:" + $(ui.prevPage).prev().prop("tagName") + ")");
 		}
 	}
 	,"startScreen": {
 	    "init": function () {
 	        setTimeout(function () { clLib.UI.showLoading("Starting....") }, 5);
 	        // pre-fetch newRouteLog page..
-//	        $.mobile.loadPage("clLib_newRouteLog.default.html");
+	        $.mobile.loadPage("clLib_preferences.html");
 
 	        // Link to preferences page..
 	        $("#startScreen_preferencesButton").die("click").click(function () {
@@ -59,7 +78,7 @@ clLib.PAGES.handlers = {
 	        $("#addRouteButton").on("click", function (e) {
 //	            alert("loading page..");
 	            setTimeout(function () {
-	                alert("1");
+	                //alert("1");
 	                setTimeout(function () { clLib.UI.showLoading("Loading page.."); }, 5);
 	                setTimeout(function () {
 	                    //	            alert("loading page2..");
@@ -98,7 +117,7 @@ clLib.PAGES.handlers = {
 
 	            setTimeout(function () {
 	                localStorage.setItem("currentJqmSlide", "newRouteLog");
-	                clLib.UI.defaultSaveHandler(null, null, function () { });
+	                clLib.UI.save();
 	                clLib.UI.resetUIelements("newRouteLog", "newRouteLog");
 	                //clLib.UI.showLoading("Route log(s) saved!");
 	                setTimeout(function () { clLib.UI.hideLoading(); }, 1500);
@@ -115,11 +134,11 @@ clLib.PAGES.handlers = {
 };
 
 
-clLib.PAGES.initHandler = function (event) {
-    return clLib.PAGES.defaultHandler(event, "init");
+clLib.PAGES.initHandler = function (event, ui) {
+    return clLib.PAGES.defaultHandler(event, ui, "init");
 };
-clLib.PAGES.showHandler = function (event) {
-    return clLib.PAGES.defaultHandler(event, "show");
+clLib.PAGES.showHandler = function (event, ui) {
+    return clLib.PAGES.defaultHandler(event, ui, "show");
 };
 
 /*$("#newRouteLog").die("pageinit").live("pageinit", function (event, ui) {
@@ -133,13 +152,13 @@ $("#preferences").die("pageinit").live("pageinit", function (event, ui) {
     clLib.PAGES.initHandler(event);
 });*/
 
-$("#newRouteLog").die("pagebeforehow").live("pagebeforeshow", function (event, ui) {
-    clLib.PAGES.showHandler(event);
-});
 $("#startScreen").die("pagebeforeshow").live("pagebeforeshow", function (event, ui) {
     clLib.PAGES.showHandler(event);
 });
 $("#preferences").die("pagebeforeshow").live("pagebeforeshow", function (event, ui) {
+    clLib.PAGES.showHandler(event, ui);
+});
+$("#newRouteLog").die("pagebeforehow").live("pagebeforeshow", function (event, ui) {
     clLib.PAGES.showHandler(event);
 });
 
@@ -148,10 +167,10 @@ $("#startScreen").die("pageinit").live("pageinit", function (event, ui) {
     clLib.PAGES.initHandler(event);
 });
 $("#preferences").die("pageinit").live("pageinit", function (event, ui) {
-    clLib.PAGES.initHandler(event);
+    clLib.PAGES.initHandler(event, ui);
 });
 $("#newRouteLog").die("pageinit").live("pageinit", function (event, ui) {
-    clLib.PAGES.initHandler(event);
+    clLib.PAGES.initHandler(event, ui);
 });
 
 

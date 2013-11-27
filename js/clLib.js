@@ -34,7 +34,7 @@ clLib.populateGradeTypes = function($gradeTypeSelect, preselectedGradeType){
 /*
 *   Populates a select box with available grades in a certain gradeType.
 */
-clLib.populateGrades = function($gradeSelect, selectedGradeType) {
+clLib.populateGrades = function($gradeSelect, selectedGradeType, selectedGrade) {
 	clLib.loggi("refreshing grades for gradetype " + selectedGradeType);
 	//clLib.populateSelectBox($gradeSelect, Object.keys(clLib.gradeConfig[selectedGradeType]["grades"]), clLib.gradeConfig[selectedGradeType]["defaultGrade"]);
 
@@ -42,7 +42,10 @@ clLib.populateGrades = function($gradeSelect, selectedGradeType) {
 	clLib.populateSelectBox({
 		selectBoxElement : $gradeSelect,
 		dataObj : Object.keys(clLib.gradeConfig[selectedGradeType]["grades"]),
-		selectedValue : localStorage.getItem("defaultGrade") || clLib.gradeConfig[selectedGradeType]["defaultGrade"]
+		selectedValue:
+            selectedGrade ||
+            localStorage.getItem("defaultGrade") ||
+            clLib.gradeConfig[selectedGradeType]["defaultGrade"]
 	});
 	
 };
