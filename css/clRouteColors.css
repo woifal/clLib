@@ -15,34 +15,31 @@
 */
 .Platte {
     background-repeat: no-repeat;
-    background-position: 120px 0px;
+    background-position: 0px 0px;
     background-size: 40px 40px;
-    padding-left: 0px; /*8%;*/
-	/*background-image: none;*/
-    background-image: URL('../files/views/assets/image/platte.jpg');
+    padding-left: 40px; /*8%;*/
+	background-image: URL('../files/views/assets/image/platte.jpg');
 }
+
 .Senkrecht {
     background-repeat: no-repeat;
-    background-position: 120px 0px;
+    background-position: 0px 0px;
     background-size: 40px 40px;
-    padding-left: 0px; /*8%;*/
-	/*background-image: none;*/
+    padding-left: 40px; /*8%;*/
     background-image: URL('../files/views/assets/image/senkrecht.jpg');
 }
 .Ueberhaengend {
     background-repeat: no-repeat;
-    background-position: 120px 0px;
+    background-position: 0px 0px;
     background-size: 40px 40px;
-    padding-left: 0px; /*8%;*/
-	/*background-image: none;*/
+    padding-left: 40px; /*8%;*/
     background-image: URL('../files/views/assets/image/ueberhaengend.jpg');
 }
 .Dach{
     background-repeat: no-repeat;
-    background-position: 120px 0px;
+    background-position: 0px 0px;
     background-size: 40px 40px;
-    padding-left: 0px; /*8%;*/
-	/*background-image: none;*/
+    padding-left: 40px; /*8%;*/
     background-image: URL('../files/views/assets/image/dach.jpg');
 }
 
