@@ -828,14 +828,19 @@ clLib.addCSSBackground = function(targetId) {
         var selection = $(this).find(':selected').html();
         //alert("last_style " + last_style + ",changing to " + selection);
 
-        // Remove CSS class for previously selected color
+        var className;
+        if (classForText && classForText[selection]) {
+            className = classForText[selection];
+        }
+
+	    // Remove CSS class for previously selected color
         if (last_style) {
-            $(this).closest('.ui-select').find('.ui-btn').removeClass(last_style);
+            $(this).closest('.ui-select').find('.ui-btn-inner').removeClass(last_style);
         }
         // Set currently selected color
-        $(this).closest('.ui-select').find('.ui-btn').addClass(selection);
+        $(this).closest('.ui-select').find('.ui-btn-inner').addClass(className);
         // Remember currently selected color
-        $(this).data("cllast_style", selection);
+        $(this).data("cllast_style", className);
         //alert("remembering last_style " + selection);
 		//$(this).change();
     });
