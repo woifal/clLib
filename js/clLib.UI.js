@@ -2,7 +2,7 @@
 
 clLib.UI = {
 	"NOTSELECTED": {
-		text : "UNKNOWN",
+		text : "?",
 		value : "__UNKNOWN__"
 	}
 };
@@ -825,13 +825,12 @@ clLib.addCSSBackground = function(targetId) {
 	$targetEl.on('change.clLibCSSBackground', function () {
 		var last_style = $(this).data("cllast_style");
 		// Get currently selected element
-        var selection = $(this).find(':selected').html();
-        //alert("last_style " + last_style + ",changing to " + selection);
 
-        var className;
-        if (classForText && classForText[selection]) {
-            className = classForText[selection];
+	    var className = $(this).find(':selected').html();;
+	    if (classForText && classForText[className]) {
+            className = classForText[className];
         }
+	    //alert("last_style " + last_style + ",changing to " + className);
 
 	    // Remove CSS class for previously selected color
         if (last_style) {
