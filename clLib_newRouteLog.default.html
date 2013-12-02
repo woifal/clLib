@@ -34,7 +34,7 @@
         <div id="newRouteLog" data-role="page"
              class="type-interior"
              data-theme="a"
-             style="min-height:480px; max-width:600px;">
+             style="min-height:480px; max-width:320px;">
             <div id="newRouteLog_mobileheader1" data-role="header"
                  data-position="fixed" data-theme="a"
             >
@@ -48,6 +48,13 @@
                 <option value="reduced">Reduced</option>
             </select>
             -->
+                <!-- refresh button -->
+                <a class='ui-btn-right'
+                   id="newRouteLog_refreshButton"
+                   data-icon="refresh" data-inline='true'
+                   data-mini='true' data-theme="a">
+                    Refresh
+                </a>
             </div>
 
 
@@ -62,7 +69,8 @@
                                 <td>
                                     <!-- gradeTypeSelect -->
                                     <div>
-                                        <select id="newRouteLog_gradeTypeSelect"
+                                        <label style="font-size: 8px;" class="select" for="newRouteLog_gradeTypeSelect">GradeType</label>
+                                        <select style="border: 1px solid red" id="newRouteLog_gradeTypeSelect" name="newRouteLog_gradeTypeSelect"
                                                 data-theme="a" data-inline="false" data-mini="false" data-icon="arrow-d" data-iconpos="right"
                                                 data-native-menu="true" tabindex="16"></select>
                                     </div>
@@ -70,7 +78,8 @@
                                 <td>
                                     <!-- gradeSelect -->
                                     <div>
-                                        <select id="newRouteLog_gradeSelect"
+                                        <label style="font-size: 8px" for="newRouteLog_gradeSelect">Grade</label>
+                                        <select id="newRouteLog_gradeSelect" name="newRouteLog_gradeSelect"
                                                 data-theme="a" data-inline="false" data-mini="false" data-icon="arrow-d" data-iconpos="right"
                                                 data-native-menu="true" tabindex="2"></select>
                                     </div>
@@ -88,7 +97,8 @@
                                     <div>
                                         <!-- ticktypes -->
                                         <div>
-                                            <select id="newRouteLog_tickType" data-theme="a"
+                                            <label style="font-size: 8px" for="newRouteLog_tickType">TickType</label>
+                                            <select id="newRouteLog_tickType" name="newRouteLog_tickType" data-theme="a"
                                                     data-inline="false" data-mini="false" data-icon="arrow-d" data-iconpos="right" data-native-menu="true"
                                                     tabindex="3">
                                                 <option value="" rerender="ticktypes" selected="selected">
@@ -102,7 +112,8 @@
                                     <div>
                                         <!-- colourSelect -->
                                         <div>
-                                            <select id="newRouteLog_colourSelect" data-theme="a"
+                                            <label style="font-size: 8px" for="newRouteLog_colourSelect">Colour</label>
+                                            <select id="newRouteLog_colourSelect" name="newRouteLog_colourSelect" data-theme="a"
                                                     data-inline="false" data-mini="false" data-icon="arrow-d" data-iconpos="right" data-native-menu="false"
                                                     tabindex="6">
                                                 <option value="" rerender="colourSelect" selected="selected">
@@ -119,12 +130,13 @@
                 </div>
                 <div>
                     <table style="width: 100%" cellpadding="0" cellspacing="0">
-                        <col style="width:80%;" />
-                        <col style="width:20%;" />
+                        <col style="width:70%;" />
+                        <col style="width:30%;" />
                         <tr>
                             <td colspan="1" rowspan="1">
                                 <!-- sectorSelect -->
-                                <select id="newRouteLog_sectorSelect" data-theme="a" data-inline="false"
+                                <label style="font-size: 8px;" class="select" for="newRouteLog_sectorSelect">Sector</label>
+                                <select id="newRouteLog_sectorSelect" name="newRouteLog_sectorSelect"  data-theme="a" data-inline="false"
                                         data-mini="false" data-icon="arrow-d" data-iconpos="right" data-native-menu="true"
                                         tabindex="5">
                                     <option value="" rerender="sectorSelect" selected="selected">
@@ -134,7 +146,8 @@
                             </td>
                             <td>
                                 <!-- lineSelect -->
-                                <select id="newRouteLog_lineSelect" data-theme="a" data-inline="false"
+                                <label style="font-size: 8px;" class="select" for="newRouteLog_lineSelect">Line</label>
+                                <select id="newRouteLog_lineSelect" name="newRouteLog_lineSelect" data-theme="a" data-inline="false"
                                         data-mini="false" data-icon="arrow-d" data-iconpos="right" data-native-menu="true"
                                         tabindex="5">
                                     <option value="" rerender="lineSelect" selected="selected">
@@ -147,8 +160,9 @@
                 </div>
                 <div>
                     <!-- characterSelect -->
-                    <select id="newRouteLog_characterSelect" data-theme="a"
-                            data-inline="false" data-mini="false" data-icon="arrow-d" data-iconpos="right" data-native-menu="false"
+                    <label style="font-size: 8px;" class="select" for="newRouteLog_characterSelect">Character</label>
+                    <select id="newRouteLog_characterSelect" name="newRouteLog_characterSelect" data-theme="a"
+                            data-icon="arrow-d" data-iconpos="right" data-native-menu="false"
                             tabindex="6">
                         <option value="" rerender="characterSelect" selected="selected">
                             character
@@ -157,7 +171,8 @@
 
                     <!-- searchRoute -->
                     <div>
-                        <input type="search" id="newRouteLog_searchRoute"
+                        <label style="font-size: 8px;" for="newRouteLog_searchRoute">Route Name</label>
+                        <input type="search" id="newRouteLog_searchRoute" name="newRouteLog_searchRoute"
                                value="" placeholder="Search Route Name" data-theme="a" tabindex="7" />
                     </div>
                     <!-- searchRouteResults -->
@@ -174,6 +189,7 @@
                     </ul>
 
                     <div data-role="fieldcontain">
+                        <label style="font-size: 8px;">Rating</label>
                         <div data-role="none" id="newRouteLog_ratingSelectWrapper">
                             <!-- rating goes here.. -->
                         </div>
@@ -181,7 +197,8 @@
 
                     <!-- commentText -->
                     <div data-role="fieldcontain">
-                        <textarea id="newRouteLog_commentText" tabindex="9"
+                        <label style="font-size: 8px;" for="newRouteLog_commentText">Comment</label>
+                        <textarea id="newRouteLog_commentText" name="newRouteLog_commentText" tabindex="9"
                                   data-theme="a"></textarea>
                     </div>
 

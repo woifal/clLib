@@ -123,12 +123,17 @@ clLib.PAGES.handlers = {
 	                setTimeout(function () { clLib.UI.hideLoading(); }, 1500);
 	            });
 	        });
+	        $("#newRouteLog_refreshButton").on("click", function () {
+	            clLib.UI.resetUIelements("newRouteLog", "newRouteLog");
+	        });
 	        $("#foobut").on("click", function () {
 	            clLib.UI.showLoading("33TEST LOADING!!!!");
 	        });
+
+	        clLib.UI.fillUIelements("newRouteLog", "newRouteLog");
 	    }
         , "show": function () {
-            clLib.UI.fillUIelements("newRouteLog", "newRouteLog");
+            
 		}
 	}
 };
