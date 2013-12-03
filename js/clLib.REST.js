@@ -19,7 +19,7 @@ clLib.REST.executeRetrieve = function (uri, method, whereObj, allowNoSessionToke
 	if(whereObj) {
 		whereObj = "where=" + encodeURIComponent(JSON.stringify(whereObj));
 	}
-	var returnObj = clLib.REST.execAJAXRequest(uri, method, whereObj);
+	var returnObj = clLib.REST.execAJAXRequest(uri, method, whereObj, allowNoSessionToken);
 	return returnObj;
 }
 	
@@ -28,7 +28,7 @@ clLib.REST.executeInsert = function(uri, method, objData, allowNoSessionToken) {
 	if(objData) {
 		objData = JSON.stringify(objData);
 	}
-	var returnObj = clLib.REST.execAJAXRequest(uri, method, objData);
+	var returnObj = clLib.REST.execAJAXRequest(uri, method, objData, allowNoSessionToken);
 	return returnObj;
 }
 		
