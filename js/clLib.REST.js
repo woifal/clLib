@@ -7,13 +7,15 @@ clLib.clException= function(name, message) {
    this.name = name;
 };
 
-clLib.REST.baseURI = "https://api.appery.io/rest/1/db/collections/";
+clLib.REST.baseURI = "https://api.appery.io/rest/1/db";
+clLib.REST.baseCollectionsURI = clLib.REST.baseURI + "/collections/";
+clLib.REST.baseUsersURI = clLib.REST.baseURI + "/users";
 
 /*
 *	retrieve => need to encode where string
 *	insert => do NOT encore obj props
 */
-clLib.REST.executeRetrieve = function(uri, method, whereObj) {
+clLib.REST.executeRetrieve = function (uri, method, whereObj, allowNoSessionToken) {
 	if(whereObj) {
 		whereObj = "where=" + encodeURIComponent(JSON.stringify(whereObj));
 	}
@@ -22,7 +24,7 @@ clLib.REST.executeRetrieve = function(uri, method, whereObj) {
 }
 	
 
-clLib.REST.executeInsert = function(uri, method, objData) {
+clLib.REST.executeInsert = function(uri, method, objData, allowNoSessionToken) {
 	if(objData) {
 		objData = JSON.stringify(objData);
 	}
@@ -30,8 +32,8 @@ clLib.REST.executeInsert = function(uri, method, objData) {
 	return returnObj;
 }
 		
-clLib.REST.execAJAXRequest = function(uri, method, params) {
-	var request = clLib.REST.buildAJAXRequest(uri, method, params);
+clLib.REST.execAJAXRequest = function (uri, method, params, allowNoSessionToken) {
+	var request = clLib.REST.buildAJAXRequest(uri, method, params, null, allowNoSessionToken);
 
 	var returnObj = {};
 	$.ajax(request)
@@ -51,7 +53,7 @@ clLib.REST.execAJAXRequest = function(uri, method, params) {
 };
 
 		
-clLib.REST.buildAJAXRequest = function(uri, method, getParams) {
+clLib.REST.buildAJAXRequest = function(uri, method, getParams, headerParams, allowNoSessionToken) {
 	var request = {
 		async: false,
 		url: uri,
@@ -76,6 +78,17 @@ clLib.REST.buildAJAXRequest = function(uri, method, getParams) {
 			xhr.setRequestHeader("DNT", "1");
 //			xhr.setRequestHeader("User-Agent", "Mozilla/5.0 (Windows NT 6.2; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0");
 			xhr.setRequestHeader("X-Appery-Database-Id", "52093c91e4b04c2d0a027d7f");
+
+            if(!allowNoSessionToken) {
+		        // only allow REST calls for authenticated users..
+			    xhr.setRequestHeader("X-Appery-Session-Token", localStorage.getItem("sessionToken"));
+            }
+			if (headerParams) {
+			    $.each(headerParams, function (paramName, paramValue) {
+
+			        xhr.setRequestHeader(paramName, paramValue);
+			    });
+			};
 		},
 		error: function(jqXHR) {
 			clLib.loggi("ajax error " + jqXHR.status);
@@ -85,7 +98,7 @@ clLib.REST.buildAJAXRequest = function(uri, method, getParams) {
 }
 
 clLib.REST.getEntities = function(entityName, whereObj) {
-	var uri = clLib.REST.baseURI + entityName;
+	var uri = clLib.REST.baseCollectionsURI + entityName;
 	//clLib.UI.showLoading("Loading " + entityName + " from server...", "xyxyx");
 	var returnObj = {};
 	returnObj[entityName] = clLib.REST.executeRetrieve(uri, 'GET', whereObj);
@@ -94,11 +107,40 @@ clLib.REST.getEntities = function(entityName, whereObj) {
 	return returnObj;
 }
 
-clLib.REST.storeEntity = function(entityName, entityInstance) {
-	var uri = clLib.REST.baseURI + entityName;
-	//clLib.UI.showLoading("Loading " + entityName + " from server...", "xyxyx");
-	var returnObj = clLib.REST.executeInsert(uri, 'POST', entityInstance);
+clLib.REST.storeEntity = function (entityName, entityInstance) {
+    var uri = clLib.REST.baseCollectionsURI + entityName;
+    //clLib.UI.showLoading("Loading " + entityName + " from server...", "xyxyx");
+    var returnObj = clLib.REST.executeInsert(uri, 'POST', entityInstance);
 
-	clLib.loggi("returning(storeEntity) " + JSON.stringify(returnObj));
-	return returnObj;
+    clLib.loggi("returning(storeEntity) " + JSON.stringify(returnObj));
+    return returnObj;
 }
+
+
+clLib.REST.createUser = function (entityName, entityInstance) {
+    var uri = clLib.REST.baseUsersURI;
+    //alert("creating user >" + JSON.stringify(entityInstance) + "<");
+    //clLib.UI.showLoading("Loading " + entityName + " from server...", "xyxyx");
+    var returnObj = clLib.REST.executeInsert(uri, 'POST', entityInstance, true);
+
+    //alert("returning(storeEntity) " + JSON.stringify(returnObj));
+
+    return returnObj;
+}
+
+
+clLib.REST.loginUser = function (entityName, entityInstance) {
+    var uri = clLib.REST.baseURI + "/login";
+    ;
+    //alert("logging in >" + JSON.stringify(entityInstance) + "<");
+    //clLib.UI.showLoading("Loading " + entityName + " from server...", "xyxyx");
+    var returnObj = clLib.REST.execAJAXRequest(uri, "GET", entityInstance, true);
+
+    //alert("returning(storeEntity) " + JSON.stringify(returnObj));
+    return returnObj;
+}
+
+
+
+
+

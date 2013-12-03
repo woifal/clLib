@@ -371,8 +371,8 @@ clLib.localStorage.syncUp = function(entity, entityInstance, storageName) {
 		clLib.localStorage.addStorageItem(storageName, entity, entityInstance);
 
 	} catch (e) {
-		alert("could not sync item due to:" + e.name + " + (" + e.message);
-	}
+	    alert("could not sync item due to:" + e.name + " + (" + e.message + ")");
+    }
 }
 
 
@@ -401,10 +401,10 @@ clLib.localStorage.addInstance = function(entity, entityInstance, storageName) {
 }
 
 clLib.isOnline = function() {
-	var currentlyOnline = localStorage.getItem("onlineMode");
-	clLib.loggi("currentlyOnline? >" + currentlyOnline);
-	if(!(currentlyOnline == 0)) {
-	    return navigator.onLine;
+	var onlineMode = localStorage.getItem("onlineMode");
+	clLib.loggi("currentlyOnline? >" + onlineMode);
+	if(!(onlineMode == 0)) {
+	    return navigator.onLine && clLib.loggedInCheck()
 	} else {
 		return false;
 	}

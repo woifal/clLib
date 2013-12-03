@@ -7,12 +7,6 @@ clLib.UI.preloadImages([
 ]);
 
 
-clLib.prefsCompleteCheck = function() {
-};
-clLib.wasOnlineCheck = function () {
-};
-
-
 clLib.PAGES.defaultHandler = function (event, ui, eventName) {
     var pageId = $(event.target).attr("id");
     //alert("SHOW page >" + pageId + "<");
@@ -55,6 +49,11 @@ clLib.PAGES.handlers = {
                     clLib.UI.resetUIelements("newRouteLog", "preferences");
                     setTimeout(function () { clLib.UI.hideLoading(); history.back(); }, 1500);
                 });
+            });
+
+            $("#preferences_currentUser").on("click", function () {
+                //alert("user input field clicked!");
+                $.mobile.navigate("clLib_users.html");
             });
 
             clLib.UI.fillUIelements("preferences", "preferences");
@@ -103,7 +102,7 @@ clLib.PAGES.handlers = {
 	        clLib.UI.fillUIelements("startScreen", "startScreen");
 		}
 	}
-	,"newRouteLog": {
+	, "newRouteLog": {
 	    "init": function () {
 
 	        clLib.UI.buildRatingRadio($("#newRouteLog_ratingSelectWrapper"));
@@ -133,8 +132,40 @@ clLib.PAGES.handlers = {
 	        clLib.UI.fillUIelements("newRouteLog", "newRouteLog");
 	    }
         , "show": function () {
+
+        }
+	}
+	,"users": {
+	    "init": function () {
+
+	        $("#users_loginButton").on("click", function () {
+	            setTimeout(function () { clLib.UI.showLoading("logging in..."); }, 1);
+
+	            setTimeout(function () {
+	                clLib.UI.save(null, null, null, { action: "login" });
+	                setTimeout(function () { clLib.UI.hideLoading(); }, 1500);
+	            });
+	        });
+	        $("#users_logoutButton").on("click", function () {
+	            setTimeout(function () { clLib.UI.showLoading("logging out..."); }, 1);
+	            setTimeout(function () {
+	                localStorage.removeItem("sessionToken");
+	                setTimeout(function () { clLib.UI.hideLoading(); }, 1500);
+	            });
+	        });
+	        $("#users_newUserButton").on("click", function () {
+	            setTimeout(function () { clLib.UI.showLoading("creating user..."); }, 1);
+
+	            setTimeout(function () {
+	                clLib.UI.save(null, null, null, { action: "create" });
+	                setTimeout(function () { clLib.UI.hideLoading(); }, 1500);
+	            });
+	        });
+	        clLib.UI.fillUIelements("users", "users");
+	    }
+        , "show": function () {
             
-		}
+        }
 	}
 };
 
@@ -166,6 +197,9 @@ $("#preferences").die("pagebeforeshow").live("pagebeforeshow", function (event, 
 $("#newRouteLog").die("pagebeforehow").live("pagebeforeshow", function (event, ui) {
     clLib.PAGES.showHandler(event);
 });
+$("#users").die("pagebeforehow").live("pagebeforeshow", function (event, ui) {
+    clLib.PAGES.showHandler(event);
+});
 
 
 $("#startScreen").die("pageinit").live("pageinit", function (event, ui) {
@@ -175,6 +209,9 @@ $("#preferences").die("pageinit").live("pageinit", function (event, ui) {
     clLib.PAGES.initHandler(event, ui);
 });
 $("#newRouteLog").die("pageinit").live("pageinit", function (event, ui) {
+    clLib.PAGES.initHandler(event, ui);
+});
+$("#users").die("pageinit").live("pageinit", function (event, ui) {
     clLib.PAGES.initHandler(event, ui);
 });
 

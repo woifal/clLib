@@ -702,7 +702,7 @@ clLib.UI.getVal = function(elementName) {
 	return elementValue;
 }
 
-clLib.UI.save = function (currentJqmSlide, currentLayout, successHandler) {
+clLib.UI.save = function (currentJqmSlide, currentLayout, successHandler, additionalData) {
     var saveHandler;
 
     if (!currentJqmSlide) {
@@ -714,7 +714,7 @@ clLib.UI.save = function (currentJqmSlide, currentLayout, successHandler) {
         return;
     }
 
-    saveHandler(currentJqmSlide, currentLayout, successHandler);
+    saveHandler(currentJqmSlide, currentLayout, successHandler, additionalData);
 }
 
 
@@ -772,6 +772,59 @@ clLib.UI.RESTSaveHandler = function (currentJqmSlide, currentLayout, successHand
     });
     //alert("saveObj is " + JSON.stringify(saveObj));
     clLib.localStorage.addInstance("RouteLog", saveObj, "routeLogStorage");
+    //	successHandler();
+}
+
+
+clLib.UI.userHandler = function (currentJqmSlide, currentLayout, successHandler, additionalData) {
+    //    alert("showing page load...");
+    //    clLib.UI.showLoading("Saving route log(s)...");
+    //    alert("showed page load...");
+    var saveObj = {};
+    if (!currentJqmSlide) {
+        currentJqmSlide = localStorage.getItem("currentJqmSlide");
+    }
+    if (!currentLayout) {
+        currentLayout = localStorage.getItem("currentLayout");
+    }
+
+    $.each(clLib.UI.pageElements[currentJqmSlide][currentLayout], function (idx, elementName) {
+        //alert("eaching " + idx + " and " + elementName);
+        var elementConfig = clLib.UI.elements[elementName];
+        if (!elementConfig) {
+            alert("will not save " + elementName + ", no config found!");
+        } else {
+            saveObj[elementConfig["dbField"]] = clLib.UI.getVal(elementName);
+        }
+    });
+    $.each(additionalData, function (elementName, elementValue) {
+        //alert("2eaching " + elementName + " and " + elementValue);
+        saveObj[elementName] = elementValue;
+    });    
+    //alert("saveObj is " + JSON.stringify(saveObj));
+    try {
+        var returnObj;
+        var userAction = additionalData["action"];
+
+        if (userAction == "create") {
+            returnObj = clLib.REST.createUser("users", saveObj, "users");
+        }
+        else if (userAction == "login") {
+            returnObj = clLib.REST.loginUser("users", saveObj, "users");
+        }
+        else {
+            alert("unknown operation >" + userAction + "< - don't know what to do for user..");
+        }
+        var sessionToken = returnObj["sessionToken"];
+        //alert("retrieved sessionToken >" + sessionToken + "<");
+        localStorage.setItem("sessionToken", sessionToken);
+    } catch (e) {
+        //alert("could not create user due to:" + e.name + " + (" + e.message + ")");
+        alert("could not login user: " + JSON.parse(JSON.parse(e.message)["responseText"])["description"]);
+
+    }
+
+
     //	successHandler();
 }
 
@@ -904,12 +957,23 @@ clLib.prefsCompleteCheck = function () {
 
 };
 
+clLib.loggedInCheck = function () {
+    if (localStorage.getItem("sessionToken")) {
+        return true;
+    }
+    return false;
+};
+
 clLib.wasOnlineCheck = function () {
     var wasOnline = false;
     //alert("last refresh:" + clLib.localStorage.getLastRefreshDate("routeStorage"));
     if (clLib.localStorage.getLastRefreshDate("routeStorage")) {
         wasOnline = true;
     }
+    if (!localStorage.getItem("sessionToken")) {
+        wasOnline = false;
+    }
+
     if (!wasOnline) {
         if (!clLib.localStorage.refreshAllData()) {
             alert("You need to go online once to get initial Route(Log) data!");

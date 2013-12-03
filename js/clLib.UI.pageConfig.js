@@ -15,6 +15,7 @@ clLib.UI.pageRequisites = {
     "startScreen": [clLib.prefsCompleteCheck, clLib.wasOnlineCheck]
     , "preferences": []
     , "newRouteLog": [clLib.prefsCompleteCheck, clLib.wasOnlineCheck]
+    , "users": []
 };
 
 
@@ -22,6 +23,7 @@ clLib.UI.saveHandlers= {
       "preferences": clLib.UI.localStorageSaveHandler
     , "newRouteLog": clLib.UI.RESTSaveHandler
     , "startScreen": clLib.UI.RESTSaveHandler
+    , "users": clLib.UI.userHandler
 };
 
 clLib.UI.autoLoad = {
@@ -44,6 +46,10 @@ clLib.UI.autoLoad = {
         , "defaultGradeType"
         , "defaultGrade"
 	]
+    ,users : [
+		"currentUser",
+		"currentPassword"
+]
 };
 
 clLib.UI.elementsToReset = {
@@ -107,15 +113,21 @@ clLib.UI.pageElements = {
 			"selectedArea"
 	    ]
 	}
-    ,preferences : {
-		default: [
+    , preferences: {
+        default: [
 			"currentUser"
-			,"buddiesStr"
-            ,"showTopX"
-            ,"defaultLayout"
-            ,"defaultGradeType"
+			, "buddiesStr"
+            , "showTopX"
+            , "defaultLayout"
+            , "defaultGradeType"
             , "defaultGrade"
             , "onlineMode"
+        ]
+    }
+    ,users: {
+        default: [
+			"currentUser"
+			,"currentPassword"
         ]
     }
 };
@@ -125,10 +137,15 @@ clLib.UI.pageElements = {
 clLib.UI.elements = {
     "currentUser": $.extend({}, {
         "changeHandler": function ($this, changeOptions) {
-//            alert("CHANGED currentUser..");
         }
+        ,"dbField": "username"
     }, clLib.UI.elementConfig.localVar)
-    , "buddiesStr":     clLib.UI.elementConfig.localVar
+    ,"currentPassword": $.extend({}, {
+        "changeHandler": function ($this, changeOptions) {
+        }
+        , "dbField": "password"
+    }, clLib.UI.elementConfig.localVar)
+    , "buddiesStr": clLib.UI.elementConfig.localVar
     , "showTopX":       clLib.UI.elementConfig.localVar
     , "onlineMode":     clLib.UI.elementConfig.localVar
     , "defaultLayout":  clLib.UI.elementConfig.localVar
