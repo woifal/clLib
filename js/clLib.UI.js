@@ -728,7 +728,7 @@ clLib.UI.localStorageSaveHandler = function (currentJqmSlide, currentLayout, suc
         currentJqmSlide = localStorage.getItem("currentJqmSlide");
     }
     if (!currentLayout) {
-        currentLayout = localStorage.getItem("currentLayout");
+        currentLayout = localStorage.getItem("currentLayout") || "default";
     }
 
     $.each(clLib.UI.pageElements[currentJqmSlide][currentLayout], function (idx, elementName) {
@@ -737,6 +737,7 @@ clLib.UI.localStorageSaveHandler = function (currentJqmSlide, currentLayout, suc
         if (!elementConfig) {
             alert("will not save " + elementName + ", no config found!");
         } else {
+			//alert("setting localstorage " + (elementConfig["dbField"] || elementName) + " to " + clLib.UI.getVal(elementName));
             localStorage.setItem(
                 elementConfig["dbField"] || elementName, 
                 clLib.UI.getVal(elementName)
@@ -758,7 +759,7 @@ clLib.UI.RESTSaveHandler = function (currentJqmSlide, currentLayout, successHand
         currentJqmSlide = localStorage.getItem("currentJqmSlide");
     }
     if (!currentLayout) {
-        currentLayout = localStorage.getItem("currentLayout");
+        currentLayout = localStorage.getItem("currentLayout") || "default";
     }
 
     $.each(clLib.UI.pageElements[currentJqmSlide][currentLayout], function (idx, elementName) {
@@ -785,7 +786,7 @@ clLib.UI.userHandler = function (currentJqmSlide, currentLayout, successHandler,
         currentJqmSlide = localStorage.getItem("currentJqmSlide");
     }
     if (!currentLayout) {
-        currentLayout = localStorage.getItem("currentLayout");
+        currentLayout = localStorage.getItem("currentLayout") || "default";
     }
 
     $.each(clLib.UI.pageElements[currentJqmSlide][currentLayout], function (idx, elementName) {
@@ -817,7 +818,7 @@ clLib.UI.userHandler = function (currentJqmSlide, currentLayout, successHandler,
         }
         var sessionToken = returnObj["sessionToken"];
         //alert("retrieved sessionToken >" + sessionToken + "<");
-        localStorage.setItem("sessionToken", sessionToken);
+        clLib.sessionToken = sessionToken;
     } catch (e) {
         //alert("could not create user due to:" + e.name + " + (" + e.message + ")");
         alert("could not login user: " + JSON.parse(JSON.parse(e.message)["responseText"])["description"]);
@@ -917,16 +918,37 @@ clLib.UI.elementConfig.localVarSaveImmediately = {
     "refreshHandler": function ($this) {
         var elementName = clLib.UI.elementNameFromId($this.attr("id"));
         var localVarValue = localStorage.getItem(elementName);
+		//alert("AAAA setting element " + elementName + " to " + localStorage.getItem(elementName));
         //$this.val(localVarValue).attr('selected', true).siblings('option').removeAttr('selected');
         //$this.selectmenu("refresh", true);
-        $this.val(localVarValue);
+        var jqmDataRole = $this.attr("data-role");
+        if (jqmDataRole == "button") {
+            //alert("button - " + $this.attr("id") + " setting txt to " + localVarValue);
+            $this.text(localVarValue);
+//            $this.find(".ui-btn-text").text(localVarValue);
+            $this.button("refresh");
+        } else {
+            $this.val(localVarValue);
+        }
         //alert("set value to " + localVarValue);
     }
     , "changeHandler": function ($this, changeOptions) {
         //alert("changed " + $this.attr("id"));
         var elementName = clLib.UI.elementNameFromId($this.attr("id"));
-        var localVarValue = $this.val();
+        var localVarValue;
+
+        var jqmDataRole = $this.attr("data-role");
+        if (jqmDataRole == "button") {
+            localVarValue = $this.text();
+            //alert("1" + localVarValue);
+//			localVarValue = $this.find(".ui-btn-text").text();
+//            alert("2" + localVarValue);
+        } else {
+            localVarValue = $this.val();
+          //alert("button - " + $this.attr("id") + " changing txt to " + localVarValue);
+//
         localStorage.setItem(elementName, localVarValue);
+			}
         //clLib.UI.setSelectedValue($this, localVarValue);
     }
 };
@@ -934,10 +956,30 @@ clLib.UI.elementConfig.localVarSaveImmediately = {
 clLib.UI.elementConfig.localVar = {
     "refreshHandler": function ($this) {
         var elementName = clLib.UI.elementNameFromId($this.attr("id"));
-        var localVarValue = localStorage.getItem(elementName);
+		
+		if(elementName == "currentUserReadOnly") {
+			elementName = "currentUser";
+		}
+        //alert("Getting localstorage " + elementName);
+		var localVarValue = localStorage.getItem(elementName);
         //$this.val(localVarValue).attr('selected', true).siblings('option').removeAttr('selected');
         //$this.selectmenu("refresh", true);
-        $this.val(localVarValue);
+        var jqmDataRole = $this.attr("data-role");
+        clLib.loggi($this.attr("id") + " is a >" + jqmDataRole + "< - setting it to " + localVarValue);
+
+        if (jqmDataRole == "button") {
+            $this.text(localVarValue);
+//            $this.find(".ui-btn-text").text(localVarValue);
+            $this.button("refresh");
+        } 
+		else if (jqmDataRole == "select" || $this.prop("tagName") == "SELECT") {
+            $this.val(localVarValue);
+			$this.selectmenu("refresh");
+		}	
+		else {
+			//alert($this.attr("id") + " is not a button >" + jqmDataRole + "< - setting txt to " + localVarValue);
+            $this.val(localVarValue);
+        }
         //alert("set value to " + localVarValue);
     }
 };
@@ -957,27 +999,3 @@ clLib.prefsCompleteCheck = function () {
 
 };
 
-clLib.loggedInCheck = function () {
-    if (localStorage.getItem("sessionToken")) {
-        return true;
-    }
-    return false;
-};
-
-clLib.wasOnlineCheck = function () {
-    var wasOnline = false;
-    //alert("last refresh:" + clLib.localStorage.getLastRefreshDate("routeStorage"));
-    if (clLib.localStorage.getLastRefreshDate("routeStorage")) {
-        wasOnline = true;
-    }
-    if (!localStorage.getItem("sessionToken")) {
-        wasOnline = false;
-    }
-
-    if (!wasOnline) {
-        if (!clLib.localStorage.refreshAllData()) {
-            alert("You need to go online once to get initial Route(Log) data!");
-            $.mobile.navigate("clLib_startScreen.html");
-        }
-    }
-};

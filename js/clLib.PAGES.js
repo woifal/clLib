@@ -51,15 +51,39 @@ clLib.PAGES.handlers = {
                 });
             });
 
-            $("#preferences_currentUser").on("click", function () {
+            $("#preferences_currentUserReadOnly").on("click", function () {
                 //alert("user input field clicked!");
                 $.mobile.navigate("clLib_users.html");
             });
 
-            clLib.UI.fillUIelements("preferences", "preferences");
-        }
+			//clLib.UI.fillUIelements("preferences", "preferences");
+
+		}
         , "show": function (e, ui) {
-//            alert("showing page!(prev:" + $(ui.prevPage).prev().prop("tagName") + ")");
+            var $prevElement = $(ui.prevPage);//.prev();
+			var prevTag = $prevElement.prop("tagName");
+			var prevId = $prevElement.attr("id");
+			clLib.loggi("showing page!(prev:" + prevTag + " #" + prevId + ")");
+			
+			
+if (!String.prototype.endsWith) {
+	Object.defineProperty(String.prototype, 'endsWith', {
+        enumerable: false,
+        configurable: false,
+        writable: false,
+        value: function (searchString, position) {
+            position = position || this.length;
+            position = position - searchString.length;
+            var lastIndex = this.lastIndexOf(searchString);
+            return lastIndex !== -1 && lastIndex === position;
+        }
+    });
+}
+			
+			
+			if (!prevId || !prevId.endsWith("-dialog")) {
+				clLib.UI.fillUIelements("preferences", "preferences");
+			}
 		}
 	}
 	,"startScreen": {

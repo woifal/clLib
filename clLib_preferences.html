@@ -38,6 +38,7 @@
             <a id="preferences_saveButton"  data-icon="check" data-role="button" rel="external">Save</a> 
             <h1>
                 Preferences
+				<img id="header_onlineIcon" src="files/views/assets/image/online.jpg" style="width:20px; height:20px"/>
             </h1>
         </div>
         <!-- mobilecontainer -->
@@ -47,7 +48,7 @@
         >
             <!-- currentUser -->
             <label for="currentUser">Username:</label>
-            <input id="preferences_currentUser"  type="text" name="currentUser" tabindex="1" data-theme="a"/>
+            <button data-theme="c" data-role="button" data-iconpos="right" data-icon="gear" id="preferences_currentUserReadOnly"  type="text" name="currentUser" tabindex="1"></button>
 
             <label for="buddiesStr">Buddies:</label>
             <input id="preferences_buddiesStr" type="text" name="buddiesStr" tabindex="2" data-theme="a"/>
@@ -83,9 +84,8 @@
                 <option value="yes">yes</option>
                 <option value="no">no</option>
             </select>
-    </div>
-
-</div>
+		</div>
+	</div>
 </body>
 
   

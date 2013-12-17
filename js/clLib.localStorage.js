@@ -390,7 +390,7 @@ clLib.localStorage.addInstance = function(entity, entityInstance, storageName) {
 
 	clLib.localStorage.addStorageItem("UNSYNCED_" + storageName, entity, entityInstance);
 	
-	if(clLib.isOnline()) {
+	if(clLib.loggedInCheck()) {
 		clLib.loggi("online, syncing UP!!!");
 		//clLib.localStorage.syncUp(entity, entityInstance, storageName);
 		clLib.localStorage.syncAllUp(entity, storageName);
@@ -399,16 +399,6 @@ clLib.localStorage.addInstance = function(entity, entityInstance, storageName) {
 	}
 	//clLib.UI.showLoading(entity + " saved!");
 }
-
-clLib.isOnline = function() {
-	var onlineMode = localStorage.getItem("onlineMode");
-	clLib.loggi("currentlyOnline? >" + onlineMode);
-	if(!(onlineMode == 0)) {
-	    return navigator.onLine && clLib.loggedInCheck()
-	} else {
-		return false;
-	}
-};
 
 /*
 *	Returns all objects from localStorage storage "storageName" where ALL conditions in whereObj are met.
@@ -718,7 +708,7 @@ clLib.localStorage.evalCondition = function(valueToTest, condition) {
 
 
 clLib.localStorage.refreshAllData = function () {
-    if (clLib.isOnline()) {
+    if (clLib.loggedInCheck()) {
         clLib.UI.showLoading("refreshing from server..");
 
         //alert("previous refresh:" +clLib.localStorage.getLastRefreshDate("routeStorage"));

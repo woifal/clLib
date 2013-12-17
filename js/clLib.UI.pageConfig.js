@@ -12,9 +12,9 @@ clLib.UI.cssBackgrounds = {
 
 
 clLib.UI.pageRequisites = {
-    "startScreen": [clLib.prefsCompleteCheck, clLib.wasOnlineCheck]
+    "startScreen": [clLib.prefsCompleteCheck, /*clLib.loggedInCheck, */ clLib.wasOnlineCheck]
     , "preferences": []
-    , "newRouteLog": [clLib.prefsCompleteCheck, clLib.wasOnlineCheck]
+    , "newRouteLog": [clLib.prefsCompleteCheck, /*clLib.loggedInCheck, */ clLib.wasOnlineCheck]
     , "users": []
 };
 
@@ -39,7 +39,7 @@ clLib.UI.autoLoad = {
 		"areaSelect"
 	]
 	,preferences : [
-		"currentUser"
+		"currentUserReadOnly"
 		, "buddiesStr"
         , "showTopX"
         , "defaultLayout"
@@ -115,7 +115,7 @@ clLib.UI.pageElements = {
 	}
     , preferences: {
         default: [
-			"currentUser"
+			"currentUserReadOnly"
 			, "buddiesStr"
             , "showTopX"
             , "defaultLayout"
@@ -135,16 +135,24 @@ clLib.UI.pageElements = {
 
 
 clLib.UI.elements = {
-    "currentUser": $.extend({}, {
-        "changeHandler": function ($this, changeOptions) {
+    "currentUserReadOnly": $.extend({}, {
+/*        "changeHandler": function ($this, changeOptions) {
         }
-        ,"dbField": "username"
+        ,*/
+		"dbField": "username"
     }, clLib.UI.elementConfig.localVar)
+    ,"currentUser": $.extend({}, {
+/*        "changeHandler": function ($this, changeOptions) {
+        }
+        ,*/
+		"dbField": "username"
+    }, clLib.UI.elementConfig.localVarSaveImmediately)
     ,"currentPassword": $.extend({}, {
-        "changeHandler": function ($this, changeOptions) {
+/*        "changeHandler": function ($this, changeOptions) {
         }
-        , "dbField": "password"
-    }, clLib.UI.elementConfig.localVar)
+        ,*/
+		"dbField": "password"
+    }, clLib.UI.elementConfig.localVarSaveImmediately)
     , "buddiesStr": clLib.UI.elementConfig.localVar
     , "showTopX":       clLib.UI.elementConfig.localVar
     , "onlineMode":     clLib.UI.elementConfig.localVar

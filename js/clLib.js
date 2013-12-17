@@ -476,8 +476,68 @@ clLib.alert = function (text, html) {
 };
 
 
+clLib.login = function() {
+	var userObj = {};
+	userObj["username"] = localStorage.getItem("currentUser");
+	userObj["password"] = localStorage.getItem("currentPassword");
+    var returnObj = clLib.REST.loginUser("users", userObj, "users");
+	var sessionToken = returnObj["sessionToken"];
+	//alert("retrieved sessionToken >" + sessionToken + "<");
+	clLib.sessionToken = sessionToken;
+};
 
+clLib.isOnline = function() {
+	var onlineMode = localStorage.getItem("onlineMode");
+	clLib.loggi("currentlyOnline? >" + onlineMode);
+	if(!(onlineMode == 0)) {
+	    onlineMode = navigator.onLine;
+	} else {
+		onlineMode = false;
+	}
+	
+	$("#header_onlineIcon").attr("src", 
+		onlineMode ? "files/views/assets/image/online.jpg" : "files/views/assets/image/offline.jpg"
+	);
+	return onlineMode;
+};
 
+clLib.loggedInCheck = function () {
+    //alert(clLib.sessionToken);
+	// not online? assume you're logged in..
+	if(!clLib.isOnline()) {
+		return false;
+	}
+	// online - check for valid sessiontoken
+	if (clLib.sessionToken) {
+        return true;
+    }
+	// no session token found - try to logon using stored credentials
+	try {
+		clLib.login();
+		// successfully logged in, return true
+		return true;
+	} catch (e) {
+		// could not login - alert error and return false
+        alert("could not login user: " + JSON.parse(JSON.parse(e.message)["responseText"])["description"]);
+		return false;
+	}
+
+	// should not get here, return false anyway.
+	return false;
+};
+
+clLib.wasOnlineCheck = function () {
+	//alert("last refresh:" + clLib.localStorage.getLastRefreshDate("routeStorage"));
+	// data from previous refresh found?
+    if (clLib.localStorage.getLastRefreshDate("routeStorage")) {
+        return true;
+    }
+
+    if (!clLib.localStorage.refreshAllData()) {
+		alert("You need to go online once to get initial Route(Log) data!");
+		$.mobile.navigate("clLib_startScreen.html");
+	}
+};
 
 
 //})(jQuery)

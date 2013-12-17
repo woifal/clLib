@@ -19,7 +19,7 @@ clLib.REST.executeRetrieve = function (uri, method, whereObj, allowNoSessionToke
 	if(whereObj) {
 		whereObj = "where=" + encodeURIComponent(JSON.stringify(whereObj));
 	}
-	var returnObj = clLib.REST.execAJAXRequest(uri, method, whereObj, allowNoSessionToken);
+	var returnObj = clLib.REST.execAJAXRequest(uri, method, whereObj, allowNoSessionToken   );
 	return returnObj;
 }
 	
@@ -81,7 +81,7 @@ clLib.REST.buildAJAXRequest = function(uri, method, getParams, headerParams, all
 
             if(!allowNoSessionToken) {
 		        // only allow REST calls for authenticated users..
-			    xhr.setRequestHeader("X-Appery-Session-Token", localStorage.getItem("sessionToken"));
+			    xhr.setRequestHeader("X-Appery-Session-Token", clLib.sessionToken);
             }
 			if (headerParams) {
 			    $.each(headerParams, function (paramName, paramValue) {
@@ -134,7 +134,8 @@ clLib.REST.loginUser = function (entityName, entityInstance) {
     ;
     //alert("logging in >" + JSON.stringify(entityInstance) + "<");
     //clLib.UI.showLoading("Loading " + entityName + " from server...", "xyxyx");
-    var returnObj = clLib.REST.execAJAXRequest(uri, "GET", entityInstance, true);
+    
+	var returnObj = clLib.REST.execAJAXRequest(uri, "GET", entityInstance, true);
 
     //alert("returning(storeEntity) " + JSON.stringify(returnObj));
     return returnObj;
