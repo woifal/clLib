@@ -347,7 +347,9 @@ clLib.UI.elements = {
 		,"refreshOnUpdate" : {
 		    default: {
 		        "searchRouteResults": {
-		            hideOnSingleResult: true
+		            // 2013-12-20 WD: don't hide single result - causes select boxes to never be able to get "unselected" again.
+					//hideOnSingleResult: true
+					hideOnSingleResult: false
 		        }
 		    }
         }
