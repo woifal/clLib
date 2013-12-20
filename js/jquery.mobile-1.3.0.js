@@ -8794,7 +8794,7 @@ $.widget( "mobile.textinput", $.mobile.widget, {
 			this._keyup = function() {
 				var scrollHeight = input[ 0 ].scrollHeight,
 					clientHeight = input[ 0 ].clientHeight;
-
+				
 				if ( clientHeight < scrollHeight ) {
 					input.height( scrollHeight + extraLineHeight );
 				}

@@ -248,7 +248,11 @@ clLib.UI.elements = {
 					"Top Rope"
 				]
 				,preserveCurrentValue : true
-				,additionalValue : clLib.UI.NOTSELECTED
+				,additionalValue : {
+					text: "TickType?",
+					value: "__UNKNOWN__"
+				}
+				//clLib.UI.NOTSELECTED
 				,selectedValue : "Red Point"
 			});
 		}
@@ -485,7 +489,11 @@ clLib.UI.elements = {
 					"Dach"
 				],
 				preserveCurrentValue : true,
-				additionalValue : clLib.UI.NOTSELECTED
+				additionalValue : {
+					text: "Character?",
+					value: "__UNKNOWN__"
+				}
+				//clLib.UI.NOTSELECTED
 			});
 
 			

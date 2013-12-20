@@ -59,28 +59,44 @@
                 </a>
             </div>
 
-
+			<style>
+				label {
+					visibility: hidden;
+					height: 0px;
+				}
+				label.rated, label.unrated {
+					visibility: visible;
+					height:20px;
+				}
+				textarea.ui-input-text { height: inherit; }
+			</style>
             <div id="newRouteLog_mobilecontainer1" data-role="content"
                  data-theme="">
                 <div style="afloat:left">
-                    <div>
+                    <div style="border: 0px solid red">
                         <table id="newRouteLog_mobilegrid_30" cellpadding="0" cellspacing="0" style="width: 100%">
                             <col style="width:50%;" />
                             <col style="width:50%;" />
                             <tr>
+								<style>
+									.ui-select > div {
+										margin-top: 0px;
+										margin-bottom: 0px;
+									}
+								</style>
                                 <td>
                                     <!-- gradeTypeSelect -->
-                                    <div>
-                                        <label style="font-size: 8px;" class="select" for="newRouteLog_gradeTypeSelect">GradeType</label>
-                                        <select style="border: 1px solid red" id="newRouteLog_gradeTypeSelect" name="newRouteLog_gradeTypeSelect"
+                                    <div style="border: 0px solid yellow; padding: 0; margin: 0;">
+                                        <!--<label style="visibility: hidden; font-size: 8px;" class="select" for="newRouteLog_gradeTypeSelect">GradeType</label>-->
+                                        <select id="newRouteLog_gradeTypeSelect" name="newRouteLog_gradeTypeSelect"
                                                 data-theme="a" data-inline="false" data-mini="false" data-icon="arrow-d" data-iconpos="right"
                                                 data-native-menu="true" tabindex="16"></select>
                                     </div>
                                 </td>
                                 <td>
                                     <!-- gradeSelect -->
-                                    <div>
-                                        <label style="font-size: 8px" for="newRouteLog_gradeSelect">Grade</label>
+                                    <div style="border: 0px solid yellow; padding: 0; margin: 0;">
+                                        <!--<label style="font-size: 8px" for="newRouteLog_gradeSelect">Grade</label>-->
                                         <select id="newRouteLog_gradeSelect" name="newRouteLog_gradeSelect"
                                                 data-theme="a" data-inline="false" data-mini="false" data-icon="arrow-d" data-iconpos="right"
                                                 data-native-menu="true" tabindex="2"></select>
@@ -90,7 +106,7 @@
                         </table>
                     </div>
 
-                    <div>
+                    <div style="border: 0px solid green">
                         <table style="width: 100%" cellpadding="0" cellspacing="0">
                             <col style="width:50%;" />
                             <col style="width:50%;" />
@@ -113,7 +129,7 @@
                                 <td colspan="1" rowspan="1">
                                     <div>
                                         <!-- colourSelect -->
-                                        <div>
+                                        <div style="margin-top: 0px; padding-top: 0px;">
                                             <label style="font-size: 8px" for="newRouteLog_colourSelect">Colour</label>
                                             <select id="newRouteLog_colourSelect" name="newRouteLog_colourSelect" data-theme="a"
                                                     data-inline="false" data-mini="false" data-icon="arrow-d" data-iconpos="right" data-native-menu="false"
@@ -189,27 +205,46 @@
                             </a>
                         </li>
                     </ul>
-
-                    <div data-role="fieldcontain">
-                        <label style="font-size: 8px;">Rating</label>
-                        <div data-role="none" id="newRouteLog_ratingSelectWrapper">
-                            <!-- rating goes here.. -->
-                        </div>
-                    </div>
-
-                    <!-- commentText -->
-                    <div data-role="fieldcontain">
-                        <label style="font-size: 8px;" for="newRouteLog_commentText">Comment</label>
-                        <div>
-                            <textarea id="newRouteLog_commentText" name="newRouteLog_commentText" tabindex="9"
-                                      data-theme="a"></textarea>
-                        </div>
-                    </div>
-
+				</div>
+				<div>
+					<table style="width: 100%;" cellpadding="0" cellspacing="0">
+						<col style="width:60%;" />
+						<col style="width:40%;" />
+						<tr>
+							<td>
+								<!-- commentText -->
+								<!--<label style="font-size: 8px;" for="newRouteLog_commentText">Comment</label>-->
+								<style>
+								/* set text area to height of 30 px */
+								.ui-page .ui-content textarea.ui-input-text {
+									height : 20px;
+								}​
+								input.ui-input-text, textarea.ui-input-text {
+									min-height: 20px;
+									height: 20px;
+									line-height: 15px;
+									margin-top: 0px;
+								}
+								</style>
+								<textarea style="resize: none; height: 30px" id="newRouteLog_commentText" name="newRouteLog_commentText" tabindex="9" placeholder="comments?"></textarea>
+							</td>
+							<td style="text-align: center; vertical-align: top; border: 0px solid blue;">
+								<!-- rating widget
+								2DO: autosize acc. to parent div..
+								-->
+								<!--<label style="font-size: 8px;" for="newRouteLog_rating">Rating</label>-->
+								<div style="border: 0px solid red" data-role="none" id="newRouteLog_ratingSelectWrapper">
+									<!-- rating goes here.. -->
+								</div>
+							</td>
+						</tr>
+					</table>
+				</div>
+				<div>
                     <!-- save_tick -->
                     <a data-role="button"
                        id="newRouteLog_save_tick" data-corners="true" data-icon="check" data-iconpos="right"
-                       data-mini="false" data-theme="a" tabindex="8">
+                       data-mini="false" data-theme="a" tabindex="8" style="height: 60px">
                         Save Tick!
                     </a>
                 </div>

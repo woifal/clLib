@@ -401,6 +401,7 @@ clLib.UI.resetUIelements = function(pageName, currentJqmSlide) {
 		
 	});
 	
+//	hardcoded reset for <textarea> element...
 	$("#newRouteLog_commentText").val('');
 };
 	
@@ -659,12 +660,20 @@ clLib.UI.defaultRefreshHandler = function($element, additionalSelectBoxOptions) 
 		selectBoxElement : $element,
 		dataObj : results,
 		preserveCurrentValue : true,
-		additionalValue : clLib.UI.NOTSELECTED
+		// additionalValue : clLib.UI.NOTSELECTED
+		additionalValue : {
+			 //text: clLib.UI.elementNameFromId($element.attr("id"))
+			text: clLib.UI.getLabelForElement($element) + "?"
+			,value: "__UNKNOWN__"
+		}
 	};
 	$.extend(selectBoxOptions, additionalSelectBoxOptions);
 	clLib.populateSelectBox(selectBoxOptions);
 }
 
+clLib.UI.getLabelForElement = function($element) {
+	return $element.parents("td").find("label[for=" + $element.attr("id") + "]").html();
+};
 
 clLib.UI.defaultEntitySearch = function(resultColName, dependentPageElements, distinctFlag, additionalWhereObj) {
 	var baseWhere = {}, where, results;
