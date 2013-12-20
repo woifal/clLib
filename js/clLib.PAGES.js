@@ -153,7 +153,7 @@ if (!String.prototype.endsWith) {
 	            clLib.UI.showLoading("33TEST LOADING!!!!");
 	        });
 
-	        clLib.UI.fillUIelements("newRouteLog", "newRouteLog");
+	        clLib.UI.fillUIelements("newRouteLog", "newRouteLog", localStorage.getItem("defaultLayout"));
 	    }
         , "show": function () {
 

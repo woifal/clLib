@@ -27,29 +27,44 @@ clLib.UI.saveHandlers= {
 };
 
 clLib.UI.autoLoad = {
-	newRouteLog : [
-		"gradeTypeSelect",
-		"searchRoute",
-		"ratingSelect",
-		"tickType",
-		"characterSelect",
-		"routeLogContainer"
-	]
-	, startScreen: [
-		"areaSelect"
-	]
-	,preferences : [
-		"currentUserReadOnly"
-		, "buddiesStr"
-        , "showTopX"
-        , "defaultLayout"
-        , "defaultGradeType"
-        , "defaultGrade"
-	]
-    ,users : [
-		"currentUser",
-		"currentPassword"
-]
+	newRouteLog : {
+		default: [
+			"gradeTypeSelect",
+			"searchRoute",
+			"ratingSelect",
+			"tickType",
+			"characterSelect",
+			"routeLogContainer"
+		],
+		reduced: [
+			"gradeTypeSelect",
+			"tickType",
+			"colourSelect",
+			"characterSelect",
+			"routeLogContainer"
+		]
+	}
+	,startScreen: {
+		default: [
+			"areaSelect"
+		]
+	}
+	,preferences : {
+		default: [
+			"currentUserReadOnly"
+			, "buddiesStr"
+			, "showTopX"
+			, "defaultLayout"
+			, "defaultGradeType"
+			, "defaultGrade"
+		]
+	}
+    ,users : {
+		default: [
+			"currentUser",
+			"currentPassword"
+		]
+	}
 };
 
 clLib.UI.elementsToReset = {

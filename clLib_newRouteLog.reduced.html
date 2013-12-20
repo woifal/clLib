@@ -4,33 +4,33 @@
 <head>
 	<meta charset="utf-8"/>
 	<meta name="viewport" content="width=device-width, initial-scale=1"/> 
+    <meta http-equiv="no-cache"/>
+    <meta http-equiv="Expires" content="-1"/>
+    <meta http-equiv="Cache-Control" content="no-cache"/>
+
 	<title>clLib Test</title> 
-        <link rel="stylesheet" href="css/THEMES/default/jqm.min.css" />
+<!--	<link rel="stylesheet" href="http://code.jquery.com/mobile/1.3.0/jquery.mobile-1.3.0.min.css" />-->
+    <link rel="stylesheet" href="css/THEMES/default/jqm.min.css" />
+<!--    <link rel="stylesheet" href="css/THEMES/20131202/jqm.css" />-->
 		<link rel="stylesheet" href="css/clRouteColors.css" />
 
-		<script type="text/javascript" src="js/clLib.js"></script>
-		<script type="text/javascript" src="js/clLib.gradeConfig.js"></script>
-		<script type="text/javascript" src="js/clLib.localStorage.js"></script>
-		<script type="text/javascript" src="js/clLib.localStorage.indexes.js"></script>
-		<script type="text/javascript" src="js/clLib.UI.js"></script>
-		<script type="text/javascript" src="js/clLib.UI.pageConfig.js"></script>
-		<script type="text/javascript" src="js/clLib.REST.js"></script>
-<!--		<script type="text/javascript" src="clLib.COMBINED.js"></script>-->
 
-<!--
-		<script type="text/javascript" src="sampledata/routeLogSample.js"></script>
-		<script type="text/javascript" src="sampledata/routeSample_big.js"></script>
--->
-<!--
-		<script type="text/javascript" src="http://codeorigin.jquery.com/jquery-1.8.2.js"></script>
-        <script type="text/javascript" src="http://codeorigin.jquery.com/mobile/1.3.0/jquery.mobile-1.3.0.js"></script>
--->
-		<script type="text/javascript" src="js/jquery-1.8.2.js"></script>
-        <script type="text/javascript" src="js/jquery.mobile-1.3.0.js"></script>
-        <script type="text/javascript" src="js/clLib.PAGES.js"></script>
+    <script type="text/javascript" src="js/jquery-1.8.2.js"></script>
+    <script type="text/javascript" src="js/jquery.mobile-1.3.0.js"></script>
+
+    <script type="text/javascript" src="js/clLib.js"></script>
+    <script type="text/javascript" src="js/clLib.gradeConfig.js"></script>
+    <script type="text/javascript" src="js/clLib.localStorage.js"></script>
+    <script type="text/javascript" src="js/clLib.localStorage.indexes.js"></script>
+    <script type="text/javascript" src="js/clLib.UI.js"></script>
+    <script type="text/javascript" src="js/clLib.UI.pageConfig.js"></script>
+    <script type="text/javascript" src="js/clLib.REST.js"></script>
+    <script type="text/javascript" src="js/clLib.PAGES.js"></script>
+
 
 		<link rel="stylesheet" href="css/clLib.css" />
 </head> 
+
 
 <body> 
 
@@ -85,42 +85,44 @@
                 </table>
             </div>
 
-            <div>
-                <table style="width: 100%" cellpadding="0" cellspacing="0">
-                    <col style="width:50%;" />
-                    <col style="width:50%;" />
-                    <tr>
-                        <td colspan="1" rowspan="1">
-                            <div>
-                                <!-- ticktypes -->
-                                <div>
-                                    <select id="newRouteLog_tickType" data-theme="a"
-                                            data-inline="false" data-mini="false" data-icon="arrow-d" data-iconpos="right" data-native-menu="true"
-                                            tabindex="3">
-                                        <option value="" rerender="ticktypes" selected="selected">
-                                            Tick Type
-                                        </option>
-                                    </select>
-                                </div>
-                            </div>
-                        </td>
-                        <td colspan="1" rowspan="1">
-                            <div>
-                                <!-- colourSelect -->
-                                <div>
-                                    <select id="newRouteLog_colourSelect" data-theme="a"
-                                            data-inline="false" data-mini="false" data-icon="arrow-d" data-iconpos="right" data-native-menu="false"
-                                            tabindex="6">
-                                        <option value="" rerender="colourSelect" selected="selected">
-                                            Colour
-                                        </option>
-                                    </select>
-                                </div>
-                            </div>
-                        </td>
-                    </tr>
-                </table>
-            </div>
+                    <div style="border: 0px solid green">
+                        <table style="width: 100%" cellpadding="0" cellspacing="0">
+                            <col style="width:50%;" />
+                            <col style="width:50%;" />
+                            <tr>
+                                <td colspan="1" rowspan="1">
+                                    <div>
+                                        <!-- ticktypes -->
+                                        <div>
+                                            <label style="font-size: 8px" for="newRouteLog_tickType">TickType</label>
+                                            <select id="newRouteLog_tickType" name="newRouteLog_tickType" data-theme="a"
+                                                    data-inline="false" data-mini="false" data-icon="arrow-d" data-iconpos="right" data-native-menu="true"
+                                                    tabindex="3">
+                                                <option value="" rerender="ticktypes" selected="selected">
+                                                    Tick Type
+                                                </option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td colspan="1" rowspan="1">
+                                    <div>
+                                        <!-- colourSelect -->
+                                        <div style="margin-top: 0px; padding-top: 0px;">
+                                            <label style="font-size: 8px" for="newRouteLog_colourSelect">Colour</label>
+                                            <select id="newRouteLog_colourSelect" name="newRouteLog_colourSelect" data-theme="a"
+                                                    data-inline="false" data-mini="false" data-icon="arrow-d" data-iconpos="right" data-native-menu="false"
+                                                    tabindex="6">
+                                                <option value="" rerender="colourSelect" selected="selected">
+                                                    Colour
+                                                </option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
 
         </div>
             
@@ -134,12 +136,12 @@
             </select>
 
 
-            <!-- save_tick -->
-            <a data-role="button"
-               id="newRouteLog_save_tick" data-corners="true" data-icon="check" data-iconpos="right"
-               data-mini="false" data-theme="a" tabindex="8">
-                Save Tick!
-            </a>
+			<!-- save_tick -->
+			<a data-role="button"
+			   id="newRouteLog_save_tick" data-corners="true" data-icon="check" data-iconpos="right"
+			   data-mini="false" data-theme="a" tabindex="8" style="height: 60px">
+				Save Tick!
+			</a>
 
             <div id="newRouteLog_routeLogContainer" style="margin: 0px 0px 0px 0px; padding: 0px 0px 0px 0px ;" data-role="collapsible-set" data-theme="b" data-content-theme="d">
                 <div data-role="collapsible" data-collapsed="true">

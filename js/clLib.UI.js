@@ -432,11 +432,11 @@ clLib.UI.showUIElement = function($element) {
 * The "refresh.clLib" event can (and should) be used to re-populate such elements using the defined "refreshHandler" function.
 *
 */
-clLib.UI.fillUIelements = function(pageName, currentJqmSlide) {
+clLib.UI.fillUIelements = function(pageName, currentJqmSlide, layout) {
     localStorage.setItem("currentJqmSlide", currentJqmSlide);
 		
 	// no special layout to apply? use default layout..
-	var layout = localStorage.getItem("currentLayout") || "default";
+	var layout = layout || localStorage.getItem("currentLayout") || "default";
 
 	clLib.loggi("populating UI elements for page >" + pageName + "< and layout >" + layout + "<", 2);
 
@@ -495,7 +495,7 @@ clLib.UI.fillUIelements = function(pageName, currentJqmSlide) {
 	});
 
 	// populate autoload elements
-	$.each(clLib.UI.autoLoad[pageName], function(idx, elementName) {
+	$.each(clLib.UI.autoLoad[pageName][layout], function(idx, elementName) {
 		clLib.loggi("triggering autoload for " + elementName, 2);
 		clLib.loggi("html:" + clLib.UI.byId$(elementName).html(), 2);
 		var optionObj = {};
@@ -651,6 +651,7 @@ clLib.UI.defaultRefreshHandler = function($element, additionalSelectBoxOptions) 
 	var elementConfig = clLib.UI.elements[clLib.UI.elementNameFromId($element.attr("id"))];
 
 	var dependingPageElements = elementConfig["dependingOn"][currentLayout] || elementConfig["dependingOn"]["default"];
+	//alert($element.attr("id") + "depends on " + JSON.stringify(dependingPageElements)); 
 	var resultColName = elementConfig["dbField"];
 
 	var results = clLib.UI.defaultEntitySearch(resultColName, dependingPageElements, true); //, additionalWhere);
@@ -680,7 +681,10 @@ clLib.UI.defaultEntitySearch = function(resultColName, dependentPageElements, di
 	$.each(dependentPageElements, function(idx, elementName) {
 		var elementConfig = clLib.UI.elements[elementName];
 		//alert("eaching " + idx + "," + elementName + "=>" + elementConfig["dbField"] + " to " + clLib.UI.getVal(elementName));
-		baseWhere[elementConfig["dbField"]] = clLib.UI.getVal(elementName);
+		var aValue = clLib.UI.getVal(elementName);
+		if(aValue) {
+			baseWhere[elementConfig["dbField"]] = aValue;
+		}
 	});
 	//alert("basewhere1 = " + JSON.stringify(baseWhere));
 	if(additionalWhereObj) {
