@@ -7,6 +7,30 @@
 	font-size: 10pt;
 }
 
+label.clUIElement{
+	font-size: 8px;
+	visibility: hidden;
+	height: 0px;
+	width: 0px;
+}
+
+label.rated, label.unrated {
+	visibility: visible;
+	height:20px;
+}
+textarea.ui-input-text { height: inherit; }
+
+/* set text area to height of 30 px */
+.ui-page .ui-content textarea.ui-input-text {
+	height : 20px;
+}​
+input.ui-input-text, textarea.ui-input-text {
+	min-height: 20px;
+	height: 20px;
+	line-height: 15px;
+	margin-top: 0px;
+}
+
 /*
 .ratingSelect {
 	border: 0px solid red;

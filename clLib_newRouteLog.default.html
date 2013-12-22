@@ -59,17 +59,6 @@
                 </a>
             </div>
 
-			<style>
-				label {
-					visibility: hidden;
-					height: 0px;
-				}
-				label.rated, label.unrated {
-					visibility: visible;
-					height:20px;
-				}
-				textarea.ui-input-text { height: inherit; }
-			</style>
             <div id="newRouteLog_mobilecontainer1" data-role="content"
                  data-theme="">
                 <div style="afloat:left">
@@ -115,7 +104,7 @@
                                     <div>
                                         <!-- ticktypes -->
                                         <div>
-                                            <label style="font-size: 8px" for="newRouteLog_tickType">TickType</label>
+                                            <label class="clUIElement" for="newRouteLog_tickType">TickType</label>
                                             <select id="newRouteLog_tickType" name="newRouteLog_tickType" data-theme="a"
                                                     data-inline="false" data-mini="false" data-icon="arrow-d" data-iconpos="right" data-native-menu="true"
                                                     tabindex="3">
@@ -130,7 +119,7 @@
                                     <div>
                                         <!-- colourSelect -->
                                         <div style="margin-top: 0px; padding-top: 0px;">
-                                            <label style="font-size: 8px" for="newRouteLog_colourSelect">Colour</label>
+                                            <label class="clUIElement" for="newRouteLog_colourSelect">Colour</label>
                                             <select id="newRouteLog_colourSelect" name="newRouteLog_colourSelect" data-theme="a"
                                                     data-inline="false" data-mini="false" data-icon="arrow-d" data-iconpos="right" data-native-menu="false"
                                                     tabindex="6">
@@ -153,7 +142,7 @@
                         <tr>
                             <td colspan="1" rowspan="1">
                                 <!-- sectorSelect -->
-                                <label style="font-size: 8px;" class="select" for="newRouteLog_sectorSelect">Sector</label>
+                                <label class="clUIElement select" for="newRouteLog_sectorSelect">Sector</label>
                                 <select id="newRouteLog_sectorSelect" name="newRouteLog_sectorSelect"  data-theme="a" data-inline="false"
                                         data-mini="false" data-icon="arrow-d" data-iconpos="right" data-native-menu="true"
                                         tabindex="5">
@@ -164,7 +153,7 @@
                             </td>
                             <td>
                                 <!-- lineSelect -->
-                                <label style="font-size: 8px;" class="select" for="newRouteLog_lineSelect">Line</label>
+                                <label class="clUIElement select" for="newRouteLog_lineSelect">Line</label>
                                 <select id="newRouteLog_lineSelect" name="newRouteLog_lineSelect" data-theme="a" data-inline="false"
                                         data-mini="false" data-icon="arrow-d" data-iconpos="right" data-native-menu="true"
                                         tabindex="5">
@@ -178,7 +167,7 @@
                 </div>
                 <div>
                     <!-- characterSelect -->
-                    <label style="font-size: 8px;" class="select" for="newRouteLog_characterSelect">Character</label>
+                    <label class="clUIElement select" for="newRouteLog_characterSelect">Character</label>
                     <select id="newRouteLog_characterSelect" name="newRouteLog_characterSelect" data-theme="a"
                             data-icon="arrow-d" data-iconpos="right" data-native-menu="false"
                             tabindex="6">
@@ -189,7 +178,7 @@
 
                     <!-- searchRoute -->
                     <div>
-                        <label style="font-size: 8px;" for="newRouteLog_searchRoute">Route Name</label>
+                        <label class="clUIElement" for="newRouteLog_searchRoute">Route Name</label>
                         <input type="search" id="newRouteLog_searchRoute" name="newRouteLog_searchRoute"
                                value="" placeholder="Search Route Name" data-theme="a" tabindex="7" />
                     </div>
@@ -214,26 +203,14 @@
 						<tr>
 							<td>
 								<!-- commentText -->
-								<!--<label style="font-size: 8px;" for="newRouteLog_commentText">Comment</label>-->
-								<style>
-								/* set text area to height of 30 px */
-								.ui-page .ui-content textarea.ui-input-text {
-									height : 20px;
-								}​
-								input.ui-input-text, textarea.ui-input-text {
-									min-height: 20px;
-									height: 20px;
-									line-height: 15px;
-									margin-top: 0px;
-								}
-								</style>
+								<label class="clUIElement" for="newRouteLog_commentText">Comment</label>
 								<textarea style="resize: none; height: 30px" id="newRouteLog_commentText" name="newRouteLog_commentText" tabindex="9" placeholder="comments?"></textarea>
 							</td>
 							<td style="text-align: center; vertical-align: top; border: 0px solid blue;">
 								<!-- rating widget
 								2DO: autosize acc. to parent div..
 								-->
-								<!--<label style="font-size: 8px;" for="newRouteLog_rating">Rating</label>-->
+								<!--<label class="clUIElement" for="newRouteLog_rating">Rating</label>-->
 								<div style="border: 0px solid red" data-role="none" id="newRouteLog_ratingSelectWrapper">
 									<!-- rating goes here.. -->
 								</div>
@@ -245,7 +222,7 @@
                     <!-- save_tick -->
                     <a data-role="button"
                        id="newRouteLog_save_tick" data-corners="true" data-icon="check" data-iconpos="right"
-                       data-mini="false" data-theme="a" tabindex="8" style="height: 60px">
+                       data-mini="false" data-theme="a" tabindex="8" style="height: 60px; line-height: 40px;">
                         Save Tick!
                     </a>
                 </div>

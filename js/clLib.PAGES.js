@@ -6,7 +6,7 @@ clLib.PAGES = {};
 *	Remove local storage items no longer used:
 +	- currentLayout
 */
-localStorage.setItem("currentLayout", null);
+localStorage.removeItem("currentLayout");
 
 
 clLib.UI.preloadImages([
@@ -114,7 +114,7 @@ if (!String.prototype.endsWith) {
 	                setTimeout(function () {
 	                    //	            alert("loading page2..");
 	                    var currentLayout = localStorage.getItem("currentLayout") || localStorage.getItem("defaultLayout") || "default";
-						//alert("navigating to " + localStorage.getItem("currentLayout") + "," + localStorage.getItem("defaultLayout"));
+						clLib.loggi("navigating to " + localStorage.getItem("currentLayout") + "," + localStorage.getItem("defaultLayout")+ "=>" + currentLayout);
 	                    var newRouteLogURL = "clLib_newRouteLog." + currentLayout + ".html";
 
 	                    $.mobile.navigate(newRouteLogURL);
@@ -137,7 +137,7 @@ if (!String.prototype.endsWith) {
 	}
 	, "newRouteLog": {
 	    "init": function () {
-
+			//alert("init!");
 	        clLib.UI.buildRatingRadio($("#newRouteLog_ratingSelectWrapper"));
 	        $("#newRouteLog_layoutSelect").val(localStorage.getItem("currentLayout"));
 	        $("#newRouteLog_layoutSelect").selectmenu("refresh");
@@ -165,7 +165,8 @@ if (!String.prototype.endsWith) {
 	        clLib.UI.fillUIelements("newRouteLog", "newRouteLog", localStorage.getItem("defaultLayout"));
 	    }
         , "show": function () {
-
+			//alert("show!");
+	        localStorage.setItem("currentJqmSlide", "newRouteLog");
         }
 	}
 	,"users": {

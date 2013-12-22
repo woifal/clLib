@@ -38,6 +38,7 @@ clLib.UI.autoLoad = {
 		],
 		reduced: [
 			"gradeTypeSelect",
+			"ratingSelect",
 			"tickType",
 			"colourSelect",
 			"characterSelect",
@@ -75,7 +76,8 @@ clLib.UI.elementsToReset = {
 		"ratingSelect",
 		"searchRouteResults",
 		"searchRoute",
-		"routeLogContainer"
+		"routeLogContainer",
+		"characterSelect"
 	]
 	, startScreen : []
     , preferences: [
@@ -114,6 +116,7 @@ clLib.UI.pageElements = {
             , "gradeTypeSelect"
 			, "gradeSelect"
 			, "colourSelect"
+			, "ratingSelect"
 			, "tickType"
 			, "characterSelect"
 			, "selectedArea"

@@ -313,12 +313,18 @@ clLib.UI.defaultChangeHandler = function($element, changeOptions) {
 	$element.data("clLib.currentValue", $element.val());
 	//clLib.loggi($element.attr("id") + " was changed to: >" + $element.data("clLib.currentValue") + "<" + JSON.stringify(changeOptions));
 	var elementConfig = clLib.UI.elements[clLib.UI.elementNameFromId($element.attr("id"))];
+	
+	if(!elementConfig) {
+		alert("no element config for element with id " + $element.attr("id") + " and name " + clLib.UI.elementNameFromId($element.attr("id")) + " found..");
+		alert("currentJqmSlide = " + localStorage.getItem("currentJqmSlide"));
+		
+	}
 	//alert("elementConfig for " + $element.attr("id") + "(" + clLib.UI.elementNameFromId($element.attr("id")) + ") is " + JSON.stringify(elementConfig));
 	
 	//
 	// consider currently chosen layout from now on..
 	//
-	var currentLayout = localStorage.getItem("currentLayout");
+	var currentLayout = localStorage.getItem("currentLayout") || localStorage.getItem("defaultLayout") || "default";
 	clLib.loggi("current layout is >" +  currentLayout  + "<");
 	var refreshTargets = elementConfig["refreshOnUpdate"];
 	//alert("getting dependent " + JSON.stringify(refreshTargets));
