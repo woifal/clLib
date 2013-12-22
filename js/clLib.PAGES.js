@@ -1,6 +1,14 @@
 "use strict";
 clLib.PAGES = {};
 
+
+/*
+*	Remove local storage items no longer used:
++	- currentLayout
+*/
+localStorage.setItem("currentLayout", null);
+
+
 clLib.UI.preloadImages([
     "files/views/assets/image/star_rated.png"
     , "files/views/assets/image/star_unrated.png"
@@ -106,6 +114,7 @@ if (!String.prototype.endsWith) {
 	                setTimeout(function () {
 	                    //	            alert("loading page2..");
 	                    var currentLayout = localStorage.getItem("currentLayout") || localStorage.getItem("defaultLayout") || "default";
+						//alert("navigating to " + localStorage.getItem("currentLayout") + "," + localStorage.getItem("defaultLayout"));
 	                    var newRouteLogURL = "clLib_newRouteLog." + currentLayout + ".html";
 
 	                    $.mobile.navigate(newRouteLogURL);
