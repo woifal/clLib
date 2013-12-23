@@ -73,22 +73,6 @@ clLib.PAGES.handlers = {
 			var prevId = $prevElement.attr("id");
 			clLib.loggi("showing page!(prev:" + prevTag + " #" + prevId + ")");
 			
-			
-if (!String.prototype.endsWith) {
-	Object.defineProperty(String.prototype, 'endsWith', {
-        enumerable: false,
-        configurable: false,
-        writable: false,
-        value: function (searchString, position) {
-            position = position || this.length;
-            position = position - searchString.length;
-            var lastIndex = this.lastIndexOf(searchString);
-            return lastIndex !== -1 && lastIndex === position;
-        }
-    });
-}
-			
-			
 			if (!prevId || !prevId.endsWith("-dialog")) {
 				clLib.UI.fillUIelements("preferences", "preferences");
 			}
@@ -129,6 +113,9 @@ if (!String.prototype.endsWith) {
 	        setTimeout(function () { clLib.UI.showLoading("Ready!");  setTimeout(function() { clLib.UI.hideLoading(); }, 500) }, 5);
 	        
 
+            $("#startScreen_usersButton").on("click", function () {
+                $.mobile.navigate("clLib_users.html");
+            });
 	    }
         , "show" : function() {
             // Fill UI elements..
@@ -177,13 +164,16 @@ if (!String.prototype.endsWith) {
 
 	            setTimeout(function () {
 	                clLib.UI.save(null, null, null, { action: "login" });
+	                clLib.UI.fillUIelements("users", "users");
+
 	                setTimeout(function () { clLib.UI.hideLoading(); }, 1500);
 	            });
 	        });
 	        $("#users_logoutButton").on("click", function () {
 	            setTimeout(function () { clLib.UI.showLoading("logging out..."); }, 1);
 	            setTimeout(function () {
-	                localStorage.removeItem("sessionToken");
+	                clLib.UI.save(null, null, null, { action: "logout" });
+	                clLib.UI.fillUIelements("users", "users");
 	                setTimeout(function () { clLib.UI.hideLoading(); }, 1500);
 	            });
 	        });
@@ -192,6 +182,7 @@ if (!String.prototype.endsWith) {
 
 	            setTimeout(function () {
 	                clLib.UI.save(null, null, null, { action: "create" });
+	                clLib.UI.fillUIelements("users", "users");
 	                setTimeout(function () { clLib.UI.hideLoading(); }, 1500);
 	            });
 	        });

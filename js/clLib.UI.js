@@ -823,7 +823,7 @@ clLib.UI.userHandler = function (currentJqmSlide, currentLayout, successHandler,
     });    
     //alert("saveObj is " + JSON.stringify(saveObj));
     try {
-        var returnObj;
+        var returnObj = {};
         var userAction = additionalData["action"];
 
         if (userAction == "create") {
@@ -832,16 +832,26 @@ clLib.UI.userHandler = function (currentJqmSlide, currentLayout, successHandler,
         else if (userAction == "login") {
             returnObj = clLib.REST.loginUser("users", saveObj, "users");
         }
+        else if (userAction == "logout") {
+			localStorage.removeItem("currentPassword");
+			clLib.sessionToken = null;
+			returnObj["sessionToken"] = null;
+        
+		}
         else {
             alert("unknown operation >" + userAction + "< - don't know what to do for user..");
         }
+		
+		// Clear any "old" error messages 
+		localStorage.removeItem("loginError");
+
         var sessionToken = returnObj["sessionToken"];
         //alert("retrieved sessionToken >" + sessionToken + "<");
         clLib.sessionToken = sessionToken;
     } catch (e) {
-        //alert("could not create user due to:" + e.name + " + (" + e.message + ")");
-        alert("could not login user: " + JSON.parse(JSON.parse(e.message)["responseText"])["description"]);
-
+		// could not login - alert error and return false
+        clLib.sessionToken = null;
+		localStorage.setItem("loginError", "Could not login user: " + JSON.parse(JSON.parse(e.message)["responseText"])["description"]);
     }
 
 
@@ -995,6 +1005,9 @@ clLib.UI.elementConfig.localVar = {
             $this.val(localVarValue);
 			$this.selectmenu("refresh");
 		}	
+		else if($this.prop("tagName") == "SPAN") {
+			$this.html(localVarValue);
+		}		
 		else {
 			//alert($this.attr("id") + " is not a button >" + jqmDataRole + "< - setting txt to " + localVarValue);
             $this.val(localVarValue);
@@ -1011,10 +1024,22 @@ clLib.prefsCompleteCheck = function () {
         prefsComplete = true;
     }
     if (!prefsComplete) {
-        alert("Specify local settings first!");
-        $.mobile.navigate("clLib_preferences.html");
+        $.mobile.navigate("clLib_users.html");
     }
     return prefsComplete;
 
 };
 
+clLib.tryLogin = function() {
+	// offline? no need to try to login..
+	if(!clLib.isOnline()) {
+		return false;
+	}
+	var loggedIn = clLib.loggedInCheck();
+	//alert("loggedin: " + loggedIn);
+    if (!loggedIn) {
+		$.mobile.navigate("clLib_users.html");
+    }
+
+	return loggedIn;
+};

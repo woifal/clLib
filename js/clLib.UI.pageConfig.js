@@ -12,10 +12,10 @@ clLib.UI.cssBackgrounds = {
 
 
 clLib.UI.pageRequisites = {
-    "startScreen": [clLib.prefsCompleteCheck, /*clLib.loggedInCheck, */ clLib.wasOnlineCheck]
+    "startScreen": [clLib.prefsCompleteCheck, clLib.tryLogin, clLib.wasOnlineCheck]
     , "preferences": []
-    , "newRouteLog": [clLib.prefsCompleteCheck, /*clLib.loggedInCheck, */ clLib.wasOnlineCheck]
-    , "users": []
+    , "newRouteLog": [clLib.prefsCompleteCheck, clLib.tryLogin, clLib.wasOnlineCheck]
+    , "users": [clLib.tryLogin]
 };
 
 
@@ -47,7 +47,8 @@ clLib.UI.autoLoad = {
 	}
 	,startScreen: {
 		default: [
-			"areaSelect"
+			"areaSelect",
+			"currentUserReadOnly"
 		]
 	}
 	,preferences : {
@@ -58,12 +59,14 @@ clLib.UI.autoLoad = {
 			, "defaultLayout"
 			, "defaultGradeType"
 			, "defaultGrade"
+			, "onlineMode"
 		]
 	}
     ,users : {
 		default: [
 			"currentUser",
-			"currentPassword"
+			"currentPassword",
+			"loginError"
 		]
 	}
 };
@@ -81,12 +84,17 @@ clLib.UI.elementsToReset = {
 	]
 	, startScreen : []
     , preferences: [
-		"currentUser"
+		"currentUserReadOnly"
 		, "buddiesStr"
         , "showTopX"
         , "defaultLayout"
         , "defaultGradeType"
         , "defaultGrade"
+    	]
+    , users: [
+		"currentUser"
+		, "currentPassword"
+        , "loginError"
     	]
 
 };
@@ -128,7 +136,8 @@ clLib.UI.pageElements = {
 	,startScreen: {
 	    default: [
 			"areaSelect",
-			"selectedArea"
+			"selectedArea",
+			"currentUserReadOnly"
 	    ]
 	}
     , preferences: {
@@ -146,6 +155,7 @@ clLib.UI.pageElements = {
         default: [
 			"currentUser"
 			,"currentPassword"
+			,"loginError"
         ]
     }
 };
@@ -171,6 +181,37 @@ clLib.UI.elements = {
         ,*/
 		"dbField": "password"
     }, clLib.UI.elementConfig.localVarSaveImmediately)
+    , "loginError": $.extend({}, clLib.UI.elementConfig.localVar, {
+	    "refreshHandler": function ($this) {
+			//alert("hiding " + "#" + $this.attr("id") + "Container");
+			$("#" + $this.attr("id") + "Container").hide();
+			var elementName = clLib.UI.elementNameFromId($this.attr("id"));
+			var localVarValue = localStorage.getItem(elementName);
+			if(localVarValue) {
+				//alert("yes, value; " + localVarValue);
+				$("#" + $this.attr("id") + "Container").show();
+				//alert("AAAA setting element " + elementName + " to " + localStorage.getItem(elementName));
+				//$this.val(localVarValue).attr('selected', true).siblings('option').removeAttr('selected');
+				//$this.selectmenu("refresh", true);
+				var jqmDataRole = $this.attr("data-role");
+				if (jqmDataRole == "button") {
+					alert("button - " + $this.attr("id") + " setting txt to " + localVarValue);
+					$this.text(localVarValue);
+		//            $this.find(".ui-btn-text").text(localVarValue);
+					$this.button("refresh");
+				} 
+				else if($this.prop("tagName") == "SPAN") {
+					$this.html(localVarValue);
+				}		
+				else {
+					$this.val(localVarValue);
+				}
+				//alert("set value to " + localVarValue);
+			}
+		}
+        ,
+		"dbField": "loginError"
+    })
     , "buddiesStr": clLib.UI.elementConfig.localVar
     , "showTopX":       clLib.UI.elementConfig.localVar
     , "onlineMode":     clLib.UI.elementConfig.localVar

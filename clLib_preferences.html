@@ -27,18 +27,18 @@
 
     <div 
          id="preferences" data-role="page" 
-         style="min-height:480px; max-width:600px;" 
-         data-theme="a" data-add-back-btn="false"
+         class="clPage"
+		 data-theme="a" data-add-back-btn="false"
     >
         <div id="preferences_mobileHeader1" data-role="header"
-             data-position="fixed" data-theme="a"
+             adata-position="fixed" data-theme="a"
         >
 <!--            <a href="clLib_startScreen.html">Home</a>-->
             <a id="preferences_cancelButton"  data-icon="delete" data-role="button" rel="external">Cancel</a> 
             <a id="preferences_saveButton"  data-icon="check" data-role="button" rel="external">Save</a> 
             <h1>
                 Preferences
-				<img id="header_onlineIcon" src="files/views/assets/image/online.jpg" style="width:20px; height:20px"/>
+				<!--<img id="header_onlineIcon" src="files/views/assets/image/online.jpg" style="width:20px; height:20px"/>-->
             </h1>
         </div>
         <!-- mobilecontainer -->
@@ -81,8 +81,8 @@
             <select id="preferences_onlineMode" name="onlineMode"
                     data-theme="a" data-inline="false" data-mini="false" data-icon="arrow-d" data-iconpos="right"
                     data-native-menu="false" tabindex="4">
-                <option value="yes">yes</option>
-                <option value="no">no</option>
+                <option value="true">true</option>
+                <option value="false">false</option>
             </select>
 		</div>
 	</div>

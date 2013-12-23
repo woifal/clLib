@@ -484,20 +484,29 @@ clLib.login = function() {
 	var sessionToken = returnObj["sessionToken"];
 	//alert("retrieved sessionToken >" + sessionToken + "<");
 	clLib.sessionToken = sessionToken;
+	// Clear any "old" error messages 
+	localStorage.removeItem("loginError");
 };
 
 clLib.isOnline = function() {
-	var onlineMode = localStorage.getItem("onlineMode");
-	clLib.loggi("currentlyOnline? >" + onlineMode);
-	if(!(onlineMode == 0)) {
+	var onlineMode = "" + localStorage.getItem("onlineMode");
+	onlineMode = onlineMode == "true";
+	//alert("currentlyOnline? >" + onlineMode);
+	if(onlineMode) {
+		//alert("yes, fuck you true!!!");
 	    onlineMode = navigator.onLine;
-	} else {
-		onlineMode = false;
 	}
 	
-	$("#header_onlineIcon").attr("src", 
-		onlineMode ? "files/views/assets/image/online.jpg" : "files/views/assets/image/offline.jpg"
-	);
+	//alert("onlineMode >" + onlineMode + "<");
+	var iconSrc = "";
+	if(onlineMode){
+		iconSrc = "files/views/assets/image/online.jpg";
+	} else {
+		iconSrc = "files/views/assets/image/offline.jpg";
+	}
+	//alert("src is " + iconSrc);
+	$("#header_onlineIcon").attr("src", iconSrc); 
+
 	return onlineMode;
 };
 
@@ -518,7 +527,8 @@ clLib.loggedInCheck = function () {
 		return true;
 	} catch (e) {
 		// could not login - alert error and return false
-        alert("could not login user: " + JSON.parse(JSON.parse(e.message)["responseText"])["description"]);
+        clLib.sessionToken = null;
+		localStorage.setItem("loginError", "Could not login user: " + JSON.parse(JSON.parse(e.message)["responseText"])["description"]);
 		return false;
 	}
 
@@ -538,6 +548,24 @@ clLib.wasOnlineCheck = function () {
 		$.mobile.navigate("clLib_startScreen.html");
 	}
 };
+
+//
+// Polyfill for "String.endsWith()" function
+//
+if (!String.prototype.endsWith) {
+	Object.defineProperty(String.prototype, 'endsWith', {
+        enumerable: false,
+        configurable: false,
+        writable: false,
+        value: function (searchString, position) {
+            position = position || this.length;
+            position = position - searchString.length;
+            var lastIndex = this.lastIndexOf(searchString);
+            return lastIndex !== -1 && lastIndex === position;
+        }
+    });
+}
+
 
 
 //})(jQuery)

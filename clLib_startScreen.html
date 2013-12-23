@@ -35,14 +35,14 @@
 
     <div 
          id="startScreen" data-role="page" 
-         style="min-height:480px; max-width:600px;" class="type-interior"
-         data-theme="a" data-add-back-btn="true" data-back-btn-text="Back"
+         class="clPage"
+         data-theme="a" data-add-back-btn="false"
     >
 
 
         <div 
              id="startScreen_mobileheader1" data-role="header" 
-             data-position="fixed" data-theme="a"
+             data-theme="a"
         >
             <h1>
                 StartScreen
@@ -70,14 +70,20 @@
              id="startScreen_mobilecontainer1" data-role="content" 
              data-theme=""
         >
+			<div>
+				<a id="startScreen_usersButton" data-theme="b" data-role="button" data-iconpos="right" data-icon="gear">
+					Hello, <span data-role="none" id="startScreen_currentUserReadOnly">user</span>!
+				</a>
+			</div>
+
             <!-- Add new route.. -->
             <div style="text-align: center">
                 <a id="addRouteButton" href="#"><img src="files/views/assets/image/add_button.png" /></a>
             </div>
 
             <!-- Area -->
-            <label for="areaSelect">Current area:</label>
-            <select id="startScreen_areaSelect" name="areaSelect" data-theme="a" tabindex="4">
+            <label style="text-align: center" for="startScreen_areaSelect">Current area:</label>
+            <select id="startScreen_areaSelect" name="startScreen_areaSelect" data-theme="a" tabindex="4">
                 <!-- Areas go here.. -->
             </select>
 

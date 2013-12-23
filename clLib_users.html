@@ -33,17 +33,25 @@
 
 <body> 
         <div id="users" data-role="page"
-             class="type-interior"
-             data-theme="a"
-             style="min-height:480px; max-width:320px;">
+			class="clPage"
+			data-theme="a" data-add-back-btn="false"
+		>
             <div id="users_mobileheader1" data-role="header"
-                 data-position="fixed" data-theme="a"
+                 adata-position="fixed" data-theme="a"
             >
                 <a href="clLib_startScreen.html">Home</a>
                 <h1>
                     Users
-					<img id="header_onlineIcon" src="files/views/assets/image/online.jpg" style="width:20px; height:20px"/>
+					<!--<img id="header_onlineIcon" src="files/views/assets/image/online.jpg" style="width:20px; height:20px"/>-->
                 </h1>
+				<!-- preferencesButton -->
+				<a class='ui-btn-right'
+				   style='min-height:20px; ' id="users_preferencesButton" data-corners="true"
+				   data-icon="gear" data-inline='true'
+				   data-mini='true' data-theme="a" tabindex="11">
+					Settings
+				</a>
+
             </div>
 
 
@@ -52,6 +60,12 @@
 				<!-- Floating element for landscape orientation.. -->
                 <!--<div style="afloat:left">-->
 
+<div id="users_loginErrorContainer" style="white-space: normal" data-role="collapsible" data-collapsed="true" data-content-theme="b" data-theme="c" data-iconpos="right" adata-expanded-icon="alert" adata-collapsed-icon="alert">
+    <h4 style="white-space: normal" ><span style="white-space: normal" id="users_loginError">Not logged in.</span></h4>
+	<p>1) You can proceed with the app by simply providing a (currently unauthenticated) username below and setting online mode to "false" on the <a href="clLib_preferences.html">general preferences</a> - but your routes will be saved locally and will only by synced to the server after you successfully log in.</p>
+	<p>2) Provide a valid username and password and login</p>
+	<p>3) Create a new user</p>
+</div>
 
                 <div>
                     <!-- userName -->
