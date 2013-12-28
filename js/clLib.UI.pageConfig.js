@@ -47,16 +47,18 @@ clLib.UI.autoLoad = {
 	}
 	,startScreen: {
 		default: [
-			"areaSelect",
-			"currentUserReadOnly"
-		]
+			"areaSelect"
+			, "currentUserReadOnly"
+			, "defaultLayout"
+
+			]
 	}
 	,preferences : {
 		default: [
 			"currentUserReadOnly"
 			, "buddiesStr"
 			, "showTopX"
-			, "defaultLayout"
+//			, "defaultLayout"
 			, "defaultGradeType"
 			, "defaultGrade"
 			, "onlineMode"
@@ -82,12 +84,14 @@ clLib.UI.elementsToReset = {
 		"routeLogContainer",
 		"characterSelect"
 	]
-	, startScreen : []
+	, startScreen : [
+		"defaultLayout"
+	]
     , preferences: [
 		"currentUserReadOnly"
 		, "buddiesStr"
         , "showTopX"
-        , "defaultLayout"
+//        , "defaultLayout"
         , "defaultGradeType"
         , "defaultGrade"
     	]
@@ -135,9 +139,10 @@ clLib.UI.pageElements = {
 	}
 	,startScreen: {
 	    default: [
-			"areaSelect",
-			"selectedArea",
-			"currentUserReadOnly"
+			"areaSelect"
+			, "selectedArea",
+			, "currentUserReadOnly"
+			, "defaultLayout"
 	    ]
 	}
     , preferences: {
@@ -145,7 +150,7 @@ clLib.UI.pageElements = {
 			"currentUserReadOnly"
 			, "buddiesStr"
             , "showTopX"
-            , "defaultLayout"
+//            , "defaultLayout"
             , "defaultGradeType"
             , "defaultGrade"
             , "onlineMode"
@@ -215,7 +220,7 @@ clLib.UI.elements = {
     , "buddiesStr": clLib.UI.elementConfig.localVar
     , "showTopX":       clLib.UI.elementConfig.localVar
     , "onlineMode":     clLib.UI.elementConfig.localVar
-    , "defaultLayout":  clLib.UI.elementConfig.localVar
+    , "defaultLayout":  clLib.UI.elementConfig.localVarSaveImmediately
 /*        "changeHandler": function ($this, changeOptions) {
             var elementName = clLib.UI.elementNameFromId($this.attr("id"));
             var localVarValue = $this.val();
