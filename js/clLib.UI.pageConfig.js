@@ -385,6 +385,9 @@ clLib.UI.elements = {
 		    default: [
 				"gradeTypeSelect", "gradeSelect", "selectedArea", "sectorSelect", "colourSelect"
 		    ]
+			, reduced: [
+				"selectedArea"
+			]
 		}
 		,"refreshHandler" : function($this) { 
 		    clLib.UI.defaultRefreshHandler($this, { preserveCurrentValue: false });

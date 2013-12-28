@@ -653,7 +653,7 @@ clLib.UI.elementNameFromId = function(id) {
 
 clLib.UI.defaultRefreshHandler = function($element, additionalSelectBoxOptions) {
 	//alert("refreshing " + $element.attr("id"));
-	var currentLayout = localStorage.getItem("currentLayout") || "default";
+	var currentLayout = localStorage.getItem("currentLayout") || localStorage.getItem("defaultLayout") || "default";
 	var elementConfig = clLib.UI.elements[clLib.UI.elementNameFromId($element.attr("id"))];
 
 	var dependingPageElements = elementConfig["dependingOn"][currentLayout] || elementConfig["dependingOn"]["default"];
