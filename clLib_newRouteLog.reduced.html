@@ -144,20 +144,26 @@
             
 
 			<div>
+				<!-- characterSelect -->
+				<label class="clUIElement select" for="newRouteLog_characterSelect">Character</label>
+				<select id="newRouteLog_characterSelect" name="newRouteLog_characterSelect" data-theme="a"
+						data-icon="arrow-d" data-iconpos="right" data-native-menu="false"
+						tabindex="6">
+					<option value="" rerender="characterSelect" selected="selected">
+						character
+					</option>
+				</select>
+			</div>
+
+			<div>
 				<table style="width: 100%;" cellpadding="0" cellspacing="0">
 					<col style="width:60%;" />
 					<col style="width:40%;" />
 					<tr>
 						<td>
-							<!-- characterSelect -->
-							<label class="clUIElement select" for="newRouteLog_characterSelect">Character</label>
-							<select id="newRouteLog_characterSelect" name="newRouteLog_characterSelect" data-theme="a"
-									data-icon="arrow-d" data-iconpos="right" data-native-menu="false"
-									tabindex="6">
-								<option value="" rerender="characterSelect" selected="selected">
-									character
-								</option>
-							</select>
+							<!-- commentText -->
+							<label class="clUIElement" for="newRouteLog_commentText">Comment</label>
+							<textarea style="resize: none; height: 30px" id="newRouteLog_commentText" name="newRouteLog_commentText" tabindex="9" placeholder="comments?"></textarea>
 						</td>
 						<td style="text-align: center; vertical-align: top; border: 0px solid blue;">
 							<!-- rating widget
@@ -171,7 +177,6 @@
 					</tr>
 				</table>
 			</div>
-
 			
 			<div>
 				<!-- save_tick -->

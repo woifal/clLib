@@ -131,6 +131,7 @@ clLib.UI.pageElements = {
 			, "ratingSelect"
 			, "tickType"
 			, "characterSelect"
+			, "commentText"
 			, "selectedArea"
 			, "currentUserPref"
 			, "currentDate"
