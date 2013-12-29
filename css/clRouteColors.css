@@ -64,14 +64,14 @@ div.clCSSBgIconOnly {
     background-position: 0px 0px;
     padding-left: 0px; /*8%;*/
 	/*background-image: none;*/
-    background-image: URL('http://www.herpanierer.com/templates/herpanierer/clLib/images/white-green-blue.png');
+    background-image: URL('../files/views/assets/image/white-green-blue.png');
 }
 .white-yellow-black {
     background-repeat: no-repeat;
     background-position: 0px 0px;
     padding-left: 0px; /*8%;*/
 	/*background-image: none;*/
-    background-image: URL('http://www.herpanierer.com/templates/herpanierer/clLib/images/white-yellow-black.png');
+    background-image: URL('../files/views/assets/image/white-yellow-black.png');
 }
 .blue {
     background-image: none;
@@ -123,16 +123,6 @@ div.clCSSBgIconOnly {
     background-color: #A901DB;
 }
 
-/*.white/yellow/black{
-    background-image: none;
-    background-color: #ffffff;
-}
-
-.white/green/blue{
-    background-image: none;
-    background-color: #ffffff;
-}
-*/
 .yellow{
     background-image: none;
     background-color: #FFFF00;
