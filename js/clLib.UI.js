@@ -880,7 +880,7 @@ clLib.UI.userHandler = function (currentJqmSlide, currentLayout, successHandler,
 *  _targetId_ is expected to be a select menu rendered by jqm.
 *
 */
-clLib.addCSSBackground = function(targetId) {
+clLib.addCSSBackground = function(targetId, options) {
 	//clLib.loggi("adding CSS bg to " + targetId);
 	var $targetEl = $('#' + targetId);
 	clLib.UI.killEventHandlers($targetEl, "change.clLibCSSBackground");
@@ -912,7 +912,15 @@ clLib.addCSSBackground = function(targetId) {
         entry
             .addClass("clCSSBg")
             .addClass(className);
-    });
+    
+		if(options && options["iconOnly"]) {
+			entry.addClass("clCSSBgIconOnly");
+		}
+	});
+	
+	if(options && options["iconOnly"]) {
+		$targetEl.parents("div.ui-select").addClass("clCSSBgIconOnly");
+	}
     
 	// Set currently selected color in collapsed select menu 
     var last_style; // remembers last color chosen

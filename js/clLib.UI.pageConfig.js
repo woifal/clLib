@@ -570,6 +570,7 @@ clLib.UI.elements = {
 					"Ueberhaengend",
 					"Dach"
 				],
+				selectedValue : "Platte",
 				preserveCurrentValue : true,
 				additionalValue : {
 					text: "Character?",
@@ -579,7 +580,7 @@ clLib.UI.elements = {
 			});
 
 			
-			clLib.addCSSBackground($this.attr("id")); 
+			clLib.addCSSBackground($this.attr("id"), {iconOnly: true}); 
 		}
 		,"setSelectedValueHandler" : function($this, changeOptions) { 
 			clLib.UI.setSelectedValueOnlyHandler($this, changeOptions);

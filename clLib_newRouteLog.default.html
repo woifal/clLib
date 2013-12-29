@@ -165,23 +165,26 @@
                         </tr>
                     </table>
                 </div>
-                <div>
+                <div style="width: 100px">
                     <!-- characterSelect -->
                     <label class="clUIElement select" for="newRouteLog_characterSelect">Character</label>
                     <select id="newRouteLog_characterSelect" name="newRouteLog_characterSelect" data-theme="a"
                             data-icon="arrow-d" data-iconpos="right" data-native-menu="false"
                             tabindex="6">
-                        <option value="" rerender="characterSelect" selected="selected">
+                        <!--<option value="" rerender="characterSelect" selected="selected">
                             character
-                        </option>
+                        </option>-->
                     </select>
-
+				</div>
+				<div>
                     <!-- searchRoute -->
                     <div>
                         <label class="clUIElement" for="newRouteLog_searchRoute">Route Name</label>
                         <input type="search" id="newRouteLog_searchRoute" name="newRouteLog_searchRoute"
                                value="" placeholder="Search Route Name" data-theme="a" tabindex="7" />
                     </div>
+				</div>
+				<div>
                     <!-- searchRouteResults -->
                     <ul data-role="listview" id="newRouteLog_searchRouteResults"
                         data-inset="true" data-theme="d"
