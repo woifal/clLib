@@ -32,13 +32,14 @@ clLib.localStorage.indexExists = function(storageName, indexName) {
 };
 
 
-clLib.localStorage.initStorage = function(storageName, storageObj) {
+clLib.localStorage.initStorage = function(storageObj, storageName) {
+	// Use default storageName if none supplied..
+	storageName = storageName || "defaultStorage";
+	
 	// Delete cache
 	var storageItemsKey = storageName + "_items";
 	
-//	localStorage.removeItem("cache_" + storageItemsKey);
 	delete(storageCache[storageItemsKey]);
-
 
 	//alert("adding elements " + Object.keys(storageObj).length + "->" + JSON.stringify(Object.keys(storageObj)));
 	var allItems = {};
@@ -52,10 +53,10 @@ clLib.localStorage.initStorage = function(storageName, storageObj) {
 		// add UNSYNCED entries to cache	
 		var unsyncedStorage = clLib.localStorage.getStorageItems("UNSYNCED_" + storageName);
 		clLib.loggi("currently unsynced items for entity >" + entityName + "< =>" + JSON.stringify(unsyncedStorage) + "<");
-		if(unsyncedStorage) {
+		if(unsyncedStorage && unsyncedStorage[entityName]) {
 			$.each(unsyncedStorage[entityName], function(dummyId) {
 				var entityInstance = unsyncedStorage[entityName][dummyId];
-				//alert("add to storage items for >" + dummyId + "< bzw. >" + JSON.stringify(entityInstance) + "<");
+				//alert("add to storage items (" + entityName + ") for >" + dummyId + "< bzw. >" + JSON.stringify(entityInstance) + "<");
 				entityItems[entityInstance["_id"]] = entityInstance;
 			});
 		}
@@ -64,8 +65,6 @@ clLib.localStorage.initStorage = function(storageName, storageObj) {
 		allItems[entityName] = entityItems;
 
 	}
-
-
 
 	clLib.loggi("storing items");
 	clLib.localStorage.setStorageItems(storageName, allItems);
@@ -159,7 +158,7 @@ clLib.localStorage.setItem = function(key, value){
 
 
 clLib.localStorage.getStorageItems = function(storageName, reinitCache) {
-	var storageName = storageName || clLib.localStorage.getItem("defaultStorage");
+	var storageName = storageName || "defaultStorage";
 	var storageItemsKey = storageName + "_items";
 	// session cache is good enough?
 	if(
@@ -181,7 +180,7 @@ clLib.localStorage.initCache = function(storageName) {
 
 
 clLib.localStorage.setStorageItems = function(storageName, storageItems) {
-	var storageName = storageName || clLib.localStorage.getItem("defaultStorage");
+	var storageName = storageName || "defaultStorage";
 	var storageItemsKey = storageName + "_items";
 	clLib.localStorage.setItem(storageItemsKey, tojson(storageItems));
 	clLib.localStorage.setLastRefreshDate(storageName);
@@ -232,7 +231,7 @@ clLib.localStorage.removeStorageItem = function(storageName, entity, id2delete) 
 
 
 clLib.localStorage.getStorageIndexes = function(storageName, entityName) {
-	var storageName = storageName || clLib.localStorage.getItem("defaultStorage");
+	var storageName = storageName || "defaultStorage";
 	var indexItemsKey = storageName + "_index_" + entityName;
 	
 	if(!storageCache[indexItemsKey]) {
@@ -258,7 +257,7 @@ clLib.localStorage.setLastRefreshDate = function (storageName) {
 
 
 clLib.localStorage.setStorageIndexes = function(storageName, entityName, indexItems) {
-	var storageName = storageName || clLib.localStorage.getItem("defaultStorage");
+	var storageName = storageName || "defaultStorage";
 	var indexItemsKey = storageName + "_index_" + entityName;
 	
 	clLib.localStorage.setItem(indexItemsKey, tojson(indexItems)); 
@@ -466,7 +465,7 @@ clLib.localStorage.getEntities = function(entity, whereObj, storageName, sortKey
 	}
 */
 	var remainingIdsToQuery = Object.keys(storage[entity]);
-	
+	//clLib.loggi("storage Keys:" + JSON.stringify(remainingIdsToQuery));
 	$.each(remainingIdsToQuery, function(index, id) {
 		//clLib.loggi("remainigni items!!");
 		var currentItem = storage[entity][id];
@@ -578,7 +577,7 @@ clLib.localStorage.getDistinct = function(entity, whereObj, colName, storageName
 		//alert("no local data available for " + storageName + "[" + entity + "]=> you need to refresh first.");
 		return {};
 	} else {
-		//alert("entity storage: " + JSON.stringify(storage));
+		//alert("entity (" + entity + "," + colName + ") storage: " + JSON.stringify(storage[entity]));
 		
 	}
 
@@ -592,7 +591,7 @@ clLib.localStorage.getDistinct = function(entity, whereObj, colName, storageName
 		}
 */		
 		var currentItem = storage[entity][id];
-		//clLib.loggi("iterating id(" + index + ") " + id + " item " + JSON.stringify(currentItem));
+		clLib.loggi("iterating id(" + index + ") " + id + " item " + JSON.stringify(currentItem));
 		
 		var eligible = true;
 		
@@ -711,19 +710,31 @@ clLib.localStorage.refreshAllData = function () {
     if (clLib.loggedInCheck()) {
         clLib.UI.showLoading("refreshing from server..");
 
-        //alert("previous refresh:" +clLib.localStorage.getLastRefreshDate("routeStorage"));
+        //alert("previous refresh:" +clLib.localStorage.getLastRefreshDate("defaultStorage"));
 
+		var storageObjects = {};
+		
         var userRoutes = clLib.REST.getEntities("Routes");
         console.log("GOT: " + JSON.stringify(userRoutes));
-        clLib.localStorage.initStorage("routeStorage", userRoutes);
+		$.extend(storageObjects, userRoutes);
 
         var userRouteLogs = clLib.REST.getEntities("RouteLog", clLib.getRouteLogWhereToday());
         console.log("GOT: " + JSON.stringify(userRouteLogs));
-        clLib.localStorage.initStorage("routeLogStorage", userRouteLogs);
+		$.extend(storageObjects, userRouteLogs);
+
+		//
+		// compile grade config for DB-like use in clLib.localStorage...
+		//
+		var compiledGradeConfig = clLib.compileGradeConfig();
+		console.log("compiledGradeConfig: " + JSON.stringify(compiledGradeConfig));
+		$.extend(storageObjects, compiledGradeConfig);
+
+		// Initialize local storage..
+		clLib.localStorage.initStorage(storageObjects);
 
         clLib.UI.fillUIelements("startScreen", "startScreen");
 
-        //alert("new refresh:" + clLib.localStorage.getLastRefreshDate("routeStorage"));
+        //alert("new refresh:" + clLib.localStorage.getLastRefreshDate("defaultStorage"));
         clLib.UI.hideLoading();
         return true;
     } else {

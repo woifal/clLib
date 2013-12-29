@@ -2,8 +2,8 @@
 
 /*
 *   Configuration object for grades.
-*   Keys are the available gradeTypes.
-*   For every gradeType column with the same name has to be present in the Routes collection.
+*   Keys are the available grade systems.
+*   For every grade system a column with the same name has to be present in the Routes collection.
 *
 */
 
@@ -21,6 +21,20 @@ clLib.defaultTickTypeFactors = {
 	"Onsight" : "+145",
 	"Attempt" : "*0",
 	"Top Rope" : "-150"
+};
+
+//
+// Compiles and returns compiled grade config (to be used DB-like via clLib.localStorage..)
+//
+clLib.compileGradeConfig = function() {
+	var compiledGradeConfig = [];
+	var dummyId = 1;
+	$.each(clLib.gradeConfig, function(gradeSystem, gradeSystemConfig) {
+		$.each(gradeSystemConfig.grades, function(grade, score) {
+			compiledGradeConfig.push({ "_id": dummyId++, GradeSystem: gradeSystem, Grade: grade, Score: score });
+		});
+	});
+	return {"Grades": compiledGradeConfig};
 };
 
 clLib.gradeConfig = {

@@ -19,36 +19,84 @@ clLib.UI = {};
 
 
 /*
-*   Populates a select box with available gradeTypes from clLib.gradeConfig.
+*   Populates a select box with available grade systems from clLib.gradeConfig.
+*
+*	!!!! FUNCTION IS OBSOLETE SINCE GRADE CONFIG WAS CHANGED TO USE CORE LOCAL STORAGE!!!
+*
 */
-clLib.populateGradeTypes = function($gradeTypeSelect, preselectedGradeType){
-	//alert("refreshing gradeTypes for preselected gradetype " + preselectedGradeType);
-//	clLib.populateSelectBox($gradeTypeSelect, Object.keys(clLib.gradeConfig), preselectedGradeType);
+clLib.populateGradeSystems = function($gradeSystemSelect, preselectedGradeSystem){
+	//alert("refreshing grade systems for preselected grade system " + preselectedGradeSystem);
+//	clLib.populateSelectBox($gradeSystemSelect, Object.keys(clLib.gradeConfig), preselectedGradeSystem);
 	clLib.populateSelectBox({
-		selectBoxElement : $gradeTypeSelect,
+		selectBoxElement : $gradeSystemSelect,
 		dataObj : Object.keys(clLib.gradeConfig),
-		selectedValue : preselectedGradeType
+		selectedValue : preselectedGradeSystem
 	});
 };
 
 /*
-*   Populates a select box with available grades in a certain gradeType.
+*   Populates a select box with available grades in a certain grade system.
+*
+*	!!!! FUNCTION IS OBSOLETE SINCE GRADE CONFIG WAS CHANGED TO USE CORE LOCAL STORAGE!!!
+*
 */
-clLib.populateGrades = function($gradeSelect, selectedGradeType, selectedGrade) {
-	clLib.loggi("refreshing grades for gradetype " + selectedGradeType);
-	//clLib.populateSelectBox($gradeSelect, Object.keys(clLib.gradeConfig[selectedGradeType]["grades"]), clLib.gradeConfig[selectedGradeType]["defaultGrade"]);
+clLib.populateGrades = function($gradeSelect, selectedGradeSystem, selectedGrade) {
+	//alert("refreshing grades for grade system " + selectedGradeSystem);
+	//clLib.populateSelectBox($gradeSelect, Object.keys(clLib.gradeConfig[selectedGradeSystem]["grades"]), clLib.gradeConfig[selectedGradeSystem]["defaultGrade"]);
 
-	clLib.loggi("default grade " + localStorage.getItem("defaultGrade") + "||+ " + clLib.gradeConfig[selectedGradeType]["defaultGrade"]);
+	//clLib.loggi("default grade " + localStorage.getItem("defaultGrade") + "||+ " + clLib.gradeConfig[selectedGradeSystem]["defaultGrade"]);
 	clLib.populateSelectBox({
 		selectBoxElement : $gradeSelect,
-		dataObj : Object.keys(clLib.gradeConfig[selectedGradeType]["grades"]),
+		dataObj : Object.keys(clLib.gradeConfig[selectedGradeSystem]["grades"]),
 		selectedValue:
             selectedGrade ||
             localStorage.getItem("defaultGrade") ||
-            clLib.gradeConfig[selectedGradeType]["defaultGrade"]
+            clLib.gradeConfig[selectedGradeSystem]["defaultGrade"]
 	});
 	
 };
+
+/*
+* Finds a grade with a (best matching) score in another grade system.
+*/
+clLib.findEquivalentGrade = function(origGradeSystem, origGrade, newGradeSystem){
+	var newGrade = "";
+	// current grade system is default grade system? in this case the default grade can be pre-selected..
+	if(origGradeSystem == newGradeSystem) {
+		newGrade = origGrade;
+	}
+	// default grade is not in current grade system. guess grade-to-preselect based on default grade's score..
+	else {
+		// 1) Get score of default grade 
+		var results = clLib.localStorage.getDistinct(
+			"Grades"
+			, { 
+				  "GradeSystem": origGradeSystem
+				, "Grade" : origGrade
+			}
+			, "Score"
+			, "defaultStorage"
+		);
+		var defaultScore = results[0];
+		
+		// 2) find equivalent for default score in currently selected grade system..
+		var results = clLib.localStorage.getDistinct("Grades", { 
+				  "GradeSystem": newGradeSystem
+				, "Score" : { 
+					"$gte": defaultScore
+				}
+			}
+			, "Grade"
+			, "defaultStorage"
+		);
+		var equivalentGrade = results[0];
+		clLib.loggi("found equivalent grade: " + equivalentGrade);
+		newGrade = equivalentGrade;
+	}
+
+	return newGrade;
+
+}
 
 /*
 *   Calculates a total score for an array of route logs based on config in clLib.gradeConfig.
@@ -68,24 +116,24 @@ clLib.calculateScore = function(routeLogs) {
 */ 
 clLib.computeScore = function(routeLogObj) {
 	if(!(routeLogObj.GradeSystem in clLib.gradeConfig)) {
-		clLib.loggi("unknown gradeType " + routeLogObj.GradeSystem);
+		clLib.loggi("unknown grade system " + routeLogObj.GradeSystem);
 		return 0;
 	}
-	var gradeTypeScore = clLib.gradeConfig[routeLogObj.GradeSystem];
-	if(!(routeLogObj.Grade in gradeTypeScore.grades)) {
+	var gradeSystemScore = clLib.gradeConfig[routeLogObj.GradeSystem];
+	if(!(routeLogObj.Grade in gradeSystemScore.grades)) {
 		clLib.loggi("unknown grade " + routeLogObj.Grade);
 		return 0;
 	}
-	if(!(routeLogObj.TickType in gradeTypeScore.tickTypeFactors)) {
+	if(!(routeLogObj.TickType in gradeSystemScore.tickTypeFactors)) {
 		clLib.loggi("unknown ticktype " + routeLogObj.TickType);
 		return 0;
 	}
 	
 	var score =
-		gradeTypeScore["grades"][routeLogObj.Grade]+ 0
+		gradeSystemScore["grades"][routeLogObj.Grade]+ 0
 	;
 	// allow for flexible tick type factors a eval-able expressions...
-	score = eval(score + gradeTypeScore["tickTypeFactors"][routeLogObj.TickType]);
+	score = eval(score + gradeSystemScore["tickTypeFactors"][routeLogObj.TickType]);
 	;
 	clLib.loggi("computed score >" + score + "< for route " + JSON.stringify(routeLogObj));
 	return score;
@@ -185,7 +233,7 @@ clLib.colBetweenDate = function(colName, startDate, endDate) {
 
 /*
 * Builds a mongodb WHERE clause to use for "Routes" collection queries based on
-*	- gradeType MANDATORY
+*	- grade system MANDATORY
 *	- grade     MANDATORY
 *	- area      OPTIONAL
 *	- sector    OPTIONAL
@@ -196,21 +244,21 @@ clLib.colBetweenDate = function(colName, startDate, endDate) {
 * Returns the WHERE clause in JSON notation.
 *
 */
-clLib.getRoutesWhere = function(gradeType, grade, area, sector, colour, line) {
-	//alert("typeof first ehre argument " + typeof(gradeType));
+clLib.getRoutesWhere = function(gradeSystem, grade, area, sector, colour, line) {
+	//alert("typeof first ehre argument " + typeof(gradeSystem));
 	//alert("getting " + line);
-	if(typeof(gradeType) !== "object") {
-		return clLib.getRoutesWhere_plain(gradeType, grade, area, sector, colour, line);
+	if(typeof(gradeSystem) !== "object") {
+		return clLib.getRoutesWhere_plain(gradeSystem, grade, area, sector, colour, line);
 	} else {
-		return clLib.getRoutesWhere_obj(gradeType);
+		return clLib.getRoutesWhere_obj(gradeSystem);
 	}
 }
 
-clLib.getRoutesWhere_plain = function(gradeType, grade, area, sector, colour, line) {
+clLib.getRoutesWhere_plain = function(gradeSystem, grade, area, sector, colour, line) {
 	var restrictionObj = {};
 	//alert("building restrictionobj" + JSON.stringify(line));
 	if(restrictionObj["GradeSystem"]) {
-		restrictionObj["GradeSystem"] = gradeType;
+		restrictionObj["GradeSystem"] = gradeSystem;
 		restrictionObj["Grade"] = grade;
 	}
 	clLib.extendIfDefined(restrictionObj, "Area", area);
@@ -223,14 +271,14 @@ clLib.getRoutesWhere_plain = function(gradeType, grade, area, sector, colour, li
 };
 
 clLib.getRoutesWhere_obj = function(restrictionObj) {
-	var gradeType, grade;
-	gradeType = restrictionObj["GradeSystem"];
+	var gradeSystem, grade;
+	gradeSystem = restrictionObj["GradeSystem"];
 	grade = restrictionObj["Grade"];
 	delete restrictionObj["GradeSystem"];
 	delete restrictionObj["Grade"];
 	
-	if(gradeType) {
-		restrictionObj[gradeType] = grade;
+	if(gradeSystem) {
+		restrictionObj[gradeSystem] = grade;
 	}
 	clLib.removeIfNotDefined(restrictionObj, "Area");
 	clLib.removeIfNotDefined(restrictionObj, "Sector");
@@ -490,7 +538,7 @@ clLib.login = function() {
 
 clLib.isOnline = function() {
 	var onlineMode = "" + localStorage.getItem("onlineMode");
-	onlineMode = onlineMode == "true";
+	onlineMode = onlineMode != "false";
 	//alert("currentlyOnline? >" + onlineMode);
 	if(onlineMode) {
 		//alert("yes, fuck you true!!!");
@@ -520,6 +568,7 @@ clLib.loggedInCheck = function () {
 	if (clLib.sessionToken) {
         return true;
     }
+	clLib.loggi("no session token!");
 	// no session token found - try to logon using stored credentials
 	try {
 		clLib.login();
@@ -537,9 +586,9 @@ clLib.loggedInCheck = function () {
 };
 
 clLib.wasOnlineCheck = function () {
-	//alert("last refresh:" + clLib.localStorage.getLastRefreshDate("routeStorage"));
+	//alert("last refresh:" + clLib.localStorage.getLastRefreshDate("defaultStorage"));
 	// data from previous refresh found?
-    if (clLib.localStorage.getLastRefreshDate("routeStorage")) {
+    if (clLib.localStorage.getLastRefreshDate("defaultStorage")) {
         return true;
     }
 

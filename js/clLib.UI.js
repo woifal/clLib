@@ -205,7 +205,7 @@ clLib.populateSelectBox_plain = function($selectBox, dataObj, selectedValue, pre
 	var oldValue = $selectBox.val();
 	var oldValueFound = true;
 	if(preserveCurrentValue && oldValue) {
-		//clLib.loggi("preserving >" + oldValue + "<");
+		clLib.loggi("preserving >" + oldValue + "<");
 		selectedValue = oldValue;
 		oldValueFound = false;
 	}
@@ -543,7 +543,7 @@ clLib.UI.showAllTodayScores = function(buddyNames, targetElement) {
 		// build where clause for today's routelogs
 		var buddyWhere = clLib.getRouteLogWhereToday({userName: buddyName});
 		// retrieve today's top scored routelogs
-		var buddyTodaysTopRouteLogs = clLib.localStorage.getEntities("RouteLog", buddyWhere, "routeLogStorage", 
+		var buddyTodaysTopRouteLogs = clLib.localStorage.getEntities("RouteLog", buddyWhere, "defaultStorage", 
 			clLib.sortByScoreFunc,
 			true, 10);
 		// calculate today's score
@@ -652,16 +652,23 @@ clLib.UI.elementNameFromId = function(id) {
 };
 
 clLib.UI.defaultRefreshHandler = function($element, additionalSelectBoxOptions) {
-	//alert("refreshing " + $element.attr("id"));
+	clLib.loggi("refreshing " + $element.attr("id"));
 	var currentLayout = localStorage.getItem("currentLayout") || localStorage.getItem("defaultLayout") || "default";
 	var elementConfig = clLib.UI.elements[clLib.UI.elementNameFromId($element.attr("id"))];
 
-	var dependingPageElements = elementConfig["dependingOn"][currentLayout] || elementConfig["dependingOn"]["default"];
-	//alert($element.attr("id") + "depends on " + JSON.stringify(dependingPageElements)); 
+	
+	var dependingPageElements = [];
+	if(elementConfig["dependingOn"]) {
+		dependingPageElements = elementConfig["dependingOn"][currentLayout] || elementConfig["dependingOn"]["default"];
+	}
+	
+	clLib.loggi($element.attr("id") + " depends on " + JSON.stringify(dependingPageElements)); 
 	var resultColName = elementConfig["dbField"];
 
-	var results = clLib.UI.defaultEntitySearch(resultColName, dependingPageElements, true); //, additionalWhere);
-	//alert("got results: " + JSON.stringify(results));
+	var entityName = elementConfig["refreshFromEntity"] || "Routes";
+	
+	var results = clLib.UI.defaultEntitySearch(entityName, resultColName, dependingPageElements, true, null);
+	clLib.loggi("got results: " + JSON.stringify(results));
 
 	var selectBoxOptions = {
 		selectBoxElement : $element,
@@ -682,8 +689,9 @@ clLib.UI.getLabelForElement = function($element) {
 	return $element.parents("td").find("label[for=" + $element.attr("id") + "]").html();
 };
 
-clLib.UI.defaultEntitySearch = function(resultColName, dependentPageElements, distinctFlag, additionalWhereObj) {
+clLib.UI.defaultEntitySearch = function(entityName, resultColName, dependentPageElements, distinctFlag, additionalWhereObj, storageName) {
 	var baseWhere = {}, where, results;
+	clLib.loggi("searching for entity " + entityName + " in storage " + storageName);
 	$.each(dependentPageElements, function(idx, elementName) {
 		var elementConfig = clLib.UI.elements[elementName];
 		//alert("eaching " + idx + "," + elementName + "=>" + elementConfig["dbField"] + " to " + clLib.UI.getVal(elementName));
@@ -697,13 +705,17 @@ clLib.UI.defaultEntitySearch = function(resultColName, dependentPageElements, di
 		$.extend(baseWhere, additionalWhereObj);
 	}
 	//alert("basewhere2 = " + JSON.stringify(baseWhere));
-	where = clLib.getRoutesWhere(baseWhere);
+	if(entityName == "Routes" || entityName == "RouteLog") {
+		where = clLib.getRoutesWhere(baseWhere);
+	} else {
+		where = baseWhere;
+	}
 	//alert("where = " + JSON.stringify(where));
 
 	if(distinctFlag) {
-		results = clLib.localStorage.getDistinct("Routes", where, resultColName, "routeStorage");
+		results = clLib.localStorage.getDistinct(entityName, where, resultColName, "defaultStorage");
 	} else {
-		results = clLib.localStorage.getEntities("Routes", where, "routeStorage");
+		results = clLib.localStorage.getEntities(entityName, where, "defaultStorage");
 	}
 	return results;
 
@@ -758,7 +770,7 @@ clLib.UI.localStorageSaveHandler = function (currentJqmSlide, currentLayout, suc
         } else {
 			//alert("setting localstorage " + (elementConfig["dbField"] || elementName) + " to " + clLib.UI.getVal(elementName));
             localStorage.setItem(
-                elementConfig["dbField"] || elementName, 
+                elementConfig["localVarField"] || elementConfig["dbField"] || elementName, 
                 clLib.UI.getVal(elementName)
             );
         }
@@ -791,7 +803,7 @@ clLib.UI.RESTSaveHandler = function (currentJqmSlide, currentLayout, successHand
         }
     });
     //alert("saveObj is " + JSON.stringify(saveObj));
-    clLib.localStorage.addInstance("RouteLog", saveObj, "routeLogStorage");
+    clLib.localStorage.addInstance("RouteLog", saveObj, "defaultStorage");
     //	successHandler();
 }
 
@@ -839,8 +851,8 @@ clLib.UI.userHandler = function (currentJqmSlide, currentLayout, successHandler,
         
 		}
         else {
-            alert("unknown operation >" + userAction + "< - don't know what to do for user..");
-        }
+			throw new clLib.clException("CORE", "unknown operation >" + userAction + "< - don't know what to do for user..");
+		}
 		
 		// Clear any "old" error messages 
 		localStorage.removeItem("loginError");
@@ -1024,6 +1036,7 @@ clLib.prefsCompleteCheck = function () {
         prefsComplete = true;
     }
     if (!prefsComplete) {
+		localStorage.setItem("loginError", "No username specified.");
         $.mobile.navigate("clLib_users.html");
     }
     return prefsComplete;

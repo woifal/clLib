@@ -29,7 +29,7 @@ clLib.UI.saveHandlers= {
 clLib.UI.autoLoad = {
 	newRouteLog : {
 		default: [
-			"gradeTypeSelect",
+			"gradeSystemSelect",
 			"searchRoute",
 			"ratingSelect",
 			"tickType",
@@ -37,7 +37,7 @@ clLib.UI.autoLoad = {
 			"routeLogContainer"
 		],
 		reduced: [
-			"gradeTypeSelect",
+			"gradeSystemSelect",
 			"ratingSelect",
 			"tickType",
 			"colourSelect",
@@ -59,7 +59,7 @@ clLib.UI.autoLoad = {
 			, "buddiesStr"
 			, "showTopX"
 //			, "defaultLayout"
-			, "defaultGradeType"
+			, "defaultGradeSystem"
 			, "defaultGrade"
 			, "onlineMode"
 		]
@@ -92,7 +92,7 @@ clLib.UI.elementsToReset = {
 		, "buddiesStr"
         , "showTopX"
 //        , "defaultLayout"
-        , "defaultGradeType"
+        , "defaultGradeSystem"
         , "defaultGrade"
     	]
     , users: [
@@ -107,7 +107,7 @@ clLib.UI.pageElements = {
 	newRouteLog : {
 		default: [
             "currentLayout"
-            , "gradeTypeSelect"
+            , "gradeSystemSelect"
 			, "gradeSelect"
 			, "sectorSelect"
 			, "colourSelect"
@@ -125,7 +125,7 @@ clLib.UI.pageElements = {
 		],
 		reduced: [
             "currentLayout"
-            , "gradeTypeSelect"
+            , "gradeSystemSelect"
 			, "gradeSelect"
 			, "colourSelect"
 			, "ratingSelect"
@@ -152,7 +152,7 @@ clLib.UI.pageElements = {
 			, "buddiesStr"
             , "showTopX"
 //            , "defaultLayout"
-            , "defaultGradeType"
+            , "defaultGradeSystem"
             , "defaultGrade"
             , "onlineMode"
         ]
@@ -170,21 +170,12 @@ clLib.UI.pageElements = {
 
 clLib.UI.elements = {
     "currentUserReadOnly": $.extend({}, {
-/*        "changeHandler": function ($this, changeOptions) {
-        }
-        ,*/
 		"dbField": "username"
     }, clLib.UI.elementConfig.localVar)
     ,"currentUser": $.extend({}, {
-/*        "changeHandler": function ($this, changeOptions) {
-        }
-        ,*/
 		"dbField": "username"
     }, clLib.UI.elementConfig.localVarSaveImmediately)
     ,"currentPassword": $.extend({}, {
-/*        "changeHandler": function ($this, changeOptions) {
-        }
-        ,*/
 		"dbField": "password"
     }, clLib.UI.elementConfig.localVarSaveImmediately)
     , "loginError": $.extend({}, clLib.UI.elementConfig.localVar, {
@@ -222,42 +213,48 @@ clLib.UI.elements = {
     , "showTopX":       clLib.UI.elementConfig.localVar
     , "onlineMode":     clLib.UI.elementConfig.localVar
     , "defaultLayout":  clLib.UI.elementConfig.localVarSaveImmediately
-/*        "changeHandler": function ($this, changeOptions) {
-            var elementName = clLib.UI.elementNameFromId($this.attr("id"));
-            var localVarValue = $this.val();
-            localStorage.setItem(elementName, $this.val());
-            localStorage.setItem("currentLayout", $this.val());
-        }*/
-    , "defaultGradeType" : {
-        "refreshHandler" : function($this) { 
-            clLib.populateGradeTypes($this, localStorage.getItem("defaultGradeType") || "UIAA");
-        }
-		, "refreshOnUpdate": {
-		    default: {
-		        "defaultGrade": {}
-		    }
+
+    , "defaultGradeSystem" : {
+		"localVarField" : "defaultGradeSystem"
+		,"dbField" : "GradeSystem"
+		,"refreshFromEntity" : "Grades"
+		,"refreshHandler" : function($this) { 
+			return clLib.UI.defaultRefreshHandler($this, {
+				selectedValue : localStorage.getItem("defaultGradeSystem") || "UIAA",
+				preserveCurrentValue : true,
+				additionalValue : null	
+			});
+		}
+		,"refreshOnUpdate" : {
+			default: {
+				"defaultGrade" : {}
+			}
 		}
     }
     , "defaultGrade": {
-        "refreshHandler": function ($this) {
-            var defaultGradeType = clLib.UI.byId$("defaultGradeType").val();
-            //alert("repopulating for gradetype " + defaultGradeType);
-            clLib.populateGrades($this,
-				defaultGradeType
+		"localVarField" : "defaultGrade"
+		,"dbField" : "Grade"
+		,"dependingOn": {
+			default: [
+				"defaultGradeSystem"
+			],
+		}
+		,"refreshFromEntity" : "Grades"
+		,"refreshHandler" : function($this) {
+			var selectedValue = clLib.findEquivalentGrade(
+				localStorage.getItem("defaultGradeSystem")
+				, localStorage.getItem("defaultGrade")
+				, $("#preferences_defaultGradeSystem").val()
 			);
-/*            var selectBoxOptions = {
-                selectBoxElement: $this,
-                dataObj: ["aa", "bb", "aa", "bb", "aa", "bb", "aa", "bb", "aa", "bb", "aa", "bb", "aa", "bb", "aa", "bb", "aa", "bb", "aa", "bb", "aa", "bb", "aa", "bb", "aa", "bb", "aa", "bb", "cc"],
-                preserveCurrentValue: true,
-                additionalValue: clLib.UI.NOTSELECTED
-            };
-            clLib.populateSelectBox(selectBoxOptions);
-*/
-        }
-        , "changeHandler": function ($this, changeOptions) {
-//            alert("CHANGED defaultGrade..");
-        }
-    }
+
+			//alert("preselecting " + selectedValue);
+			return clLib.UI.defaultRefreshHandler($this, {
+				selectedValue : selectedValue,
+				preserveCurrentValue : false,
+				additionalValue : null	
+			});
+		}
+	}
     , "currentLayout": {
         "refreshHandler": function ($this) {
             var elementName = clLib.UI.elementNameFromId($this.attr("id"));
@@ -271,24 +268,43 @@ clLib.UI.elements = {
             location.reload();
         }
     }   
-    , "gradeTypeSelect": {
+	, "gradeSystemSelect" : {
 		"dbField" : "GradeSystem"
+		,"refreshFromEntity" : "Grades"
 		,"refreshHandler" : function($this) { 
-			clLib.populateGradeTypes($this, localStorage.getItem("defaultGradeType") || "UIAA") 
+			return clLib.UI.defaultRefreshHandler($this, {
+				selectedValue : localStorage.getItem("defaultGradeSystem") || "UIAA",
+				preserveCurrentValue : true,
+				additionalValue : null	
+			});
 		}
 		,"refreshOnUpdate" : {
 			default: {
-				"gradeSelect" : { }
+				"gradeSelect" : {}
 			}
 		}
-	},
-	"gradeSelect" : {
+	}
+	, "gradeSelect" : {
 		"dbField" : "Grade"
-		,"refreshHandler" : function($this) { 
-			var $gradeTypeSelect = clLib.UI.byId$("gradeTypeSelect");
-			clLib.populateGrades($this, 
-				$gradeTypeSelect.val()
-			); 
+		,"dependingOn": {
+			default: [
+				"gradeSystemSelect"
+			],
+		}
+		,"refreshFromEntity" : "Grades"
+		,"refreshHandler" : function($this) {
+			var selectedValue = clLib.findEquivalentGrade(
+				localStorage.getItem("defaultGradeSystem")
+				, localStorage.getItem("defaultGrade")
+				, $("#newRouteLog_gradeSystemSelect").val()
+			);
+
+			//alert("preselecting " + selectedValue);
+			return clLib.UI.defaultRefreshHandler($this, {
+				selectedValue : selectedValue,
+				preserveCurrentValue : false,
+				additionalValue : null	
+			});
 		}
 		,"refreshOnUpdate" : {
 			default: {
@@ -326,7 +342,7 @@ clLib.UI.elements = {
 		"dbField" : "Sector"
 		,"dependingOn": {
 			default: [
-				"gradeTypeSelect", "gradeSelect", "selectedArea", "lineSelect"
+				"gradeSystemSelect", "gradeSelect", "selectedArea", "lineSelect"
 			],
 		}
 		,"refreshHandler" : function($this) { return clLib.UI.defaultRefreshHandler($this); }
@@ -346,7 +362,7 @@ clLib.UI.elements = {
 		"dbField" : "Line"
 		,"dependingOn" : {
 			default: [
-				"gradeTypeSelect", "gradeSelect", "selectedArea", "sectorSelect", "colourSelect"
+				"gradeSystemSelect", "gradeSelect", "selectedArea", "sectorSelect", "colourSelect"
 			]
 		}
 		,"refreshHandler" : function($this) { 
@@ -356,7 +372,7 @@ clLib.UI.elements = {
 		,"changeHandler" : function($this, changeOptions) {
 			var $sectorSelect = clLib.UI.byId$("sectorSelect");
 			
-			var results = clLib.UI.defaultEntitySearch("Sector", ["gradeTypeSelect", "gradeSelect", "selectedArea", "lineSelect"], true);
+			var results = clLib.UI.defaultEntitySearch("Routes", "Sector", ["gradeSystemSelect", "gradeSelect", "selectedArea", "lineSelect"], true);
 			
 			if(results.length == 1) {
 				clLib.UI.setSelectedValue($sectorSelect, results[0]);
@@ -383,7 +399,7 @@ clLib.UI.elements = {
 		"dbField" : "Colour"
 		,"dependingOn" : {
 		    default: [
-				"gradeTypeSelect", "gradeSelect", "selectedArea", "sectorSelect", "colourSelect"
+				"gradeSystemSelect", "gradeSelect", "selectedArea", "sectorSelect", "colourSelect"
 		    ]
 			, reduced: []
 		}
@@ -418,8 +434,9 @@ clLib.UI.elements = {
 			;
 			
 			var results= clLib.UI.defaultEntitySearch(
+				"Routes",
 				"Name", 
-				["gradeTypeSelect", "gradeSelect", "selectedArea", "sectorSelect", "colourSelect", "lineSelect"], 
+				["gradeSystemSelect", "gradeSelect", "selectedArea", "sectorSelect", "colourSelect", "lineSelect"], 
 				true, 
 				{"Name": { "$starts-with" : $forElement.val() }}
 			);
@@ -461,8 +478,9 @@ clLib.UI.elements = {
 			//	set all other elements to the one of the currently selected route..
 			//
 			var currentRoute = clLib.UI.defaultEntitySearch(
+				"Routes",
 				"Sector", 
-				["gradeTypeSelect", "gradeSelect"], 
+				["gradeSystemSelect", "gradeSelect"], 
 				false, 
 				{"Name": changeOptions["value"]})
 			;
@@ -512,17 +530,13 @@ clLib.UI.elements = {
 			//alert(clLib.UI.getId$("ratingSelect") + ":checked");
 			return $(clLib.UI.getId$("ratingSelectRadio") + ":checked").val();
 		}
-
-		
-		
-		
-		},
+	},
 	"areaSelect" : {
 		"refreshHandler" : function($this) { 
 			var distinctColumn, where, results;
 			distinctColumn = "Area";
 			where = clLib.getRoutesWhere();
-			results = clLib.localStorage.getDistinct("Routes", where, distinctColumn, "routeStorage");
+			results = clLib.localStorage.getDistinct("Routes", where, distinctColumn, "defaultStorage");
 			
 			clLib.populateSelectBox({
 				selectBoxElement : $this,
@@ -544,7 +558,7 @@ clLib.UI.elements = {
 		"dbField" : "character"
 		,"dependingOn" : {
 			default: [
-				"gradeTypeSelect", "gradeSelect", "selectedArea", "sectorSelect", "colourSelect"
+				"gradeSystemSelect", "gradeSelect", "selectedArea", "sectorSelect", "colourSelect"
 			]
 		}
 		,"refreshHandler" : function($this) { 
@@ -587,11 +601,11 @@ clLib.UI.elements = {
 			//alert("getting today's route logs..");
 		    // retrieve today's routelogs (sorted by Date)
 			var todaysRouteLogs = clLib.localStorage.getEntities(
-					"RouteLog", where, "routeLogStorage", "Date", true);
+					"RouteLog", where, "defaultStorage", "Date", true);
 			// retrieve today's 10 top scored routelogs
 			//alert("getting today's top route logs..");
 			var todaysTopRouteLogs = clLib.localStorage.getEntities(
-					"RouteLog", where, "routeLogStorage", clLib.sortByScoreFunc, true, 10);
+					"RouteLog", where, "defaultStorage", clLib.sortByScoreFunc, true, 10);
 			//alert("items retrieved(high-scored first) " + JSON.stringify(todaysTopRouteLogs));
 			//alert("items retrieved(latest first) " + JSON.stringify(todaysRouteLogs));
 
