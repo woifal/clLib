@@ -48,15 +48,12 @@ clLib.PAGES.handlers = {
             });
 
             $("#preferences_saveButton").on("click", function () {
-                //alert(1);
-                setTimeout(function () { clLib.UI.showLoading("11Saving preference(s)..."); }, 1);
-
-                setTimeout(function () {
+				clLib.UI.execWithMsg(function() {
                     localStorage.setItem("currentJqmSlide", "preferences");
                     clLib.UI.save();
                     clLib.UI.resetUIelements("newRouteLog", "preferences");
                     setTimeout(function () { clLib.UI.hideLoading(); history.back(); }, 1500);
-                });
+				}, {text: "Saving preferences..."});
             });
 
             $("#preferences_currentUserReadOnly").on("click", function () {
@@ -80,8 +77,8 @@ clLib.PAGES.handlers = {
 	}
 	,"startScreen": {
 	    "init": function () {
-	        setTimeout(function () { clLib.UI.showLoading("Starting....") }, 5);
-	        // pre-fetch newRouteLog page..
+	        
+			// pre-fetch newRouteLog page..
 	        $.mobile.loadPage("clLib_preferences.html");
 
 	        // Link to preferences page..
@@ -91,26 +88,21 @@ clLib.PAGES.handlers = {
 
 	        // Link to New Route page..
 	        $("#addRouteButton").on("click", function (e) {
-//	            alert("loading page..");
-	            setTimeout(function () {
-	                //alert("1");
-	                setTimeout(function () { clLib.UI.showLoading("Loading page.."); }, 5);
-	                setTimeout(function () {
-	                    //	            alert("loading page2..");
-	                    var currentLayout = localStorage.getItem("currentLayout") || localStorage.getItem("defaultLayout") || "default";
-						clLib.loggi("navigating to " + localStorage.getItem("currentLayout") + "," + localStorage.getItem("defaultLayout")+ "=>" + currentLayout);
-	                    var newRouteLogURL = "clLib_newRouteLog." + currentLayout + ".html";
+				clLib.UI.execWithMsg(function() {
+					var currentLayout = localStorage.getItem("currentLayout") || localStorage.getItem("defaultLayout") || "default";
+					clLib.loggi("navigating to " + localStorage.getItem("currentLayout") + "," + localStorage.getItem("defaultLayout")+ "=>" + currentLayout);
+					var newRouteLogURL = "clLib_newRouteLog." + currentLayout + ".html";
 
-	                    $.mobile.navigate(newRouteLogURL);
-	                }, 5);
-	            }, 1);
+					$.mobile.navigate(newRouteLogURL);
+				}, {text: "Loading page.."});
 	        });
 
 	        // refresh button(=> in page header)..
 	        $("#startScreen_refreshRouteStorageButton").on("click", function () {
 	            clLib.localStorage.refreshAllData();
 	        });
-	        setTimeout(function () { clLib.UI.showLoading("Ready!");  setTimeout(function() { clLib.UI.hideLoading(); }, 500) }, 5);
+
+//	        setTimeout(function () { clLib.UI.showLoading("Ready!");  setTimeout(function() { clLib.UI.hideLoading(); }, 500) }, 5);
 	        
 
             $("#startScreen_usersButton").on("click", function () {
@@ -131,16 +123,11 @@ clLib.PAGES.handlers = {
 
 	        //alert("444isave handler..");
 	        $("#newRouteLog_save_tick").on("click", function () {
-	            //alert(1);
-	            setTimeout(function () { clLib.UI.showLoading("9999Saving route log(s)..."); }, 1);
-
-	            setTimeout(function () {
+				clLib.UI.execWithMsg(function() {
 	                localStorage.setItem("currentJqmSlide", "newRouteLog");
 	                clLib.UI.save();
 	                clLib.UI.resetUIelements("newRouteLog", "newRouteLog");
-	                //clLib.UI.showLoading("Route log(s) saved!");
-	                setTimeout(function () { clLib.UI.hideLoading(); }, 1500);
-	            });
+	            }, {text: "Saving route logs.."});
 	        });
 	        $("#newRouteLog_refreshButton").on("click", function () {
 	            clLib.UI.resetUIelements("newRouteLog", "newRouteLog");
@@ -160,33 +147,25 @@ clLib.PAGES.handlers = {
 	    "init": function () {
 
 	        $("#users_loginButton").on("click", function () {
-	            setTimeout(function () { clLib.UI.showLoading("logging in..."); }, 1);
-
-	            setTimeout(function () {
-	                clLib.UI.save(null, null, null, { action: "login" });
+	            clLib.UI.execWithMsg(function() {
+					clLib.UI.save(null, null, null, { action: "login" });
 	                clLib.UI.fillUIelements("users", "users");
-
-	                setTimeout(function () { clLib.UI.hideLoading(); }, 1500);
-	            });
-	        });
+				}, {text: "logging in"});
+			});
 	        $("#users_logoutButton").on("click", function () {
-	            setTimeout(function () { clLib.UI.showLoading("logging out..."); }, 1);
-	            setTimeout(function () {
+				clLib.UI.execWithMsg(function() {
 	                clLib.UI.save(null, null, null, { action: "logout" });
 	                clLib.UI.fillUIelements("users", "users");
-	                setTimeout(function () { clLib.UI.hideLoading(); }, 1500);
-	            });
+	            }, {text: "logging out.."});
 	        });
 	        $("#users_newUserButton").on("click", function () {
-	            setTimeout(function () { clLib.UI.showLoading("creating user..."); }, 1);
-
-	            setTimeout(function () {
-	                clLib.UI.save(null, null, null, { action: "create" });
+				clLib.UI.execWithMsg(function() {
+					clLib.UI.save(null, null, null, { action: "create" });
 	                clLib.UI.fillUIelements("users", "users");
-	                setTimeout(function () { clLib.UI.hideLoading(); }, 1500);
-	            });
-	        });
-	        clLib.UI.fillUIelements("users", "users");
+				}, {text: "creating user.."});
+			});
+	        
+			clLib.UI.fillUIelements("users", "users");
 	    }
         , "show": function () {
             

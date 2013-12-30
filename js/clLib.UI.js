@@ -516,6 +516,21 @@ clLib.UI.addObjArr = function(anObj, pathArray, objValue) {
 	return JSON.parse(JSON.stringify(anObj));
 }
 
+/*
+*
+*	Executes function "func" and displays spinner with "spinnerParams" while executing..
+*
+*/
+clLib.UI.execWithMsg = function(func, spinnerParams) {
+	//setTimeout(function() {clLib.UI.showLoading("doing...");}, 0);
+	clLib.UI.showLoading(spinnerParams);
+	setTimeout(function() {
+		func();
+		clLib.UI.hideLoading();
+	},10);
+	
+};
+
 clLib.UI.showLoading = function(text, html) {
         //clLib.loggi("shwoing..");
         $.mobile.loading('show', {
