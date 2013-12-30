@@ -102,9 +102,6 @@ clLib.PAGES.handlers = {
 	            clLib.localStorage.refreshAllData();
 	        });
 
-//	        setTimeout(function () { clLib.UI.showLoading("Ready!");  setTimeout(function() { clLib.UI.hideLoading(); }, 500) }, 5);
-	        
-
             $("#startScreen_usersButton").on("click", function () {
                 $.mobile.navigate("clLib_users.html");
             });
@@ -131,9 +128,6 @@ clLib.PAGES.handlers = {
 	        });
 	        $("#newRouteLog_refreshButton").on("click", function () {
 	            clLib.UI.resetUIelements("newRouteLog", "newRouteLog");
-	        });
-	        $("#foobut").on("click", function () {
-	            clLib.UI.showLoading("33TEST LOADING!!!!");
 	        });
 
 	        clLib.UI.fillUIelements("newRouteLog", "newRouteLog", localStorage.getItem("defaultLayout"));

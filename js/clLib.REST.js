@@ -99,7 +99,6 @@ clLib.REST.buildAJAXRequest = function(uri, method, getParams, headerParams, all
 
 clLib.REST.getEntities = function(entityName, whereObj) {
 	var uri = clLib.REST.baseCollectionsURI + entityName;
-	//clLib.UI.showLoading("Loading " + entityName + " from server...", "xyxyx");
 	var returnObj = {};
 	returnObj[entityName] = clLib.REST.executeRetrieve(uri, 'GET', whereObj);
 
@@ -109,7 +108,6 @@ clLib.REST.getEntities = function(entityName, whereObj) {
 
 clLib.REST.storeEntity = function (entityName, entityInstance) {
     var uri = clLib.REST.baseCollectionsURI + entityName;
-    //clLib.UI.showLoading("Loading " + entityName + " from server...", "xyxyx");
     var returnObj = clLib.REST.executeInsert(uri, 'POST', entityInstance);
 
     clLib.loggi("returning(storeEntity) " + JSON.stringify(returnObj));
@@ -119,8 +117,6 @@ clLib.REST.storeEntity = function (entityName, entityInstance) {
 
 clLib.REST.createUser = function (entityName, entityInstance) {
     var uri = clLib.REST.baseUsersURI;
-    //alert("creating user >" + JSON.stringify(entityInstance) + "<");
-    //clLib.UI.showLoading("Loading " + entityName + " from server...", "xyxyx");
     var returnObj = clLib.REST.executeInsert(uri, 'POST', entityInstance, true);
 
     //alert("returning(storeEntity) " + JSON.stringify(returnObj));
@@ -131,10 +127,6 @@ clLib.REST.createUser = function (entityName, entityInstance) {
 
 clLib.REST.loginUser = function (entityName, entityInstance) {
     var uri = clLib.REST.baseURI + "/login";
-    ;
-    //alert("logging in >" + JSON.stringify(entityInstance) + "<");
-    //clLib.UI.showLoading("Loading " + entityName + " from server...", "xyxyx");
-    
 	var returnObj = clLib.REST.execAJAXRequest(uri, "GET", entityInstance, true);
 
     //alert("returning(storeEntity) " + JSON.stringify(returnObj));

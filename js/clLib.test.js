@@ -3,7 +3,6 @@ var clLib = {};
 clLib.UI = {};
 
 clLib.UI.execWithMsg = function(func, spinnerParams) {
-	//setTimeout(function() {clLib.UI.showLoading("doing...");}, 0);
 	clLib.UI.showLoading(spinnerParams);
 	setTimeout(function() {
 		func();

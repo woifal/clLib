@@ -377,7 +377,6 @@ clLib.localStorage.syncUp = function(entity, entityInstance, storageName) {
 
 
 clLib.localStorage.addInstance = function(entity, entityInstance, storageName) {
-    //clLib.UI.showLoading("addInstance called..");
     //alert("addinstance called!");
     var storage = clLib.localStorage.getStorageItems(storageName);
 	
@@ -396,7 +395,6 @@ clLib.localStorage.addInstance = function(entity, entityInstance, storageName) {
 	} else {
 		clLib.loggi("offline, saving for later sync UP..");
 	}
-	//clLib.UI.showLoading(entity + " saved!");
 }
 
 /*
@@ -708,36 +706,38 @@ clLib.localStorage.evalCondition = function(valueToTest, condition) {
 
 clLib.localStorage.refreshAllData = function () {
     if (clLib.loggedInCheck()) {
-        clLib.UI.showLoading("refreshing from server..");
+		clLib.UI.execWithMsg(function() {
+			clLib.UI.showLoading("refreshing from server..");
 
-        //alert("previous refresh:" +clLib.localStorage.getLastRefreshDate("defaultStorage"));
+			//alert("previous refresh:" +clLib.localStorage.getLastRefreshDate("defaultStorage"));
 
-		var storageObjects = {};
-		
-        var userRoutes = clLib.REST.getEntities("Routes");
-        console.log("GOT: " + JSON.stringify(userRoutes));
-		$.extend(storageObjects, userRoutes);
+			var storageObjects = {};
+			
+			var userRoutes = clLib.REST.getEntities("Routes");
+			console.log("GOT: " + JSON.stringify(userRoutes));
+			$.extend(storageObjects, userRoutes);
 
-        var userRouteLogs = clLib.REST.getEntities("RouteLog", clLib.getRouteLogWhereToday());
-        console.log("GOT: " + JSON.stringify(userRouteLogs));
-		$.extend(storageObjects, userRouteLogs);
+			var userRouteLogs = clLib.REST.getEntities("RouteLog", clLib.getRouteLogWhereToday());
+			console.log("GOT: " + JSON.stringify(userRouteLogs));
+			$.extend(storageObjects, userRouteLogs);
 
-		//
-		// compile grade config for DB-like use in clLib.localStorage...
-		//
-		var compiledGradeConfig = clLib.compileGradeConfig();
-		console.log("compiledGradeConfig: " + JSON.stringify(compiledGradeConfig));
-		$.extend(storageObjects, compiledGradeConfig);
+			//
+			// compile grade config for DB-like use in clLib.localStorage...
+			//
+			var compiledGradeConfig = clLib.compileGradeConfig();
+			console.log("compiledGradeConfig: " + JSON.stringify(compiledGradeConfig));
+			$.extend(storageObjects, compiledGradeConfig);
 
-		// Initialize local storage..
-		clLib.localStorage.initStorage(storageObjects);
+			// Initialize local storage..
+			clLib.localStorage.initStorage(storageObjects);
 
-        clLib.UI.fillUIelements("startScreen", "startScreen");
+			clLib.UI.fillUIelements("startScreen", "startScreen");
 
-        //alert("new refresh:" + clLib.localStorage.getLastRefreshDate("defaultStorage"));
-        clLib.UI.hideLoading();
-        return true;
-    } else {
+			//alert("new refresh:" + clLib.localStorage.getLastRefreshDate("defaultStorage"));
+			clLib.UI.hideLoading();
+			return true;
+		}, {text: "Refreshing from server.."});
+	} else {
         clLib.alert("Not online!");
         return false;
     }

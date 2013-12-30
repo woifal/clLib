@@ -522,7 +522,6 @@ clLib.UI.addObjArr = function(anObj, pathArray, objValue) {
 *
 */
 clLib.UI.execWithMsg = function(func, spinnerParams) {
-	//setTimeout(function() {clLib.UI.showLoading("doing...");}, 0);
 	clLib.UI.showLoading(spinnerParams);
 	setTimeout(function() {
 		func();
@@ -531,13 +530,13 @@ clLib.UI.execWithMsg = function(func, spinnerParams) {
 	
 };
 
-clLib.UI.showLoading = function(text, html) {
+clLib.UI.showLoading = function(spinnerParams) {
         //clLib.loggi("shwoing..");
         $.mobile.loading('show', {
-            text: text,
+            text: spinnerParams["text"],
             textVisible: true,
             theme: 'e',
-            html: html
+            html: spinnerParams["html"]
         });
         //clLib.loggi("showed..");
 };
@@ -766,9 +765,6 @@ clLib.UI.save = function (currentJqmSlide, currentLayout, successHandler, additi
 
 
 clLib.UI.localStorageSaveHandler = function (currentJqmSlide, currentLayout, successHandler) {
-    //    alert("showing page load...");
-    //    clLib.UI.showLoading("Saving route log(s)...");
-    //    alert("showed page load...");
     var saveObj = {};
     if (!currentJqmSlide) {
         currentJqmSlide = localStorage.getItem("currentJqmSlide");
@@ -797,9 +793,6 @@ clLib.UI.localStorageSaveHandler = function (currentJqmSlide, currentLayout, suc
 
 
 clLib.UI.RESTSaveHandler = function (currentJqmSlide, currentLayout, successHandler) {
-    //    alert("showing page load...");
-    //    clLib.UI.showLoading("Saving route log(s)...");
-    //    alert("showed page load...");
     var saveObj = {};
     if (!currentJqmSlide) {
         currentJqmSlide = localStorage.getItem("currentJqmSlide");
@@ -824,9 +817,6 @@ clLib.UI.RESTSaveHandler = function (currentJqmSlide, currentLayout, successHand
 
 
 clLib.UI.userHandler = function (currentJqmSlide, currentLayout, successHandler, additionalData) {
-    //    alert("showing page load...");
-    //    clLib.UI.showLoading("Saving route log(s)...");
-    //    alert("showed page load...");
     var saveObj = {};
     if (!currentJqmSlide) {
         currentJqmSlide = localStorage.getItem("currentJqmSlide");
