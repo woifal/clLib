@@ -83,7 +83,7 @@ clLib.findEquivalentGrade = function(origGradeSystem, origGrade, newGradeSystem)
 		var results = clLib.localStorage.getDistinct("Grades", { 
 				  "GradeSystem": newGradeSystem
 				, "Score" : { 
-					"$gte": defaultScore
+					"$gte": JSON.parse(defaultScore)
 				}
 			}
 			, "Grade"

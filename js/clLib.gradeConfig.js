@@ -31,7 +31,12 @@ clLib.compileGradeConfig = function() {
 	var dummyId = 1;
 	$.each(clLib.gradeConfig, function(gradeSystem, gradeSystemConfig) {
 		$.each(gradeSystemConfig.grades, function(grade, score) {
-			compiledGradeConfig.push({ "_id": dummyId++, GradeSystem: gradeSystem, Grade: grade, Score: score });
+			compiledGradeConfig.push({ 
+				"_id": dummyId++, 
+				GradeSystem: gradeSystem, 
+				Grade: grade, 
+				Score: score 
+			});
 		});
 	});
 	return {"Grades": compiledGradeConfig};
