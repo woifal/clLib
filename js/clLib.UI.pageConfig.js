@@ -12,10 +12,10 @@ clLib.UI.cssBackgrounds = {
 
 
 clLib.UI.pageRequisites = {
-    "startScreen": [clLib.prefsCompleteCheck, clLib.tryLogin, clLib.wasOnlineCheck]
-    , "preferences": []
-    , "newRouteLog": [clLib.prefsCompleteCheck, clLib.tryLogin, clLib.wasOnlineCheck]
-    , "users": [clLib.tryLogin]
+    "startScreen": { "pagebeforeshow" : [clLib.prefsCompleteCheck, clLib.tryLogin, clLib.wasOnlineCheck] }
+    , "preferences": { "pagebeforeshow" : [] }
+    , "newRouteLog": { "pagebeforeshow" : [clLib.prefsCompleteCheck, clLib.tryLogin, clLib.wasOnlineCheck] }
+    , "users": { "pagebeforeshow" : [clLib.tryLogin] }
 };
 
 

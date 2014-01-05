@@ -15,13 +15,13 @@ clLib.UI.preloadImages([
 ]);
 
 
-clLib.PAGES.defaultHandler = function (event, ui, eventName) {
+clLib.PAGES.defaultHandler = function (event, ui) {
+	var eventName = event.type;
     var pageId = $(event.target).attr("id");
-    //alert("SHOW page >" + pageId + "<");
 
     var allTrue = false;
-    //alert("checking prerequisites for " + pageId);
-    $.each(clLib.UI.pageRequisites[pageId], function (index, checkFunc) {
+	var requisiteFunctions = clLib.UI.pageRequisites[pageId][eventName] || {};
+    $.each(requisiteFunctions, function (index, checkFunc) {
         //alert("executing " + index + " >" + JSON.stringify(checkFunc.name));
         if (checkFunc()) {
             allTrue = true;
@@ -39,7 +39,7 @@ clLib.PAGES.defaultHandler = function (event, ui, eventName) {
 };
 clLib.PAGES.handlers = {
     "preferences": {
-        "init": function() {
+        "pageinit": function() {
             //alert("444isave handler..");
             $("#preferences_cancelButton").on("click", function () {
                 clLib.UI.fillUIelements("preferences", "preferences");
@@ -64,7 +64,7 @@ clLib.PAGES.handlers = {
 			//clLib.UI.fillUIelements("preferences", "preferences");
 
 		}
-        , "show": function (e, ui) {
+        , "pagebeforeshow": function (e, ui) {
             var $prevElement = $(ui.prevPage);//.prev();
 			var prevTag = $prevElement.prop("tagName");
 			var prevId = $prevElement.attr("id");
@@ -76,7 +76,7 @@ clLib.PAGES.handlers = {
 		}
 	}
 	,"startScreen": {
-	    "init": function () {
+	    "pageinit": function () {
 	        
 			// pre-fetch newRouteLog page..
 	        $.mobile.loadPage("clLib_preferences.html");
@@ -106,13 +106,13 @@ clLib.PAGES.handlers = {
                 $.mobile.navigate("clLib_users.html");
             });
 	    }
-        , "show" : function() {
+        , "pagebeforeshow" : function() {
             // Fill UI elements..
 	        clLib.UI.fillUIelements("startScreen", "startScreen");
 		}
 	}
 	, "newRouteLog": {
-	    "init": function () {
+	    "pageinit": function () {
 			//alert("init!");
 	        clLib.UI.buildRatingRadio($("#newRouteLog_ratingSelectWrapper"));
 	        $("#newRouteLog_layoutSelect").val(localStorage.getItem("currentLayout"));
@@ -132,13 +132,13 @@ clLib.PAGES.handlers = {
 
 	        clLib.UI.fillUIelements("newRouteLog", "newRouteLog", localStorage.getItem("defaultLayout"));
 	    }
-        , "show": function () {
+        , "pagebeforeshow": function () {
 			//alert("show!");
 	        localStorage.setItem("currentJqmSlide", "newRouteLog");
         }
 	}
 	,"users": {
-	    "init": function () {
+	    "pageinit"	: function () {
 
 	        $("#users_loginButton").on("click", function () {
 	            clLib.UI.execWithMsg(function() {
@@ -161,56 +161,17 @@ clLib.PAGES.handlers = {
 	        
 			clLib.UI.fillUIelements("users", "users");
 	    }
-        , "show": function () {
+        , "pagebeforeshow": function () {
             
         }
 	}
 };
 
 
-clLib.PAGES.initHandler = function (event, ui) {
-    return clLib.PAGES.defaultHandler(event, ui, "init");
-};
-clLib.PAGES.showHandler = function (event, ui) {
-    return clLib.PAGES.defaultHandler(event, ui, "show");
-};
 
-/*$("#newRouteLog").die("pageinit").live("pageinit", function (event, ui) {
-    clLib.PAGES.initHandler(event);
-});
+var eventsToBind = "pageinit pagebeforeshow";
 
-$("#startScreen").die("pageinit").live("pageinit", function (event, ui) {
-    clLib.PAGES.initHandler(event);
+// bind "pageinit"/"pagebeforeshow" events for all pages..
+$("div[data-role=page]").die(eventsToBind).live(eventsToBind, function (event, ui) {
+    clLib.PAGES.defaultHandler(event, ui);
 });
-$("#preferences").die("pageinit").live("pageinit", function (event, ui) {
-    clLib.PAGES.initHandler(event);
-});*/
-
-$("#startScreen").die("pagebeforeshow").live("pagebeforeshow", function (event, ui) {
-    clLib.PAGES.showHandler(event);
-});
-$("#preferences").die("pagebeforeshow").live("pagebeforeshow", function (event, ui) {
-    clLib.PAGES.showHandler(event, ui);
-});
-$("#newRouteLog").die("pagebeforehow").live("pagebeforeshow", function (event, ui) {
-    clLib.PAGES.showHandler(event);
-});
-$("#users").die("pagebeforehow").live("pagebeforeshow", function (event, ui) {
-    clLib.PAGES.showHandler(event);
-});
-
-
-$("#startScreen").die("pageinit").live("pageinit", function (event, ui) {
-    clLib.PAGES.initHandler(event);
-});
-$("#preferences").die("pageinit").live("pageinit", function (event, ui) {
-    clLib.PAGES.initHandler(event, ui);
-});
-$("#newRouteLog").die("pageinit").live("pageinit", function (event, ui) {
-    clLib.PAGES.initHandler(event, ui);
-});
-$("#users").die("pageinit").live("pageinit", function (event, ui) {
-    clLib.PAGES.initHandler(event, ui);
-});
-
-
