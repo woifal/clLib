@@ -159,10 +159,12 @@ clLib.PAGES.handlers = {
 				}, {text: "creating user.."});
 			});
 	        
-			clLib.UI.fillUIelements("users", "users");
+			$("#users_preferencesButton").die("click").click(function () {
+				$.mobile.navigate("clLib_preferences.html");
+			});
 	    }
         , "pagebeforeshow": function () {
-            
+			clLib.UI.fillUIelements("users", "users");
         }
 	}
 };

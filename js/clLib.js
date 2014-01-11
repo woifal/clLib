@@ -577,7 +577,13 @@ clLib.loggedInCheck = function () {
 	} catch (e) {
 		// could not login - alert error and return false
         clLib.sessionToken = null;
-		localStorage.setItem("loginError", "Could not login user: " + JSON.parse(JSON.parse(e.message)["responseText"])["description"]);
+		
+		var errorMsg = e.message;
+		if(e.message && JSON.parse(e.message)["responseText"]) {
+			errorMsg = JSON.parse(JSON.parse(e.message)["responseText"])["description"];
+		}
+		localStorage.setItem("loginError", "Could not login user: " + errorMsg);
+		
 		return false;
 	}
 
