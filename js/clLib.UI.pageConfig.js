@@ -243,8 +243,8 @@ clLib.UI.elements = {
 		,"refreshFromEntity" : "Grades"
 		,"refreshHandler" : function($this) {
 			var selectedValue = clLib.findEquivalentGrade(
-				localStorage.getItem("defaultGradeSystem")
-				, localStorage.getItem("defaultGrade")
+				localStorage.getItem("defaultGradeSystem") || "UIAA"
+				, localStorage.getItem("defaultGrade") || "VI"
 				, $("#preferences_defaultGradeSystem").val()
 			);
 
