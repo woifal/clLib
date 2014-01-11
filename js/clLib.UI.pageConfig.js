@@ -50,7 +50,7 @@ clLib.UI.autoLoad = {
 			"areaSelect"
 			, "currentUserReadOnly"
 			, "defaultLayout"
-
+			, "onlineIcon"
 			]
 	}
 	,preferences : {
@@ -144,6 +144,7 @@ clLib.UI.pageElements = {
 			, "selectedArea",
 			, "currentUserReadOnly"
 			, "defaultLayout"
+			, "onlineIcon"
 	    ]
 	}
     , preferences: {
@@ -552,6 +553,20 @@ clLib.UI.elements = {
 			default: {
 				"selectedArea" : {}
 			}
+		}
+	}
+	, "onlineIcon" : {
+		"refreshHandler" : function($this) { 
+			var isOnline = clLib.isOnline();
+			clLib.loggi("isOnline for icon? >" + isOnline + "<");
+			var iconSrc = "";
+			if(isOnline){
+				iconSrc = "files/views/assets/image/online.jpg";
+			} else {
+				iconSrc = "files/views/assets/image/offline.jpg";
+			}
+			//alert("src is " + iconSrc);
+			$this.attr("src", iconSrc); 
 		}
 	}
 	,"characterSelect": {

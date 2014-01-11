@@ -545,16 +545,6 @@ clLib.isOnline = function() {
 	    onlineMode = navigator.onLine;
 	}
 	
-	//alert("onlineMode >" + onlineMode + "<");
-	var iconSrc = "";
-	if(onlineMode){
-		iconSrc = "files/views/assets/image/online.jpg";
-	} else {
-		iconSrc = "files/views/assets/image/offline.jpg";
-	}
-	//alert("src is " + iconSrc);
-	$("#header_onlineIcon").attr("src", iconSrc); 
-
 	return onlineMode;
 };
 

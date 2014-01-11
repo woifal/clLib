@@ -79,7 +79,7 @@ clLib.PAGES.handlers = {
 	    "pageinit": function () {
 	        
 			// pre-fetch newRouteLog page..
-	        $.mobile.loadPage("clLib_preferences.html");
+	        // $.mobile.loadPage("clLib_preferences.html");
 
 	        // Link to preferences page..
 	        $("#startScreen_preferencesButton").die("click").click(function () {
