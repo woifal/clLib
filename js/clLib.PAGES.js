@@ -89,8 +89,26 @@ clLib.PAGES.handlers = {
 	        // Link to New Route page..
 	        $("#addRouteButton").on("click", function (e) {
 				clLib.UI.execWithMsg(function() {
+					// Only use default layout if selected area provides predefined route log data..
+					var currentArea = clLib.localStorage.getEntities(
+						"Area", 
+						{"AreaName": localStorage.getItem("currentlySelectedArea")}
+					);
+					currentArea = currentArea[0]
+					clLib.loggi("defaultLayout:" + currentLayout + ", area:" + JSON.stringify(currentArea));
+					var routeLogAvailable = false;
+					if (currentArea && currentArea["routeLogAvailable"]) {
+						routeLogAvailable = true;
+					}
 					var currentLayout = localStorage.getItem("currentLayout") || localStorage.getItem("defaultLayout") || "default";
+					if(!routeLogAvailable) {
+						currentLayout = "reduced";
+					}
+					
 					clLib.loggi("navigating to " + localStorage.getItem("currentLayout") + "," + localStorage.getItem("defaultLayout")+ "=>" + currentLayout);
+					
+
+					clLib.loggi("currentLayout set to " + currentLayout);
 					var newRouteLogURL = "clLib_newRouteLog." + currentLayout + ".html";
 
 					$.mobile.navigate(newRouteLogURL);

@@ -32,6 +32,35 @@ clLib.localStorage.indexExists = function(storageName, indexName) {
 };
 
 
+clLib.localStorage.addStorageItems = function(entityName, entityItemsArr, storageName) {
+	alert("adding elements " + entityItemsArr.length + "->" + JSON.stringify(entityItemsArr));
+	for(var i = 0; i < entityItemsArr.length; i++) {
+		// store new items
+		clLib.localStorage.addStorageItem(storageName, entityName, entityItemsArr[i]);
+	}
+};
+
+clLib.localStorage.initStorageItems = function(entityName, entityItemsArr, storageName) {
+	//alert("entity: " + entityName);
+	var entityItems = {};
+	for(var i = 0; i < entityItemsArr.length; i++) {
+		entityItems[entityItemsArr[i]["_id"]] = entityItemsArr[i];
+	}
+
+	// add UNSYNCED entries to cache	
+	var unsyncedStorage = clLib.localStorage.getStorageItems("UNSYNCED_" + storageName);
+	clLib.loggi("currently unsynced items for entity >" + entityName + "< =>" + JSON.stringify(unsyncedStorage) + "<");
+	if(unsyncedStorage && unsyncedStorage[entityName]) {
+		$.each(unsyncedStorage[entityName], function(dummyId) {
+			var entityInstance = unsyncedStorage[entityName][dummyId];
+			//alert("add to storage items (" + entityName + ") for >" + dummyId + "< bzw. >" + JSON.stringify(entityInstance) + "<");
+			entityItems[entityInstance["_id"]] = entityInstance;
+		});
+	}
+	
+	return entityItems;
+};
+
 clLib.localStorage.initStorage = function(storageObj, storageName) {
 	// Use default storageName if none supplied..
 	storageName = storageName || "defaultStorage";
@@ -44,32 +73,23 @@ clLib.localStorage.initStorage = function(storageObj, storageName) {
 	//alert("adding elements " + Object.keys(storageObj).length + "->" + JSON.stringify(Object.keys(storageObj)));
 	var allItems = {};
 	for(var entityName in storageObj) {
-		//alert("entity: " + entityName);
-		var entityItems = {};
-		for(var i = 0; i < storageObj[entityName].length; i++) {
-			entityItems[storageObj[entityName][i]["_id"]] = storageObj[entityName][i];
-		}
-
-		// add UNSYNCED entries to cache	
-		var unsyncedStorage = clLib.localStorage.getStorageItems("UNSYNCED_" + storageName);
-		clLib.loggi("currently unsynced items for entity >" + entityName + "< =>" + JSON.stringify(unsyncedStorage) + "<");
-		if(unsyncedStorage && unsyncedStorage[entityName]) {
-			$.each(unsyncedStorage[entityName], function(dummyId) {
-				var entityInstance = unsyncedStorage[entityName][dummyId];
-				//alert("add to storage items (" + entityName + ") for >" + dummyId + "< bzw. >" + JSON.stringify(entityInstance) + "<");
-				entityItems[entityInstance["_id"]] = entityInstance;
-			});
-		}
-		
+		var entityItems = clLib.localStorage.initStorageItems(entityName, storageObj[entityName], storageName);
 		// store retrieved AND unsynced items
 		allItems[entityName] = entityItems;
-
 	}
 
 	clLib.loggi("storing items");
 	clLib.localStorage.setStorageItems(storageName, allItems);
 	clLib.loggi("items stored");
 	
+	clLib.localStorage.initStorageIndexes(storageObj, storageName);
+	
+	//clLib.loggi("initialized storage " + storageName);
+	//clLib.loggi("storage now is " + JSON.stringify(clLib.localStorage.getItem(storageName + "_items")));
+	//alert("local storage after init " + JSON.stringify(localStorage));
+};
+
+clLib.localStorage.initStorageIndexes = function(storageObj, storageName) {
 /*
 	var storageItems = clLib.localStorage.getStorageItems(storageName);
 	var indexedEntities = clLib.localStorage.indexes;
@@ -128,14 +148,9 @@ clLib.localStorage.initStorage = function(storageObj, storageName) {
 	}
 	//);
 	*/
-	
-	//clLib.loggi("initialized storage " + storageName);
-	//clLib.loggi("storage now is " + JSON.stringify(clLib.localStorage.getItem(storageName + "_items")));
 	//clLib.loggi("index now is " + JSON.stringify(clLib.localStorage.getItem(storageName + "_index_" + "routes")));
-	//alert("local storage after init " + JSON.stringify(localStorage));
+	
 };
-
-
 
 window.tojson  = function(x) {
 	return JSON.stringify(x);
@@ -370,7 +385,20 @@ clLib.localStorage.syncUp = function(entity, entityInstance, storageName) {
 		clLib.localStorage.addStorageItem(storageName, entity, entityInstance);
 
 	} catch (e) {
-	    alert("could not sync item due to:" + e.name + " + (" + e.message + ")");
+		
+		
+		
+		var errorMsg = e.message;
+		var errorCode = "N/A";
+		if(e.message && JSON.parse(e.message)["responseText"]) {
+			errorCode = JSON.parse(JSON.parse(e.message)["responseText"])["code"];
+			errorMsg = JSON.parse(JSON.parse(e.message)["responseText"])["description"];
+		}
+		if(errorCode == "DBSC002") {
+			clLib.sessionToken = null;
+		}
+		
+		alert("could not sync item due to:" + e.name + " + (" + e.message + ")");
     }
 }
 
@@ -637,7 +665,7 @@ clLib.localStorage.evalCondition = function(valueToTest, condition) {
 	// remove leading/trailing whitespace..
 	valueToTest = $.trim(valueToTest);
 
-	//clLib.loggi("checking " + valueToTest + " against " + JSON.stringify(condition));
+	clLib.loggi("checking " + valueToTest + " against " + JSON.stringify(condition));
 	if(!valueToTest) {
 		return false;
 	}
@@ -703,6 +731,38 @@ clLib.localStorage.evalCondition = function(valueToTest, condition) {
 	
 };
 
+//
+// Refresh remote data modifed after last refresh date..
+//
+clLib.localStorage.refreshNewData = function () {
+	console.log("refreshing entities changed after " + clLib.localStorage.getLastRefreshDate() + "..");
+	var entities;
+	entities = clLib.REST.getEntities(
+		"Routes", 
+		{
+			"_updatedAt": { 
+				"$gt": {
+					"$date": clLib.localStorage.getLastRefreshDate("defaultStorage")
+				}
+			}
+		}
+	);
+	console.log("Entities to add to local storage: " + JSON.stringify(entities));
+	clLib.localStorage.addStorageItems("Routes", entities);
+	
+	entities = clLib.REST.getEntities(
+		"RouteLog", 
+		{
+			"_updatedAt": { 
+				"$gt": {
+					"$date": clLib.localStorage.getLastRefreshDate("defaultStorage")
+				}
+			}
+		}
+	);
+	console.log("Entities to add to local storage: " + JSON.stringify(entities));
+	clLib.localStorage.addStorageItems("RouteLog", entities);
+};
 
 clLib.localStorage.refreshAllData = function () {
     if (clLib.loggedInCheck()) {
@@ -720,6 +780,10 @@ clLib.localStorage.refreshAllData = function () {
 			var userRouteLogs = clLib.REST.getEntities("RouteLog", clLib.getRouteLogWhereToday());
 			console.log("GOT: " + JSON.stringify(userRouteLogs));
 			$.extend(storageObjects, userRouteLogs);
+
+			var areas = clLib.REST.getEntities("Area");
+			console.log("GOT: " + JSON.stringify(areas));
+			$.extend(storageObjects, areas);
 
 			//
 			// compile grade config for DB-like use in clLib.localStorage...
@@ -742,3 +806,5 @@ clLib.localStorage.refreshAllData = function () {
         return false;
     }
 };
+
+
