@@ -144,7 +144,9 @@ clLib.computeScore = function(routeLogObj) {
 */
 clLib.today = function() {
 	var current = new Date();
-	current.setHours(0,0,0,0);
+	// hours = UTC
+	// => we're CET, so add 1...
+	current.setHours(0+1,0,0,0);
 	return current;
 };
 
@@ -195,23 +197,46 @@ clLib.lpad = function(str1, padString, length) {
     return str;
 };
 
+clLib.rpad = function(str1, padString, length) {
+    var str = str1 +"";
+    //alert("padding " + str + " with " + padString + " to " + length);
+    while (str.length < length)
+        str = str + padString;
+    //alert("returning " + str);
+    return str;
+};
+
 clLib.dateToStr = function(dateObj) {
-	var dateStr = 
-		dateObj.getFullYear() + 
+	// ALL dates are ISO dates!!
+	var asISOstring = true;
+	var dateStr;
+	dateStr = 
+		dateObj.getUTCFullYear() + 
 		"-" + 
-        clLib.lpad((dateObj.getMonth() + 1), '0', 2) + 
+        clLib.lpad((dateObj.getUTCMonth() + 1), '0', 2) + 
 		"-" + 
-		clLib.lpad(dateObj.getDate(), '0', 2) + 
-		" " + 
-		clLib.lpad(dateObj.getHours(), '0', 2)+ 
+		clLib.lpad(dateObj.getUTCDate(), '0', 2) + 
+		// !!!
+		(asISOstring ? "T" : " " ) +
+		clLib.lpad(
+			dateObj.getUTCHours(), 
+			'0', 
+			2
+		)+ 
 		":" + 
-		clLib.lpad(dateObj.getMinutes(), '0', 2) + 
+		clLib.lpad(dateObj.getUTCMinutes(), '0', 2) + 
 		":" + 
-		clLib.lpad(dateObj.getSeconds(), '0', 2) + 
+		clLib.lpad(dateObj.getUTCSeconds(), '0', 2) + 
 		"." + 
-		clLib.lpad(dateObj.getMilliseconds(), '0', 2)
+		clLib.lpad(dateObj.getUTCMilliseconds(), '0', 3) +
+		(asISOstring ? "Z" : "")
+		//(asISOstring ? "+01:00" : "")
 	;
 	//alert(dateStr);
+	
+	//if(asISOstring) {
+	//	dateStr = { "$date" : dateStr };
+	//}
 	return dateStr;
 };
 
@@ -498,7 +523,7 @@ Array.prototype.hasValue = function(needle) {
 
 
 clLib.loggi = function(text, priority) {
-	priority = priority || 0;
+	priority = priority || window.priority || 0;
 	if(priority) {
 		if(priority == 1) {
 			alert(text);

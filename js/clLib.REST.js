@@ -11,6 +11,69 @@ clLib.REST.baseURI = "https://api.appery.io/rest/1/db";
 clLib.REST.baseCollectionsURI = clLib.REST.baseURI + "/collections/";
 clLib.REST.baseUsersURI = clLib.REST.baseURI + "/users";
 
+// prepare REST handler for appery.io results..
+clLib.REST.appery = {};
+
+clLib.REST.appery.dateToISOString = function(apperyDateStr) {
+    //console.log("-----");
+	var newStr = apperyDateStr;
+		
+	var datepattern = /(....)-(..)-(..)(.)(..):(..):(..)(\.*)(.*)/;
+	//console.log("matching " + apperyDateStr);
+	var	matches = apperyDateStr.match(datepattern);
+	var year = matches[1],
+	month = matches[2],
+	day = matches[3],
+	hour = matches[5],
+	minute = matches[6],
+	second = matches[7],
+	milli = matches[9]
+	;
+    /*
+    console.log ('year = ' + year);
+    console.log ('month = ' + month);
+    console.log ('day = ' + day);
+    console.log ('hour = ' + hour);
+    console.log ('minutes = ' + minute);
+    console.log ('seconds = ' + second);
+    console.log ('millis  = ' + milli);
+		*/
+    newStr = 
+        year + "-" + month + "-" + day + 
+        "T" + 
+        hour + ":" + minute + ":" + second + 
+        "." + clLib.rpad(milli, "0", 3) + "Z";
+	//console.log("newStr " + newStr);
+
+	return newStr;
+};
+
+
+// ApperyIO result:
+// Remaps defined colums in AJAX result object(Array of rows(=>objects)
+//
+clLib.REST.appery.postAJAXprocessing = function(AJAXResult) {
+	var colsToRemap ={
+		"_createdAt": clLib.REST.appery.dateToISOString,
+		"_updatedAt": clLib.REST.appery.dateToISOString
+	};
+	console.log("before:" + AJAXResult.length);
+	$.each(AJAXResult, function(index, value) {
+		$.each(colsToRemap, function(colName, remapFunc) {
+			if(AJAXResult[index][colName]) {
+				AJAXResult[index][colName]= remapFunc(AJAXResult[index][colName]);
+			}
+		});
+	});
+	console.log("after:" + AJAXResult.length);
+	return AJAXResult;
+};
+
+clLib.REST.postAJAXprocessing = {
+	"https://api.appery.io/rest/1/db" : clLib.REST.appery.postAJAXprocessing
+};
+
+
 /*
 *	retrieve => need to encode where string
 *	insert => do NOT encore obj props
@@ -100,9 +163,13 @@ clLib.REST.buildAJAXRequest = function(uri, method, getParams, headerParams, all
 clLib.REST.getEntities = function(entityName, whereObj) {
 	var uri = clLib.REST.baseCollectionsURI + entityName;
 	var returnObj = {};
-	returnObj[entityName] = clLib.REST.executeRetrieve(uri, 'GET', whereObj);
-
-	clLib.loggi("returning(getEntities) " + JSON.stringify(returnObj));
+	var AJAXResult = clLib.REST.executeRetrieve(uri, 'GET', whereObj);
+	console.log("result first " + JSON.stringify(AJAXResult));
+	AJAXResult = clLib.REST.postAJAXprocessing[clLib.REST.baseURI](AJAXResult);
+	
+	returnObj[entityName] = AJAXResult;
+	
+	//clLib.loggi("returning(getEntities) " + JSON.stringify(returnObj));
 	return returnObj;
 }
 
@@ -119,8 +186,6 @@ clLib.REST.createUser = function (entityName, entityInstance) {
     var uri = clLib.REST.baseUsersURI;
     var returnObj = clLib.REST.executeInsert(uri, 'POST', entityInstance, true);
 
-    //alert("returning(storeEntity) " + JSON.stringify(returnObj));
-
     return returnObj;
 }
 
@@ -129,7 +194,6 @@ clLib.REST.loginUser = function (entityName, entityInstance) {
     var uri = clLib.REST.baseURI + "/login";
 	var returnObj = clLib.REST.execAJAXRequest(uri, "GET", entityInstance, true);
 
-    //alert("returning(storeEntity) " + JSON.stringify(returnObj));
     return returnObj;
 }
 
