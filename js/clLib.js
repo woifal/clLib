@@ -637,6 +637,10 @@ if (!String.prototype.endsWith) {
 }
 
 
+clLib.dateToISOStr = function(dateObj) {
+	return JSON.parse(JSON.stringify(dateObj));
+};
+
 
 //})(jQuery)
 ;

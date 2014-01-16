@@ -651,11 +651,13 @@ clLib.UI.elements = {
 	,"currentDate" : {
 		"dbField" : "Date"
 		,"customVal": function() {
-			return new Date();
+			// Build ISO date string
+			var currentDate = clLib.dateToISOStr(new Date());
+			console.log("Storing current date of " + currentDate);
+			return currentDate;
 		}
 	}
 	,"commentText" : {
 		"dbField" : "Comment"
 	}
 };
-

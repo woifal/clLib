@@ -14,7 +14,7 @@ clLib.REST.baseUsersURI = clLib.REST.baseURI + "/users";
 // prepare REST handler for appery.io results..
 clLib.REST.appery = {};
 
-clLib.REST.appery.dateToISOString = function(apperyDateStr) {
+clLib.REST.appery.dateStrToISOString = function(apperyDateStr) {
     //console.log("-----");
 	var newStr = apperyDateStr;
 		
@@ -54,8 +54,8 @@ clLib.REST.appery.dateToISOString = function(apperyDateStr) {
 //
 clLib.REST.appery.postAJAXprocessing = function(AJAXResult) {
 	var colsToRemap ={
-		"_createdAt": clLib.REST.appery.dateToISOString,
-		"_updatedAt": clLib.REST.appery.dateToISOString
+		"_createdAt": clLib.REST.appery.dateStrToISOString,
+		"_updatedAt": clLib.REST.appery.dateStrToISOString
 	};
 	console.log("before:" + AJAXResult.length);
 	$.each(AJAXResult, function(index, value) {
