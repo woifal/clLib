@@ -348,7 +348,7 @@ clLib.getRouteLogWhereToday = function(additionalWhere) {
 */
 clLib.getRouteLogWhereAtDay = function(dateObj, additionalWhere){
 	return clLib.getRouteLogWhereAt(
-		clLib.colBetweenDate("Date", clLib.dayBegin(dateObj), clLib.dayEnd(dateObj)),
+		clLib.colBetweenDate("DateISO", clLib.dayBegin(dateObj), clLib.dayEnd(dateObj)),
 		additionalWhere
 	);
 };

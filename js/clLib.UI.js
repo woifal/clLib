@@ -92,7 +92,7 @@ clLib.UI.list.formatRouteLogRow = function(dataRow) {
 		,bubble: "Score"
 		,body: {
 			header: "RouteName",
-			items: ["Date", "Sector", "Line", "Colour", "Comment"]
+			items: ["DateISO", "Sector", "Line", "Colour", "Comment"]
 		}
 	};
 	

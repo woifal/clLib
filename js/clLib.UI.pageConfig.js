@@ -617,7 +617,7 @@ clLib.UI.elements = {
 			//alert("getting today's route logs..");
 		    // retrieve today's routelogs (sorted by Date)
 			var todaysRouteLogs = clLib.localStorage.getEntities(
-					"RouteLog", where, "defaultStorage", "Date", true);
+					"RouteLog", where, "defaultStorage", "DateISO", true);
 			// retrieve today's 10 top scored routelogs
 			//alert("getting today's top route logs..");
 			var todaysTopRouteLogs = clLib.localStorage.getEntities(
@@ -649,7 +649,7 @@ clLib.UI.elements = {
 		}
 	}
 	,"currentDate" : {
-		"dbField" : "Date"
+		"dbField" : "DateISO"
 		,"customVal": function() {
 			// Build ISO date string
 			var currentDate = clLib.dateToISOStr(new Date());
