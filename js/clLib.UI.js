@@ -1028,7 +1028,12 @@ clLib.UI.elementConfig.localVar = {
         } 
 		else if (jqmDataRole == "select" || $this.prop("tagName") == "SELECT") {
             $this.val(localVarValue);
-			$this.selectmenu("refresh");
+			//alert("jqmDataRole:" + jqmDataRole + ", $this.prop(tagName) " + $this.prop("tagName") );
+			if(jqmDataRole != 'slider') {
+				$this.selectmenu("refresh");
+			} else {
+				$this.slider("refresh");
+			}
 		}	
 		else if($this.prop("tagName") == "SPAN") {
 			$this.html(localVarValue);

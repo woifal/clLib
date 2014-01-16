@@ -31,7 +31,7 @@
 		 data-theme="a" data-add-back-btn="false"
     >
         <div id="preferences_mobileHeader1" data-role="header"
-             adata-position="fixed" data-theme="a"
+             adata-position="fixed"
         >
 <!--            <a href="clLib_startScreen.html">Home</a>-->
             <a id="preferences_cancelButton"  data-icon="delete" data-role="button" rel="external">Cancel</a> 
@@ -44,21 +44,21 @@
         <!-- mobilecontainer -->
         <div 
             id="preferences_mobilecontainer" data-role="content" 
-            data-theme=""
         >
+      
             <!-- currentUser -->
             <label for="currentUser">Username:</label>
             <button data-theme="c" data-role="button" data-iconpos="right" data-icon="gear" id="preferences_currentUserReadOnly"  type="text" name="currentUser" tabindex="1"></button>
 
             <label for="buddiesStr">Buddies:</label>
-            <input id="preferences_buddiesStr" type="text" name="buddiesStr" tabindex="2" data-theme="a"/>
+            <input id="preferences_buddiesStr" type="text" name="buddiesStr" tabindex="2"/>
     
             <label for="showTopX"># of Top-routes:</label>
-            <input id="preferences_showTopX" type="text" name="showTopX" tabindex="3" data-theme="a"/>
+            <input id="preferences_showTopX" type="text" name="showTopX" tabindex="3"/>
 <!--
             <label for="defaultLayout">Default Layout:</label>
             <select id="preferences_defaultLayout" name="defaultLayout" 
-                    data-theme="a" data-inline="false" data-mini="false" data-icon="arrow-d" data-iconpos="right"
+                    data-inline="false" data-mini="false" data-icon="arrow-d" data-iconpos="right"
                     data-native-menu="false" tabindex="4"
             >
                 <option value="default">default</option>
@@ -67,23 +67,33 @@
 -->
             <label for="defaultGradeSystem">Default Grade System:</label>
             <select id="preferences_defaultGradeSystem" name="defaultGradeSystem"
-                    data-theme="a" data-inline="false" data-mini="false" data-icon="arrow-d" data-iconpos="right"
+                    data-inline="false" data-mini="false" data-icon="arrow-d" data-iconpos="right"
                     data-native-menu="false" tabindex="4">
             </select>
                 
             <label for="defaultGrade">Default Grade:</label>
             <select id="preferences_defaultGrade" name="defaultGrade"
-                    data-theme="a" data-inline="false" data-mini="false" data-icon="arrow-d" data-iconpos="right"
+                    data-inline="false" data-mini="false" data-icon="arrow-d" data-iconpos="right"
                     data-native-menu="false" tabindex="2"></select>
 
 
             <label for="onlineMode">Online Mode:</label>
             <select id="preferences_onlineMode" name="onlineMode"
-                    data-theme="a" data-inline="false" data-mini="false" data-icon="arrow-d" data-iconpos="right"
+                    data-inline="false" data-mini="false" data-icon="arrow-d" data-iconpos="right"
                     data-native-menu="false" tabindex="4">
                 <option value="true">true</option>
                 <option value="false">false</option>
             </select>
+
+			<label style="text-align: center" for="defaultLayout">Layout to use:</label>
+			<select id="preferences_defaultLayout" name="defaultLayout" 
+					data-inline="false" data-mini="false"
+					data-role="slider"
+			>
+				<option value="default">default</option>
+				<option value="reduced">reduced</option>
+			</select>
+
 		</div>
 	</div>
 </body>

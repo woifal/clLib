@@ -49,7 +49,6 @@ clLib.UI.autoLoad = {
 		default: [
 			"areaSelect"
 			, "currentUserReadOnly"
-			, "defaultLayout"
 			, "onlineIcon"
 			]
 	}
@@ -58,7 +57,7 @@ clLib.UI.autoLoad = {
 			"currentUserReadOnly"
 			, "buddiesStr"
 			, "showTopX"
-//			, "defaultLayout"
+			, "defaultLayout"
 			, "defaultGradeSystem"
 			, "defaultGrade"
 			, "onlineMode"
@@ -85,13 +84,12 @@ clLib.UI.elementsToReset = {
 		"characterSelect"
 	]
 	, startScreen : [
-		"defaultLayout"
 	]
     , preferences: [
 		"currentUserReadOnly"
 		, "buddiesStr"
         , "showTopX"
-//        , "defaultLayout"
+        , "defaultLayout"
         , "defaultGradeSystem"
         , "defaultGrade"
     	]
@@ -143,7 +141,6 @@ clLib.UI.pageElements = {
 			"areaSelect"
 			, "selectedArea",
 			, "currentUserReadOnly"
-			, "defaultLayout"
 			, "onlineIcon"
 	    ]
 	}
@@ -152,7 +149,7 @@ clLib.UI.pageElements = {
 			"currentUserReadOnly"
 			, "buddiesStr"
             , "showTopX"
-//            , "defaultLayout"
+            , "defaultLayout"
             , "defaultGradeSystem"
             , "defaultGrade"
             , "onlineMode"
@@ -213,9 +210,8 @@ clLib.UI.elements = {
     , "buddiesStr": clLib.UI.elementConfig.localVar
     , "showTopX":       clLib.UI.elementConfig.localVar
     , "onlineMode":     clLib.UI.elementConfig.localVar
-    , "defaultLayout":  clLib.UI.elementConfig.localVarSaveImmediately
-
-    , "defaultGradeSystem" : {
+    , "defaultLayout":  clLib.UI.elementConfig.localVar
+	, "defaultGradeSystem" : {
 		"localVarField" : "defaultGradeSystem"
 		,"dbField" : "GradeSystem"
 		,"refreshFromEntity" : "Grades"
