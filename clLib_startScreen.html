@@ -49,57 +49,71 @@
 				<img id="startScreen_onlineIcon" src="files/views/assets/image/online.jpg" style="width:20px; height:20px"/>
             </h1>
             <!-- preferencesButton -->
-            <a class='ui-btn-right'
+            <a data-role="button"
+				class='ui-btn-right'
                style='min-height:20px; ' id="startScreen_preferencesButton" data-corners="true"
                data-icon="gear" data-inline='true'
-               data-mini='true' data-theme="a" tabindex="11">
-                Settings
+               data-mini='true' data-theme="a"
+			data-iconpos="notext">
+            <!--    Settings-->
             </a>
             <!-- refreshRouteStorageButton -->
             <a data-role="button"
                 class='ui-btn-left' style='min-height:20px; '
                 id="startScreen_refreshRouteStorageButton" data-corners="true" data-icon="refresh"
                 data-inline='true' data-mini='true'
-                data-theme="a" tabindex="5">
-                Refresh
+                data-theme="a" 
+				data-iconpos="notext">
+                <!--Refresh-->
 			</a>
         </div>
-
 
         <div 
              id="startScreen_mobilecontainer1" data-role="content" 
              data-theme=""
         >
-			<div>
-				<a id="startScreen_usersButton" data-theme="b" data-role="button" data-iconpos="right" data-icon="gear">
-					Hello, <span data-role="none" id="startScreen_currentUserReadOnly">user</span>!
-				</a>
-			</div>
-
-            <!-- Add new route.. -->
-            <div style="text-align: center">
-                <a id="addRouteButton" href="#"><img src="files/views/assets/image/add_button.png" /></a>
-            </div>
-
-			<!-- Area -->
-            <label style="text-align: center" for="startScreen_areaSelect">Current area:</label>
-            <select id="startScreen_areaSelect" name="startScreen_areaSelect" data-theme="a" tabindex="4">
-                <!-- Areas go here.. -->
-            </select>
-			<div style="text-align:center" data-role="fieldcontain">
-				<label style="text-align: center" for="defaultLayout">New RouteLog Layout:</label>
-            </div>
-			<div style="text-align:center" data-role="fieldcontain">
-			<select id="startScreen_defaultLayout" name="defaultLayout" 
-                    data-theme="a" data-inline="false" data-mini="false" adata-icon="arrow-d" adata-iconpos="right"
-                    adata-native-menu="false" tabindex="4"
-					data-role="slider"
-            >
-                <option value="default">default</option>
-                <option value="reduced">reduced</option>
-            </select>
-			</div>
-		 
+			<ul data-role="listview" data-inset="true" data-divider-theme="c">
+<!--				<li data-role="list-divider">Add Route Log:</li>-->
+				<li data-theme="c" data-icon="gear">
+				<!--<div>-->
+					<a id="startScreen_usersButton">
+						User: <span data-role="none" id="startScreen_currentUserReadOnly">user</span>!
+					</a>
+				<!--</div>-->
+				</li>
+				<li data-role="list-divider">Add Route Log:</li>
+				<li>
+					<!-- Add new route.. -->
+					<div style="text-align: center">
+						<a id="addRouteButton" href="#"><img src="files/views/assets/image/add_button.png" /></a>
+					</div>
+				</li>
+				<li data-role="list-divider">Current area:</li>
+				<li> 
+					<!-- Area -->
+<!--					<label style="text-align: center" for="startScreen_areaSelect">Current area:</label>-->
+					<select id="startScreen_areaSelect" name="startScreen_areaSelect" data-theme="a">
+						<!-- Areas go here.. -->
+					</select>
+				</li>
+				<li data-role="list-divider">New Route Log Layout:</li>
+				<li>
+		<!--			<div style="text-align:center" data-role="fieldcontain">
+						<label style="text-align: center" for="defaultLayout">New RouteLog Layout:</label>
+					</div>
+		-->
+					<div style="text-align:center" data-role="fieldcontain">
+					<select id="startScreen_defaultLayout" name="defaultLayout" 
+							data-theme="a" data-inline="false" data-mini="false" adata-icon="arrow-d" adata-iconpos="right"
+							adata-native-menu="false" 
+							data-role="slider"
+					>
+						<option value="default">default</option>
+						<option value="reduced">reduced</option>
+					</select>
+					</div>
+				</li>
+			</ul>
 			
 			
         </div>
