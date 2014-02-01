@@ -1,0 +1,13 @@
+{
+  "name": "app_name",
+  "version": "0.0.1",
+  "dependencies": {   
+    "restify": "2.5.1",   
+    "pg": "0.6.x",
+	"nodemailer": "0.3.x"
+  },
+    "engines": {
+    "node": "0.10.x",
+    "npm": "1.2.x"
+  }
+}
