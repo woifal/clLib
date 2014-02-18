@@ -501,14 +501,16 @@ clLib.UI.fillUIelements = function(pageName, currentJqmSlide, layout) {
 	});
 
 	// populate autoload elements
-	$.each(clLib.UI.autoLoad[pageName][layout], function(idx, elementName) {
-		clLib.loggi("triggering autoload for " + elementName, 2);
-		clLib.loggi("html:" + clLib.UI.byId$(elementName).html(), 2);
-		var optionObj = {};
-		clLib.UI.byId$(elementName).trigger("refresh.clLib", 
-			clLib.UI.addObjArr(optionObj,["eventSourcePath"], "AUTOLOAD")
-		);
-	});
+	if(clLib.UI.autoLoad[pageName] && clLib.UI.autoLoad[pageName][layout]) {
+		$.each(clLib.UI.autoLoad[pageName][layout], function(idx, elementName) {
+			clLib.loggi("triggering autoload for " + elementName, 2);
+			clLib.loggi("html:" + clLib.UI.byId$(elementName).html(), 2);
+			var optionObj = {};
+			clLib.UI.byId$(elementName).trigger("refresh.clLib", 
+				clLib.UI.addObjArr(optionObj,["eventSourcePath"], "AUTOLOAD")
+			);
+		});
+	}
 };
 
 clLib.UI.addObjArr = function(anObj, pathArray, objValue) {
@@ -817,7 +819,7 @@ clLib.UI.RESTSaveHandler = function (currentJqmSlide, currentLayout, successHand
 
 
 clLib.UI.userHandler = function (currentJqmSlide, currentLayout, successHandler, additionalData) {
-    var saveObj = {};
+    var userObj = {};
     if (!currentJqmSlide) {
         currentJqmSlide = localStorage.getItem("currentJqmSlide");
     }
@@ -831,23 +833,23 @@ clLib.UI.userHandler = function (currentJqmSlide, currentLayout, successHandler,
         if (!elementConfig) {
             alert("will not save " + elementName + ", no config found!");
         } else {
-            saveObj[elementConfig["dbField"]] = clLib.UI.getVal(elementName);
+            userObj[elementConfig["dbField"]] = clLib.UI.getVal(elementName);
         }
     });
     $.each(additionalData, function (elementName, elementValue) {
         //alert("2eaching " + elementName + " and " + elementValue);
-        saveObj[elementName] = elementValue;
+        userObj[elementName] = elementValue;
     });    
-    //alert("saveObj is " + JSON.stringify(saveObj));
+    //alert("userObj is " + JSON.stringify(userObj));
     try {
         var returnObj = {};
         var userAction = additionalData["action"];
 
         if (userAction == "create") {
-            returnObj = clLib.REST.createUser("users", saveObj, "users");
+            returnObj = clLib.REST.createUser(userObj);
         }
         else if (userAction == "login") {
-            returnObj = clLib.REST.loginUser("users", saveObj, "users");
+            returnObj = clLib.REST.loginUser(userObj);
         }
         else if (userAction == "logout") {
 			localStorage.removeItem("currentPassword");

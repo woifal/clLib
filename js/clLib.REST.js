@@ -10,6 +10,7 @@ clLib.clException= function(name, message) {
 clLib.REST.baseURI = "https://api.appery.io/rest/1/db";
 clLib.REST.baseCollectionsURI = clLib.REST.baseURI + "/collections/";
 clLib.REST.baseUsersURI = clLib.REST.baseURI + "/users";
+clLib.REST.clLibServerURI = "http://localhost:1983";
 
 // prepare REST handler for appery.io results..
 clLib.REST.appery = {};
@@ -76,7 +77,7 @@ clLib.REST.postAJAXprocessing = {
 
 /*
 *	retrieve => need to encode where string
-*	insert => do NOT encore obj props
+*	insert => do NOT encode obj props
 */
 clLib.REST.executeRetrieve = function (uri, method, whereObj, allowNoSessionToken) {
 	if(whereObj) {
@@ -99,17 +100,18 @@ clLib.REST.execAJAXRequest = function (uri, method, params, allowNoSessionToken)
 	var request = clLib.REST.buildAJAXRequest(uri, method, params, null, allowNoSessionToken);
 
 	var returnObj = {};
+
 	$.ajax(request)
 		.done(function(data) {
 			clLib.loggi("ajax done " + JSON.stringify(data));
 			returnObj = data;
 		})
 		.error(function(data) {
+			console.log("AJAX ERROR: " + JSON.stringify(data));
 			throw new clLib.clException("AJAX", JSON.stringify(data));
 			returnObj = null;
 		})
 	;
-
 	clLib.loggi("returing returoIbj of " + JSON.stringify(returnObj));
 	return returnObj;
 	
@@ -182,22 +184,38 @@ clLib.REST.storeEntity = function (entityName, entityInstance) {
 }
 
 
-clLib.REST.createUser = function (entityName, entityInstance) {
+clLib.REST.createUser = function (userInstance) {
     var uri = clLib.REST.baseUsersURI;
-    var returnObj = clLib.REST.executeInsert(uri, 'POST', entityInstance, true);
+    var returnObj = clLib.REST.executeInsert(uri, 'POST', userInstance, true);
 
     return returnObj;
 }
 
 
-clLib.REST.loginUser = function (entityName, entityInstance) {
+clLib.REST.loginUser = function (userInstance) {
     var uri = clLib.REST.baseURI + "/login";
-	var returnObj = clLib.REST.execAJAXRequest(uri, "GET", entityInstance, true);
+	var returnObj = clLib.REST.execAJAXRequest(uri, "GET", userInstance, true);
 
     return returnObj;
 }
 
+clLib.REST.changePassword = function (options) {
+	options.uri = clLib.REST.clLibServerURI + "/setPassword";
+	clLib.REST.execGET(options);
+}
 
+clLib.REST.requestVerification = function(options) {
+	options.uri = clLib.REST.clLibServerURI + "/requestVerification";
+	clLib.REST.execGET(options);
+};
 
-
-
+clLib.REST.execGET = function(options) {
+	//alert("requesting url " + options.uri);
+	try {
+		var returnObj = clLib.REST.execAJAXRequest(options.uri, "GET", options.entityInstance, true);
+	} catch (e) {
+		options.onError(e);
+	}
+	options.onSuccess(returnObj);
+	
+};

@@ -16,6 +16,7 @@ clLib.UI.pageRequisites = {
     , "preferences": { "pagebeforeshow" : [] }
     , "newRouteLog": { "pagebeforeshow" : [clLib.prefsCompleteCheck, clLib.tryLogin, clLib.wasOnlineCheck] }
     , "users": { "pagebeforeshow" : [clLib.tryLogin] }
+    , "users_verification": { }
 };
 
 
@@ -68,6 +69,12 @@ clLib.UI.autoLoad = {
 			"currentUser",
 			"currentPassword",
 			"loginError"
+		]
+	}
+    ,"users_verification" : {
+		default: [
+			"currentUser",
+			"notification"
 		]
 	}
 };
@@ -162,6 +169,12 @@ clLib.UI.pageElements = {
 			,"loginError"
         ]
     }
+    ,"users_verification": {
+        default: [
+			"currentUser",
+			"notification"
+        ]
+    }
 };
 
 
@@ -207,6 +220,38 @@ clLib.UI.elements = {
         ,
 		"dbField": "loginError"
     })
+	, "notification": $.extend({}, clLib.UI.elementConfig.localVar, {
+	    "refreshHandler": function ($this) {
+			//alert("hiding " + "#" + $this.attr("id") + "Container");
+			$("#" + $this.attr("id") + "Container").hide();
+			var elementName = clLib.UI.elementNameFromId($this.attr("id"));
+			var localVarValue = localStorage.getItem(elementName);
+			if(localVarValue) {
+				//alert("yes, value; " + localVarValue);
+				$("#" + $this.attr("id") + "Container").show();
+				//alert("AAAA setting element " + elementName + " to " + localStorage.getItem(elementName));
+				//$this.val(localVarValue).attr('selected', true).siblings('option').removeAttr('selected');
+				//$this.selectmenu("refresh", true);
+				var jqmDataRole = $this.attr("data-role");
+				if (jqmDataRole == "button") {
+					alert("button - " + $this.attr("id") + " setting txt to " + localVarValue);
+					$this.text(localVarValue);
+		//            $this.find(".ui-btn-text").text(localVarValue);
+					$this.button("refresh");
+				} 
+				else if($this.prop("tagName") == "SPAN") {
+					$this.html(localVarValue);
+				}		
+				else {
+					$this.val(localVarValue);
+				}
+				//alert("set value to " + localVarValue);
+			}
+		}
+        ,
+		"dbField": "loginError"
+    })
+
     , "buddiesStr": clLib.UI.elementConfig.localVar
     , "showTopX":       clLib.UI.elementConfig.localVar
     , "onlineMode":     clLib.UI.elementConfig.localVar

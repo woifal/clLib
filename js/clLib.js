@@ -553,10 +553,12 @@ clLib.login = function() {
 	var userObj = {};
 	userObj["username"] = localStorage.getItem("currentUser");
 	userObj["password"] = localStorage.getItem("currentPassword");
-    var returnObj = clLib.REST.loginUser("users", userObj, "users");
+    var returnObj = clLib.REST.loginUser(userObj);
 	var sessionToken = returnObj["sessionToken"];
+	var currentUserId = returnObj["_id"];
 	//alert("retrieved sessionToken >" + sessionToken + "<");
 	clLib.sessionToken = sessionToken;
+	clLib.currentUserId = currentUserId;
 	// Clear any "old" error messages 
 	localStorage.removeItem("loginError");
 };

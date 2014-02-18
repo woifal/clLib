@@ -155,6 +155,51 @@ clLib.PAGES.handlers = {
 	        localStorage.setItem("currentJqmSlide", "newRouteLog");
         }
 	}
+	,"users_verification": {
+	    "pageinit"	: function () {
+			localStorage.setItem("notification", "");
+			var userEntity = {
+				"username" : localStorage.getItem("currentUser") 
+			};
+			var errorHandler = function(e) {
+				alert("CAUGHT: " + JSON.stringify(e));
+				var errorMsg = JSON.stringify(e);
+		/*
+				if(e.message && JSON.parse(e.message)["responseText"]) {
+					errorMsg = JSON.parse(JSON.parse(e.message)["responseText"])["description"];
+				}
+		*/
+				localStorage.setItem("notification", "Could not: " + errorMsg);
+			};
+			
+			var successHandler = function() {
+				clLib.UI.fillUIelements("users_verification", "users_verification");
+			};
+			
+
+			$("#users_verification_requestTokenButton").on("click", function () {
+				clLib.UI.execWithMsg(function() {
+					clLib.REST.requestVerification({
+						entityInstance : userEntity,
+						onSuccess : successHandler, 
+						onError : errorHandler
+					});
+				}, {text: "generating token"});
+			});
+			$("#users_verification_changePassword").on("click", function () {
+	            clLib.UI.execWithMsg(function() {
+					clLib.REST.changePassword({
+						entityInstance : userEntity,
+						onSuccess : successHandler, 
+						onError : errorHandler
+					});
+				}, {text: "changing password"});
+			});
+		}
+        , "pagebeforeshow": function () {
+			clLib.UI.fillUIelements("users_verification", "users_verification");
+        }
+	}
 	,"users": {
 	    "pageinit"	: function () {
 
@@ -175,6 +220,9 @@ clLib.PAGES.handlers = {
 					clLib.UI.save(null, null, null, { action: "create" });
 	                clLib.UI.fillUIelements("users", "users");
 				}, {text: "creating user.."});
+			});
+	        $("#users_forgotPwdButton").on("click", function () {
+				$.mobile.navigate("clLib_users_verification.html");
 			});
 	        
 			$("#users_preferencesButton").die("click").click(function () {

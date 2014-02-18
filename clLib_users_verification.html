@@ -32,21 +32,21 @@
 </head> 
 
 <body> 
-        <div id="users" data-role="page"
+        <div id="users_verification" data-role="page"
 			class="clPage"
 			data-theme="a" data-add-back-btn="false"
 		>
-            <div id="users_mobileheader1" data-role="header"
+            <div id="users_verification_mobileheader1" data-role="header"
                  adata-position="fixed" data-theme="a"
             >
                 <a href="clLib_startScreen.html">Home</a>
                 <h1>
-                    Users
+                    Change password
 					<!--<img id="header_onlineIcon" src="files/views/assets/image/online.jpg" style="width:20px; height:20px"/>-->
                 </h1>
 				<!-- preferencesButton -->
 				<a class='ui-btn-right'
-				   style='min-height:20px; ' id="users_preferencesButton" data-corners="true"
+				   style='min-height:20px; ' id="users_verification_preferencesButton" data-corners="true"
 				   data-icon="gear" data-inline='true'
 				   data-mini='true' data-theme="a" tabindex="11">
 					Settings
@@ -55,61 +55,56 @@
             </div>
 
 
-            <div id="users_mobilecontainer1" data-role="content"
+            <div id="users_verification_mobilecontainer1" data-role="content"
                 data-theme="">
 				<!-- Floating element for landscape orientation.. -->
                 <!--<div style="afloat:left">-->
 
-<div id="users_loginErrorContainer" style="white-space: normal" data-role="collapsible" data-collapsed="true" data-content-theme="b" data-theme="c" data-iconpos="right" adata-expanded-icon="alert" adata-collapsed-icon="alert">
-    <h4 style="white-space: normal" ><span style="white-space: normal" id="users_loginError">Not logged in.</span></h4>
-	<p>1) You can proceed with the app by simply providing a (currently unauthenticated) username below and setting online mode to "false" on the <a href="clLib_preferences.html">general preferences</a> - but your routes will be saved locally and will only by synced to the server after you successfully log in.</p>
-	<p>2) Provide a valid username and password and login</p>
-	<p>3) Create a new user</p>
-</div>
+				<div id="users_verification_notificationContainer" 
+					style="white-space: normal" data-role="collapsible" data-collapsed="true" data-content-theme="b" data-theme="c" 
+					data-iconpos="right" adata-expanded-icon="alert" adata-collapsed-icon="alert"
+				>
+					<h4 style="white-space: normal" ><span style="white-space: normal" id="users_verification_notification">You're about to change your password.</span></h4>
+				</div>
 
                 <div>
                     <!-- userName -->
                     <div>
-                        <label style="font-size: 8px;" for="users_currentUser">User name</label>
-                        <input type="text" id="users_currentUser" name="users_currentUser"
+                        <label style="font-size: 8px;" for="users_verification_currentUser">User name</label>
+                        <input type="text" id="users_verification_currentUser" name="users_verification_currentUser"
                                value="" placeholder="Username..." data-theme="a" tabindex="7" />
                     </div>
-                    <!-- password -->
+                    <!-- verificationToken-->
                     <div>
-                        <label style="font-size: 8px;" for="users_currentPassword">Password</label>
-                        <input type="password" id="users_currentPassword" name="users_currentPassword"
-                               value="" placeholder="Password..." data-theme="a" tabindex="7" />
+                        <label style="font-size: 8px;" for="users_verification_token">User name</label>
+                        <input type="text" id="users_verification_token" name="users_verification_token"
+                               value="" placeholder="Verification token" data-theme="a" tabindex="7" />
                     </div>
-                    <!-- Forgot password -->
+                    <!-- newPassword-->
+                    <div>
+                        <label style="font-size: 8px;" for="users_verification_newPassword">User name</label>
+                        <input type="text" id="users_verification_newPassword" name="users_verification_newPassword"
+                               value="" placeholder="New password" data-theme="a" tabindex="7" />
+                    </div>
+                    
+                    <!-- request token -->
                     <a data-role="button"
-                       id="users_forgotPwdButton" data-corners="true" data-icon="check" data-iconpos="right"
+                       id="users_verification_requestTokenButton" data-corners="true" data-icon="check" data-iconpos="right"
                        data-mini="false" data-theme="a" tabindex="8">
-                        Forgot Password
+                        Request verification token
                     </a>
-                    <!-- Logout user -->
+                    <!-- change password  -->
                     <a data-role="button"
-                       id="users_logoutButton" data-corners="true" data-icon="check" data-iconpos="right"
+                       id="users_verification_changePassword" data-corners="true" data-icon="check" data-iconpos="right"
                        data-mini="false" data-theme="a" tabindex="8">
-                        Logout!
-                    </a>
-                    <!-- Login user -->
-                    <a data-role="button"
-                       id="users_loginButton" data-corners="true" data-icon="check" data-iconpos="right"
-                       data-mini="false" data-theme="a" tabindex="8">
-                        (Re)login!
-                    </a>
-                    <!-- Create new user -->
-                    <a data-role="button"
-                       id="users_newUserButton" data-corners="true" data-icon="check" data-iconpos="right"
-                       data-mini="false" data-theme="a" tabindex="8">
-                        Create new user!
+                        Change Password
                     </a>
                 </div>
 				
 			</div>
             <!-- mobilefooter1 -->
             <div data-role="footer" data-position="fixed"
-                 id="users_mobilefooter1" data-theme="a">
+                 id="users_verification_mobilefooter1" data-theme="a">
             </div>
         </div>
 </body>
