@@ -27,8 +27,35 @@ var server = restify.createServer(options);
  
 //Use bodyParser to read the body of incoming requests
 //server.use(restify.bodyParser({ mapParams: true }));
-server.use(restify.queryParser()); 
+
+//server.use(restify.queryParser()); 
+
+//server.use(restify.fullResponse());
+server.use(restify.fullResponse());
+function unknownMethodHandler(req, res) {
+	if (req.method.toLowerCase() === 'options') {
+		console.log('received an options method request');
+		var allowHeaders = ['Accept', 'Accept-Version', 'Content-Type', 'Api-Version', 'Origin', 'X-Requested-With']; // added Origin & X-Requested-With
+
+		if (res.methods.indexOf('OPTIONS') === -1) res.methods.push('OPTIONS');
+
+		res.header('Access-Control-Allow-Credentials', true);
+		res.header('Access-Control-Allow-Headers', "content-type,x-appery-database-id");
+		res.header('Access-Control-Allow-Methods', res.methods.join(', '));
+		res.header('Access-Control-Allow-Origin', req.headers.origin);
+		return res.send(204);
+	} else {
+		return res.send(new restify.MethodNotAllowedError());
+	}
+}
+
+server.use(restify.fullResponse());
+server.on('MethodNotAllowed', unknownMethodHandler);
+
 server.listen(PORT, '0.0.0.0');
+server.use(restify.CORS());
+server.use(restify.fullResponse());
+
 util.log("listening "+PORT);
  
 
@@ -49,42 +76,52 @@ adminUserObj["password"] = "foobar";
 var adminDBSession;
 
 
-adminDBSession = RESTHandler.loginUser(adminUserObj, function(resultObj) {
-	RESTHandler.setAdminDBSession(resultObj.data);
-	util.log("<----  LOGGED in .........");
-},
-function(errorObj) {
-	util.log("!!!!!! ERROR WHILE LOGGING IN:");
-	util.log(JSON.stringify(errorObj));
+var fooFunc = function() {
+	return "";
+};
+
+adminDBSession = RESTHandler.loginUser({
+	data : adminUserObj,
+	onSuccess : function(resultObj) {
+		RESTHandler.setAdminDBSession(resultObj.data);
+		util.log("<----  LOGGED in .........");
+	},
+	onError: function(errorObj) {
+		util.log("!!!!!! ERROR WHILE LOGGING IN:");
+		util.log(fooFunc(errorObj));
+	}
 });
 
 
+
 server.get('/requestVerification', function(req, res) {
+	util.log("getting..");
 	var resText = [];
 	var resCount = 0;
 	// verify user.
-	RESTHandler.getEntities(
-		"users", 
-		{"username": req.params["username"]}, 
-		function(resultObj, responseStream) { 
-		// upon success...
+	RESTHandler.getEntities({
+		entity : "users", 
+		where : {"username": req.params["username"]}, 
+		responseStream : res,
+		onSuccess : function(resultObj, responseStream) { 
+			// upon success...
 			var userDetails = resultObj.data[0];
-			util.log("Found user >" + JSON.stringify(userDetails) + "<"); 
+			util.log("Found user >" + fooFunc(userDetails) + "<"); 
 			
 			// store newly generated token
 			var verificationToken = clLib.server.generateRandomToken();
-			RESTHandler.updateEntity( 
-				"users",
-				userDetails["_id"],
-				//{"verificationToken": verificationToken},
-				{"username": req.params["username"], "verificationToken": verificationToken},
-				function(resultObj, responseStream) {
+			RESTHandler.updateEntity({
+				entity : "users",
+				id : userDetails["_id"],
+				data : {"username": req.params["username"], "verificationToken": verificationToken},
+				responseStream : res,
+				onSuccess : function(resultObj, responseStream) {
 					util.log("Token >" + verificationToken + "< stored at >" + resultObj.data["_updatedAt"] + "<");
 					
 					userDetails["verificationToken"] = verificationToken;
 					// send token to user..
 					util.log("Sending email..");
-					emailOptions = {
+					var options = {
 						"template": {
 							name: "verificationEmail",
 							vars: userDetails
@@ -93,50 +130,52 @@ server.get('/requestVerification', function(req, res) {
 //						"subject": "token test...",
 //						"body": "your token is >" + verificationToken + "<"
 					}
-					mailHandler.send(emailOptions, function(responseStream) {
-						responseStream.send(JSON.stringify({
-							result: "email sent:"// + JSON.stringify(msgSent)
-						}));
+					
+					mailHandler.send({
+						emailOptions : options, 
+						onSuccess : function(mailRespMsg) {
+							responseStream.send(JSON.stringify({
+								result: "email sent:" + mailRespMsg
+							}));
+						},
+						onError : function(mailRespMsg) {
+							responseStream.send(500, JSON.stringify({
+								result: "email sent:" + mailRespMsg
+							}));
+						}
 					});
-					
-			
-	
-				},
-				null, 
-				res
-				
-			);
-					
-		},
-		null,
-		res
-	);
+				}
+			});
+		}
+	});
 });
 	
 
+	
 server.get('/setPassword', function(req, res) {
 	// verify user.
-	RESTHandler.getEntities(
-		"users", 
-		{"username": req.params["username"]}, 
-		function(resultObj, responseStream) { 
+	RESTHandler.getEntities({
+		entity : "users", 
+		where : {"username": req.params["username"]}, 
+		responseStream: res,
+		onSuccess : function(resultObj, responseStream) { 
 		// upon success...
 			var userDetails = resultObj.data[0];
-			util.log("Found user >" + JSON.stringify(userDetails) + "<"); 
+			util.log("Found user >" + fooFunc(userDetails) + "<"); 
 			
 			// store newly generated token
 			var dbVerificationToken = userDetails["verificationToken"];
 			util.log("verificationToken is >" + dbVerificationToken + "<");
 			if(req.params["verificationToken"] == dbVerificationToken) {
-				
-				RESTHandler.updateEntity( 
-					"users",
-					userDetails["_id"],
-					{
+				RESTHandler.updateEntity({
+					entity : "users",
+					id : userDetails["_id"],
+					data : {
 						"verificationToken": "",
 						"password": req.params["password"]
 					},
-					function(resultObj, responseStream) {
+					responseStream : res,
+					onSuccess : function(resultObj, responseStream) {
 						util.log("Token updated, password stored at >" + resultObj.data["_updatedAt"] + "<");
 						
 						// send token to user..
@@ -144,31 +183,34 @@ server.get('/setPassword', function(req, res) {
 
 						
 						userDetails["newPassword"] = req.params["password"];
-						emailOptions = {
+						var options = {
 							"template": {
 								name: "passwordChanged",
 								vars: userDetails
 							},
 							"to": userDetails["email"]
 						}
-						mailHandler.send(emailOptions, function(responseStream) {
-							responseStream.send(JSON.stringify({
-								result: "email sent:"// + JSON.stringify(msgSent)
-							}));
+						mailHandler.send({
+							emailOptions : options, 
+							onSuccess : function(mailRespMsg) {
+								responseStream.send(JSON.stringify({
+									result: "email sent:" + mailRespMsg
+								}));
+							},
+							onError : function(mailRespMsg) {
+								responseStream.send(500, JSON.stringify({
+									result: "email sent:" + mailRespMsg
+								}));
+							}
 						});
 		
-					},
-					null, 
-					res
-					
-				);
+					}
+				});
 			} else {
 				responseStream.send("tokens: >" + req.params["verificationToken"] + "< and >" + dbVerificationToken+ 	 "< do not match!");
 			}
-		},
-		null,
-		res
-	);
+		}
+	});
 });
 	
 
@@ -193,7 +235,7 @@ server.get('/sendmail', function(emailParams, res) {
 
 //DEFINE THE URIs THE SERVER IS RESPONDING TO
 server.get('/events', function(req, res) {
-   util.log("GET request:" + JSON.stringify(req.params));
+   util.log("GET request:" + fooFunc(req.params));
   var events = new eventsResource.Events() ;
    
   //Get all events from DB
@@ -211,39 +253,3 @@ server.get('/events', function(req, res) {
 });
 
 
-server.get('/test', function(req, res) {
-	var verificationToken = clLib.server.generateRandomToken();
-
-	var resText = [];
-	var resCount = 0;
-	RESTHandler.getEntities(
-		"users", 
-		{"username": req.params["username"]}, 
-		function(resultObj, responseStream) { 
-		// upon success...
-			var userDetails = resultObj.data;
-			util.log(resCount + " callback " + userDetails[0]["_id"] + " saves: " + JSON.stringify(userDetails[0])); //._id);
-			resText[resCount++] = "#" + resCount + "-->" + userDetails[0]["_id"];
-			util.log("resText is now " + JSON.stringify(resText));
-			
-			RESTHandler.getEntities(
-				"users", 
-				{"username": "woifal"}, 
-				function(resultObj2) {
-				// upon further success
-					var userDetails2 = resultObj2.data;
-					util.log(resCount + " callback " + userDetails2[0]["_id"] + " saves: " + JSON.stringify(userDetails2[0])); //._id);
-					resText[resCount++] = "#" + resCount + "-->" + userDetails2[0]["_id"];
-					util.log("resText is now " + JSON.stringify(resText));
-					
-					responseStream.send("callbackresults: " + JSON.stringify(resText));
-					// close callback loop..
-				}
-			);
-		},
-		null, // errorHandler
-		res
-	);
-	util.log("Request performed. Waiting for response.");
-	
-});

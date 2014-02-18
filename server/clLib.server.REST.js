@@ -7,6 +7,9 @@ var https = require('https');
 var URL = require('url');
 var util = require("util");
 
+var fooFunc = function() {
+	return "";
+};
 function serverREST(){};
 exports.serverREST = serverREST;
 serverREST.prototype.setAdminDBSession = function(adminDBSession) {
@@ -20,16 +23,26 @@ clLib.server.baseURI = "https://api.appery.io/rest/1/db";
 clLib.server.baseCollectionsURI = clLib.server.baseURI + "/collections";
 clLib.server.baseUsersURI = clLib.server.baseURI + "/users";
 
-//clLib.localStorage.getEntities = function(entity, whereObj, storageName, sortKey, descSortFlag, limit) {
-
-serverREST.prototype.loginUser = function (userInstance, callbackFunc, errorFunc, responseStream) {
+serverREST.prototype.loginUser = function(options) {
+	var 
+		userInstance = options["data"],
+		callbackFunc = options["onSuccess"],
+		errorFunc = options["onError"],
+		responseStream = options["responseStream"]
+	;
     util.log("-----> LOGGING in .........");
 	var uri = clLib.server.baseURI + "/login";
 //	var returnObj = this.executeRequest(uri, "GET", JSON.stringify(userInstance));
 	this.executeRequest(uri, "GET", "username=" + userInstance.username + "&password=" + userInstance.password, callbackFunc, errorFunc, responseStream);
 };
 
-serverREST.prototype.getEntities = function(entityName, whereObj, callbackFunc, errorFunc, responseStream) {
+serverREST.prototype.getEntities = function(options) {
+	var entityName = options["entity"];
+	var whereObj = options["where"];
+	var callbackFunc = options["onSuccess"];
+	var errorFunc = options["onError"];
+	var responseStream = options["responseStream"];
+	
 	//var uri = clLib.server.baseCollectionsURI + entityName;
 	var uri = clLib.server.baseUsersURI;
 	var returnObj = {};
@@ -38,7 +51,14 @@ serverREST.prototype.getEntities = function(entityName, whereObj, callbackFunc, 
 	util.log("THE ENTITY: " + JSON.stringify(entityName));
 	util.log("THE WHEREOBJ: " + JSON.stringify(whereObj));
 	var reqParams = "where=" + encodeURIComponent(JSON.stringify(whereObj));
-	util.log("THE REQ PARAMS:" + reqParams);
+/*
+	util.log("TYPEOF" + typeof(reqParams));
+	if(typeof(reqParams) == "string") {
+		util.log("THE REQ PARAMS:" + JSON.stringify(reqParams));
+	} else {
+		util.log("THE REQ PARAMS:" + JSON.stringify(Object.keys(reqParams)));
+	};
+*/
 	var serverResult = this.executeRequest(uri, 'GET', reqParams, callbackFunc, errorFunc, responseStream	);
 	//util.log("result first " + JSON.stringify(serverResult));
 	//serverResult = clLib.REST.postAJAXprocessing[clLib.REST.baseURI](AJAXResult);
@@ -46,7 +66,14 @@ serverREST.prototype.getEntities = function(entityName, whereObj, callbackFunc, 
 };
 
 
-serverREST.prototype.updateEntity = function(entityName, entityId, entityData, callbackFunc, errorFunc, responseStream) {
+serverREST.prototype.updateEntity = function(options) {
+	var entityName = options["entity"];
+	var entityId = options["id"];
+	var entityData = options["data"];
+	var callbackFunc = options["onSuccess"];
+	var errorFunc = options["onError"];
+	var responseStream = options["responseStream"];
+	
 	//var uri = clLib.server.baseCollectionsURI + "/" + entityName + "/" + entityId;
 	var uri = clLib.server.baseUsersURI + "/" + entityId;
 	
@@ -73,70 +100,54 @@ var fooException= function(name, message) {
 serverREST.defaults = {
 	"errorFunc" : function(resultObj, responseStream) {
 		util.log("standard errorFunc: " + JSON.stringify(resultObj) + "," + responseStream);
-		responseStream.send(JSON.stringify(resultObj));
+		responseStream.send(500, new Error(JSON.stringify(resultObj)));
 	}
 };
 
 serverREST.prototype.executeRequest = function(uri, method, params, callbackFunc, errorFunc, responseStream, contentLength) {
+	var reqOptions = {};
+	reqOptions["params"] =  params;
+
 	var resultObj = {};
-	
-	var postData;
 	
 	if(!errorFunc) {
 		errorFunc = serverREST.defaults["errorFunc"];
 	}
 
 	var URLObj = URL.parse(uri);
-	var host = URLObj.host;
-	var path = URLObj.pathname;
-	if(method == "GET") {
-		path += "?" + params;
-	} else {
-		postData = JSON.stringify(params);
-		postData = "{'usernamesdf': 'asdfasf', 'password':'asdf'}";
-		//	postData = ('{"asdfasfdsafusername": "asdfasf", "password":"asdf"}');
-		//postData = "{\foo':'blerl'}";
-		postData = "\{\"XXX\": 123\}";
-		postData = JSON.stringify(params);
-		util.log("POST DATA >" + postData + "<");
-	}
-	
-	// An object of options to indicate where to post to
-	var httpHeaders = {
+	reqOptions["host"] = URLObj.host;
+	reqOptions["path"] =  URLObj.pathname;
+
+	reqOptions.httpHeaders = {
 		"X-Appery-Database-Id" : "52093c91e4b04c2d0a027d7f",
 		"X-Appery-Master-Key": "14e89fa4-48ff-4696-83fc-c0d58fe10f49"
 	};
 	if(this.adminDBSession) {
-		httpHeaders["X-Appery-Session-Token"] = this.adminDBSession["sessionToken"]
+		reqOptions.httpHeaders["X-Appery-Session-Token"] = this.adminDBSession["sessionToken"]
 	}
-	if(method != "GET") {
-		httpHeaders['Accept'] = "application/json"; //, text/javascript, */*; q=0.01";
-		httpHeaders['Accept-Encoding'] = "gzip, deflate";
-		httpHeaders['Accept-Language'] = "de-de,de;q=0.8,en-us;q=0.5,en;q=0.3";
-		httpHeaders['Connection'] = "keep-alive";
-		httpHeaders['DNT'] = "1";
-		httpHeaders['User-Agent'] = "curl/7.32.0";
-		httpHeaders['Host'] = "api.appery.io";
-	}
-	
-	if(method != "GET") {
-		httpHeaders['Content-Type'] = 'application/json';//; charset=UTF-8';
-//		httpHeaders['Content-Length'] = 45; //contentLength; //postData.length - 45;
-	}
-	
-	
-	var httpOptions = {
-		host: host //'api.appery.io',
-//      port: '443',
-		,path: path //// '/rest/1/db/collections/RouteLog?' + "where=" + encodeURIComponent(JSON.stringify({"Grade": "VIII"}))
-		,method: method,
-		headers: httpHeaders
-	};
 
-	util.log("httpOptions: " + JSON.stringify(httpOptions));
+	var prepareFunc;
+	if(method == "GET") {
+		prepareFunc = this.prepareGETRequest;
+	} else if(method == "POST") {
+		prepareFunc = this.preparePOSTRequest;
+	} else if(method == "PUT") {
+		prepareFunc = this.preparePOSTRequest;
+	}
+	prepareFunc(reqOptions);
+	
+	reqOptions.host = reqOptions.host; //'api.appery.io',
+	reqOptions.port = '443';
+	reqOptions.path = reqOptions.path; //// '/rest/1/db/collections/RouteLog?' + "where=" + encodeURIComponent(JSON.stringify({"Grade": "VIII"}))
+	reqOptions.method = reqOptions.method;
+	reqOptions.headers = reqOptions.httpHeaders;
+
+
+	//util.log("reqOptions: " + JSON.stringify(reqOptions));
+	util.log("reqOptions: " + reqOptions);
+	
 	// Set up the request */
-
-	var req = https.request(httpOptions, function(res) {
+	var req = https.request(reqOptions, function(res) {
 		var statusCode = res.statusCode;
 		util.log("checking response with status " + statusCode);
 		//util.log("response keys:" + JSON.stringify(Object.keys(res)));
@@ -183,12 +194,40 @@ serverREST.prototype.executeRequest = function(uri, method, params, callbackFunc
 	
 	if(method != "GET") {
 		//postData = "\"username\"";
-		util.log("writing to request: >" + postData + "<");
-		util.log("Content-length: >" + contentLength + "," + Buffer.byteLength(postData) + "<");
-		req.write(postData); //, "utf-8");
+		util.log("writing to request: >" + reqOptions.postData + "<");
+		util.log("Content-length: >" + contentLength + "," + Buffer.byteLength(reqOptions.postData) + "<");
+		req.write(reqOptions.postData); //, "utf-8");
 	}
 	
 	req.end();
+
+	
+};
+
+
+serverREST.prototype.prepareGETRequest = function(options) {
+	util.log("OLD path >" + JSON.stringify(options.path) + "<");
+	options.path += "?" + options.params;
+	util.log("NEW path >" + JSON.stringify(options.path) + "<");
+}
+	
+serverREST.prototype.preparePOSTRequest = function(options) {
+	options.postData = JSON.stringify(options.params);
+	options.postData = "{'usernamesdf': 'asdfasf', 'password':'asdf'}";
+	//	postData = ('{"asdfasfdsafusername": "asdfasf", "password":"asdf"}');
+	//postData = "{\foo':'blerl'}";
+	options.postData = "\{\"XXX\": 123\}";
+	options.postData = JSON.stringify(options.params);
+	util.log("POST DATA >" + options.postData + "<");
+
+	options.httpHeaders['Accept'] = "application/json"; //, text/javascript, */*; q=0.01";
+	options.httpHeaders['Accept-Encoding'] = "gzip, deflate";
+	options.httpHeaders['Accept-Language'] = "de-de,de;q=0.8,en-us;q=0.5,en;q=0.3";
+	options.httpHeaders['Connection'] = "keep-alive";
+	options.httpHeaders['DNT'] = "1";
+	options.httpHeaders['User-Agent'] = "curl/7.32.0";
+	options.httpHeaders['Host'] = "api.appery.io";
+	options.httpHeaders['Content-Type'] = 'application/json';//; charset=UTF-8';
 
 };
 

@@ -14,13 +14,13 @@ clLib.prototype.mailTemplates = {
 clLib.prototype.options = {
 	"template" : {
 		"verificationEmail": {
-			"to": "kurtl+template+default@gmail.com, [email]"
-//			,"cc" : "wolfgang.dietersdorfer+kurtl+templatecc+tokenrequest@gmail.com"
+			"to": "kurtclimbing+template+default@gmail.com, [email]"
+//			,"cc" : "wolfgang.dietersdorfer+kurtclimbing+templatecc+tokenrequest@gmail.com"
 			,"subject" : "Forgot your password on Kurtl? Here is the verification token.."
 			,"body" : "You asked to change your password for user <b>[username]</b> at <b>[email]</b>.<br>Here is your verification token: <b>[verificationToken]</b>."
 		},
 		"passwordChanged": {
-			"to": "kurtl+template+default@gmail.com, [email]"
+			"to": "kurtclimbing+template+default@gmail.com, [email]"
 //			,"cc" : "wolfgang.dietersdorfer+templatecc+pwdchanged@gmail.com"
 			,"subject" : "New password for Kurtl"
 			,"body": "Your new password for <b>[username]</b> at <b>[email]</b> is [newPassword]."
