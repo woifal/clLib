@@ -26,11 +26,10 @@ var server = restify.createServer(options);
 
  
 //Use bodyParser to read the body of incoming requests
-//server.use(restify.bodyParser({ mapParams: true }));
+server.use(restify.bodyParser({ mapParams: true }));
 
-//server.use(restify.queryParser()); 
 
-//server.use(restify.fullResponse());
+server.use(restify.fullResponse());
 server.use(restify.fullResponse());
 function unknownMethodHandler(req, res) {
 	if (req.method.toLowerCase() === 'options') {
@@ -49,6 +48,7 @@ function unknownMethodHandler(req, res) {
 	}
 }
 
+server.use(restify.queryParser()); 
 server.use(restify.fullResponse());
 server.on('MethodNotAllowed', unknownMethodHandler);
 
@@ -63,8 +63,9 @@ util.log("listening "+PORT);
  //IMPORT RESOURCES
 var eventsResource = require('./events');
 var mailResource = require("./clMail.gmail");
-var RESTResource = require("./clLib.server.REST.js");
-var RESTHandler = new RESTResource.serverREST();
+//var DBResource = require("./clLib.server.db.apperyREST.js");
+var DBResource = require("./clLib.server.db.mongolab.js");
+var DBHandler = new DBResource.DBHandler();
 var mailHandler = new mailResource.mail();
 
 var adminUserDetails = {};
@@ -80,10 +81,10 @@ var fooFunc = function() {
 	return "";
 };
 
-adminDBSession = RESTHandler.loginUser({
+adminDBSession = DBHandler.loginUser({
 	data : adminUserObj,
 	onSuccess : function(resultObj) {
-		RESTHandler.setAdminDBSession(resultObj.data);
+		DBHandler.setAdminDBSession(resultObj.data);
 		util.log("<----  LOGGED in .........");
 	},
 	onError: function(errorObj) {
@@ -95,11 +96,11 @@ adminDBSession = RESTHandler.loginUser({
 
 
 server.get('/requestVerification', function(req, res) {
-	util.log("getting..");
+	util.log("getting.." + JSON.stringify(req.params));
 	var resText = [];
 	var resCount = 0;
 	// verify user.
-	RESTHandler.getEntities({
+	DBHandler.getEntities({
 		entity : "users", 
 		where : {"username": req.params["username"]}, 
 		responseStream : res,
@@ -108,9 +109,16 @@ server.get('/requestVerification', function(req, res) {
 			var userDetails = resultObj.data[0];
 			util.log("Found user >" + fooFunc(userDetails) + "<"); 
 			
+			// User not found=
+			if(!userDetails) {
+				responseStream.send(500, JSON.stringify({
+				result: "User not found: >" + req.params["username"] + "<"}));
+			}
+
+			
 			// store newly generated token
 			var verificationToken = clLib.server.generateRandomToken();
-			RESTHandler.updateEntity({
+			DBHandler.updateEntity({
 				entity : "users",
 				id : userDetails["_id"],
 				data : {"username": req.params["username"], "verificationToken": verificationToken},
@@ -154,7 +162,7 @@ server.get('/requestVerification', function(req, res) {
 	
 server.get('/setPassword', function(req, res) {
 	// verify user.
-	RESTHandler.getEntities({
+	DBHandler.getEntities({
 		entity : "users", 
 		where : {"username": req.params["username"]}, 
 		responseStream: res,
@@ -167,7 +175,7 @@ server.get('/setPassword', function(req, res) {
 			var dbVerificationToken = userDetails["verificationToken"];
 			util.log("verificationToken is >" + dbVerificationToken + "<");
 			if(req.params["verificationToken"] == dbVerificationToken) {
-				RESTHandler.updateEntity({
+				DBHandler.updateEntity({
 					entity : "users",
 					id : userDetails["_id"],
 					data : {

@@ -10,9 +10,9 @@ var util = require("util");
 var fooFunc = function() {
 	return "";
 };
-function serverREST(){};
-exports.serverREST = serverREST;
-serverREST.prototype.setAdminDBSession = function(adminDBSession) {
+function apperyREST(){};
+exports.DBHandler = apperyREST;
+apperyREST.prototype.setAdminDBSession = function(adminDBSession) {
 	util.log("setting admin session to " + JSON.stringify(adminDBSession));
 	this.adminDBSession = adminDBSession;
 };
@@ -23,7 +23,7 @@ clLib.server.baseURI = "https://api.appery.io/rest/1/db";
 clLib.server.baseCollectionsURI = clLib.server.baseURI + "/collections";
 clLib.server.baseUsersURI = clLib.server.baseURI + "/users";
 
-serverREST.prototype.loginUser = function(options) {
+apperyREST.prototype.loginUser = function(options) {
 	var 
 		userInstance = options["data"],
 		callbackFunc = options["onSuccess"],
@@ -36,7 +36,7 @@ serverREST.prototype.loginUser = function(options) {
 	this.executeRequest(uri, "GET", "username=" + userInstance.username + "&password=" + userInstance.password, callbackFunc, errorFunc, responseStream);
 };
 
-serverREST.prototype.getEntities = function(options) {
+apperyREST.prototype.getEntities = function(options) {
 	var entityName = options["entity"];
 	var whereObj = options["where"];
 	var callbackFunc = options["onSuccess"];
@@ -66,7 +66,7 @@ serverREST.prototype.getEntities = function(options) {
 };
 
 
-serverREST.prototype.updateEntity = function(options) {
+apperyREST.prototype.updateEntity = function(options) {
 	var entityName = options["entity"];
 	var entityId = options["id"];
 	var entityData = options["data"];
@@ -97,21 +97,21 @@ var fooException= function(name, message) {
 };
 
 
-serverREST.defaults = {
+apperyREST.defaults = {
 	"errorFunc" : function(resultObj, responseStream) {
 		util.log("standard errorFunc: " + JSON.stringify(resultObj) + "," + responseStream);
 		responseStream.send(500, new Error(JSON.stringify(resultObj)));
 	}
 };
 
-serverREST.prototype.executeRequest = function(uri, method, params, callbackFunc, errorFunc, responseStream, contentLength) {
+apperyREST.prototype.executeRequest = function(uri, method, params, callbackFunc, errorFunc, responseStream, contentLength) {
 	var reqOptions = {};
 	reqOptions["params"] =  params;
 
 	var resultObj = {};
 	
 	if(!errorFunc) {
-		errorFunc = serverREST.defaults["errorFunc"];
+		errorFunc = apperyREST.defaults["errorFunc"];
 	}
 
 	var URLObj = URL.parse(uri);
@@ -122,9 +122,9 @@ serverREST.prototype.executeRequest = function(uri, method, params, callbackFunc
 		"X-Appery-Database-Id" : "52093c91e4b04c2d0a027d7f",
 		"X-Appery-Master-Key": "14e89fa4-48ff-4696-83fc-c0d58fe10f49"
 	};
-	if(this.adminDBSession) {
-		reqOptions.httpHeaders["X-Appery-Session-Token"] = this.adminDBSession["sessionToken"]
-	}
+//	if(this.adminDBSession) {
+//		reqOptions.httpHeaders["X-Appery-Session-Token"] = this.adminDBSession["sessionToken"]
+//	}
 
 	var prepareFunc;
 	if(method == "GET") {
@@ -150,7 +150,7 @@ serverREST.prototype.executeRequest = function(uri, method, params, callbackFunc
 	var req = https.request(reqOptions, function(res) {
 		var statusCode = res.statusCode;
 		util.log("checking response with status " + statusCode);
-		//util.log("response keys:" + JSON.stringify(Object.keys(res)));
+		util.log("response keys:" + JSON.stringify(Object.keys(res)));
 		//util.log("headers: ", res.headers);
 		
 		
@@ -205,13 +205,13 @@ serverREST.prototype.executeRequest = function(uri, method, params, callbackFunc
 };
 
 
-serverREST.prototype.prepareGETRequest = function(options) {
+apperyREST.prototype.prepareGETRequest = function(options) {
 	util.log("OLD path >" + JSON.stringify(options.path) + "<");
 	options.path += "?" + options.params;
 	util.log("NEW path >" + JSON.stringify(options.path) + "<");
 }
 	
-serverREST.prototype.preparePOSTRequest = function(options) {
+apperyREST.prototype.preparePOSTRequest = function(options) {
 	options.postData = JSON.stringify(options.params);
 	options.postData = "{'usernamesdf': 'asdfasf', 'password':'asdf'}";
 	//	postData = ('{"asdfasfdsafusername": "asdfasf", "password":"asdf"}');
