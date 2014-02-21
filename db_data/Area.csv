@@ -1,0 +1,5 @@
+"_id","acl","Country","City","AreaName","routeLogAvailable"
+"5221a91ce4b0158b3c4d38b2","","Austria","Vienna","Kletterhalle Wien","true"
+"5221a92ce4b0158b3c4d38b3","","Austria","Vienna","Climb on Marswiese","false"
+"5221a93ae4b0158b3c4d38b4","","Austria","Klosterneuburg","dieKletterei","false"
+"5222f124e4b0158b3c4d3a87","","Austria","Wien","Leiter","false"
