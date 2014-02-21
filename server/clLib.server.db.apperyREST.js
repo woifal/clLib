@@ -23,95 +23,66 @@ clLib.server.baseURI = "https://api.appery.io/rest/1/db";
 clLib.server.baseCollectionsURI = clLib.server.baseURI + "/collections";
 clLib.server.baseUsersURI = clLib.server.baseURI + "/users";
 
-apperyREST.prototype.loginUser = function(options) {
-	var 
-		userInstance = options["data"],
-		callbackFunc = options["onSuccess"],
-		errorFunc = options["onError"],
-		responseStream = options["responseStream"]
-	;
+apperyREST.prototype.loginUser = function(options, callbackFunc, errorFunc) {
+	var userInstance = options["data"];
     util.log("-----> LOGGING in .........");
 	var uri = clLib.server.baseURI + "/login";
-//	var returnObj = this.executeRequest(uri, "GET", JSON.stringify(userInstance));
-	this.executeRequest(uri, "GET", "username=" + userInstance.username + "&password=" + userInstance.password, callbackFunc, errorFunc, responseStream);
+	this.executeRequest(uri, "GET", "username=" + userInstance.username + "&password=" + userInstance.password, callbackFunc, errorFunc);
 };
 
-apperyREST.prototype.getEntities = function(options) {
+apperyREST.prototype.getEntities = function(options, callbackFunc, errorFunc) {
+	var returnObj = {};
 	var entityName = options["entity"];
 	var whereObj = options["where"];
-	var callbackFunc = options["onSuccess"];
-	var errorFunc = options["onError"];
-	var responseStream = options["responseStream"];
+
+	if(!errorFunc) errorFunc = this.defaults["errorFunc"];
 	
 	//var uri = clLib.server.baseCollectionsURI + entityName;
 	var uri = clLib.server.baseUsersURI;
-	var returnObj = {};
 
-//	var urlParams = "where=" + encodeURIComponent(JSON.stringify({"Grade": "VIII"}))
 	util.log("THE ENTITY: " + JSON.stringify(entityName));
 	util.log("THE WHEREOBJ: " + JSON.stringify(whereObj));
-	var reqParams = "where=" + encodeURIComponent(JSON.stringify(whereObj));
-/*
-	util.log("TYPEOF" + typeof(reqParams));
-	if(typeof(reqParams) == "string") {
-		util.log("THE REQ PARAMS:" + JSON.stringify(reqParams));
-	} else {
-		util.log("THE REQ PARAMS:" + JSON.stringify(Object.keys(reqParams)));
-	};
-*/
-	var serverResult = this.executeRequest(uri, 'GET', reqParams, callbackFunc, errorFunc, responseStream	);
-	//util.log("result first " + JSON.stringify(serverResult));
-	//serverResult = clLib.REST.postAJAXprocessing[clLib.REST.baseURI](AJAXResult);
+//	var reqParams = "where=" + encodeURIComponent(JSON.stringify(whereObj));
+	var reqParams = "where=" + JSON.stringify(whereObj);
+	var serverResult = this.executeRequest(uri, 'GET', reqParams, callbackFunc, errorFunc);
 	
 };
 
 
-apperyREST.prototype.updateEntity = function(options) {
+apperyREST.prototype.updateEntity = function(options, callbackFunc, errorFunc) {
 	var entityName = options["entity"];
 	var entityId = options["id"];
 	var entityData = options["data"];
-	var callbackFunc = options["onSuccess"];
-	var errorFunc = options["onError"];
-	var responseStream = options["responseStream"];
 	
 	//var uri = clLib.server.baseCollectionsURI + "/" + entityName + "/" + entityId;
 	var uri = clLib.server.baseUsersURI + "/" + entityId;
 	
 	var returnObj = {};
 
-//	var urlParams = "where=" + encodeURIComponent(JSON.stringify({"Grade": "VIII"}))
 	util.log("THE ENTITY: " + JSON.stringify(entityName));
 	util.log("THE ENTITYDATA: " + JSON.stringify(entityData));
 	var reqParams = entityData;
 	util.log("THE REQ PARAMS:" + reqParams);
-	var serverResult = this.executeRequest(uri, "PUT", reqParams, callbackFunc, errorFunc, responseStream, 3	);
-	//util.log("result first " + JSON.stringify(serverResult));
-	//serverResult = clLib.REST.postAJAXprocessing[clLib.REST.baseURI](AJAXResult);
+	var serverResult = this.executeRequest(uri, "PUT", reqParams, callbackFunc, errorFunc);
 	
 };
 
 
-var fooException= function(name, message) {
-   this.message = message;
-   this.name = name;
-};
-
-
-apperyREST.defaults = {
-	"errorFunc" : function(resultObj, responseStream) {
-		util.log("standard errorFunc: " + JSON.stringify(resultObj) + "," + responseStream);
-		responseStream.send(500, new Error(JSON.stringify(resultObj)));
+apperyREST.prototype.defaults = {
+	"errorFunc" : function(resultObj) {
+		util.log("standard errorFunc: " + JSON.stringify(resultObj));
+		//responseStream.send(500, new Error(JSON.stringify(resultObj)));
 	}
 };
 
-apperyREST.prototype.executeRequest = function(uri, method, params, callbackFunc, errorFunc, responseStream, contentLength) {
+apperyREST.prototype.executeRequest = function(uri, method, params, callbackFunc, errorFunc) {
 	var reqOptions = {};
 	reqOptions["params"] =  params;
 
 	var resultObj = {};
 	
 	if(!errorFunc) {
-		errorFunc = apperyREST.defaults["errorFunc"];
+		errorFunc = this.defaults["errorFunc"];
 	}
 
 	var URLObj = URL.parse(uri);
@@ -122,9 +93,6 @@ apperyREST.prototype.executeRequest = function(uri, method, params, callbackFunc
 		"X-Appery-Database-Id" : "52093c91e4b04c2d0a027d7f",
 		"X-Appery-Master-Key": "14e89fa4-48ff-4696-83fc-c0d58fe10f49"
 	};
-//	if(this.adminDBSession) {
-//		reqOptions.httpHeaders["X-Appery-Session-Token"] = this.adminDBSession["sessionToken"]
-//	}
 
 	var prepareFunc;
 	if(method == "GET") {
@@ -136,14 +104,12 @@ apperyREST.prototype.executeRequest = function(uri, method, params, callbackFunc
 	}
 	prepareFunc(reqOptions);
 	
-	reqOptions.host = reqOptions.host; //'api.appery.io',
+	reqOptions.host = reqOptions.host;
 	reqOptions.port = '443';
-	reqOptions.path = reqOptions.path; //// '/rest/1/db/collections/RouteLog?' + "where=" + encodeURIComponent(JSON.stringify({"Grade": "VIII"}))
+	reqOptions.path = reqOptions.path;
 	reqOptions.method = reqOptions.method;
 	reqOptions.headers = reqOptions.httpHeaders;
 
-
-	//util.log("reqOptions: " + JSON.stringify(reqOptions));
 	util.log("reqOptions: " + reqOptions);
 	
 	// Set up the request */
@@ -151,32 +117,26 @@ apperyREST.prototype.executeRequest = function(uri, method, params, callbackFunc
 		var statusCode = res.statusCode;
 		util.log("checking response with status " + statusCode);
 		util.log("response keys:" + JSON.stringify(Object.keys(res)));
-		//util.log("headers: ", res.headers);
-		
 		
 		//res.setEncoding('utf8');
 		res.on('data', function(d) {
 //			try {
-				util.log('result received.');
-				//process.stdout.write(d);
 				resultObj["statusCode"] = statusCode;
+				util.log('result received(' + statusCode + ').');
+				util.log('data received.' + d);
+				//process.stdout.write(d);
 				resultObj.data = JSON.parse(d);
 				util.log("parsed result: " + JSON.stringify(resultObj).substr(0, 1000));
-				
-				//if(uri != clLib.server.baseURI + "/login") {
-					//util.log("trying to throw errrors..");
-					//throw new fooException("XXX", "YYY");
-				//}
 				
 				if(statusCode == 200) {
 					util.log("=> callbackFunc..");
 					if(callbackFunc) {
-						callbackFunc(resultObj, responseStream);
+						callbackFunc(resultObj);
 					}
 				} else {
 					util.log("=> errorFunc..");
 					if(errorFunc) {
-						errorFunc(resultObj, responseStream);
+						errorFunc(resultObj);
 					} else {
 						util.log("no errorFunc defined..");
 					}
@@ -189,7 +149,7 @@ apperyREST.prototype.executeRequest = function(uri, method, params, callbackFunc
 	});
 
 	req.on('error', function(errorObj) {
-		errorFunc(errorObj, responseStream);
+		errorFunc(errorObj);
 	});
 	
 	if(method != "GET") {
@@ -213,10 +173,6 @@ apperyREST.prototype.prepareGETRequest = function(options) {
 	
 apperyREST.prototype.preparePOSTRequest = function(options) {
 	options.postData = JSON.stringify(options.params);
-	options.postData = "{'usernamesdf': 'asdfasf', 'password':'asdf'}";
-	//	postData = ('{"asdfasfdsafusername": "asdfasf", "password":"asdf"}');
-	//postData = "{\foo':'blerl'}";
-	options.postData = "\{\"XXX\": 123\}";
 	options.postData = JSON.stringify(options.params);
 	util.log("POST DATA >" + options.postData + "<");
 
