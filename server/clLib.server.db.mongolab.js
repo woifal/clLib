@@ -3,6 +3,8 @@
 
 
 var mongo = require('mongoskin');
+var BSON = mongo.BSONPure;
+
 var util = require("util");
 var async = require("async");
 
@@ -22,6 +24,8 @@ clLib.mongolab = {};
 clLib.mongolab.mongoURI = "mongodb://clAdmin:blerl1la@ds053438.mongolab.com:53438/climbinglog";
 clLib.mongolab.conn = mongo.db(clLib.mongolab.mongoURI, {safe: false});
 
+clLib.mongolab.conn.collection("Users").ensureIndex( { "username": 1 }, { unique: true } );
+
 mongolab.prototype.loginUser = function(options, callbackFunc, errorFunc) {
 	var userInstance = options["data"];
     util.log("-----> LOGGING in .........");
@@ -32,7 +36,7 @@ mongolab.prototype.getEntities = function(options, callbackFunc, errorFunc) {
 	util.log("getting entitites >"+ JSON.stringify(options) + "<");
 	var resultObj = {};
 	var entityName = options["entity"];
-	var whereObj = JSON.parse(options["where"]);
+	var whereObj = options["where"];
 
 	if(!errorFunc) errorFunc = this.defaults["errorFunc"];
 	
@@ -56,34 +60,76 @@ mongolab.prototype.getEntities = function(options, callbackFunc, errorFunc) {
 		
 		if(callbackFunc) {
 			util.log("Calling callback function, result OK!");
-			callbackFunc({data : items});
+			callbackFunc(items);
+		}
+	});
+};
+
+mongolab.prototype.insertEntity = function(options, callbackFunc, errorFunc) {
+	util.log("inserting entity >"+ JSON.stringify(options) + "<");
+	var resultObj = {};
+	var entityName = options["entity"];
+	var entityValues = options["values"];
+
+	if(!errorFunc) errorFunc = this.defaults["errorFunc"];
+	
+	var db = clLib.mongolab.conn;
+	
+	util.log("inserting into " + entityName + "");
+	var userColl = db.collection(entityName);
+	userColl.insert(entityValues, function(err) {
+		if (JSON.stringify(err) != "{}" && JSON.stringify(err) != "null") {
+			util.log("ERROR:" + JSON.stringify(err));	
+			resultObj["error"] = JSON.stringify(err);
+			errorFunc(resultObj);
+		}
+		util.log("inserted >" + JSON.stringify(entityValues));
+
+		if(callbackFunc) {
+			util.log("Calling callback function, result OK!");
+			callbackFunc(entityValues);
 		}
 	});
 };
 
 
+
 mongolab.prototype.updateEntity = function(options, callbackFunc, errorFunc) {
+	util.log("updating entity >"+ JSON.stringify(options) + "<");
+	var resultObj = {};
 	var entityName = options["entity"];
 	var entityId = options["id"];
+	if(typeof(entityId) == "string") {
+		entityId = new BSON.ObjectID(options["id"]);
+	}
+
 	var entityData = options["data"];
 	
 	if(!errorFunc) errorFunc = this.defaults["errorFunc"];
 	
-/*	
-	//var uri = clLib.server.baseCollectionsURI + "/" + entityName + "/" + entityId;
-	var uri = clLib.server.baseUsersURI + "/" + entityId;
+	//var db = clLib.mongolab.conn;
+	var db = mongo.db(clLib.mongolab.mongoURI, {safe: true});
 	
-	var returnObj = {};
+	// only update fields mentioned in entityData..
+	var updateObj = {"$set": entityData};
 
-//	var urlParams = "where=" + encodeURIComponent(JSON.stringify({"Grade": "VIII"}))
-	util.log("THE ENTITY: " + JSON.stringify(entityName));
-	util.log("THE ENTITYDATA: " + JSON.stringify(entityData));
-	var reqParams = entityData;
-	util.log("THE REQ PARAMS:" + reqParams);
-	var serverResult = this.executeRequest(uri, "PUT", reqParams, callbackFunc, errorFunc);
-	//util.log("result first " + JSON.stringify(serverResult));
-	//serverResult = clLib.REST.postAJAXprocessing[clLib.REST.baseURI](AJAXResult);
-*/
+	util.log("1updating " + entityName + " with id " + entityId + " and values >" + JSON.stringify(updateObj) + "<");
+	db.collection(entityName).update({"_id" : entityId}, updateObj, {safe: true}, function(err, rowCount) {
+		util.log("x" + JSON.stringify(err));
+		util.log("ERROR(" + rowCount + ")?" + JSON.stringify(err));
+		if (JSON.stringify(err) != "undefined" && JSON.stringify(err) != "{}" && JSON.stringify(err) != "null") {
+			util.log("ERROR:" + JSON.stringify(err));	
+			resultObj["error"] = JSON.stringify(err);
+			return errorFunc(resultObj);
+		}
+		util.log("updated >" + rowCount + "< rows.");
+
+		if(callbackFunc) {
+			util.log("Calling callback function, result OK!");
+			callbackFunc(entityData);
+		}
+	});
+
 };
 
 mongolab.prototype.defaults = {

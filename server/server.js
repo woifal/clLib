@@ -1,13 +1,17 @@
 var util = require("util");
 
+var mongo = require('mongoskin');
+var BSON = mongo.BSONPure;
+
 var clLib = {};
-
-//require("../../clLib/js/clLib.js");
-//require("../../clLib/js/clLib.REST.js");
-
-
 clLib.server = {};
+clLib.server.runtime = {
+	"sessionTokens" : {}
+};
 clLib.server.email = {};
+
+exports.server = clLib.server;
+
 
 //Define the port to listen to
 var PORT = process.env.PORT || 1983;
@@ -26,11 +30,15 @@ var server = restify.createServer(options);
 
  
 //Use bodyParser to read the body of incoming requests
-server.use(restify.bodyParser({ mapParams: true }));
+/*
+?!?!?!?!?!
+*/
+//server.use(restify.bodyParser({ mapParams: true }));
+server.use(restify.bodyParser({ mapParams: false }));
+server.use(restify.fullResponse());
 
 
-server.use(restify.fullResponse());
-server.use(restify.fullResponse());
+
 function unknownMethodHandler(req, res) {
 	if (req.method.toLowerCase() === 'options') {
 		console.log('received an options method request');
@@ -55,6 +63,7 @@ server.on('MethodNotAllowed', unknownMethodHandler);
 server.listen(PORT, '0.0.0.0');
 server.use(restify.CORS());
 server.use(restify.fullResponse());
+//server.use(restify.session());
 
 util.log("listening "+PORT);
  
@@ -63,10 +72,12 @@ util.log("listening "+PORT);
  //IMPORT RESOURCES
 var eventsResource = require('./events');
 var mailResource = require("./clMail.gmail");
+var authResource = require("./clLib.authentification");
 //var DBResource = require("./clLib.server.db.apperyREST.js");
-var DBResource = require("./clLib.server.db.mongolab.js");
+var DBResource = require("./clLib.server.db.mongolab");
 var DBHandler = new DBResource.DBHandler();
 var mailHandler = new mailResource.mail();
+var authHandler = new authResource.auth();
 
 var adminUserDetails = {};
 
@@ -81,6 +92,7 @@ var fooFunc = function() {
 	return "";
 };
 
+
 adminDBSession = DBHandler.loginUser({
 	data : adminUserObj,
 	onSuccess : function(resultObj) {
@@ -93,6 +105,95 @@ adminDBSession = DBHandler.loginUser({
 	}
 });
 
+server.get("/login", function (req, res) {
+	util.log("authHandler.defaults : >" + JSON.stringify(authHandler.defaults) + "<");
+
+	authHandler.authenticate({
+		username : req.params["username"]
+		,password :  req.params["password"]
+	},
+	function(userObj) {
+		util.log("AUTHENTICATED!!! " + JSON.stringify(userObj));
+		res.send("AUTHENTICATED!!! " + JSON.stringify(userObj));
+	},
+	function(errorObj) {
+		res.send(500, "error >" + JSON.stringify(errorObj.message) + "<");
+	}
+	);
+
+});
+
+server.get("/signup", function (req, res) {
+	util.log("authHandler.defaults : >" + JSON.stringify(authHandler.defaults) + "<");
+	var errHandler = function(errorObj) {
+		util.log("ERROR!!!" + errorObj);
+		res.send(500, "error >" + JSON.stringify(errorObj.message) + "< + >" + JSON.stringify(errorObj) + "<");
+	};
+	
+	
+	var userObj = req.params;
+	var foo = this;
+	
+	authHandler.hash(userObj.password, userObj.username, 
+	function(hashpwd) {
+		util.log("HASHPWD IS >" + hashpwd + "<");
+		userObj.password = hashpwd;
+		
+		// verify user.
+		DBHandler.insertEntity({
+			entity : "Users", 
+			values : userObj
+		},
+		// upon success...
+		function(userObj) { 
+			//userObj = userObj[0];
+			util.log("Created user >" + JSON.stringify(userObj) + "<"); 
+
+			// generate new verification token
+			var initialToken = clLib.server.generateRandomToken();
+			util.log("updating with token");
+			DBHandler.updateEntity({
+				entity : "Users",
+				id : userObj["_id"],
+				data : {"initialToken": initialToken}
+			},
+			function(resultObj) {
+				util.log("updatied with token");
+		
+				util.log("Token >" + initialToken + "< stored at >" + resultObj + "<");
+				
+				userObj["initialToken"] = initialToken;
+/*
+				// send token to user..
+				util.log("Sending email..");
+				var options = {
+					"template": {
+						name: "initialEmail",
+						vars: userObj
+					},
+					"to": userObj["email"]
+				}
+				
+				mailHandler.send(
+					{"emailOptions" : options}, 
+				function(responseObj) {
+					util.log("email sent!!! " + JSON.stringify(responseObj));
+					res.send("email sent >" + JSON.stringify(responseObj) + "<");
+				}
+				,errHandler
+				);
+*/
+			},
+			errHandler
+			);
+		}
+		, errHandler
+		);
+	}
+	, errHandler
+	);
+});
+
 
 
 server.get('/requestVerification', function(req, res) {
@@ -102,121 +203,220 @@ server.get('/requestVerification', function(req, res) {
 	// verify user.
 	DBHandler.getEntities({
 		entity : "users", 
-		where : {"username": req.params["username"]}, 
-		responseStream : res,
-		onSuccess : function(resultObj, responseStream) { 
-			// upon success...
-			var userDetails = resultObj.data[0];
-			util.log("Found user >" + fooFunc(userDetails) + "<"); 
-			
-			// User not found=
-			if(!userDetails) {
-				responseStream.send(500, JSON.stringify({
-				result: "User not found: >" + req.params["username"] + "<"}));
-			}
-
-			
-			// store newly generated token
-			var verificationToken = clLib.server.generateRandomToken();
-			DBHandler.updateEntity({
-				entity : "users",
-				id : userDetails["_id"],
-				data : {"username": req.params["username"], "verificationToken": verificationToken},
-				responseStream : res,
-				onSuccess : function(resultObj, responseStream) {
-					util.log("Token >" + verificationToken + "< stored at >" + resultObj.data["_updatedAt"] + "<");
-					
-					userDetails["verificationToken"] = verificationToken;
-					// send token to user..
-					util.log("Sending email..");
-					var options = {
-						"template": {
-							name: "verificationEmail",
-							vars: userDetails
-						},
-						"to": userDetails["email"],
-//						"subject": "token test...",
-//						"body": "your token is >" + verificationToken + "<"
-					}
-					
-					mailHandler.send({
-						emailOptions : options, 
-						onSuccess : function(mailRespMsg) {
-							responseStream.send(JSON.stringify({
-								result: "email sent:" + mailRespMsg
-							}));
-						},
-						onError : function(mailRespMsg) {
-							responseStream.send(500, JSON.stringify({
-								result: "email sent:" + mailRespMsg
-							}));
-						}
-					});
-				}
-			});
+		where : {"username": req.params["username"]}
+	}, 
+	function(resultObj) { 
+		// upon success...
+		var userDetails = resultObj[0];
+		util.log("Found user >" + fooFunc(userDetails) + "<"); 
+		
+		// User not found=
+		if(!userDetails) {
+			res.send(500, JSON.stringify({
+			result: "User not found: >" + req.params["username"] + "<"}));
 		}
+
+		
+		// store newly generated token
+		var verificationToken = clLib.server.generateRandomToken();
+		DBHandler.updateEntity({
+			entity : "Users",
+			id : userDetails["_id"],
+			data : {"username": req.params["username"], "verificationToken": verificationToken}
+		},
+		function(resultObj) {
+			util.log("Token >" + verificationToken + "< stored at >" + resultObj.data["_updatedAt"] + "<");
+			
+			userDetails["verificationToken"] = verificationToken;
+			// send token to user..
+			util.log("Sending email..");
+			var options = {
+				"template": {
+					name: "verificationEmail",
+					vars: userDetails
+				},
+				"to": userDetails["email"]
+			}
+			
+			mailHandler.send(
+				{"emailOptions" : options}, 
+			function(responseObj) {
+				util.log("email sent!!! " + JSON.stringify(responseObj));
+				res.send("email sent >" + JSON.stringify(responseObj) + "<");
+			}
+			,errHandler
+			);
+		}
+		,errHandler
+		);
 	});
 });
 	
+	
 
+server.get('/db/:entityName/:entityId', 
+		//authHandler.requiredAuthentication, 
+		function(req, res) 
+{
+	util.log("getting.." + JSON.stringify(req.params));
+	var entityName = req.params.entityName;
+	var entityId = req.params.entityId;
+	if(typeof(entityId) == "string") {
+		entityId = new BSON.ObjectID(entityId);
+	}
+	util.log("ENTITY ID IS " + entityId);
+	
+
+	// verify user.
+	DBHandler.getEntities({
+		entity : entityName, 
+		where : {_id: entityId}
+	},
+	function(resultObj) { 
+		// upon success...
+		var entityDetails = resultObj[0];
+		util.log("Found entity(" + entityName + ")>" + fooFunc(entityDetails) + "<"); 
+		
+		// User not found=
+		if(!entityDetails) {
+			res.send(500, JSON.stringify({
+			result: "Entity(" + entityName + ") not found: >" + JSON.stringify(req.params["where"]) + "<"}));
+			return;
+		}
+		res.send(JSON.stringify(resultObj));
+
+	});
+});
+	
+server.get('/db/:entityName', 
+		//authHandler.requiredAuthentication, 
+		function(req, res) 
+{
+	util.log("2getting.." + JSON.stringify(req.params));
+	var entityName = req.params.entityName;
+	// verify user.
+	DBHandler.getEntities({
+		entity : entityName, 
+		where : JSON.parse(req.params["where"])
+	},
+	function(resultObj) { 
+		// upon success...
+		var entityDetails = resultObj[0];
+		util.log("Found entity(" + entityName + ")>" + fooFunc(entityDetails) + "<"); 
+		
+		// User not found=
+		if(!entityDetails) {
+			res.send(500, JSON.stringify({
+			result: "Entity(" + entityName + ") not found: >" + JSON.stringify(req.params["where"]) + "<"}));
+			return;
+		}
+		res.send(JSON.stringify(resultObj));
+
+	});
+});
+
+server.put('/db/:entityName/:entityId', 
+		//authHandler.requiredAuthentication, 
+		function(req, res) 
+{
+	util.log("putting.." + JSON.stringify(req.params));
+	var entityName = req.params.entityName;
+	var entityId = req.params.entityId;
+	// verify user.
+	DBHandler.updateEntity({
+		entity : entityName, 
+		id : entityId,
+		data : req.body
+	},
+	function(resultObj) { 
+		// upon success...
+		util.log("updated entity(" + entityName + ")>" + JSON.stringify(resultObj) + "<"); 
+		
+		// User not found=
+		if(!resultObj) {
+			res.send(500, JSON.stringify({
+			result: "Entity(" + entityName + ") not found: >" + entityId + "<"}));
+		}
+		res.send(JSON.stringify(resultObj));
+
+	});
+});
+
+server.post('/db/:entityName', 
+		//authHandler.requiredAuthentication, 
+		function(req, res) 
+{
+	util.log("posting.." + JSON.stringify(req.params));
+	var entityName = req.params.entityName;
+	DBHandler.insertEntity({
+		entity : entityName,
+		values : req.body
+	},
+	function(resultObj) { 
+		// upon success...
+		util.log("insertED entity(" + entityName + ")>" + JSON.stringify(resultObj) + "<"); 
+		
+		// User not found=
+		if(!resultObj) {
+			res.send(500, JSON.stringify({
+			result: "Entity(" + entityName + ") not found: >" + entityId + "<"}));
+		}
+		res.send(JSON.stringify(resultObj));
+
+	});
+});
 	
 server.get('/setPassword', function(req, res) {
 	// verify user.
 	DBHandler.getEntities({
 		entity : "users", 
-		where : {"username": req.params["username"]}, 
-		responseStream: res,
-		onSuccess : function(resultObj, responseStream) { 
-		// upon success...
-			var userDetails = resultObj.data[0];
-			util.log("Found user >" + fooFunc(userDetails) + "<"); 
-			
-			// store newly generated token
-			var dbVerificationToken = userDetails["verificationToken"];
-			util.log("verificationToken is >" + dbVerificationToken + "<");
-			if(req.params["verificationToken"] == dbVerificationToken) {
-				DBHandler.updateEntity({
-					entity : "users",
-					id : userDetails["_id"],
-					data : {
-						"verificationToken": "",
-						"password": req.params["password"]
-					},
-					responseStream : res,
-					onSuccess : function(resultObj, responseStream) {
-						util.log("Token updated, password stored at >" + resultObj.data["_updatedAt"] + "<");
-						
-						// send token to user..
-						util.log("Sending email..");
-
-						
-						userDetails["newPassword"] = req.params["password"];
-						var options = {
-							"template": {
-								name: "passwordChanged",
-								vars: userDetails
-							},
-							"to": userDetails["email"]
-						}
-						mailHandler.send({
-							emailOptions : options, 
-							onSuccess : function(mailRespMsg) {
-								responseStream.send(JSON.stringify({
-									result: "email sent:" + mailRespMsg
-								}));
-							},
-							onError : function(mailRespMsg) {
-								responseStream.send(500, JSON.stringify({
-									result: "email sent:" + mailRespMsg
-								}));
-							}
-						});
+		where : {"username": req.params["username"]}
+	},
+	function(resultObj) { 
+	// upon success...
+		var userDetails = resultObj[0];
+		util.log("Found user >" + fooFunc(userDetails) + "<"); 
 		
-					}
-				});
-			} else {
-				responseStream.send("tokens: >" + req.params["verificationToken"] + "< and >" + dbVerificationToken+ 	 "< do not match!");
+		// store newly generated token
+		var dbVerificationToken = userDetails["verificationToken"];
+		util.log("verificationToken is >" + dbVerificationToken + "<");
+		if(req.params["verificationToken"] == dbVerificationToken) {
+			DBHandler.updateEntity({
+				entity : "users",
+				id : userDetails["_id"],
+				data : {
+					"verificationToken": "",
+					"password": req.params["password"]
+				},
 			}
+			, function(resultObj) {
+				util.log("Token updated, password stored at >" + resultObj.data["_updatedAt"] + "<");
+				
+				// send token to user..
+				util.log("Sending email..");
+
+				
+				userDetails["newPassword"] = req.params["password"];
+				var options = {
+					"template": {
+						name: "passwordChanged",
+						vars: userDetails
+					},
+					"to": userDetails["email"]
+				}
+				mailHandler.send(
+					{"emailOptions" : options}, 
+				function(responseObj) {
+					util.log("email sent!!! " + JSON.stringify(responseObj));
+					res.send("email sent >" + JSON.stringify(responseObj) + "<");
+				}
+				,errHandler
+				);
+			}
+			, errHandler
+			);
+		} else {
+			res.send("tokens: >" + req.params["verificationToken"] + "< and >" + dbVerificationToken+ 	 "< do not match!");
 		}
 	});
 });
@@ -243,18 +443,18 @@ server.get('/sendmail', function(emailParams, res) {
 
 //DEFINE THE URIs THE SERVER IS RESPONDING TO
 server.get('/events', function(req, res) {
-   util.log("GET request:" + fooFunc(req.params));
-  var events = new eventsResource.Events() ;
+	util.log("GET request:" + fooFunc(req.params));
+	var events = new eventsResource.Events() ;
    
-  //Get all events from DB
-  events.getAllEvents(req.params, function(result){
+	//Get all events from DB
+	events.getAllEvents(req.params, function(result){
      
     var allEvents = result;
  
     //If no events exist return 200 and and empty JSON
     if(allEvents.length == 0) {
-      res.send(200, []);
-      return;
+		res.send(200, []);
+		return;
     }else res.send(200, result);
   });   
  

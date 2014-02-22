@@ -16,12 +16,20 @@ var exitCallBack = function() {
 	process.exit();
 }
 
+// bind method: db.user ===> db.collection('user')
+conn.bind('Users');
+
+
 function testQuery(i) {
 	util.log("i is " + i);
 	if(i >= 10) {
 		return;
 	}
-	conn.collection(tableName).find(whereObj).toArray(function(err, items) {
+	var coll = conn.collection(tableName);
+	if(!coll) {
+		util.log("NO coll " + tableName + "found..");
+	}
+	coll.find(whereObj).toArray(function(err, items) {
 		if (err) {
 			util.log("ERROR:" + JSON.stringify(err));
 		}
@@ -32,6 +40,28 @@ function testQuery(i) {
 
 };
 
-testQuery(1);
+
+function testUpdate(i) {
+	util.log("i is " + i);
+	if(i >= 10) {
+		return;
+	}
+	var coll = conn.Users;
+	if(!coll) {
+		util.log("NO coll " + tableName + "found..");
+	}
+	coll.update({_id: "_a_A_a_5307f9dbaa0f221c19000001"}, {$set: {"password": 'haha update'}}, {safe: true, multi: true}, function(err, items) {
+		if (err) {
+			util.log("ERROR:" + err.message);
+		}
+		
+		util.log(items);
+		testUpdate(++i);
+	});
+
+};
+
+testUpdate(1);
+//testQuery(1);
 
 util.log("Done");

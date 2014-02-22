@@ -13,6 +13,12 @@ clLib.prototype.mailTemplates = {
 };
 clLib.prototype.options = {
 	"template" : {
+		"initialEmail": {
+			"to": "kurtclimbing+template+default@gmail.com, [email]"
+//			,"cc" : "wolfgang.dietersdorfer+kurtclimbing+templatecc+tokenrequest@gmail.com"
+			,"subject" : "Welcome to Kurtl!"
+			,"body" : "Please verify your registration for user <b>[username]</b> at <b>[email]</b>.<br>Here is your verification token: <b>[initialToken]</b>."
+		},
 		"verificationEmail": {
 			"to": "kurtclimbing+template+default@gmail.com, [email]"
 //			,"cc" : "wolfgang.dietersdorfer+kurtclimbing+templatecc+tokenrequest@gmail.com"

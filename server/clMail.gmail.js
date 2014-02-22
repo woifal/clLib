@@ -17,7 +17,7 @@ var fooFunc = function() {
 
 
 //mail.prototype.send = function(options, successFunc, errorFunc) {
-mail.prototype.send = function(options) {
+mail.prototype.send = function(options, callbackFunc, errorFunc) {
 
 	// Create a SMTP transport object
 	var transport = nodemailer.createTransport("SMTP", {
@@ -90,12 +90,7 @@ mail.prototype.send = function(options) {
 		if(error){
 			console.log('Error occured');
 			console.log(error.message);
-			if(options["onError"]) {
-				options["onError"](error.message);
-			}
-			else {
-				options["onSuccess"](error.message);
-			}
+			errorFunc(error.message);
 		} else {
 			console.log('Message sent successfully!');
 			util.log("Msg sent: " + message.to);
@@ -103,7 +98,7 @@ mail.prototype.send = function(options) {
 			util.log("Msg sent: " + message.subject);
 			util.log("Msg sent: " + message.html);
 			util.log("2Msg sent: " + message);
-			options["onSuccess"](response);
+			callbackFunc(response);
 		}	
 		// if you don't want to use this transport object anymore, uncomment following line
 		transport.close(); // close the connection pool
