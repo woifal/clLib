@@ -549,18 +549,25 @@ clLib.alert = function (text, html) {
 };
 
 
-clLib.login = function() {
+clLib.login = function(successFunc, errorFunc) {
+	//alert("clLib.login called.....");
 	var userObj = {};
 	userObj["username"] = localStorage.getItem("currentUser");
 	userObj["password"] = localStorage.getItem("currentPassword");
-    var returnObj = clLib.REST.loginUser(userObj);
-	var sessionToken = returnObj["sessionToken"];
-	var currentUserId = returnObj["_id"];
-	//alert("retrieved sessionToken >" + sessionToken + "<");
-	clLib.sessionToken = sessionToken;
-	clLib.currentUserId = currentUserId;
-	// Clear any "old" error messages 
-	localStorage.removeItem("loginError");
+    return clLib.REST.loginUser(userObj, 
+	function(returnObj) {
+		var sessionToken = returnObj["sessionToken"];
+		var currentUserId = returnObj["_id"];
+		clLib.loggi("retrieved sessionToken >" + sessionToken + "<");
+		clLib.sessionToken = sessionToken;
+		clLib.currentUserId = currentUserId;
+		// Clear any "old" error messages 
+		localStorage.removeItem("loginError");
+		clLib.loggi("logged in, return success");
+		return successFunc(returnObj);
+	}
+	, errorFunc
+	);
 };
 
 clLib.isOnline = function() {
@@ -575,37 +582,49 @@ clLib.isOnline = function() {
 	return onlineMode;
 };
 
-clLib.loggedInCheck = function () {
-    //alert(clLib.sessionToken);
+clLib.loginErrorHandler = function(e) {
+	//alert("type " + typeof(e));
+	//alert("JSON ERROR " + JSON.stringify(e));
+	// could not login - alert error and return false
+	clLib.sessionToken = null;
+	
+	var errorMsg = e.message;
+	if(e.message && JSON.parse(e.message)["responseText"]) {
+		errorMsg = JSON.parse(JSON.parse(e.message)["responseText"])["description"];
+	}
+	if(e.responseText) {
+		errorMsg = e.responseText
+	}
+	localStorage.setItem("loginError", "Could not login user: " + errorMsg);
+	alert("2loginError " + errorMsg);
+	return false;
+};
+
+clLib.loggedInCheck = function (callbackFunc, errorFunc) {
+    //alert("clLib.loggedInCheck called..");
+	//alert(clLib.sessionToken);
 	// not online? assume you're logged in..
 	if(!clLib.isOnline()) {
-		return false;
+		return errorFunc(false);
 	}
 	// online - check for valid sessiontoken
 	if (clLib.sessionToken) {
-        return true;
+        return callbackFunc(true);
     }
 	clLib.loggi("no session token!");
 	// no session token found - try to logon using stored credentials
-	try {
-		clLib.login();
-		// successfully logged in, return true
-		return true;
-	} catch (e) {
-		// could not login - alert error and return false
-        clLib.sessionToken = null;
-		
-		var errorMsg = e.message;
-		if(e.message && JSON.parse(e.message)["responseText"]) {
-			errorMsg = JSON.parse(JSON.parse(e.message)["responseText"])["description"];
+	//alert("logging in..");
+	return clLib.login(
+		function() {
+			// successfully logged in, return true
+			clLib.loggi("logged in now, returning true");
+			return callbackFunc();
 		}
-		localStorage.setItem("loginError", "Could not login user: " + errorMsg);
-		
-		return false;
-	}
+		, errorFunc
+	);
 
 	// should not get here, return false anyway.
-	return false;
+	alert("should not get here 45345");
 };
 
 clLib.wasOnlineCheck = function () {

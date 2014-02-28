@@ -203,7 +203,7 @@ clLib.UI.elements = {
 				//$this.selectmenu("refresh", true);
 				var jqmDataRole = $this.attr("data-role");
 				if (jqmDataRole == "button") {
-					alert("button - " + $this.attr("id") + " setting txt to " + localVarValue);
+					//alert("button - " + $this.attr("id") + " setting txt to " + localVarValue);
 					$this.text(localVarValue);
 		//            $this.find(".ui-btn-text").text(localVarValue);
 					$this.button("refresh");
@@ -234,7 +234,7 @@ clLib.UI.elements = {
 				//$this.selectmenu("refresh", true);
 				var jqmDataRole = $this.attr("data-role");
 				if (jqmDataRole == "button") {
-					alert("button - " + $this.attr("id") + " setting txt to " + localVarValue);
+					//alert("button - " + $this.attr("id") + " setting txt to " + localVarValue);
 					$this.text(localVarValue);
 		//            $this.find(".ui-btn-text").text(localVarValue);
 					$this.button("refresh");
@@ -576,10 +576,11 @@ clLib.UI.elements = {
 	"areaSelect" : {
 		"refreshHandler" : function($this) { 
 			var distinctColumn, where, results;
-			distinctColumn = "Area";
+			distinctColumn = "AreaName:string";
 			where = clLib.getRoutesWhere();
-			results = clLib.localStorage.getDistinct("Routes", where, distinctColumn, "defaultStorage");
-			
+			//alert("refreshing areaSelect where " + JSON.stringify(where));
+			results = clLib.localStorage.getDistinct("Area", where, distinctColumn, "defaultStorage");
+			//alert("got local areas >" + JSON.stringify(results) + "<");
 			clLib.populateSelectBox({
 				selectBoxElement : $this,
 				dataObj : results,
@@ -655,12 +656,13 @@ clLib.UI.elements = {
 			// build where clause for today's routelogs
 			var where = clLib.getRouteLogWhereToday(clLib.getCurrentUserWhere());
 
-			//alert("getting today's route logs..");
+			clLib.loggi("getting today's route logs..");
 		    // retrieve today's routelogs (sorted by Date)
 			var todaysRouteLogs = clLib.localStorage.getEntities(
 					"RouteLog", where, "defaultStorage", "DateISO", true);
 			// retrieve today's 10 top scored routelogs
-			//alert("getting today's top route logs..");
+			clLib.loggi("got today's top route logs.." + JSON.stringify(todaysRouteLogs));
+			clLib.loggi("getting today's top route logs..");
 			var todaysTopRouteLogs = clLib.localStorage.getEntities(
 					"RouteLog", where, "defaultStorage", clLib.sortByScoreFunc, true, 10);
 			//alert("items retrieved(high-scored first) " + JSON.stringify(todaysTopRouteLogs));

@@ -50,9 +50,10 @@ clLib.PAGES.handlers = {
             $("#preferences_saveButton").on("click", function () {
 				clLib.UI.execWithMsg(function() {
                     localStorage.setItem("currentJqmSlide", "preferences");
-                    clLib.UI.save();
-                    clLib.UI.resetUIelements("newRouteLog", "preferences");
-                    setTimeout(function () { clLib.UI.hideLoading(); history.back(); }, 1500);
+                    clLib.UI.save({}, function() {
+						clLib.UI.resetUIelements("newRouteLog", "preferences");
+						setTimeout(function () { clLib.UI.hideLoading(); history.back(); }, 1500);
+					});
 				}, {text: "Saving preferences..."});
             });
 
@@ -117,7 +118,17 @@ clLib.PAGES.handlers = {
 
 	        // refresh button(=> in page header)..
 	        $("#startScreen_refreshRouteStorageButton").on("click", function () {
-	            clLib.localStorage.refreshAllData();
+	            //alert("refreshing all data..");
+				clLib.localStorage.refreshAllData(
+				function(warnings) {
+					if(typeof(warnings) == "object"  && warnings["warnings"] != "") {
+						alert("warnings: " + JSON.stringify(warnings));
+					}
+				},
+				function(e) {
+					alert("could not refresh due to " + e.getMessage() + " >" + JSON.stringify(e));
+				}
+				);
 	        });
 
             $("#startScreen_usersButton").on("click", function () {
@@ -140,8 +151,9 @@ clLib.PAGES.handlers = {
 	        $("#newRouteLog_save_tick").on("click", function () {
 				clLib.UI.execWithMsg(function() {
 	                localStorage.setItem("currentJqmSlide", "newRouteLog");
-	                clLib.UI.save();
-	                clLib.UI.resetUIelements("newRouteLog", "newRouteLog");
+	                clLib.UI.save({}, function() {
+						clLib.UI.resetUIelements("newRouteLog", "newRouteLog");
+					});
 	            }, {text: "Saving route logs.."});
 	        });
 	        $("#newRouteLog_refreshButton").on("click", function () {
@@ -180,19 +192,21 @@ clLib.PAGES.handlers = {
 			$("#users_verification_requestTokenButton").on("click", function () {
 				clLib.UI.execWithMsg(function() {
 					clLib.REST.requestVerification({
-						entityInstance : userEntity,
-						onSuccess : successHandler, 
-						onError : errorHandler
-					});
+							entityInstance : userEntity
+						},
+						successHandler, 
+						errorHandler
+					);
 				}, {text: "generating token"});
 			});
 			$("#users_verification_changePassword").on("click", function () {
 	            clLib.UI.execWithMsg(function() {
 					clLib.REST.changePassword({
-						entityInstance : userEntity,
-						onSuccess : successHandler, 
-						onError : errorHandler
-					});
+							entityInstance : userEntity
+						},
+						successHandler, 
+						errorHandler
+					);
 				}, {text: "changing password"});
 			});
 		}
@@ -205,21 +219,45 @@ clLib.PAGES.handlers = {
 
 	        $("#users_loginButton").on("click", function () {
 	            clLib.UI.execWithMsg(function() {
-					clLib.UI.save(null, null, null, { action: "login" });
-	                clLib.UI.fillUIelements("users", "users");
-				}, {text: "logging in"});
+					clLib.UI.save({ additionalData: { action: "login" }}
+					,function() {
+						clLib.UI.fillUIelements("users", "users");
+					}
+					, function(e) {
+						clLib.loginErrorHandler(e);
+						clLib.UI.fillUIelements("users", "users");
+					}
+					); 
+				}
+				, {text: "logging in"});
 			});
 	        $("#users_logoutButton").on("click", function () {
 				clLib.UI.execWithMsg(function() {
-	                clLib.UI.save(null, null, null, { action: "logout" });
-	                clLib.UI.fillUIelements("users", "users");
-	            }, {text: "logging out.."});
+					clLib.UI.save({ additionalData: { action: "logout" }}
+					,function() {
+						clLib.UI.fillUIelements("users", "users");
+					}
+					, function(e) {
+						clLib.loginErrorHandler(e);
+						clLib.UI.fillUIelements("users", "users");
+					}
+					);
+				}
+				, {text: "logging out.."});
 	        });
 	        $("#users_newUserButton").on("click", function () {
 				clLib.UI.execWithMsg(function() {
-					clLib.UI.save(null, null, null, { action: "create" });
-	                clLib.UI.fillUIelements("users", "users");
-				}, {text: "creating user.."});
+					clLib.UI.save({ additionalData: { action: "create" }}
+					, function() {
+						clLib.UI.fillUIelements("users", "users");
+					}
+					, function(e) {
+						clLib.loginErrorHandler(e);
+						clLib.UI.fillUIelements("users", "users");
+					}
+					);
+				}
+				, {text: "creating user.."});
 			});
 	        $("#users_forgotPwdButton").on("click", function () {
 				$.mobile.navigate("clLib_users_verification.html");

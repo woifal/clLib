@@ -749,25 +749,33 @@ clLib.UI.getVal = function(elementName) {
 	return elementValue;
 }
 
-clLib.UI.save = function (currentJqmSlide, currentLayout, successHandler, additionalData) {
+clLib.UI.save = function (options, successFunc, errorFunc) {
+	var currentJqmSlide = options["currentJqmSlide"];
+	var currentLayout = options["currentLayout"];
+	var additionalData = options["additionalData"];
+	
     var saveHandler;
 
-    if (!currentJqmSlide) {
-        currentJqmSlide = localStorage.getItem("currentJqmSlide");
+    if (!options["currentJqmSlide"]) {
+        options["currentJqmSlide"] = localStorage.getItem("currentJqmSlide");
     }
 
-    if (!(saveHandler = clLib.UI.saveHandlers[currentJqmSlide])) {
-        alert("no save handler defined for page >" + currentJqmSlide + "<");
+    if (!(saveHandler = clLib.UI.saveHandlers[options["currentJqmSlide"]])) {
+        alert("no save handler defined for page >" + options["currentJqmSlide"] + "<");
         return;
     }
 
-    saveHandler(currentJqmSlide, currentLayout, successHandler, additionalData);
+    saveHandler(options, successFunc, errorFunc);
 }
 
 
 
-clLib.UI.localStorageSaveHandler = function (currentJqmSlide, currentLayout, successHandler) {
+clLib.UI.localStorageSaveHandler = function (options, successFunc, errorFunc) {
     var saveObj = {};
+
+	var currentJqmSlide = options["currentJqmSlide"];
+	var currentLayout = options["currentLayout"];
+	
     if (!currentJqmSlide) {
         currentJqmSlide = localStorage.getItem("currentJqmSlide");
     }
@@ -789,13 +797,16 @@ clLib.UI.localStorageSaveHandler = function (currentJqmSlide, currentLayout, suc
         }
     });
     //alert("local storage updated!");
-    //	successHandler();
+    successFunc();
 }
 
 
 
-clLib.UI.RESTSaveHandler = function (currentJqmSlide, currentLayout, successHandler) {
+clLib.UI.RESTSaveHandler = function (options, successFunc, errorFunc) {
     var saveObj = {};
+	var currentJqmSlide = options["currentJqmSlide"];
+	var currentLayout = options["currentLayout"];
+	
     if (!currentJqmSlide) {
         currentJqmSlide = localStorage.getItem("currentJqmSlide");
     }
@@ -814,12 +825,16 @@ clLib.UI.RESTSaveHandler = function (currentJqmSlide, currentLayout, successHand
     });
     //alert("saveObj is " + JSON.stringify(saveObj));
     clLib.localStorage.addInstance("RouteLog", saveObj, "defaultStorage");
-    //	successHandler();
+    successFunc();
 }
 
 
-clLib.UI.userHandler = function (currentJqmSlide, currentLayout, successHandler, additionalData) {
+clLib.UI.userHandler = function (options, successFunc, errorFunc) {
     var userObj = {};
+	var currentJqmSlide = options["currentJqmSlide"];
+	var currentLayout = options["currentLayout"];
+	var additionalData = options["additionalData"];
+	
     if (!currentJqmSlide) {
         currentJqmSlide = localStorage.getItem("currentJqmSlide");
     }
@@ -840,41 +855,53 @@ clLib.UI.userHandler = function (currentJqmSlide, currentLayout, successHandler,
         //alert("2eaching " + elementName + " and " + elementValue);
         userObj[elementName] = elementValue;
     });    
-    //alert("userObj is " + JSON.stringify(userObj));
-    try {
-        var returnObj = {};
-        var userAction = additionalData["action"];
+	var returnObj = {};
+	var userAction = additionalData["action"];
 
-        if (userAction == "create") {
-            returnObj = clLib.REST.createUser(userObj);
-        }
-        else if (userAction == "login") {
-            returnObj = clLib.REST.loginUser(userObj);
-        }
-        else if (userAction == "logout") {
-			localStorage.removeItem("currentPassword");
-			clLib.sessionToken = null;
-			returnObj["sessionToken"] = null;
-        
-		}
-        else {
-			throw new clLib.clException("CORE", "unknown operation >" + userAction + "< - don't know what to do for user..");
-		}
-		
-		// Clear any "old" error messages 
-		localStorage.removeItem("loginError");
+	if (userAction == "create") {
+		return clLib.REST.createUser(userObj, 
+		function(returnObj) {
+			// Clear any "old" error messages 
+			localStorage.removeItem("loginError");
 
-        var sessionToken = returnObj["sessionToken"];
-        //alert("retrieved sessionToken >" + sessionToken + "<");
-        clLib.sessionToken = sessionToken;
-    } catch (e) {
+			var sessionToken = returnObj["sessionToken"];
+			//alert("retrieved sessionToken >" + sessionToken + "<");
+			clLib.sessionToken = sessionToken;
+			
+			return successFunc();
+		}
+		, errorFunc);
+	}
+	else if (userAction == "login") {
+		return clLib.REST.loginUser(userObj, 
+		function(returnObj) {
+			// Clear any "old" error messages 
+			localStorage.removeItem("loginError");
+
+			//alert("got login response " + JSON.stringify(returnObj));
+			var sessionToken = returnObj["sessionToken"];
+			//alert("retrieved sessionToken >" + sessionToken + "<");
+			clLib.sessionToken = sessionToken;
+			
+			return successFunc();
+		}
+		, errorFunc);
+	}
+	else if (userAction == "logout") {
+		localStorage.removeItem("currentPassword");
+		clLib.sessionToken = null;
+		returnObj["sessionToken"] = null;
+		return successFunc();
+	}
+	else {
 		// could not login - alert error and return false
         clLib.sessionToken = null;
 		localStorage.setItem("loginError", "Could not login user: " + JSON.parse(JSON.parse(e.message)["responseText"])["description"]);
-    }
-
-
-    //	successHandler();
+		return errorFunc(
+				new clLib.clException("CORE", 
+					"unknown operation >" + userAction + "< - don't know what to do for user.."));
+	}
+	alert("should not get here..?!!?!?!?");
 }
 
 
@@ -1068,11 +1095,14 @@ clLib.tryLogin = function() {
 	if(!clLib.isOnline()) {
 		return false;
 	}
-	var loggedIn = clLib.loggedInCheck();
-	//alert("loggedin: " + loggedIn);
-    if (!loggedIn) {
+	return clLib.loggedInCheck(
+	function() {
+		clLib.loggi("loggedin!");
+	},
+	function(e) {
+		alert("handling error " + JSON.stringify(e));
+		clLib.loginErrorHandler(e);
 		$.mobile.navigate("clLib_users.html");
-    }
-
-	return loggedIn;
+	}
+	);
 };

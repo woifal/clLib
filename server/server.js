@@ -24,6 +24,25 @@ var options = {
   accept: [ 'application/json' ]
 }
  
+clLib.server.usersCollectionName = "Users";
+
+clLib.server.defaults = {
+	"errorFunc" : function(errorObj, res) {
+		util.log("standard errorFunc: " + JSON.stringify(errorObj));
+		var errorStr = "?";
+		if(errorObj instanceof Error) {
+			errorStr = JSON.stringify(errorObj.message);
+		} 
+		else {
+			errorStr = JSON.stringify(errorObj);
+		}
+		res.send(500, "error >" + errorStr + "<");
+	}
+};
+
+
+ 
+ 
 //Create the server
 var server = restify.createServer(options);
  
@@ -47,9 +66,10 @@ function unknownMethodHandler(req, res) {
 		if (res.methods.indexOf('OPTIONS') === -1) res.methods.push('OPTIONS');
 
 		res.header('Access-Control-Allow-Credentials', true);
-		res.header('Access-Control-Allow-Headers', "content-type,x-appery-database-id");
-		res.header('Access-Control-Allow-Methods', res.methods.join(', '));
+		res.header('Access-Control-Allow-Headers', "content-type,x-appery-database-id,x-appery-session-token,clUserName");
+		res.header('Access-Control-Allow-Methods', 	res.methods.join(', '));
 		res.header('Access-Control-Allow-Origin', req.headers.origin);
+		console.log("sending 204...\n\n\n");
 		return res.send(204);
 	} else {
 		return res.send(new restify.MethodNotAllowedError());
@@ -106,33 +126,35 @@ adminDBSession = DBHandler.loginUser({
 });
 
 server.get("/login", function (req, res) {
-	util.log("authHandler.defaults : >" + JSON.stringify(authHandler.defaults) + "<");
+	var errHandler = function(errorObj) {
+		return clLib.server.defaults.errorFunc(errorObj, res);
+	}
 
+	console.log("authHandler.defaults : >" + JSON.stringify(authHandler.defaults) + "<");
 	authHandler.authenticate({
 		username : req.params["username"]
 		,password :  req.params["password"]
 	},
 	function(userObj) {
 		util.log("AUTHENTICATED!!! " + JSON.stringify(userObj));
-		res.send("AUTHENTICATED!!! " + JSON.stringify(userObj));
+		res.send(userObj);
 	},
-	function(errorObj) {
-		res.send(500, "error >" + JSON.stringify(errorObj.message) + "<");
-	}
+	errHandler
 	);
 
 });
 
-server.get("/signup", function (req, res) {
+server.post("/signup", function (req, res) {
 	util.log("authHandler.defaults : >" + JSON.stringify(authHandler.defaults) + "<");
 	var errHandler = function(errorObj) {
-		util.log("ERROR!!!" + errorObj);
-		res.send(500, "error >" + JSON.stringify(errorObj.message) + "< + >" + JSON.stringify(errorObj) + "<");
-	};
+		return clLib.server.defaults.errorFunc(errorObj, res);
+	}
 	
-	
-	var userObj = req.params;
+	var userObj = req.body;
+	util.log("USEROBJ to insert " + JSON.stringify(userObj));
 	var foo = this;
+	
+	var plainPwd = userObj.password;
 	
 	authHandler.hash(userObj.password, userObj.username, 
 	function(hashpwd) {
@@ -141,7 +163,7 @@ server.get("/signup", function (req, res) {
 		
 		// verify user.
 		DBHandler.insertEntity({
-			entity : "Users", 
+			entity : clLib.server.usersCollectionName, 
 			values : userObj
 		},
 		// upon success...
@@ -153,7 +175,7 @@ server.get("/signup", function (req, res) {
 			var initialToken = clLib.server.generateRandomToken();
 			util.log("updating with token");
 			DBHandler.updateEntity({
-				entity : "Users",
+				entity : clLib.server.usersCollectionName,
 				id : userObj["_id"],
 				data : {"initialToken": initialToken}
 			},
@@ -163,7 +185,6 @@ server.get("/signup", function (req, res) {
 				util.log("Token >" + initialToken + "< stored at >" + resultObj + "<");
 				
 				userObj["initialToken"] = initialToken;
-/*
 				// send token to user..
 				util.log("Sending email..");
 				var options = {
@@ -176,18 +197,26 @@ server.get("/signup", function (req, res) {
 				
 				mailHandler.send(
 					{"emailOptions" : options}, 
-				function(responseObj) {
-					util.log("email sent!!! " + JSON.stringify(responseObj));
-					res.send("email sent >" + JSON.stringify(responseObj) + "<");
-				}
-				,errHandler
-				);
-*/
-			},
-			errHandler
+					function(responseObj) {
+						authHandler.authenticate({
+							username : userObj["username"]
+							,password :  plainPwd
+						},
+						function(userObj) {
+							util.log("email sent!!! " + JSON.stringify(responseObj));
+							util.log("AUTHENTICATED!!! " + JSON.stringify(userObj));
+							res.send(userObj);
+						}
+						,errHandler
+						);
+					}
+					, errHandler
+				)
+			}
+			, errHandler
 			);
-		}
-		, errHandler
+		},
+		errHandler
 		);
 	}
 	, errHandler
@@ -197,13 +226,18 @@ server.get("/signup", function (req, res) {
 
 
 server.get('/requestVerification', function(req, res) {
+	var errHandler = function(errorObj) {
+		return clLib.server.defaults.errorFunc(errorObj, res);
+	}
+
 	util.log("getting.." + JSON.stringify(req.params));
 	var resText = [];
 	var resCount = 0;
 	// verify user.
 	DBHandler.getEntities({
-		entity : "users", 
-		where : {"username": req.params["username"]}
+		entity : clLib.server.usersCollectionName, 
+		where : {"username": req.params["username"]},
+		requireResult: true
 	}, 
 	function(resultObj) { 
 		// upon success...
@@ -220,12 +254,13 @@ server.get('/requestVerification', function(req, res) {
 		// store newly generated token
 		var verificationToken = clLib.server.generateRandomToken();
 		DBHandler.updateEntity({
-			entity : "Users",
+			entity : clLib.server.usersCollectionName,
 			id : userDetails["_id"],
 			data : {"username": req.params["username"], "verificationToken": verificationToken}
 		},
 		function(resultObj) {
-			util.log("Token >" + verificationToken + "< stored at >" + resultObj.data["_updatedAt"] + "<");
+			util.log("Resultobj " + JSON.stringify(resultObj));
+			util.log("Token >" + verificationToken + "< stored at >" + resultObj["_updatedAt"] + "<");
 			
 			userDetails["verificationToken"] = verificationToken;
 			// send token to user..
@@ -255,9 +290,13 @@ server.get('/requestVerification', function(req, res) {
 	
 
 server.get('/db/:entityName/:entityId', 
-		//authHandler.requiredAuthentication, 
+		authHandler.requiredAuthentication, 
 		function(req, res) 
 {
+	var errHandler = function(errorObj) {
+		return clLib.server.defaults.errorFunc(errorObj, res);
+	}
+
 	util.log("getting.." + JSON.stringify(req.params));
 	var entityName = req.params.entityName;
 	var entityId = req.params.entityId;
@@ -270,7 +309,8 @@ server.get('/db/:entityName/:entityId',
 	// verify user.
 	DBHandler.getEntities({
 		entity : entityName, 
-		where : {_id: entityId}
+		where : {_id: entityId},
+		requireResult: true
 	},
 	function(resultObj) { 
 		// upon success...
@@ -285,13 +325,19 @@ server.get('/db/:entityName/:entityId',
 		}
 		res.send(JSON.stringify(resultObj));
 
-	});
+	}
+	, errHandler
+	);
 });
 	
 server.get('/db/:entityName', 
 		//authHandler.requiredAuthentication, 
 		function(req, res) 
 {
+	var errHandler = function(errorObj) {
+		return clLib.server.defaults.errorFunc(errorObj, res);
+	}
+
 	util.log("2getting.." + JSON.stringify(req.params));
 	var entityName = req.params.entityName;
 	// verify user.
@@ -312,13 +358,19 @@ server.get('/db/:entityName',
 		}
 		res.send(JSON.stringify(resultObj));
 
-	});
+	}
+	, errHandler
+	);
 });
 
 server.put('/db/:entityName/:entityId', 
-		//authHandler.requiredAuthentication, 
+		authHandler.requiredAuthentication, 
 		function(req, res) 
 {
+	var errHandler = function(errorObj) {
+		return clLib.server.defaults.errorFunc(errorObj, res);
+	}
+
 	util.log("putting.." + JSON.stringify(req.params));
 	var entityName = req.params.entityName;
 	var entityId = req.params.entityId;
@@ -339,14 +391,20 @@ server.put('/db/:entityName/:entityId',
 		}
 		res.send(JSON.stringify(resultObj));
 
-	});
+	}
+	, errHandler
+	);
 });
 
 server.post('/db/:entityName', 
 		//authHandler.requiredAuthentication, 
 		function(req, res) 
 {
-	util.log("posting.." + JSON.stringify(req.params));
+	var errHandler = function(errorObj) {
+		return clLib.server.defaults.errorFunc(errorObj, res);
+	}
+
+	util.log("posting.." + JSON.stringify(req.body));
 	var entityName = req.params.entityName;
 	DBHandler.insertEntity({
 		entity : entityName,
@@ -363,14 +421,20 @@ server.post('/db/:entityName',
 		}
 		res.send(JSON.stringify(resultObj));
 
-	});
+	}
+	,errHandler);
 });
 	
 server.get('/setPassword', function(req, res) {
+	var errHandler = function(errorObj) {
+		return clLib.server.defaults.errorFunc(errorObj, res);
+	}
+	
 	// verify user.
 	DBHandler.getEntities({
-		entity : "users", 
-		where : {"username": req.params["username"]}
+		entity : clLib.server.usersCollectionName, 
+		where : {"username": req.params["username"]},
+		requireResult : true
 	},
 	function(resultObj) { 
 	// upon success...
@@ -382,7 +446,7 @@ server.get('/setPassword', function(req, res) {
 		util.log("verificationToken is >" + dbVerificationToken + "<");
 		if(req.params["verificationToken"] == dbVerificationToken) {
 			DBHandler.updateEntity({
-				entity : "users",
+				entity : clLib.server.usersCollectionName,
 				id : userDetails["_id"],
 				data : {
 					"verificationToken": "",
@@ -418,7 +482,9 @@ server.get('/setPassword', function(req, res) {
 		} else {
 			res.send("tokens: >" + req.params["verificationToken"] + "< and >" + dbVerificationToken+ 	 "< do not match!");
 		}
-	});
+	}
+	,errHandler
+	);
 });
 	
 

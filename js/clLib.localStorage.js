@@ -33,7 +33,7 @@ clLib.localStorage.indexExists = function(storageName, indexName) {
 
 
 clLib.localStorage.addStorageItems = function(entityName, entityItemsArr, storageName) {
-	alert("adding elements " + entityItemsArr.length + "->" + JSON.stringify(entityItemsArr));
+	clLib.loggi("adding elements " + entityItemsArr.length + "->" + JSON.stringify(entityItemsArr));
 	for(var i = 0; i < entityItemsArr.length; i++) {
 		// store new items
 		clLib.localStorage.addStorageItem(storageName, entityName, entityItemsArr[i]);
@@ -41,12 +41,12 @@ clLib.localStorage.addStorageItems = function(entityName, entityItemsArr, storag
 };
 
 clLib.localStorage.initStorageItems = function(entityName, entityItemsArr, storageName) {
-	//alert("entity: " + entityName);
+	clLib.loggi("initStorageItems for : " + JSON.stringify(entityItemsArr));
 	var entityItems = {};
 	for(var i = 0; i < entityItemsArr.length; i++) {
 		entityItems[entityItemsArr[i]["_id"]] = entityItemsArr[i];
 	}
-
+	clLib.loggi("entityItems after ID-remapping >" + JSON.stringify(entityItems) + "<");
 	// add UNSYNCED entries to cache	
 	var unsyncedStorage = clLib.localStorage.getStorageItems("UNSYNCED_" + storageName);
 	clLib.loggi("currently unsynced items for entity >" + entityName + "< =>" + JSON.stringify(unsyncedStorage) + "<");
@@ -58,10 +58,12 @@ clLib.localStorage.initStorageItems = function(entityName, entityItemsArr, stora
 		});
 	}
 	
+	clLib.loggi("returning entityitems " + JSON.stringify(entityItems));
 	return entityItems;
 };
 
 clLib.localStorage.initStorage = function(storageObj, storageName) {
+	clLib.loggi("init storage with " + JSON.stringify(storageObj));
 	// Use default storageName if none supplied..
 	storageName = storageName || "defaultStorage";
 	
@@ -70,7 +72,7 @@ clLib.localStorage.initStorage = function(storageObj, storageName) {
 	
 	delete(storageCache[storageItemsKey]);
 
-	//alert("adding elements " + Object.keys(storageObj).length + "->" + JSON.stringify(Object.keys(storageObj)));
+	clLib.loggi("adding elements " + Object.keys(storageObj).length + "->" + JSON.stringify(Object.keys(storageObj)));
 	var allItems = {};
 	for(var entityName in storageObj) {
 		var entityItems = clLib.localStorage.initStorageItems(entityName, storageObj[entityName], storageName);
@@ -197,6 +199,7 @@ clLib.localStorage.initCache = function(storageName) {
 clLib.localStorage.setStorageItems = function(storageName, storageItems) {
 	var storageName = storageName || "defaultStorage";
 	var storageItemsKey = storageName + "_items";
+	clLib.loggi("setting " + storageItemsKey + " to " + tojson(storageItems));
 	clLib.localStorage.setItem(storageItemsKey, tojson(storageItems));
 	clLib.localStorage.setLastRefreshDate(storageName);
 };
@@ -370,12 +373,13 @@ clLib.localStorage.syncUp = function(entity, entityInstance, storageName) {
 	//alert(">" + dummyId + "< in storagecache? >" + JSON.stringify(entityStorage[dummyId]) + "<");
 
 	delete(entityInstance["_id"]);
-	try {
-		var realInstance = clLib.REST.storeEntity(entity, entityInstance);
-	
+	var realInstance;
+	clLib.REST.storeEntity(entity, entityInstance
+	,function(realInstance) {
+		clLib.loggi("synced realInstance >" + JSON.stringify(realInstance) + "<");
 		entityInstance["_id"] = realInstance["_id"];	
 
-		//alert("synced UP >" + dummyId + "<, new id is " + realInstance["_id"]);
+		clLib.loggi("synced UP >" + dummyId + "<, new id is (" + typeof(realInstance) + ")>" + realInstance["_id"] + "<, dummyId was >" + dummyId + "<");
 		// delete dummy id
 		clLib.localStorage.removeStorageItem(storageName, entity, dummyId);
 		// delete from unsynced entries..
@@ -383,11 +387,8 @@ clLib.localStorage.syncUp = function(entity, entityInstance, storageName) {
 
 		// store real id
 		clLib.localStorage.addStorageItem(storageName, entity, entityInstance);
-
-	} catch (e) {
-		
-		
-		
+	}
+	,function(e) {
 		var errorMsg = e.message;
 		var errorCode = "N/A";
 		if(e.message && JSON.parse(e.message)["responseText"]) {
@@ -398,8 +399,9 @@ clLib.localStorage.syncUp = function(entity, entityInstance, storageName) {
 			clLib.sessionToken = null;
 		}
 		
-		alert("could not sync item due to:" + e.name + " + (" + e.message + ")");
-    }
+		clLib.loggi("could not sync item due to:" + e.name + " + (" + e.message + ")");
+	}
+	);
 }
 
 
@@ -416,13 +418,16 @@ clLib.localStorage.addInstance = function(entity, entityInstance, storageName) {
 
 	clLib.localStorage.addStorageItem("UNSYNCED_" + storageName, entity, entityInstance);
 	
-	if(clLib.loggedInCheck()) {
+	clLib.loggedInCheck(
+	function() {
 		clLib.loggi("online, syncing UP!!!");
 		//clLib.localStorage.syncUp(entity, entityInstance, storageName);
 		clLib.localStorage.syncAllUp(entity, storageName);
-	} else {
+	}
+	, function(e) {
 		clLib.loggi("offline, saving for later sync UP..");
 	}
+	);
 }
 
 /*
@@ -543,7 +548,7 @@ clLib.localStorage.getEntities = function(entity, whereObj, storageName, sortKey
 clLib.localStorage.getDistinct = function(entity, whereObj, colName, storageName) {
 	var resultsObj = {};
 	var storage = clLib.localStorage.getStorageItems(storageName);
-	//clLib.loggi("storage keys: "+ Object.keys(storage));
+	//alert("storage keys: "+ Object.keys(storage));
 	
 /*
 	// indexes?
@@ -595,8 +600,7 @@ clLib.localStorage.getDistinct = function(entity, whereObj, colName, storageName
 		//alert("no local store available for storage " + storageName + " => you need to refresh first.");
 		return {};
 	} else {
-		//alert("storage: " + JSON.stringify(storage));
-		
+		clLib.loggi("storage: " + JSON.stringify(storage));
 	}
 //alert(12);
 	if(!storage[entity]){
@@ -737,52 +741,89 @@ clLib.localStorage.evalCondition = function(valueToTest, condition) {
 clLib.localStorage.refreshNewData = function () {
 	console.log("refreshing entities changed after " + clLib.localStorage.getLastRefreshDate() + "..");
 	var entities;
-	entities = clLib.REST.getEntities(
-		"Routes", 
-		{
+	clLib.REST.getEntities("Routes"
+		, {
 			"_updatedAt": { 
 				"$gt": {
 					"$date": clLib.localStorage.getLastRefreshDate("defaultStorage")
 				}
 			}
 		}
+		, function(resultObj) {
+			entities = resultObj;
+		}
+		,function(e) {
+			alert("error while retrieving Routes.." + e);
+		}
 	);
 	console.log("Entities to add to local storage: " + JSON.stringify(entities));
 	clLib.localStorage.addStorageItems("Routes", entities);
 	
-	entities = clLib.REST.getEntities(
-		"RouteLog", 
-		{
+	clLib.REST.getEntities("RouteLog"
+		, {
 			"_updatedAt": { 
 				"$gt": {
 					"$date": clLib.localStorage.getLastRefreshDate("defaultStorage")
 				}
 			}
+		}
+		, function(resultObj) {
+			entities = resultObj;
+		}
+		,function(e) {
+			alert("error while retrieving Routes.." + e);
 		}
 	);
 	console.log("Entities to add to local storage: " + JSON.stringify(entities));
 	clLib.localStorage.addStorageItems("RouteLog", entities);
 };
 
-clLib.localStorage.refreshAllData = function () {
-    if (clLib.loggedInCheck()) {
+clLib.localStorage.refreshAllData = function (callbackFunc, errorFunc) {
+    clLib.loggedInCheck(
+	function() {
 		clLib.UI.execWithMsg(function() {
 			clLib.UI.showLoading("refreshing from server..");
-
+			var warnings = "";
 			//alert("previous refresh:" +clLib.localStorage.getLastRefreshDate("defaultStorage"));
 
 			var storageObjects = {};
+
+			var userRoutes;
+			clLib.REST.getEntities("Routes", {}
+			,function(resultObj) {
+				userRoutes = resultObj;
+			}
+			,function(e) {
+				warnings += "error while retrieving Routes.." + e;
+			}
+			);
 			
-			var userRoutes = clLib.REST.getEntities("Routes");
 			console.log("GOT: " + JSON.stringify(userRoutes));
 			$.extend(storageObjects, userRoutes);
 
-			var userRouteLogs = clLib.REST.getEntities("RouteLog", clLib.getRouteLogWhereToday());
+			var userRouteLogs;
+			clLib.REST.getEntities("RouteLog", clLib.getRouteLogWhereToday()
+			, function(resultObj) {
+				userRouteLogs = resultObj;
+			}
+			,function(e) {
+				warnings += "error while retrieving RouteLog.." + JSON.stringify(e);
+			}
+			);
+			
 			console.log("GOT: " + JSON.stringify(userRouteLogs));
 			$.extend(storageObjects, userRouteLogs);
 
-			var areas = clLib.REST.getEntities("Area");
-			console.log("GOT: " + JSON.stringify(areas));
+			var areas;
+			clLib.REST.getEntities("Area", {}
+			, function(resultObj) {
+				areas = resultObj;
+			}
+			,function(e) {
+				warnings += "error while retrieving Area.." + e;
+			}
+			);
+			clLib.loggi("GOT: " + JSON.stringify(areas));
 			$.extend(storageObjects, areas);
 
 			//
@@ -791,7 +832,8 @@ clLib.localStorage.refreshAllData = function () {
 			var compiledGradeConfig = clLib.compileGradeConfig();
 			console.log("compiledGradeConfig: " + JSON.stringify(compiledGradeConfig));
 			$.extend(storageObjects, compiledGradeConfig);
-
+			clLib.loggi("initializing storage with >" + JSON.stringify(storageObjects)+ "<");
+			
 			// Initialize local storage..
 			clLib.localStorage.initStorage(storageObjects);
 
@@ -799,12 +841,17 @@ clLib.localStorage.refreshAllData = function () {
 
 			//alert("new refresh:" + clLib.localStorage.getLastRefreshDate("defaultStorage"));
 			clLib.UI.hideLoading();
-			return true;
-		}, {text: "Refreshing from server.."});
-	} else {
-        clLib.alert("Not online!");
-        return false;
+			
+			clLib.loggi("calling refreshAllData callback with " + warnings);
+			return callbackFunc({"warnings" : warnings});
+		}, {text: "Refreshing from server.."}
+		);
+	} 
+	, function(e) {
+	    clLib.alert("Not online!");
+        return errorFunc(e);
     }
+	);
 };
 
 

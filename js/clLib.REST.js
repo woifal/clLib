@@ -7,13 +7,17 @@ clLib.clException= function(name, message) {
    this.name = name;
 };
 
-clLib.REST.baseURI = "https://api.appery.io/rest/1/db";
-clLib.REST.baseCollectionsURI = clLib.REST.baseURI + "/collections/";
+//clLib.REST.baseURI = "https://api.appery.io/rest/1/db";
+clLib.REST.baseURI = "http://localhost:1983/db";
+
+clLib.REST.baseCollectionsURI = clLib.REST.baseURI+ "/"; // + "/collections/";
 clLib.REST.baseUsersURI = clLib.REST.baseURI + "/users";
 clLib.REST.clLibServerURI = "http://localhost:1983";
 
+
 // prepare REST handler for appery.io results..
 clLib.REST.appery = {};
+clLib.REST.clNode = {};
 
 clLib.REST.appery.dateStrToISOString = function(apperyDateStr) {
     //console.log("-----");
@@ -69,9 +73,29 @@ clLib.REST.appery.postAJAXprocessing = function(AJAXResult) {
 	console.log("after:" + AJAXResult.length);
 	return AJAXResult;
 };
+clLib.REST.clNode.postAJAXprocessing = function(AJAXResult) {
+	if(typeof(AJAXResult) == "string") {
+		AJAXResult = JSON.parse(AJAXResult);
+	}
+	var colsToRemap ={
+		"_createdAt": clLib.REST.appery.dateStrToISOString,
+		"_updatedAt": clLib.REST.appery.dateStrToISOString
+	};
+	console.log("before:" + AJAXResult.length);
+	$.each(AJAXResult, function(index, value) {
+		$.each(colsToRemap, function(colName, remapFunc) {
+			if(AJAXResult[index][colName]) {
+				AJAXResult[index][colName]= remapFunc(AJAXResult[index][colName]);
+			}
+		});
+	});
+	console.log("after:" + AJAXResult.length);
+	return AJAXResult;
+};
 
 clLib.REST.postAJAXprocessing = {
-	"https://api.appery.io/rest/1/db" : clLib.REST.appery.postAJAXprocessing
+	"https://api.appery.io/rest/1/db" : clLib.REST.appery.postAJAXprocessing,
+	"http://localhost:1983/db" : clLib.REST.clNode.postAJAXprocessing
 };
 
 
@@ -79,50 +103,65 @@ clLib.REST.postAJAXprocessing = {
 *	retrieve => need to encode where string
 *	insert => do NOT encode obj props
 */
-clLib.REST.executeRetrieve = function (uri, method, whereObj, allowNoSessionToken) {
+clLib.REST.executeRetrieve = function (uri, method, whereObj, successFunc, errorFunc) {
+	var whereObj;
 	if(whereObj) {
 		whereObj = "where=" + encodeURIComponent(JSON.stringify(whereObj));
 	}
-	var returnObj = clLib.REST.execAJAXRequest(uri, method, whereObj, allowNoSessionToken   );
-	return returnObj;
+	var reqOptions = {};
+	reqOptions["uri"] = uri;
+	reqOptions["method"] = method;
+	reqOptions["params"] = whereObj
+	
+	clLib.REST.execAJAXRequest(reqOptions, successFunc, errorFunc);
 }
 	
 
-clLib.REST.executeInsert = function(uri, method, objData, allowNoSessionToken) {
+clLib.REST.executeInsert = function(uri, method, objData, successFunc, errorFunc) {
 	if(objData) {
 		objData = JSON.stringify(objData);
 	}
-	var returnObj = clLib.REST.execAJAXRequest(uri, method, objData, allowNoSessionToken);
-	return returnObj;
+	var reqOptions = {};
+	reqOptions["uri"] = uri;
+	reqOptions["method"] = method;
+	reqOptions["params"] = objData
+
+	clLib.REST.execAJAXRequest(reqOptions, successFunc, errorFunc);
 }
 		
-clLib.REST.execAJAXRequest = function (uri, method, params, allowNoSessionToken) {
-	var request = clLib.REST.buildAJAXRequest(uri, method, params, null, allowNoSessionToken);
+//clLib.REST.execAJAXRequest = function (uri, method, params, allowNoSessionToken) {
+clLib.REST.execAJAXRequest = function (options, successFunc, errorFunc) {
+	return clLib.REST.buildAJAXRequest(options, 
+	function(request) {
+		var returnObj = {};
 
-	var returnObj = {};
-
-	$.ajax(request)
-		.done(function(data) {
-			clLib.loggi("ajax done " + JSON.stringify(data));
-			returnObj = data;
-		})
-		.error(function(data) {
-			console.log("AJAX ERROR: " + JSON.stringify(data));
-			throw new clLib.clException("AJAX", JSON.stringify(data));
-			returnObj = null;
-		})
-	;
-	clLib.loggi("returing returoIbj of " + JSON.stringify(returnObj));
-	return returnObj;
+		return $.ajax(request)
+			.done(function(data) {
+				clLib.loggi("ajax done " + JSON.stringify(data));
+				return successFunc(data);
+			})
+/*			.error(function(data) {
+				alert("123123AJAX ERROR: " + JSON.stringify(data));
+				return errorFunc(new clLib.clException("AJAX", JSON.stringify(data)));
+			})
+*/
+		;
+		console.log("should not get here!!! 123123");
+	}
+	, function(e) {
+		//alert("AJAX calling errorFunc");
+		return errorFunc(e);
+	});
 	
 };
 
 		
-clLib.REST.buildAJAXRequest = function(uri, method, getParams, headerParams, allowNoSessionToken) {
+clLib.REST.buildAJAXRequest = function(options, successFunc, errorFunc) {
+	
 	var request = {
 		async: false,
-		url: uri,
-		type: method,
+		url: options["uri"],
+		type: options["method"],
 		contentType: "application/json",
 		accepts: "application/json",
 		cache: true,
@@ -133,7 +172,7 @@ clLib.REST.buildAJAXRequest = function(uri, method, getParams, headerParams, all
 //curl 'https://api.appery.io/rest/1/db/collections/RouteLog?where=%7B%22Area%22%20:%20%22Kletterhalle%20Wien%22%7D' -H 'Host: api.appery.io' -H 'User-Agent: Mozilla/5.0 (Windows NT 6.2; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0' -H 'Accept: application/json, text/javascript, */*; q=0.01' -H 'Accept-Language: de-de,de;q=0.8,en-us;q=0.5,en;q=0.3' -H 'Accept-Encoding: gzip, deflate' -H 'DNT: 1' -H 'Content-Type: application/json' -H 'X-Appery-Database-Id: 52093c91e4b04c2d0a027d7f' -H 'Origin: null'
 
 //		data: "where=" + encodeURIComponent("{\"Area\" : \"Kletterhalle Wien\"}"),
-		data: getParams,
+		data: options["params"],
 		beforeSend: function (xhr) {
 //			xhr.setRequestHeader("X-Appery-Database-Id", "52093c91e4b04c2d0a027d7f");
 			xhr.setRequestHeader("Accept", "application/json, text/javascript, */*; q=0.01");
@@ -144,78 +183,85 @@ clLib.REST.buildAJAXRequest = function(uri, method, getParams, headerParams, all
 //			xhr.setRequestHeader("User-Agent", "Mozilla/5.0 (Windows NT 6.2; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0");
 			xhr.setRequestHeader("X-Appery-Database-Id", "52093c91e4b04c2d0a027d7f");
 
-            if(!allowNoSessionToken) {
+            if(!options["allowNoSessionToken"]) {
 		        // only allow REST calls for authenticated users..
 			    xhr.setRequestHeader("X-Appery-Session-Token", clLib.sessionToken);
+			    xhr.setRequestHeader("clUserName", clLib.currentUser);
             }
-			if (headerParams) {
-			    $.each(headerParams, function (paramName, paramValue) {
-
+			if (options["headerParams"]) {
+			    $.each(options["headerParams"], function (paramName, paramValue) {
 			        xhr.setRequestHeader(paramName, paramValue);
 			    });
 			};
 		},
 		error: function(jqXHR) {
-			clLib.loggi("ajax error " + jqXHR.status);
+			//alert("ajax error " + JSON.stringify(jqXHR));
+			return errorFunc(jqXHR);
 		}
 	};
-	return request;
+	//alert("request built..");
+	return successFunc(request);
 }
 
-clLib.REST.getEntities = function(entityName, whereObj) {
+clLib.REST.getEntities = function(entityName, whereObj, successFunc, errorFunc) {
 	var uri = clLib.REST.baseCollectionsURI + entityName;
-	var returnObj = {};
-	var AJAXResult = clLib.REST.executeRetrieve(uri, 'GET', whereObj);
-	console.log("result first " + JSON.stringify(AJAXResult));
-	AJAXResult = clLib.REST.postAJAXprocessing[clLib.REST.baseURI](AJAXResult);
-	
-	returnObj[entityName] = AJAXResult;
-	
-	//clLib.loggi("returning(getEntities) " + JSON.stringify(returnObj));
-	return returnObj;
+	var AJAXResult = clLib.REST.executeRetrieve(uri, 'GET', whereObj, 
+	function(AJAXResult) {
+		var returnObj = {};
+		console.log("result first " + JSON.stringify(AJAXResult));
+		AJAXResult = clLib.REST.postAJAXprocessing[clLib.REST.baseURI](AJAXResult);
+		returnObj[entityName] = AJAXResult;
+		clLib.loggi("return type "+ typeof(AJAXResult));
+		
+		//clLib.loggi("returning(getEntities) " + JSON.stringify(returnObj));
+		successFunc(returnObj);
+	}
+	, errorFunc);
 }
 
-clLib.REST.storeEntity = function (entityName, entityInstance) {
+clLib.REST.storeEntity = function (entityName, entityInstance, successFunc, errorFunc) {
     var uri = clLib.REST.baseCollectionsURI + entityName;
-    var returnObj = clLib.REST.executeInsert(uri, 'POST', entityInstance);
-
-    clLib.loggi("returning(storeEntity) " + JSON.stringify(returnObj));
-    return returnObj;
+    clLib.REST.executeInsert(uri, 'POST', entityInstance, 
+	function(AJAXResult) {
+		AJAXResult = clLib.REST.postAJAXprocessing[clLib.REST.baseURI](AJAXResult);
+		successFunc(AJAXResult);
+	}
+	, errorFunc);
 }
 
 
-clLib.REST.createUser = function (userInstance) {
-    var uri = clLib.REST.baseUsersURI;
-    var returnObj = clLib.REST.executeInsert(uri, 'POST', userInstance, true);
+clLib.REST.createUser = function (userInstance, successFunc, errorFunc) {
+	var uri = clLib.REST.clLibServerURI + "/signup";
 
-    return returnObj;
+    clLib.REST.executeInsert(uri, 'POST', userInstance, successFunc, errorFunc);
 }
 
 
-clLib.REST.loginUser = function (userInstance) {
-    var uri = clLib.REST.baseURI + "/login";
-	var returnObj = clLib.REST.execAJAXRequest(uri, "GET", userInstance, true);
-
-    return returnObj;
+clLib.REST.loginUser = function (userInstance, successFunc, errorFunc) {
+    var reqOptions = {};
+	reqOptions["uri"] = clLib.REST.clLibServerURI + "/login";
+	reqOptions["method"] = "GET";
+	reqOptions["params"] = userInstance;
+	reqOptions["allowNoSessionToken"] = true;
+	clLib.REST.execAJAXRequest(reqOptions, successFunc, errorFunc);
 }
 
-clLib.REST.changePassword = function (options) {
+clLib.REST.changePassword = function (options, callbackFunc, errorFunc) {
 	options.uri = clLib.REST.clLibServerURI + "/setPassword";
-	clLib.REST.execGET(options);
+	clLib.REST.execGET(options, callbackFunc, errorFunc);
 }
 
-clLib.REST.requestVerification = function(options) {
+clLib.REST.requestVerification = function(options, callbackFunc, errorFunc) {
 	options.uri = clLib.REST.clLibServerURI + "/requestVerification";
-	clLib.REST.execGET(options);
+	clLib.REST.execGET(options, callbackFunc, errorFunc);
 };
 
-clLib.REST.execGET = function(options) {
-	//alert("requesting url " + options.uri);
-	try {
-		var returnObj = clLib.REST.execAJAXRequest(options.uri, "GET", options.entityInstance, true);
-	} catch (e) {
-		options.onError(e);
-	}
-	options.onSuccess(returnObj);
+clLib.REST.execGET = function(options, callbackFunc, errorFunc) {
+	var reqOptions = {};
+	reqOptions["uri"] = options.uri;
+	reqOptions["method"] = "GET";
+	reqOptions["params"] = options.entityInstance;
+	reqOptions["allowNoSessionToken"] = true;
 	
+	clLib.REST.execAJAXRequest(reqOptions, callbackFunc, errorFunc);
 };

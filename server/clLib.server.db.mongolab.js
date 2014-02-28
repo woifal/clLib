@@ -50,10 +50,10 @@ mongolab.prototype.getEntities = function(options, callbackFunc, errorFunc) {
 			resultObj["error"] = JSON.stringify(err);
 			errorFunc(resultObj);
 		}
-		if(!items || items.length == 0) {
+		if(options["requireResult"] && (!items || items.length == 0)) {
 			err = "no items found";
 			resultObj["error"] = JSON.stringify(err);
-			errorFunc(resultObj);
+			return errorFunc(resultObj);
 		}
 		
 		util.log("mongo results received.." + JSON.stringify(items.length));

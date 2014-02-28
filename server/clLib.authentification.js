@@ -24,14 +24,21 @@ auth.prototype.requiredAuthentication = function(req, res, next) {
 	util.log("req" + JSON.stringify(Object.keys(req)));
 	util.log("header.." + JSON.stringify(req.headers));
 
-	var username = req.params.username;
-	var sessionToken = req.params.sessionToken;
-	var cachedSession = serverResource.runtime["sessionTokens"][username];
+	//var username = req.params.username;
+	var username = req.headers["clUserName"];
+	var sessionToken = req.headers["x-appery-session-token"];
+	//var sessionToken = req.params.sessionToken;
+	var cachedSession = serverResource.runtime["sessionTokens"][username] || {};
 	
-	var userSessionToken = cachedSession["token"];
+	var userSessionToken = cachedSession["token"] ;
 	var userSessionExpiry = cachedSession["expires"];
 	var currentTime = "" + Date.now();
-	if(sessionToken == userSessionToken) {
+	if(sessionToken == null || userSessionToken == null) {
+		res.send(500, JSON.stringify({
+			result: "Request session token >" + sessionToken+ "< is not defined or server session token >" + userSessionToken + "< does not exist."
+		}));
+	} 
+	else if(sessionToken == userSessionToken) {
         if(currentTime > userSessionExpiry) {
 			util.log("Session for user '" + username + "' expired (" + userSessionExpiry + " < " + currentTime + ")");
 			delete serverResource.runtime["sessionTokens"][username];
@@ -39,10 +46,11 @@ auth.prototype.requiredAuthentication = function(req, res, next) {
 				result: "Session for user '" + username + "' expired (" + userSessionExpiry + " < " + currentTime + ")"
 			}));
 		}
+		util.log("sessionToken >" + sessionToken + "<for user >" + username + "< is OK!");
 		next();
     } else {
 		res.send(500, JSON.stringify({
-			result: "Session verification failed: >" + currentUserToken + "< is not equal to >" + sessionToken + "<"
+			result: "Session verification failed: >" + userSesionToken + "< is not equal to >" + sessionToken + "<"
 		}));
     }
 }
@@ -57,8 +65,9 @@ auth.prototype.authenticate = function(authObj, callbackFunc, errorFunc) {
 	
 	// verify user.
 	DBHandler.getEntities({
-		entity : "Users", 
+		entity : serverResource.usersCollectionName, 
 		where : {"username": authObj["username"]}
+		, requireResult: true
 	},
 	// upon success...
 	function(userObj) { 
@@ -88,7 +97,9 @@ auth.prototype.authenticate = function(authObj, callbackFunc, errorFunc) {
 			util.log('could not generate hash for password..');
 			errorFunc(new Error('could not generate hash for password..'));
 		});
-	});
+	}
+	,errorFunc
+	);
 };
 
 auth.prototype.defaults = {
