@@ -55,7 +55,7 @@ var server = restify.createServer(options);
 //server.use(restify.bodyParser({ mapParams: true }));
 server.use(restify.bodyParser({ mapParams: false }));
 server.use(restify.fullResponse());
-
+server.use(restify.gzipResponse());
 
 
 function unknownMethodHandler(req, res) {
