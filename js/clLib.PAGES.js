@@ -97,10 +97,12 @@ clLib.PAGES.handlers = {
 					);
 					currentArea = currentArea[0]
 					clLib.loggi("defaultLayout:" + currentLayout + ", area:" + JSON.stringify(currentArea));
+					//alert("routelog avail at >" + currentArea + "< ? >" + currentArea["routeLogAvailable"] + "<");
 					var routeLogAvailable = false;
-					if (currentArea && currentArea["routeLogAvailable"]) {
+					if (currentArea && currentArea["routeLogAvailable"] != "false") {
 						routeLogAvailable = true;
 					}
+					//alert("routeLogAvailable? " + routeLogAvailable);
 					var currentLayout = localStorage.getItem("currentLayout") || localStorage.getItem("defaultLayout") || "default";
 					if(!routeLogAvailable) {
 						currentLayout = "reduced";

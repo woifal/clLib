@@ -576,7 +576,7 @@ clLib.UI.elements = {
 	"areaSelect" : {
 		"refreshHandler" : function($this) { 
 			var distinctColumn, where, results;
-			distinctColumn = "AreaName:string";
+			distinctColumn = "AreaName";
 			where = clLib.getRoutesWhere();
 			//alert("refreshing areaSelect where " + JSON.stringify(where));
 			results = clLib.localStorage.getDistinct("Area", where, distinctColumn, "defaultStorage");

@@ -604,7 +604,7 @@ clLib.loginErrorHandler = function(e) {
 
 	clLib.sessionToken = null;
 	localStorage.setItem("loginError", "Could not login user: " + errorMsg);
-	alert("2loginError " + errorMsg);
+	//alert("2loginError " + errorMsg);
 	return false;
 };
 
@@ -612,7 +612,7 @@ clLib.requestAuthHandler = function(e) {
 	var errorMsg = clLib.formatError(e);
 
 	localStorage.setItem("notification", "error: " + errorMsg);
-	alert("2loginError " + errorMsg);
+	//alert("2loginError " + errorMsg);
 	clLib.UI.fillUIelements("users_verification", "users_verification");
 
 	return false;

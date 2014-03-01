@@ -1100,7 +1100,7 @@ clLib.tryLogin = function() {
 		clLib.loggi("loggedin!");
 	},
 	function(e) {
-		alert("handling error " + JSON.stringify(e));
+		//alert("handling error " + JSON.stringify(e));
 		clLib.loginErrorHandler(e);
 		$.mobile.navigate("clLib_users.html");
 	}

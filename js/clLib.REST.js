@@ -8,11 +8,13 @@ clLib.clException= function(name, message) {
 };
 
 //clLib.REST.baseURI = "https://api.appery.io/rest/1/db";
-clLib.REST.baseURI = "http://localhost:1983/db";
-
+//clLib.REST.baseURI = "http://localhost:1983/db";
+clLib.REST.baseURI = "http://cllibserver.herokuapp.com/db";
 clLib.REST.baseCollectionsURI = clLib.REST.baseURI+ "/"; // + "/collections/";
 clLib.REST.baseUsersURI = clLib.REST.baseURI + "/users";
-clLib.REST.clLibServerURI = "http://localhost:1983";
+//clLib.REST.clLibServerURI = "http://localhost:1983";
+clLib.REST.clLibServerURI = "http://cllibserver.herokuapp.com";
+
 
 
 // prepare REST handler for appery.io results..
@@ -94,10 +96,11 @@ clLib.REST.clNode.postAJAXprocessing = function(AJAXResult) {
 };
 
 clLib.REST.postAJAXprocessing = {
-	"https://api.appery.io/rest/1/db" : clLib.REST.appery.postAJAXprocessing,
-	"http://localhost:1983/db" : clLib.REST.clNode.postAJAXprocessing
+	"x": "y"
+	,"https://api.appery.io/rest/1/db" : clLib.REST.appery.postAJAXprocessing
+	,"http://localhost:1983/db" : clLib.REST.clNode.postAJAXprocessing
+	,"http://cllibserver.herokuapp.com/db" : clLib.REST.clNode.postAJAXprocessing
 };
-
 
 /*
 *	retrieve => need to encode where string
@@ -209,6 +212,7 @@ clLib.REST.getEntities = function(entityName, whereObj, successFunc, errorFunc) 
 	function(AJAXResult) {
 		var returnObj = {};
 		console.log("result first " + JSON.stringify(AJAXResult));
+		//alert("postfunc for >" + clLib.REST.baseURI + "< is >" + clLib.REST.postAJAXprocessing[clLib.REST.baseURI] + "(" + clLib.REST.postAJAXprocessing + ")<");
 		AJAXResult = clLib.REST.postAJAXprocessing[clLib.REST.baseURI](AJAXResult);
 		returnObj[entityName] = AJAXResult;
 		clLib.loggi("return type "+ typeof(AJAXResult));

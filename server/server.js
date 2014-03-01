@@ -185,33 +185,42 @@ server.post("/signup", function (req, res) {
 				util.log("Token >" + initialToken + "< stored at >" + resultObj + "<");
 				
 				userObj["initialToken"] = initialToken;
-				// send token to user..
-				util.log("Sending email..");
-				var options = {
-					"template": {
-						name: "initialEmail",
-						vars: userObj
-					},
-					"to": userObj["email"]
-				}
 				
-				mailHandler.send(
-					{"emailOptions" : options}, 
-					function(responseObj) {
-						authHandler.authenticate({
-							username : userObj["username"]
-							,password :  plainPwd
+				var sendInitialEmail = false;
+				if(!sendInitialEmail) {
+					util.log("NO email sent!!!");
+					util.log("AUTHENTICATED!!! " + JSON.stringify(userObj));
+					res.send(userObj);
+				}
+				else {
+					// send token to user..
+					util.log("Sending email..");
+					var options = {
+						"template": {
+							name: "initialEmail",
+							vars: userObj
 						},
-						function(userObj) {
-							util.log("email sent!!! " + JSON.stringify(responseObj));
-							util.log("AUTHENTICATED!!! " + JSON.stringify(userObj));
-							res.send(userObj);
-						}
-						,errHandler
-						);
+						"to": userObj["email"]
 					}
-					, errHandler
-				)
+					
+					mailHandler.send(
+						{"emailOptions" : options}, 
+						function(responseObj) {
+							authHandler.authenticate({
+								username : userObj["username"]
+								,password :  plainPwd
+							},
+							function(userObj) {
+								util.log("email sent!!! " + JSON.stringify(responseObj));
+								util.log("AUTHENTICATED!!! " + JSON.stringify(userObj));
+								res.send(userObj);
+							}
+							,errHandler
+							);
+						}
+						, errHandler
+					)
+				}
 			}
 			, errHandler
 			);
