@@ -582,7 +582,7 @@ clLib.isOnline = function() {
 	return onlineMode;
 };
 
-clLib.loginErrorHandler = function(e) {
+clLib.formatError = function(e) {
 	//alert("type " + typeof(e));
 	//alert("JSON ERROR " + JSON.stringify(e));
 	// could not login - alert error and return false
@@ -595,8 +595,26 @@ clLib.loginErrorHandler = function(e) {
 	if(e.responseText) {
 		errorMsg = e.responseText
 	}
+	
+	return errorMsg;
+};
+
+clLib.loginErrorHandler = function(e) {
+	var errorMsg = clLib.formatError(e);
+
+	clLib.sessionToken = null;
 	localStorage.setItem("loginError", "Could not login user: " + errorMsg);
 	alert("2loginError " + errorMsg);
+	return false;
+};
+
+clLib.requestAuthHandler = function(e) {
+	var errorMsg = clLib.formatError(e);
+
+	localStorage.setItem("notification", "error: " + errorMsg);
+	alert("2loginError " + errorMsg);
+	clLib.UI.fillUIelements("users_verification", "users_verification");
+
 	return false;
 };
 

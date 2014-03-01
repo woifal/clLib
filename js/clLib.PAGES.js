@@ -172,18 +172,7 @@ clLib.PAGES.handlers = {
 			localStorage.setItem("notification", "");
 			var userEntity = {
 				"username" : localStorage.getItem("currentUser") 
-			};
-			var errorHandler = function(e) {
-				alert("CAUGHT: " + JSON.stringify(e));
-				var errorMsg = JSON.stringify(e);
-		/*
-				if(e.message && JSON.parse(e.message)["responseText"]) {
-					errorMsg = JSON.parse(JSON.parse(e.message)["responseText"])["description"];
-				}
-		*/
-				localStorage.setItem("notification", "Could not: " + errorMsg);
-			};
-			
+					};
 			var successHandler = function() {
 				clLib.UI.fillUIelements("users_verification", "users_verification");
 			};
@@ -195,7 +184,7 @@ clLib.PAGES.handlers = {
 							entityInstance : userEntity
 						},
 						successHandler, 
-						errorHandler
+						clLib.requestAuthHandler
 					);
 				}, {text: "generating token"});
 			});
@@ -205,7 +194,7 @@ clLib.PAGES.handlers = {
 							entityInstance : userEntity
 						},
 						successHandler, 
-						errorHandler
+						clLib.requestAuthHandler
 					);
 				}, {text: "changing password"});
 			});
