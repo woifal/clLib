@@ -99,6 +99,11 @@ var DBHandler = new DBResource.DBHandler();
 var mailHandler = new mailResource.mail();
 var authHandler = new authResource.auth();
 
+var statsResource = require("./clLib.statistics");
+var statsHandler = new statsResource.stats();
+
+
+
 var adminUserDetails = {};
 
 	
@@ -137,7 +142,7 @@ server.get("/login", function (req, res) {
 	},
 	function(userObj) {
 		util.log("AUTHENTICATED!!! " + JSON.stringify(userObj));
-		res.send(userObj);
+		return res.send(userObj);
 	},
 	errHandler
 	);
@@ -496,6 +501,37 @@ server.get('/setPassword', function(req, res) {
 	);
 });
 	
+server.get('/stats', 
+		//authHandler.requiredAuthentication, 
+		function(req, res) 
+{
+	var errHandler = function(errorObj) {
+		return clLib.server.defaults.errorFunc(errorObj, res);
+	}
+
+	util.log("2getting.." + JSON.stringify(req.params));
+
+
+	statsHandler.getRouteLogScoreStats({
+		datePortionFunc : statsHandler.ISODayPortion
+		//datePortionFunc : statsHandler.ISOMonthPortion
+		//datePortionFunc : statsHandler.ISODayHourPortion
+		//datePortionFunc : statsHandler.ISOHourPortion
+	}
+	, function(resultObj) {
+		util.log("2retrieved result:");
+		util.log(">" + JSON.stringify(resultObj) + "<");
+		for (var i = 0; i < resultObj.length; i++) {
+			util.log(JSON.stringify(resultObj[i]));
+		}
+		util.log("sending response..");
+		res.send(JSON.stringify(resultObj));
+	}
+	, errHandler
+	);
+
+
+});
 
 
 clLib.server.generateRandomToken = function() {

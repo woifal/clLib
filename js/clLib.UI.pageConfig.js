@@ -17,6 +17,7 @@ clLib.UI.pageRequisites = {
     , "newRouteLog": { "pagebeforeshow" : [clLib.prefsCompleteCheck, clLib.tryLogin, clLib.wasOnlineCheck] }
     , "users": { "pagebeforeshow" : [clLib.tryLogin] }
     , "users_verification": { }
+    , "stats": { }
 };
 
 
@@ -75,6 +76,10 @@ clLib.UI.autoLoad = {
 		default: [
 			"currentUser",
 			"notification"
+		]
+	}
+    ,"stats" : {
+		default: [
 		]
 	}
 };
@@ -173,6 +178,10 @@ clLib.UI.pageElements = {
         default: [
 			"currentUser",
 			"notification"
+        ]
+    }
+    ,"stats": {
+        default: [
         ]
     }
 };

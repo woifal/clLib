@@ -260,6 +260,11 @@ clLib.REST.requestVerification = function(options, callbackFunc, errorFunc) {
 	clLib.REST.execGET(options, callbackFunc, errorFunc);
 };
 
+clLib.REST.requestStats = function(options, callbackFunc, errorFunc) {
+	options.uri = clLib.REST.clLibServerURI + "/stats";
+	clLib.REST.execGET(options, callbackFunc, errorFunc);
+};
+
 clLib.REST.execGET = function(options, callbackFunc, errorFunc) {
 	var reqOptions = {};
 	reqOptions["uri"] = options.uri;

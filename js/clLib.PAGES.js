@@ -86,6 +86,10 @@ clLib.PAGES.handlers = {
 	        $("#startScreen_preferencesButton").die("click").click(function () {
 	            $.mobile.navigate("clLib_preferences.html");
 	        });
+			
+			$("#startScreen_statsButton").die("click").click(function () {
+	            $.mobile.navigate("clLib_stats.html");
+	        });
 
 	        // Link to New Route page..
 	        $("#addRouteButton").on("click", function (e) {
@@ -169,6 +173,201 @@ clLib.PAGES.handlers = {
 	        localStorage.setItem("currentJqmSlide", "newRouteLog");
         }
 	}
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+
+	,"stats": {
+	    "pageinit"	: function () {
+//	4 Mar 22:22:21 - >{"13":{"count":2,"score":1275},"14":{"count":1,"score":400},"20":{"count":10,"score":3750},"21":{"count":2,"score":700},"22":{"count
+//":1,"score":350},"23":{"count":8,"score":2800}}<
+
+
+			var formatObjItem = function(itemObj, exprs) {
+				var tmpStr = "";
+				for(var i = 0; i < exprs.length; i++) {
+					if(clLib.isFunction(exprs[i])) {
+						tmpStr += exprs[i](itemObj);
+					}
+					else {
+						tmpStr += itemObj[exprs[i]];
+					}
+				}
+				return tmpStr;
+			};
+
+			var formatObj = function(resultObj, exprs) {
+				//alert("formatting obj " + JSON.stringify(resultObj));
+				var newArr =  [];
+				for(var i = 0; i < resultObj.length; i++) {
+					newArr.push(formatObjItem(resultObj[i], exprs));
+				}
+				//alert("returning formatted obj " + JSON.stringify(newArr));
+				return newArr;
+			};
+
+			var formatObjInt = function(resultObj, exprs) {
+				//alert("formatting obj " + JSON.stringify(resultObj));
+				var newArr =  [];
+				for(var i = 0; i < resultObj.length; i++) {
+					newArr.push(parseInt(formatObjItem(resultObj[i], exprs)));
+				}
+				//alert("returning formatted obj " + JSON.stringify(newArr));
+				return newArr;
+			};
+
+
+
+			var getObjValues = function(resultObj) {
+				var values = [];
+				for(var key in resultObj) {
+					values.push(resultObj[key]);
+				}
+				//alert("values are " + JSON.stringify(values));
+				return values;
+			};
+
+
+var graphOptions = {
+				
+	//Boolean - If we show the scale above the chart data			
+	scaleOverlay : false,
+	
+	//Boolean - If we want to override with a hard coded scale
+	scaleOverride : false,
+	
+	//** Required if scaleOverride is true **
+	//Number - The number of steps in a hard coded scale
+	scaleSteps : null,
+	//Number - The value jump in the hard coded scale
+	scaleStepWidth : null,
+	//Number - The scale starting value
+	scaleStartValue : null,
+
+	//String - Colour of the scale line	
+	scaleLineColor : "rgba(0,0,0,.1)",
+	
+	//Number - Pixel width of the scale line	
+	scaleLineWidth : 1,
+
+	//Boolean - Whether to show labels on the scale	
+	scaleShowLabels : true,
+	
+	//Interpolated JS string - can access value
+	scaleLabel : "<%=value%>",
+	
+	//String - Scale label font declaration for the scale label
+	scaleFontFamily : "'Arial'",
+	
+	//Number - Scale label font size in pixels	
+	scaleFontSize : 12,
+	
+	//String - Scale label font weight style	
+	scaleFontStyle : "normal",
+	
+	//String - Scale label font colour	
+	scaleFontColor : "#666",	
+	
+	///Boolean - Whether grid lines are shown across the chart
+	scaleShowGridLines : true,
+	
+	//String - Colour of the grid lines
+	scaleGridLineColor : "rgba(0,0,0,.05)",
+	
+	//Number - Width of the grid lines
+	scaleGridLineWidth : 1,	
+	
+	//Boolean - Whether the line is curved between points
+	bezierCurve : true,
+	
+	//Boolean - Whether to show a dot for each point
+	pointDot : true,
+	
+	//Number - Radius of each point dot in pixels
+	pointDotRadius : 3,
+	
+	//Number - Pixel width of point dot stroke
+	pointDotStrokeWidth : 1,
+	
+	//Boolean - Whether to show a stroke for datasets
+	datasetStroke : true,
+	
+	//Number - Pixel width of dataset stroke
+	datasetStrokeWidth : 2,
+	
+	//Boolean - Whether to fill the dataset with a colour
+	datasetFill : true,
+	
+	//Boolean - Whether to animate the chart
+	animation : true,
+
+	//Number - Number of animation steps
+	animationSteps : 60,
+	
+	//String - Animation easing effect
+	animationEasing : "easeOutQuart",
+
+	//Function - Fires when the animation is complete
+	onAnimationComplete : null
+	
+}
+			
+			var successHandler = function(resultObj) {
+				resultObj = JSON.parse(resultObj);
+				//alert("success!!" + typeof(resultObj) + "-" + JSON.stringify(resultObj));
+				
+				var graphLabels = formatObj(Object.keys(resultObj), [function(x) { return "_" + x + "_";}]);
+				
+				var data = {
+					//labels : ["January","February","March","April","May","June","July"],
+					labels : graphLabels
+					,datasets : [
+						{
+							fillColor : "rgba(220,220,220,0.5)",
+							strokeColor : "rgba(220,220,220,1)",
+							pointColor : "rgba(220,220,220,1)",
+							pointStrokeColor : "#fff",
+							//data : [2800,48,40,19,96,27,100]
+							data : formatObjInt(getObjValues(resultObj), [function(x) { return parseInt(x.score); }])
+						}
+/*						,{
+							fillColor : "rgba(151,187,205,0.5)",
+							strokeColor : "rgba(151,187,205,1)",
+							pointColor : "rgba(151,187,205,1)",
+							pointStrokeColor : "#fff",
+							data : [28,48,40,19,96,27,100]
+						}*/
+					]
+				};
+				
+				//Get the context of the canvas element we want to select
+				var ctx = document.getElementById("statsChart").getContext("2d");
+				var myNewChart = new Chart(ctx).Line(data, graphOptions);//, options);
+					
+
+			};
+
+			clLib.REST.requestStats({
+			},
+			successHandler, 
+			function(e) {
+				alert(clLib.formatError(e));
+			}
+			);
+
+		
+		}
+		, "pagebeforeshow": function () {
+			
+		}
+	}	
 	,"users_verification": {
 	    "pageinit"	: function () {
 			localStorage.setItem("notification", "");

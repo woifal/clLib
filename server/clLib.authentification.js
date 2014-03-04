@@ -95,7 +95,7 @@ auth.prototype.authenticate = function(authObj, callbackFunc, errorFunc) {
 		},
 		function(err) {
 			util.log('could not generate hash for password..');
-			errorFunc(new Error('could not generate hash for password..'));
+			return errorFunc(new Error('could not generate hash for password..'));
 		});
 	}
 	,errorFunc
