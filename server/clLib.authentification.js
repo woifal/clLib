@@ -15,7 +15,7 @@ auth.prototype.hash = function(password, salt, callbackFunc, errorFunc) {
 	//callbackFunc(password);
 	clCrypto.hash(password, salt, function(err, hash) {
 		util.log("HASHED" + err + "," + hash);
-		if(err) errorFunc(err);
+		if(err) return errorFunc(err);
 		callbackFunc(hash);
 	});
 }
@@ -91,7 +91,7 @@ auth.prototype.authenticate = function(authObj, callbackFunc, errorFunc) {
 			// no, they don't..
 			util.log('non-matching passwords..');
 			//errorFunc("asdfasfd");
-			errorFunc(new Error('invalid password'));
+			return errorFunc(new Error('invalid password'));
 		},
 		function(err) {
 			util.log('could not generate hash for password..');
