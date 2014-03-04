@@ -323,7 +323,7 @@ var graphOptions = {
 				resultObj = JSON.parse(resultObj);
 				//alert("success!!" + typeof(resultObj) + "-" + JSON.stringify(resultObj));
 				
-				var graphLabels = formatObj(Object.keys(resultObj), [function(x) { return "_" + x + "_";}]);
+				var graphLabels = formatObj(Object.keys(resultObj), [function(x) { return "__" + x + "__";}]);
 				
 				var data = {
 					//labels : ["January","February","March","April","May","June","July"],
