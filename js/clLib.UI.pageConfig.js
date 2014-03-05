@@ -17,6 +17,7 @@ clLib.UI.pageRequisites = {
     , "newRouteLog": { "pagebeforeshow" : [clLib.prefsCompleteCheck, clLib.tryLogin, clLib.wasOnlineCheck] }
     , "users": { "pagebeforeshow" : [clLib.tryLogin] }
     , "users_verification": { }
+    , "users_signup": { }
     , "stats": { }
 };
 
@@ -26,6 +27,7 @@ clLib.UI.saveHandlers= {
     , "newRouteLog": clLib.UI.RESTSaveHandler
     , "startScreen": clLib.UI.RESTSaveHandler
     , "users": clLib.UI.userHandler
+    , "users_signup": clLib.UI.userHandler
 };
 
 clLib.UI.autoLoad = {
@@ -76,6 +78,14 @@ clLib.UI.autoLoad = {
 		default: [
 			"currentUser",
 			"notification"
+		]
+	}
+    ,"users_signup" : {
+		default: [
+			"username"
+			,"password",
+			,"email"
+			,"notification"
 		]
 	}
     ,"stats" : {
@@ -180,6 +190,14 @@ clLib.UI.pageElements = {
 			"notification"
         ]
     }
+    ,"users_signup": {
+        default: [
+			"username",
+			"password",
+			"email",
+			"notification"
+        ]
+    }
     ,"stats": {
         default: [
         ]
@@ -189,7 +207,16 @@ clLib.UI.pageElements = {
 
 
 clLib.UI.elements = {
-    "currentUserReadOnly": $.extend({}, {
+	"username": $.extend({}, {
+		"dbField": "username"
+    }, clLib.UI.elementConfig.plainElement)
+	,"password": $.extend({}, {
+		"dbField": "password"
+    }, clLib.UI.elementConfig.plainElement)
+	,"email": $.extend({}, {
+		"dbField": "email"
+    }, clLib.UI.elementConfig.plainElement)
+	,"currentUserReadOnly": $.extend({}, {
 		"dbField": "username"
     }, clLib.UI.elementConfig.localVar)
     ,"currentUser": $.extend({}, {
@@ -656,36 +683,44 @@ clLib.UI.elements = {
 	,"routeLogContainer": {
 		"setSelectedValueHandler" : function($this, changeOptions) { return $this.trigger("refresh.clLib"); }
 		,"refreshHandler" : function($this) { 
-			clLib.loggi("refreshing routelogs..");
-			var $container = $this;
-			var $list;
-			//$list = $container.first().children("ul").first();
-			$list = $container.children("div").first().find("ul").first();
 
+				
+			var $container = $this;
 			// build where clause for today's routelogs
 			var where = clLib.getRouteLogWhereToday(clLib.getCurrentUserWhere());
+			
+			clLib.loggi("getting today's top route logs..");
+			var todaysTopRouteLogs = clLib.localStorage.getEntities(
+					"RouteLog", where, "defaultStorage", clLib.sortByScoreFunc, true, 10);
+			//alert("items retrieved(high-scored first) " + JSON.stringify(todaysTopRouteLogs));
+			//alert("items retrieved(high-scored first) " + todaysTopRouteLogs.length);
+			//alert("items retrieved(latest first) " + JSON.stringify(todaysRouteLogs));
+
+			// calculate today's score
+			var todaysTopScore = clLib.calculateScore(todaysTopRouteLogs);
+			//alert("Todays score is: " + todaysTopScore);
+
+			var titleText = "Score: <strong>" + todaysTopScore + "</strong>"
+
 
 			clLib.loggi("getting today's route logs..");
 		    // retrieve today's routelogs (sorted by Date)
 			var todaysRouteLogs = clLib.localStorage.getEntities(
 					"RouteLog", where, "defaultStorage", "DateISO", true);
 			// retrieve today's 10 top scored routelogs
-			clLib.loggi("got today's top route logs.." + JSON.stringify(todaysRouteLogs));
-			clLib.loggi("getting today's top route logs..");
-			var todaysTopRouteLogs = clLib.localStorage.getEntities(
-					"RouteLog", where, "defaultStorage", clLib.sortByScoreFunc, true, 10);
-			//alert("items retrieved(high-scored first) " + JSON.stringify(todaysTopRouteLogs));
-			//alert("items retrieved(latest first) " + JSON.stringify(todaysRouteLogs));
+			//alert("got today's top route logs.." + JSON.stringify(todaysRouteLogs));
+			//alert("got today's top route logs.." + todaysRouteLogs.length);
 
-			// calculate today's score
-			var todaysTopScore = clLib.calculateScore(todaysTopRouteLogs);
-			//alert("Todays score is: " + todaysTopScore);
 			
-			var $collapsedItemText = $container.children("div").first().find("h2").first().find(".ui-btn-text");
-			$collapsedItemText.html("Score: <strong>" + todaysTopScore + "</strong>");
-			//alert("adding list items..");
-			clLib.UI.addListItems($list, todaysRouteLogs, clLib.UI.list.formatRouteLogRow, 2, true);
-			//alert("added list items..");
+			clLib.UI.buildScoreCollapsible($container, titleText, todaysRouteLogs);
+
+
+		
+		
+		
+		
+		
+		
 		}
 	}
 	,"selectedArea" : {

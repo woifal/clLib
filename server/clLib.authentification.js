@@ -63,6 +63,10 @@ auth.prototype.authenticate = function(authObj, callbackFunc, errorFunc) {
 	var password = authObj.password;
 	var meMyselfAndI = this;
 	
+	if(!userName || userName == "") {
+		return errorFunc("username is missing..");
+	}
+
 	// verify user.
 	DBHandler.getEntities({
 		entity : serverResource.usersCollectionName, 
@@ -75,11 +79,13 @@ auth.prototype.authenticate = function(authObj, callbackFunc, errorFunc) {
 		util.log("Found user >" + JSON.stringify(userObj) + "<"); 
 
 		//util.log(JSON.stringify(this));
-		meMyselfAndI.hash(password, userName,
-		function (hash) {
-			util.log("comparing " + hash + " and " + userObj["password"]);
+		
+		var realPwd = userObj["password"];
+		
+		function checkPassword(givenPwd, realPwd, callbackFunc, errorFunc) {
+			util.log("comparing " + givenPwd + " and " + realPwd);
 			// Password hashes match?
-			if (hash == userObj["password"]) {
+			if (givenPwd == realPwd) {
 				util.log("passwords match!");
 				var sessionToken = serverResource.generateRandomToken();
 				// indicate in session that user was authenticated..
@@ -92,11 +98,23 @@ auth.prototype.authenticate = function(authObj, callbackFunc, errorFunc) {
 			util.log('non-matching passwords..');
 			//errorFunc("asdfasfd");
 			return errorFunc(new Error('invalid password'));
-		},
-		function(err) {
-			util.log('could not generate hash for password..');
-			return errorFunc(new Error('could not generate hash for password..'));
-		});
+		};
+
+		util.log("plainPwd >" + authObj["plainPwd"] + "<, >" + (authObj["plainPwd"] != true) + "<");
+		if(authObj["plainPwd"] == "true") {
+			meMyselfAndI.hash(password, userName, 
+			function (hash) {
+				util.log("hash for password >" + password + "< is >" + hash + "<");
+				return checkPassword(hash, realPwd, callbackFunc, errorFunc);
+			},
+			function(err) {
+				util.log('could not generate hash for password..');
+				return errorFunc(new Error('could not generate hash for password..'));
+			}
+			);
+		} else {
+			return checkPassword(password, realPwd, callbackFunc, errorFunc);
+		}
 	}
 	,errorFunc
 	);

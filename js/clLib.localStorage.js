@@ -528,11 +528,13 @@ clLib.localStorage.getEntities = function(entity, whereObj, storageName, sortKey
 		}
 	});
 	
+	//alert("unsorted " + resultsObj.length);
 	if(sortKey) {
 		//alert("sorting by "  + sortKey);
 		resultsObj.sortBy(sortKey, descSortFlag);
 		//alert("sorted result " + JSON.stringify(resultsObj));
 	}
+	//alert("sorted " + resultsObj.length);
 
 	if(limit) {
 		resultsObj = resultsObj.slice(0, limit);

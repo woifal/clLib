@@ -829,6 +829,8 @@ clLib.UI.RESTSaveHandler = function (options, successFunc, errorFunc) {
 }
 
 
+
+
 clLib.UI.userHandler = function (options, successFunc, errorFunc) {
     var userObj = {};
 	var currentJqmSlide = options["currentJqmSlide"];
@@ -868,7 +870,7 @@ clLib.UI.userHandler = function (options, successFunc, errorFunc) {
 			//alert("retrieved sessionToken >" + sessionToken + "<");
 			clLib.sessionToken = sessionToken;
 			
-			return successFunc();
+			return successFunc(returnObj);
 		}
 		, errorFunc);
 	}
@@ -882,8 +884,9 @@ clLib.UI.userHandler = function (options, successFunc, errorFunc) {
 			var sessionToken = returnObj["sessionToken"];
 			//alert("retrieved sessionToken >" + sessionToken + "<");
 			clLib.sessionToken = sessionToken;
+			localStorage.setItem("currentPassword", returnObj["password"]);
 			
-			return successFunc();
+			return successFunc(returnObj);
 		}
 		, errorFunc);
 	}
@@ -1075,6 +1078,10 @@ clLib.UI.elementConfig.localVar = {
     }
 };
 
+clLib.UI.elementConfig.plainElement = {
+    "refreshHandler": function ($this) {
+    }
+};
 
 
 clLib.prefsCompleteCheck = function () {
@@ -1105,4 +1112,60 @@ clLib.tryLogin = function() {
 		$.mobile.navigate("clLib_users.html");
 	}
 	);
+};
+
+
+
+
+
+
+
+
+
+
+
+
+clLib.UI.buildScoreCollapsible = function($container, titleText, routeLogs) {
+			clLib.loggi("refreshing routelogs..");
+			var $list;
+			//$list = $container.first().children("ul").first();
+			$list = $container.children("div:eq(1)").find("ul").first();
+
+			/*var $list = $container.append(
+				$("<div>")
+					.attr({
+						"Xdata-role" : "collapsible"
+						,"Xdata-collapsed": "true"
+					})
+					.append(
+						$("<h2>")
+							.text("asdfs")
+							.append(
+								$("<ul>")
+									.attr({
+										"Xdata-role" : "listview"
+									})
+							)
+					)
+				)
+			;
+				*/
+				
+/*			
+	 <div data-role="collapsible" data-collapsed="true">
+		<h2 style="text-align: end">????</h2>
+		<ul data-role="listview" data-theme="d" data-divider-theme="d"></ul>
+	</div>
+   
+*/
+			
+			
+			
+			
+			var $collapsedItemText = $container.children("div:eq(1)").find("h2").first().find(".ui-btn-text");
+			$collapsedItemText.html(titleText);
+			//alert("adding list items..");
+			clLib.UI.addListItems($list, routeLogs, clLib.UI.list.formatRouteLogRow, 2, true);
+			//alert("added list items..");
+
 };
