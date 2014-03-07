@@ -681,6 +681,49 @@ clLib.dateToISOStr = function(dateObj) {
 	return JSON.parse(JSON.stringify(dateObj));
 };
 
+clLib.formatObj = function(itemObj, exprs) {
+	var tmpStr = "";
+	for(var i = 0; i < exprs.length; i++) {
+		if(clLib.isFunction(exprs[i])) {
+			tmpStr += exprs[i](itemObj);
+		}
+		else {
+			tmpStr += itemObj[exprs[i]];
+		}
+	}
+	return tmpStr;
+};
+
+clLib.formatArr = function(resultObj, exprs) {
+	//alert("formatting obj " + JSON.stringify(resultObj));
+	var newArr =  [];
+	for(var i = 0; i < resultObj.length; i++) {
+		newArr.push(clLib.formatObj(resultObj[i], exprs));
+	}
+	//alert("returning formatted obj " + JSON.stringify(newArr));
+	return newArr;
+};
+
+clLib.formatArrInt = function(resultObj, exprs) {
+	//alert("formatting obj " + JSON.stringify(resultObj));
+	var newArr =  [];
+	for(var i = 0; i < resultObj.length; i++) {
+		newArr.push(parseInt(clLib.formatObj(resultObj[i], exprs)));
+	}
+	//alert("returning formatted obj " + JSON.stringify(newArr));
+	return newArr;
+};
+
+clLib.getObjValues = function(resultObj) {
+	var values = [];
+	for(var key in resultObj) {
+		values.push(resultObj[key]);
+	}
+	//alert("values are " + JSON.stringify(values));
+	return values;
+};
+
+
 
 //})(jQuery)
 ;

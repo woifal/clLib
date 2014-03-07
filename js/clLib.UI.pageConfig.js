@@ -19,6 +19,7 @@ clLib.UI.pageRequisites = {
     , "users_verification": { }
     , "users_signup": { }
     , "stats": { }
+    , "diagram": { }
 };
 
 
@@ -89,6 +90,10 @@ clLib.UI.autoLoad = {
 		]
 	}
     ,"stats" : {
+		default: [
+		]
+	}
+    ,"diagram" : {
 		default: [
 		]
 	}
@@ -199,6 +204,13 @@ clLib.UI.pageElements = {
         ]
     }
     ,"stats": {
+        default: [
+			, "todaysRouteLogs"
+			, "monthRouteLogs"
+			, "yearRouteLogs"
+        ]
+    }
+    ,"diagram": {
         default: [
         ]
     }
@@ -712,13 +724,7 @@ clLib.UI.elements = {
 			//alert("got today's top route logs.." + todaysRouteLogs.length);
 
 			
-			clLib.UI.buildScoreCollapsible($container, titleText, todaysRouteLogs);
-
-
-		
-		
-		
-		
+			clLib.UI.buildCollapsible($container, titleText, todaysRouteLogs);
 		
 		
 		}
@@ -747,4 +753,78 @@ clLib.UI.elements = {
 	,"commentText" : {
 		"dbField" : "Comment"
 	}
+	,"todaysRouteLogs": {
+		"setSelectedValueHandler" : function($this, changeOptions) { return $this.trigger("refresh.clLib"); }
+		,"refreshHandler" : function($this) { 
+
+				
+			var $container = $this;
+			// build where clause for today's routelogs
+			var where = clLib.getRouteLogWhereToday(clLib.getCurrentUserWhere());
+			
+			clLib.loggi("getting today's top route logs..");
+			var todaysTopRouteLogs = clLib.localStorage.getEntities(
+					"RouteLog", where, "defaultStorage", clLib.sortByScoreFunc, true, 10);
+			//alert("items retrieved(high-scored first) " + JSON.stringify(todaysTopRouteLogs));
+			//alert("items retrieved(high-scored first) " + todaysTopRouteLogs.length);
+			//alert("items retrieved(latest first) " + JSON.stringify(todaysRouteLogs));
+
+			// calculate today's score
+			var todaysTopScore = clLib.calculateScore(todaysTopRouteLogs);
+			//alert("Todays score is: " + todaysTopScore);
+
+			var titleText = "Score: <strong>" + todaysTopScore + "</strong>"
+
+
+			clLib.loggi("getting today's route logs..");
+		    // retrieve today's routelogs (sorted by Date)
+			var todaysRouteLogs = clLib.localStorage.getEntities(
+					"RouteLog", where, "defaultStorage", "DateISO", true);
+			// retrieve today's 10 top scored routelogs
+			//alert("got today's top route logs.." + JSON.stringify(todaysRouteLogs));
+			//alert("got today's top route logs.." + todaysRouteLogs.length);
+
+			
+			clLib.UI.buildCollapsible($container, titleText, todaysRouteLogs);
+		
+		
+		}
+	}	
+	,"monthRouteLogs": {
+		"setSelectedValueHandler" : function($this, changeOptions) { return $this.trigger("refresh.clLib"); }
+		,"refreshHandler" : function($this) { 
+
+				
+			var $container = $this;
+			// build where clause for today's routelogs
+			var where = clLib.getRouteLogWhereToday(clLib.getCurrentUserWhere());
+			
+			clLib.loggi("getting today's top route logs..");
+			var todaysTopRouteLogs = clLib.localStorage.getEntities(
+					"RouteLog", where, "defaultStorage", clLib.sortByScoreFunc, true, 10);
+			//alert("items retrieved(high-scored first) " + JSON.stringify(todaysTopRouteLogs));
+			//alert("items retrieved(high-scored first) " + todaysTopRouteLogs.length);
+			//alert("items retrieved(latest first) " + JSON.stringify(todaysRouteLogs));
+
+			// calculate today's score
+			var todaysTopScore = clLib.calculateScore(todaysTopRouteLogs);
+			//alert("Todays score is: " + todaysTopScore);
+
+			var titleText = "Score: <strong>" + todaysTopScore + "</strong>"
+
+
+			clLib.loggi("getting today's route logs..");
+		    // retrieve today's routelogs (sorted by Date)
+			var todaysRouteLogs = clLib.localStorage.getEntities(
+					"RouteLog", where, "defaultStorage", "DateISO", true);
+			// retrieve today's 10 top scored routelogs
+			//alert("got today's top route logs.." + JSON.stringify(todaysRouteLogs));
+			//alert("got today's top route logs.." + todaysRouteLogs.length);
+
+			
+			clLib.UI.buildCollapsible($container, titleText, todaysRouteLogs);
+		
+		
+		}
+	}		
 };
