@@ -1117,24 +1117,31 @@ clLib.tryLogin = function() {
 
 
 
-clLib.UI.buildCollapsible = function($container, titleText, routeLogs) {
+clLib.UI.addCollapsible = function(options) {
+	var $container = options["collapsibleSet"];
+	var titleText = options["titleText"];
+	var listItems = options["listItems"];
+	var clearCurrentItems = options["clearCurrentItems"];
+	
 	//alert("building collapsible");
-	clLib.loggi("refreshing routelogs..");
+	clLib.loggi("refreshing listItems..");
 
 	var $newList = $("<ul>")
 		.attr({
-			"id" : "asdf",
 			"data-role" : "listview"
-			,"data-theme" : "d"
-			,"data-divider-theme" : "d"
+			,"data-theme" : "c"
+			,"adata-divider-theme" : "d"
+			,"data-inset" : "true"
 		})
 	;
 	
+
 	var $newColl =
 		$("<div>")
 			.attr({
 				"data-role" : "collapsible"
 				,"data-collapsed": "true"
+				,"data-inset" : "true"
 			})
 			.append(
 				$("<h2>")
@@ -1143,10 +1150,13 @@ clLib.UI.buildCollapsible = function($container, titleText, routeLogs) {
 			.append($newList)
 	;
 	
-	$container.children().remove();
+	if(clearCurrentItems) {
+		$container.children().remove();
+	}
 	$container.append($newColl);
 	$container.trigger("create");
 	
-	clLib.UI.addListItems($newList, routeLogs, clLib.UI.list.formatRouteLogRow, 2, true);
+	clLib.UI.addListItems($newList, listItems, clLib.UI.list.formatRouteLogRow, 2, true);
+	
 
 };

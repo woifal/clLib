@@ -91,6 +91,8 @@ clLib.UI.autoLoad = {
 	}
     ,"stats" : {
 		default: [
+			"todaysRouteLogs"
+			,"monthRouteLogs"
 		]
 	}
     ,"diagram" : {
@@ -724,7 +726,12 @@ clLib.UI.elements = {
 			//alert("got today's top route logs.." + todaysRouteLogs.length);
 
 			
-			clLib.UI.buildCollapsible($container, titleText, todaysRouteLogs);
+			clLib.UI.addCollapsible({
+				collapsibleSet : $container
+				,titleText : titleText
+				,listItems : todaysRouteLogs
+				,clearCurrentItems : true
+			});
 		
 		
 		}
@@ -774,7 +781,7 @@ clLib.UI.elements = {
 			//alert("Todays score is: " + todaysTopScore);
 
 			var titleText = "Score: <strong>" + todaysTopScore + "</strong>"
-
+			$("#stats_todaysTopScoreBubble").html(todaysTopScore);
 
 			clLib.loggi("getting today's route logs..");
 		    // retrieve today's routelogs (sorted by Date)
@@ -785,7 +792,12 @@ clLib.UI.elements = {
 			//alert("got today's top route logs.." + todaysRouteLogs.length);
 
 			
-			clLib.UI.buildCollapsible($container, titleText, todaysRouteLogs);
+			clLib.UI.addCollapsible({
+				collapsibleSet : $container,
+				titleText : titleText,
+				listItems : todaysRouteLogs
+				,clearCurrentItems : true
+			});
 		
 		
 		}
@@ -793,36 +805,49 @@ clLib.UI.elements = {
 	,"monthRouteLogs": {
 		"setSelectedValueHandler" : function($this, changeOptions) { return $this.trigger("refresh.clLib"); }
 		,"refreshHandler" : function($this) { 
-
+			//alert("refreshing monthRouteLogs...");
 				
 			var $container = $this;
 			// build where clause for today's routelogs
-			var where = clLib.getRouteLogWhereToday(clLib.getCurrentUserWhere());
+			//var where = clLib.getRouteLogWhereToday(clLib.getCurrentUserWhere());
+			var where = clLib.getRouteLogWhereToday({"userName": "asdf"});
 			
-			clLib.loggi("getting today's top route logs..");
-			var todaysTopRouteLogs = clLib.localStorage.getEntities(
-					"RouteLog", where, "defaultStorage", clLib.sortByScoreFunc, true, 10);
-			//alert("items retrieved(high-scored first) " + JSON.stringify(todaysTopRouteLogs));
-			//alert("items retrieved(high-scored first) " + todaysTopRouteLogs.length);
-			//alert("items retrieved(latest first) " + JSON.stringify(todaysRouteLogs));
+			var successHandler = function(resultObj) {
+				resultObj = JSON.parse(resultObj);
+				//alert("success!!" + typeof(resultObj) + "-" + JSON.stringify(resultObj));
 
-			// calculate today's score
-			var todaysTopScore = clLib.calculateScore(todaysTopRouteLogs);
-			//alert("Todays score is: " + todaysTopScore);
-
-			var titleText = "Score: <strong>" + todaysTopScore + "</strong>"
+				$("#stats_monthScoreBubble").html("????");
 
 
-			clLib.loggi("getting today's route logs..");
-		    // retrieve today's routelogs (sorted by Date)
-			var todaysRouteLogs = clLib.localStorage.getEntities(
-					"RouteLog", where, "defaultStorage", "DateISO", true);
-			// retrieve today's 10 top scored routelogs
-			//alert("got today's top route logs.." + JSON.stringify(todaysRouteLogs));
-			//alert("got today's top route logs.." + todaysRouteLogs.length);
+				var i;
+				var aggResultKeys = Object.keys(resultObj);
+				for (var i = 0; i < aggResultKeys.length; i++) {
+					
+					var titleText = aggResultKeys[i];
+					//alert("adding item >" + titleText + "<");
+					clLib.UI.addCollapsible({
+						collapsibleSet : $container,
+						titleText : titleText,
+						listItems : resultObj[aggResultKeys[i]].items
+						//,clearCurrentItems : true
+					});
+
+					console.log(JSON.stringify(resultObj[aggResultKeys[i]]));
+				}
+				
+			};
 
 			
-			clLib.UI.buildCollapsible($container, titleText, todaysRouteLogs);
+			
+			clLib.REST.requestStats({
+				where : where
+			},
+			successHandler, 
+			function(e) {
+				alert("error!");
+				alert(clLib.formatError(e));
+			}
+			);
 		
 		
 		}

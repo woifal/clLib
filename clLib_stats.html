@@ -48,17 +48,70 @@
 
 
             <div id="stats_mobilecontainer1" data-role="content"
-                data-theme="">
+                data-theme="a">
 				<!-- Floating element for landscape orientation.. -->
                 <!--<div style="afloat:left">-->
+				<h2>
+					<ul data-role="listview"  data-theme="c">
+						<li><span id="stats_todaysTopScoreBubble" class="ui-li-count"></span>Today</li>
+					</ul>
+				</h2>
+				<div 
+						style="margin: 0px 0px 0px 0px; padding: 0px 0px 0px 0px ;" 
+						data-role="collapsible-set" 
+						data-theme="a" 
+						data-content-theme="a"
+						data-inset="false"
+				>
+					<div id="stats_todaysDiagram" data-role="collapsible" data-inset="false">
+						<h3>Statistics</h3>
+						<p>some stats...</p>
+					</div>
+					<div 
+							id="stats_todaysRouteLogs" 
+							style="margin: 0px 0px 0px 0px; padding: 0px 0px 0px 0px ;" 
+							data-role="collapsible" 
+							data-inset="false"
+							data-content-theme="a"
+							data-theme="a"
+					>
+					</div>
+				</div>
 
-                <div>
-                    <!-- canvas. -->
-                    <div>
-						<canvas id="statsChart" width="300" height="400"></canvas>
-                    </div>
-                </div>
+				<div style="height: 50px"></div>
 				
+				<h2>
+					<ul data-role="listview"  data-theme="c">
+						<li><span id="stats_monthScoreBubble" class="ui-li-count">2500</span>Last Month</li>
+					</ul>
+				</h2>
+				<div 
+						style="margin: 0px 0px 0px 0px; padding: 0px 0px 0px 0px ;" 
+						data-role="collapsible-set" 
+						data-theme="a" 
+						data-content-theme="a"
+						data-inset="false"
+				>
+					<div id="stats_todaysDiagram" data-role="collapsible" data-inset="false">
+						<h3>Show Diagram</h3>
+					</div>
+					<div data-role="collapsible" data-inset="false" data-theme="a">
+						<h3>Daily Details</h3>
+						<div 
+								id="stats_monthRouteLogs" 
+								style="margin: 0px 0px 0px 0px; padding: 0px 0px 0px 0px ;" 
+								data-role="collapsible" 
+								data-theme="a" 
+								data-content-theme="a"
+								data-inset="false"
+						>
+						</div>
+						
+					</div>
+
+
+				</div>
+					
 			</div>
             <!-- mobilefooter1 -->
             <div data-role="footer" data-position="fixed"

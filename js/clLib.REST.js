@@ -208,7 +208,8 @@ clLib.REST.buildAJAXRequest = function(options, successFunc, errorFunc) {
 
 clLib.REST.getEntities = function(entityName, whereObj, successFunc, errorFunc) {
 	var uri = clLib.REST.baseCollectionsURI + entityName;
-	var AJAXResult = clLib.REST.executeRetrieve(uri, 'GET', whereObj, 
+
+	clLib.REST.executeRetrieve(uri, 'GET', whereObj, 
 	function(AJAXResult) {
 		var returnObj = {};
 		console.log("result first " + JSON.stringify(AJAXResult));
@@ -261,8 +262,17 @@ clLib.REST.requestVerification = function(options, callbackFunc, errorFunc) {
 };
 
 clLib.REST.requestStats = function(options, callbackFunc, errorFunc) {
-	options.uri = clLib.REST.clLibServerURI + "/stats";
-	clLib.REST.execGET(options, callbackFunc, errorFunc);
+	var uri = clLib.REST.clLibServerURI + "/stats";
+
+	clLib.REST.executeRetrieve(uri, 'GET', options.where, 
+	function(AJAXResult) {
+		console.log("result first " + JSON.stringify(AJAXResult));
+		//AJAXResult = clLib.REST.postAJAXprocessing[clLib.REST.baseURI](AJAXResult);
+		
+		//clLib.loggi("returning(getEntities) " + JSON.stringify(returnObj));
+		callbackFunc(AJAXResult);
+	}
+	, errorFunc);
 };
 
 clLib.REST.execGET = function(options, callbackFunc, errorFunc) {

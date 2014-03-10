@@ -88,7 +88,7 @@ clLib.PAGES.handlers = {
 	        });
 			
 			$("#startScreen_statsButton").die("click").click(function () {
-	            $.mobile.navigate("clLib_diagram.html");
+	            $.mobile.navigate("clLib_stats.html");
 	        });
 
 	        // Link to New Route page..
@@ -172,6 +172,23 @@ clLib.PAGES.handlers = {
 			//alert("show!");
 	        localStorage.setItem("currentJqmSlide", "newRouteLog");
 	        clLib.UI.fillUIelements("newRouteLog", "newRouteLog", localStorage.getItem("defaultLayout"));
+        }
+	}
+
+	, "stats": {
+	    "pageinit": function () {
+	        //clLib.UI.fillUIelements("newRouteLog", "newRouteLog", localStorage.getItem("defaultLayout"));
+			$("#stats_todaysDiagram h3").on("click", function (e) {
+				$.mobile.navigate("clLib_diagram.html");
+            });
+			$("#stats_monthsDiagram").on("click", function () {
+                $.mobile.navigate("clLib_diagram.html");
+            });
+		}
+        , "pagebeforeshow": function () {
+			//alert("show!");
+	        localStorage.setItem("currentJqmSlide", "stats");
+	        clLib.UI.fillUIelements("stats", "stats", localStorage.getItem("defaultLayout"));
         }
 	}
 
@@ -271,14 +288,14 @@ clLib.PAGES.handlers = {
 					, function(returnObj) {
 						//clLib.UI.fillUIelements("users_signup", "users_signup");
 					
-						alert("got login response " + JSON.stringify(returnObj));
+						//alert("got login response " + JSON.stringify(returnObj));
 						localStorage.setItem("currentUser", returnObj["username"]);
 						localStorage.setItem("currentPassword", returnObj["password"]);
 
 						// login..
 						clLib.login(function() {
 						// ..and return to startPAge..
-						alert("Successfully signed up!");
+						//alert("Successfully signed up!");
 						$.mobile.navigate("clLib_startScreen.html");
 						}
 						, function(e) {

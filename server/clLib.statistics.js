@@ -135,6 +135,8 @@ clStats.prototype.getEntityStats = function(options, callbackFunc, errorFunc) {
 		var aggResultArr = [];
 		aggResultArr = options["aggFunc"](resultObj, options["aggOptions"]);
 		util.log("aggregatedResult >" + JSON.stringify(aggResultArr) + "<");
+		util.log("aggregatedResult2 >" + JSON.stringify(aggResultArr.length) + "<");
+
 		return callbackFunc(aggResultArr);
 	}
 , function(e) {
@@ -155,12 +157,14 @@ clStats.aggregateScoresByDatePortion = function(routeLogArr, options) {
 			aggResultObj[datePortion] = {
 				count : 0
 				,score : 0
+				,items : []
 			};
 		}
 		
 		if(aggResultObj[datePortion].count < options.topX) {
 			aggResultObj[datePortion].score += clLib.computeScore(routeLog);
 			aggResultObj[datePortion].count++;
+			aggResultObj[datePortion].items.push(routeLog);
 		}
 	}
 	JSON.stringify(aggResultObj);

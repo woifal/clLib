@@ -15,10 +15,15 @@ statsHandler.getRouteLogScoreStats({
 }
 , function(resultObj) {
 	util.log("retrieved result:");
-	util.log(">" + JSON.stringify(resultObj) + "<");
-	for (var i = 0; i < resultObj.length; i++) {
-		util.log(JSON.stringify(resultObj[i]));
+	util.log(">" + JSON.stringify(Object.keys(resultObj)) + "<");
+	util.log(".....now consolidated...");
+	var i;
+	var aggResultKeys = Object.keys(resultObj);
+	for (var i = 0; i < aggResultKeys.length; i++) {
+		util.log(">>>>>> KEY " + aggResultKeys[i] + "<<<<<<");
+		util.log(JSON.stringify(resultObj[aggResultKeys[i]]));
 	}
+
 }
 , function(e) {
 	util.log("e(obj) " + e.message);
