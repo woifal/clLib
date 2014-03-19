@@ -134,27 +134,15 @@ clLib.REST.executeInsert = function(uri, method, objData, successFunc, errorFunc
 		
 //clLib.REST.execAJAXRequest = function (uri, method, params, allowNoSessionToken) {
 clLib.REST.execAJAXRequest = function (options, successFunc, errorFunc) {
-	return clLib.REST.buildAJAXRequest(options, 
-	function(request) {
-		var returnObj = {};
-
-		return $.ajax(request)
-			.done(function(data) {
-				clLib.loggi("ajax done " + JSON.stringify(data));
-				return successFunc(data);
-			})
-/*			.error(function(data) {
-				alert("123123AJAX ERROR: " + JSON.stringify(data));
-				return errorFunc(new clLib.clException("AJAX", JSON.stringify(data)));
-			})
-*/
-		;
-		console.log("should not get here!!! 123123");
-	}
-	, function(e) {
-		//alert("AJAX calling errorFunc");
-		return errorFunc(e);
-	});
+	var request = clLib.REST.buildAJAXRequest(
+		options
+		, successFunc
+		, errorFunc
+	);
+	
+	//alert("doing ajax");
+	return $.ajax(request);
+	console.log("should not get here!!! 123123");
 	
 };
 
@@ -196,14 +184,17 @@ clLib.REST.buildAJAXRequest = function(options, successFunc, errorFunc) {
 			        xhr.setRequestHeader(paramName, paramValue);
 			    });
 			};
-		},
-		error: function(jqXHR) {
-			//alert("ajax error " + JSON.stringify(jqXHR));
-			return errorFunc(jqXHR);
 		}
+		,success: successFunc
+        ,error: function(jqXHR, textStatus, errorThrown) {
+			//alert("an error..." + textStatus);
+			//return errorFunc(new clLib.clException("AJAX", JSON.stringify(data));
+			return errorFunc(jqXHR || (textStatus + ">>" + errorThrown));
+		}
+//		,timeout: 200
 	};
-	//alert("request built..");
-	return successFunc(request);
+	clLib.loggi("request built..");
+	return request;
 }
 
 clLib.REST.getEntities = function(entityName, whereObj, successFunc, errorFunc) {

@@ -1,5 +1,6 @@
 "use strict";
 
+//window.priority = 1;
 
 var profiledFnCall = function(iterations, aFunc) {
 	var totalDuration = 0;
@@ -558,6 +559,7 @@ clLib.login = function(successFunc, errorFunc) {
 	function(returnObj) {
 		var sessionToken = returnObj["sessionToken"];
 		var currentUserId = returnObj["_id"];
+		//alert("success login!");
 		clLib.loggi("retrieved sessionToken >" + sessionToken + "<");
 		clLib.sessionToken = sessionToken;
 		clLib.currentUserId = currentUserId;
@@ -583,17 +585,22 @@ clLib.isOnline = function() {
 };
 
 clLib.formatError = function(e) {
-	//alert("type " + typeof(e));
-	//alert("JSON ERROR " + JSON.stringify(e));
+	clLib.loggi("error type " + typeof(e));
+	clLib.loggi("JSON ERROR " + JSON.stringify(e));
 	// could not login - alert error and return false
 	clLib.sessionToken = null;
 	
 	var errorMsg = e.message;
 	if(e.message && JSON.parse(e.message)["responseText"]) {
 		errorMsg = JSON.parse(JSON.parse(e.message)["responseText"])["description"];
+	} 
+	else if(e.responseText) {
+		errorMsg = e.responseText;
 	}
-	if(e.responseText) {
-		errorMsg = e.responseText
+	else {
+		errorMsg = "Server down.";
+		// Don't know what type of error this is, assume server is down..
+		//errorMsg = e;
 	}
 	
 	return errorMsg;
@@ -605,7 +612,7 @@ clLib.loginErrorHandler = function(e) {
 	clLib.sessionToken = null;
 	localStorage.setItem("loginError", "Could not login user: " + errorMsg);
 	localStorage.setItem("notification", "Could not login user: " + errorMsg);
-	//alert("2loginError " + errorMsg);
+	clLib.loggi("2loginError " + errorMsg);
 	return false;
 };
 
