@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8"/>
 	<meta name="viewport" content="width=device-width, initial-scale=1"/> 
-	<title>clLib_preferences</title> 
+	<title>Kurt Climbing</title> 
         <link rel="stylesheet" href="css/THEMES/default/jqm.min.css" />
 		<link rel="stylesheet" href="css/clRouteColors.css" />
 
@@ -46,25 +46,6 @@
             id="preferences_mobilecontainer" data-role="content" 
         >
       
-            <!-- currentUser -->
-            <label for="currentUser">Username:</label>
-            <button data-theme="c" data-role="button" data-iconpos="right" data-icon="gear" id="preferences_currentUserReadOnly"  type="text" name="currentUser" tabindex="1"></button>
-
-            <label for="buddiesStr">Buddies:</label>
-            <input id="preferences_buddiesStr" type="text" name="buddiesStr" tabindex="2"/>
-    
-            <label for="showTopX"># of Top-routes:</label>
-            <input id="preferences_showTopX" type="text" name="showTopX" tabindex="3"/>
-<!--
-            <label for="defaultLayout">Default Layout:</label>
-            <select id="preferences_defaultLayout" name="defaultLayout" 
-                    data-inline="false" data-mini="false" data-icon="arrow-d" data-iconpos="right"
-                    data-native-menu="false" tabindex="4"
-            >
-                <option value="default">default</option>
-                <option value="reduced">reduced</option>
-            </select>
--->
             <label for="defaultGradeSystem">Default Grade System:</label>
             <select id="preferences_defaultGradeSystem" name="defaultGradeSystem"
                     data-inline="false" data-mini="false" data-icon="arrow-d" data-iconpos="right"
@@ -77,6 +58,30 @@
                     data-native-menu="false" tabindex="2"></select>
 
 
+            <!-- currentUser -->
+			
+            <label for="currentUser">Username:</label>
+            <button data-theme="c" data-role="button" data-iconpos="right" data-icon="gear" id="preferences_currentUserReadOnly"  type="text" name="currentUser" tabindex="1"></button>
+
+<!--
+            <label for="buddiesStr">Buddies:</label>
+            <input id="preferences_buddiesStr" type="text" name="buddiesStr" tabindex="2"/>
+-->
+<!--    
+            <label for="showTopX"># of Top-routes:</label>
+            <input id="preferences_showTopX" type="text" name="showTopX" tabindex="3"/>
+-->
+<!--
+            <label for="defaultLayout">Default Layout:</label>
+            <select id="preferences_defaultLayout" name="defaultLayout" 
+                    data-inline="false" data-mini="false" data-icon="arrow-d" data-iconpos="right"
+                    data-native-menu="false" tabindex="4"
+            >
+                <option value="default">default</option>
+                <option value="reduced">reduced</option>
+            </select>
+-->
+<!--
             <label for="onlineMode">Online Mode:</label>
             <select id="preferences_onlineMode" name="onlineMode"
                     data-inline="false" data-mini="false" data-icon="arrow-d" data-iconpos="right"
@@ -84,7 +89,7 @@
                 <option value="true">true</option>
                 <option value="false">false</option>
             </select>
-
+-->
 			<label style="text-align: center" for="defaultLayout">Layout to use(override):</label>
 			<select id="preferences_defaultLayout" name="defaultLayout" 
 					data-inline="false" data-mini="false"
