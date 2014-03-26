@@ -12,7 +12,7 @@ clLib.UI.cssBackgrounds = {
 
 
 clLib.UI.pageRequisites = {
-    "startScreen": { "pagebeforeshow" : [clLib.prefsCompleteCheck, clLib.tryLogin, clLib.wasOnlineCheck] }
+    "startScreen": { "pagebeforeshow" : [clLib.prefsCompleteCheck, clLib.wasOnlineCheck, clLib.tryLogin] }
     , "preferences": { "pagebeforeshow" : [] }
     , "newRouteLog": { "pagebeforeshow" : [clLib.prefsCompleteCheck, clLib.tryLogin, clLib.wasOnlineCheck] }
     , "users": { "pagebeforeshow" : [clLib.tryLogin] }
@@ -34,20 +34,26 @@ clLib.UI.saveHandlers= {
 clLib.UI.autoLoad = {
 	newRouteLog : {
 		default: [
-			"gradeSystemSelect",
-			"searchRoute",
-			"ratingSelect",
-			"tickType",
-			"characterSelect",
-			"routeLogContainer"
+			"gradeSystemSelect"
+			, "searchRoute"
+			, "ratingSelect"
+			, "tickType_redpoint"
+			, "tickType_flash"
+			, "tickType_attempt"
+			, "tickType_toprope"
+			, "characterSelect"
+			, "routeLogContainer"
 		],
 		reduced: [
-			"gradeSystemSelect",
-			"ratingSelect",
-			"tickType",
-			"colourSelect",
-			"characterSelect",
-			"routeLogContainer"
+			"gradeSystemSelect"
+			, "ratingSelect"
+			, "tickType_redpoint"
+			, "tickType_flash"
+			, "tickType_attempt"
+			, "tickType_toprope"
+			, "colourSelect"
+			, "characterSelect"
+			, "routeLogContainer"
 		]
 	}
 	,startScreen: {
@@ -143,8 +149,11 @@ clLib.UI.pageElements = {
 			, "searchRoute"
 			, "commentText"
 			, "ratingSelect"
-			, "tickType"
-			, "characterSelect"
+			, "tickType_redpoint"
+			, "tickType_flash"
+			, "tickType_attempt"
+			, "tickType_toprope"
+			, "routeLogContainer"
 			, "selectedArea"
 			, "currentUserPref"
 			, "currentDate"
@@ -156,7 +165,10 @@ clLib.UI.pageElements = {
 			, "gradeSelect"
 			, "colourSelect"
 			, "ratingSelect"
-			, "tickType"
+			, "tickType_redpoint"
+			, "tickType_flash"
+			, "tickType_attempt"
+			, "tickType_toprope"
 			, "characterSelect"
 			, "commentText"
 			, "selectedArea"
@@ -301,7 +313,6 @@ clLib.UI.elements = {
         ,
 		"dbField": "loginError"
     })
-
     , "buddiesStr": clLib.UI.elementConfig.localVar
     , "showTopX":       clLib.UI.elementConfig.localVar
     , "onlineMode":     clLib.UI.elementConfig.localVar
@@ -375,6 +386,9 @@ clLib.UI.elements = {
 				"gradeSelect" : {}
 			}
 		}
+		,"customVal" : function($this) {
+			return $this.find("input:radio:checked" ).val()
+		}
 	}
 	, "gradeSelect" : {
 		"dbField" : "Grade"
@@ -407,8 +421,28 @@ clLib.UI.elements = {
 				"colourSelect" : {}
 			}
 		}
-	},
-	"tickType" : {
+	}
+	, "tickType_redpoint" : $.extend({}, {
+		"customVal" : function($this) {
+			return $this.prop("checked");
+		}
+    }, clLib.UI.elementConfig.plainElement)
+	, "tickType_flash" : $.extend({}, {
+		"customVal" : function($this) {
+			return $this.prop("checked");
+		}
+    }, clLib.UI.elementConfig.plainElement)
+	, "tickType_attempt" : $.extend({}, {
+		"customVal" : function($this) {
+			return $this.prop("checked");
+		}
+    }, clLib.UI.elementConfig.plainElement)
+	, "tickType_toprope" : $.extend({}, {
+		"customVal" : function($this) {
+			return $this.prop("checked");
+		}
+    }, clLib.UI.elementConfig.plainElement)
+/*	"tickType" : {
 		"dbField" : "TickType"
 		,"refreshHandler" : function($this) { 
 			clLib.populateSelectBox({
@@ -430,7 +464,8 @@ clLib.UI.elements = {
 			});
 		}
 	},
-	"sectorSelect" : {
+*/
+	, "sectorSelect" : {
 		"dbField" : "Sector"
 		,"dependingOn": {
 			default: [
@@ -697,7 +732,7 @@ clLib.UI.elements = {
 	,"routeLogContainer": {
 		"setSelectedValueHandler" : function($this, changeOptions) { return $this.trigger("refresh.clLib"); }
 		,"refreshHandler" : function($this) { 
-
+			//alert("refreshing routelogs..");
 				
 			var $container = $this;
 			// build where clause for today's routelogs

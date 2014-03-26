@@ -61,27 +61,34 @@
 
             <div id="newRouteLog_mobilecontainer1" data-role="content"
                  data-theme="">
-                <div style="afloat:left">
-                    <div style="border: 0px solid red">
+				<style>
+					.ui-select > div {
+						margin-top: 0px;
+						margin-bottom: 0px;
+					}
+				</style>
+
+				<div style="text-align: center; afloat:left">
+                    
+
+                    <div style="border: 0px solid green; text-align: center">
+						<fieldset 
+							style="text-align: center"
+							id="newRouteLog_gradeSystemSelect"
+							data-role="controlgroup" data-type="horizontal" data-inset="true"
+						>
+<!--						<input name="newRouteLog_gradeSystems_radio" id="gs_UIAA" value="UIAA" checked="checked" type="radio">
+							<label for="gs_UIAA">ddUIAA</label>-->
+						</fieldset>												
+									
+					</div>
+
+					
+					<div style="border: 0px solid red">
                         <table id="newRouteLog_mobilegrid_30" cellpadding="0" cellspacing="0" style="width: 100%">
                             <col style="width:50%;" />
                             <col style="width:50%;" />
                             <tr>
-								<style>
-									.ui-select > div {
-										margin-top: 0px;
-										margin-bottom: 0px;
-									}
-								</style>
-                                <td>
-                                    <!-- gradeSystemSelect -->
-                                    <div style="border: 0px solid yellow; padding: 0; margin: 0;">
-                                        <!--<label style="visibility: hidden; font-size: 8px;" class="select" for="newRouteLog_gradeSystemSelect">Grade System</label>-->
-                                        <select id="newRouteLog_gradeSystemSelect" name="newRouteLog_gradeSystemSelect"
-                                                data-theme="a" data-inline="false" data-mini="false" data-icon="arrow-d" data-iconpos="right"
-                                                data-native-menu="true" tabindex="16"></select>
-                                    </div>
-                                </td>
                                 <td>
                                     <!-- gradeSelect -->
                                     <div style="border: 0px solid yellow; padding: 0; margin: 0;">
@@ -91,31 +98,7 @@
                                                 data-native-menu="true" tabindex="2"></select>
                                     </div>
                                 </td>
-                            </tr>
-                        </table>
-                    </div>
-
-                    <div style="border: 0px solid green">
-                        <table style="width: 100%" cellpadding="0" cellspacing="0">
-                            <col style="width:50%;" />
-                            <col style="width:50%;" />
-                            <tr>
-                                <td colspan="1" rowspan="1">
-                                    <div>
-                                        <!-- ticktypes -->
-                                        <div>
-                                            <label class="clUIElement" for="newRouteLog_tickType">TickType</label>
-                                            <select id="newRouteLog_tickType" name="newRouteLog_tickType" data-theme="a"
-                                                    data-inline="false" data-mini="false" data-icon="arrow-d" data-iconpos="right" data-native-menu="true"
-                                                    tabindex="3">
-                                                <option value="" rerender="ticktypes" selected="selected">
-                                                    Tick Type
-                                                </option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td colspan="1" rowspan="1">
+                                <td>
                                     <div>
                                         <!-- colourSelect -->
                                         <div style="margin-top: 0px; padding-top: 0px;">
@@ -133,6 +116,8 @@
                             </tr>
                         </table>
                     </div>
+					
+					
 
                 </div>
                 <div>
@@ -165,17 +150,66 @@
                         </tr>
                     </table>
                 </div>
-                <div style="width: 100px">
+				
+				
+				<div style="border: 0px solid green; text-align: center">
+					<fieldset 
+						style="text-align: center"
+						id="newRouteLog_tickType_ASdf"
+						data-role="controlgroup" data-type="horizontal" data-inset="true"
+					>
+					<input id="newRouteLog_tickType_redpoint" type="checkbox">
+					<label for="newRouteLog_tickType_redpoint"><img style="width:30px; height: 30px;" src="files/views/assets/image/redpoint.PNG"></label>
+					<input id="newRouteLog_tickType_flash" achecked="checked" type="checkbox">
+					<label for="newRouteLog_tickType_flash"><img style="width:30px; height: 30px;" src="files/views/assets/image/flash.png"></label>
+					<input id="newRouteLog_tickType_attempt" achecked="checked" type="checkbox">
+					<label for="newRouteLog_tickType_attempt"><img style="width:30px; height: 30px;" src="files/views/assets/image/try.png"></label>
+					<input id="newRouteLog_tickType_toprope" achecked="checked" type="checkbox">
+					<label for="newRouteLog_tickType_toprope"><img style="width:30px; height: 30px;" src="files/views/assets/image/toprope.png"></label>
+					</fieldset>												
+								
+				</div>
+
+				
+				
+				<!-- tickType -->
+<!--				
+				<div style="border: 0px solid green">
+                        <table style="width: 100%" cellpadding="0" cellspacing="0">
+                            <col style="width:50%;" />
+                            <col style="width:50%;" />
+                            <tr>
+                                <td colspan="1" rowspan="1">
+                                    <div>
+                                        <div>
+                                            <label class="clUIElement" for="newRouteLog_tickType">TickType</label>
+                                            <select id="newRouteLog_tickType" name="newRouteLog_tickType" data-theme="a"
+                                                    data-inline="false" data-mini="false" data-icon="arrow-d" data-iconpos="right" data-native-menu="true"
+                                                    tabindex="3">
+                                                <option value="" rerender="ticktypes" selected="selected">
+                                                    Tick Type
+                                                </option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td colspan="1" rowspan="1">
+
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+-->
                     <!-- characterSelect -->
+<!--
+                <div style="width: 100px">
                     <label class="clUIElement select" for="newRouteLog_characterSelect">Character</label>
                     <select id="newRouteLog_characterSelect" name="newRouteLog_characterSelect" data-theme="a"
                             data-icon="arrow-d" data-iconpos="right" data-native-menu="false"
                             tabindex="6">
-                        <!--<option value="" rerender="characterSelect" selected="selected">
-                            character
-                        </option>-->
                     </select>
 				</div>
+-->
 				<div>
                     <!-- searchRoute -->
                     <div>

@@ -40,6 +40,33 @@
          data-theme="a" data-add-back-btn="false"
     >
 
+		<!-- Menu Panel -->
+		<div data-role="panel" id="menupanel" data-display="overlay" data-theme="a">
+			<ul data-role="listview" data-theme="c">
+				<li data-role="list-divider">Kurt Climbing Menu</li>
+				<li>
+					<div>
+						<a 
+							data-role="button" 
+							data-icon="gear" 
+							data-iconpos="right" 
+							id="startScreen_usersButton"
+						>
+							Hi <span data-role="none" id="startScreen_currentUserReadOnly">user</span>
+						</a>
+					</div>
+				</li>
+<!--
+				<li data-theme="b" data-icon="gear">
+					<a id="startScreen_usersButton">
+						User: <span data-role="none" id="startScreen_currentUserReadOnly">user</span>
+					</a>
+				</li>
+-->
+				<li><a id="startScreen_preferencesButton" href="asdf">Preferences</a></li>
+				<li data-icon="minus" data-mini="true"><a href="#my-header" data-icon="gear" data-rel="close">Close panel</a></li>
+			</ul>
+		</div>
 
         <div 
              id="startScreen_mobileheader1" data-role="header" 
@@ -50,15 +77,26 @@
 				<!--<img id="startScreen_onlineIcon" src="files/views/assets/image/online.jpg" style="width:20px; height:20px"/>-->
             </h1>
             <!-- preferencesButton -->
-            <a data-role="button"
+<!--            <a data-role="button"
 				class='ui-btn-right'
                style='min-height:20px; ' id="startScreen_preferencesButton" data-corners="true"
                data-icon="gear" data-inline='true'
                data-mini='true' data-theme="a"
 			data-iconpos="notext">
-            <!--    Settings-->
             </a>
-            <!-- refreshRouteStorageButton -->
+-->
+			<a href="#menupanel" 
+				data-role="button" 
+				class='ui-btn-right'
+				data-corners="true"
+				data-icon="bars" 
+				data-inline='true'
+				data-mini='true' 
+				data-theme="a"
+				data-iconpos="notext"
+			></a>
+
+			<!-- refreshRouteStorageButton -->
             <a data-role="button"
                 class='ui-btn-left' style='min-height:20px; '
                 id="startScreen_refreshRouteStorageButton" data-corners="true" data-icon="refresh"
@@ -100,7 +138,7 @@
 			</ul>
 					<!-- Statistics -->
 					<a data-role="button"
-                       id="startScreen_statsButton" data-corners="true" data-icon="check" data-iconpos="right"
+                       id="startScreen_statsButton" data-corners="false" data-icon="check" data-iconpos="right"
                        data-mini="false" data-theme="a" tabindex="8">
                         Statistics
                     </a>

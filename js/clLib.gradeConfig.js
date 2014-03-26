@@ -16,11 +16,10 @@ Attempt: 0 points
 
 */
 clLib.defaultTickTypeFactors = {
-	"Red Point" : "+0",
-	"Flash" : "+53",
-	"Onsight" : "+145",
-	"Attempt" : "*0",
-	"Top Rope" : "-150"
+	"tickType_redpoint" : "+0",
+	"tickType_flash" : "+53",
+	"tickType_attempt" : "*0",
+	"tickType_toprope" : "-150"
 };
 
 //
@@ -195,7 +194,8 @@ clLib.gradeConfig = {
 			"Fb 8c" : 1400            ,
 			"Fb 8c+" : 1450           
 		}
-	},
+	}
+	/*,
 	"USA" : {                      
 		defaultGrade: "5.10a",
 		tickTypeFactors : clLib.defaultTickTypeFactors,
@@ -235,6 +235,6 @@ clLib.gradeConfig = {
 			"5.15b" : 1375            ,
 			"5.15c" : 1450            	
 		}
-	}
+	}*/
 };
 

@@ -86,9 +86,30 @@ clLib.UI.list.formatStandardRow = function(dataRow) {
         .append(dataRow);
 	return $listItem;
 };
+
+clLib.UI.tickTypeSymbols = {
+	tickType_redpoint : '<span><img style="width:20px; height: 20px" src="files/views/assets/image/redpoint.png"></span>'
+	, tickType_flash : '<span><img style="width:20px; height: 20px" src="files/views/assets/image/flash.png"></span>'
+	, tickType_attempt : '<span><img style="width:20px; height: 20px" src="files/views/assets/image/attempt.png"></span>'
+	, tickType_toprope : '<span><img style="width:20px; height: 20px" src="files/views/assets/image/toprope.png"></span>'
+};
+
+clLib.tickTypeSymbol = function(tickTypeName, tickTypeValue) {
+	if(tickTypeValue) {
+		return clLib.UI.tickTypeSymbols[tickTypeName];
+	}
+};
+
 clLib.UI.list.formatRouteLogRow = function(dataRow) {
 	var dataFormat = {
-		header: ["GradeSystem", "Grade", "TickType"]
+		header: {
+			/*"GradeSystem" : null*/
+			"Grade": null
+			, "tickType_redpoint" : clLib.tickTypeSymbol 
+			, "tickType_flash" : clLib.tickTypeSymbol 
+			, "tickType_attempt" : clLib.tickTypeSymbol 
+			, "tickType_toprope" : clLib.tickTypeSymbol 
+		}
 		,bubble: "Score"
 		,body: {
 			header: "RouteName",
@@ -106,10 +127,17 @@ clLib.UI.list.formatRouteLogRow = function(dataRow) {
 	/* 
 		Clickable header item
 	*/
-	$.each(dataFormat["header"], function(index, keyName) {
-		headerText.push(dataRow[keyName]);
+	$.each(dataFormat["header"], function(headerName, headerFunc) {
+		if(headerFunc) {
+			headerText.push(
+				headerFunc(headerName, dataRow[headerName])
+			);
+		} else {
+			headerText.push(dataRow[headerName]);
+		}
 	});
-	headerText = headerText.join(" / ", headerText);
+
+	headerText = headerText.join(" ", headerText);
 	
 	$bubble = $("<span>")
 		.addClass("ui-li-count")
@@ -163,6 +191,132 @@ clLib.UI.list.formatRouteLogRow = function(dataRow) {
 };
 
 
+clLib.createRadioButtons = function(options) {
+	// disable current onChange handler
+	var elementName = clLib.UI.elementNameFromId(options.selectBoxElement.attr("id"));
+	clLib.UI.killEventHandlers(options.selectBoxElement, "change.clLib");
+
+	var needRefresh = clLib.populateRadioButtons_plain(
+		options.selectBoxElement,
+		options.dataObj,
+		options.selectedValue,
+		options.preserveCurrentValue,
+		options.additionalValue
+	);
+
+	var customChangeHandler = clLib.UI.elements[elementName]["changeHandler"];
+	if(customChangeHandler) {
+		//clLib.loggi("custom event handler for " + elementName + "found.." + customChangeHandler);
+	}
+	var changeHandler = customChangeHandler || clLib.UI.defaultChangeHandler;
+
+	options.selectBoxElement.bind("change.clLib", function(event, changeOptions) {
+		changeHandler($(this), changeOptions);
+	});
+
+	
+	if(needRefresh) {
+		clLib.loggi("trigger change on " + options.selectBoxElement.attr("id"));
+		options.selectBoxElement.trigger("change.clLib", options.changeOptions);
+	}
+
+											
+											
+};
+
+
+
+clLib.populateRadioButtons_plain = function($selectBox, dataObj, selectedValue, preserveCurrentValue, additionalValue){
+	//alert("populating radio buttons..");	
+	var oldValue = clLib.UI.getVal(clLib.UI.elementNameFromId($selectBox.attr("id")));
+	var oldValueFound = true;
+	if(preserveCurrentValue && oldValue) {
+		clLib.loggi("preserving >" + oldValue + "<");
+		selectedValue = oldValue;
+		oldValueFound = false;
+	}
+	
+
+	var buttonCount = 0;
+	
+	$selectBox.empty();
+	if(additionalValue) {
+		var $option = $('<input type="radio"></input>');
+		$option.attr("name", $selectBox.attr("id") + "_radio");
+		$option.attr("id", $selectBox.attr("id") + "_" + buttonCount);
+
+		var $label = $('<label for="' + $selectBox.attr("id") + "_" + buttonCount + '"></label>');
+		
+		if(additionalValue instanceof Object) {
+			$option
+				.val(additionalValue["value"])
+			;
+			$label
+				.html(additionalValue["text"]);
+		} else {
+			$option
+				.val(additionalValue)
+			;
+			$label
+				.html(additionalValue);
+		}
+		$selectBox.append($option);
+		$selectBox.append($label);
+		buttonCount++;
+	}
+	
+	if(dataObj instanceof Array && dataObj.length == 1) {
+		clLib.loggi("Yes, array...take first element.." + JSON.stringify(dataObj));
+		selectedValue = dataObj[0];
+	} else if(dataObj instanceof Object && Object.keys(dataObj).length == 1) {
+		clLib.loggi("Yes, object...take first element.." + JSON.stringify(dataObj));
+		selectedValue = Object.keys(dataObj)[0];
+	}
+
+	var i = 0;
+	$.each(dataObj, function(index, value) {
+		//clLib.loggi("adding option " + value);
+		var $option = $('<input type="radio"></input>');
+		$option.attr("name", $selectBox.attr("id") + "_radio");
+		$option.attr("id", $selectBox.attr("id") + "_" + buttonCount);
+
+		var $label = $('<label for="' + $selectBox.attr("id") + "_" + buttonCount + '"></label>');
+		
+		$option
+			.val(dataObj instanceof Array ? value : index)
+		;
+		$label
+			.html(value);
+
+			//clLib.loggi("comp " + value + " + against " + selectedValue);
+		if(value == selectedValue) {
+			clLib.loggi("Found old value..");
+			$option.attr("checked", "checked");
+			oldValueFound = true;
+		}
+		$selectBox.append($option);
+		$selectBox.append($label);
+		buttonCount++;
+	});
+	
+	
+	$selectBox.parent().trigger("create");
+	//controlgroup().controlgroup('refresh');
+	$selectBox.controlgroup();
+	//alert("populated radio buttoins.." + $selectBox.attr("id"));
+	
+	clLib.loggi("oldValueFound? " + oldValueFound);
+	if(oldValueFound) {
+		// no refresh necessary..
+		return false;
+	}
+
+	// need to refresh
+	return true;
+	//clLib.loggi("Previous value >" + oldValue + "< is no longer present in the select list.");
+
+};
+
 clLib.populateSelectBox = function(options) {
 	var defaultOptions = {
 		preserveCurrentValue : false
@@ -172,7 +326,6 @@ clLib.populateSelectBox = function(options) {
 	// disable current onChange handler
 	var elementName = clLib.UI.elementNameFromId(options.selectBoxElement.attr("id"));
 	clLib.loggi("killing event handlers for  " + elementName + "," + options.selectBoxElement.attr("id"), 2);
-
 	clLib.UI.killEventHandlers(options.selectBoxElement, "change.clLib");
 
 	var needRefresh = clLib.populateSelectBox_plain(
@@ -248,8 +401,10 @@ clLib.populateSelectBox_plain = function($selectBox, dataObj, selectedValue, pre
 		$selectBox.append($option);
 	});
 	
+	//alert("refreshing " + $selectBox.attr("id"));
 	$selectBox.selectmenu('refresh', true);
-
+	//alert("refreshed " + $selectBox.attr("id"));
+	
 	clLib.loggi("oldValueFound? " + oldValueFound);
 	if(oldValueFound) {
 		// no refresh necessary..
@@ -667,7 +822,7 @@ clLib.UI.elementNameFromId = function(id) {
 	return newId;
 };
 
-clLib.UI.defaultRefreshHandler = function($element, additionalSelectBoxOptions) {
+clLib.UI.defaultRefreshHandler = function($element, additionalOptions) {
 	clLib.loggi("refreshing " + $element.attr("id"));
 	var currentLayout = localStorage.getItem("currentLayout") || localStorage.getItem("defaultLayout") || "default";
 	var elementConfig = clLib.UI.elements[clLib.UI.elementNameFromId($element.attr("id"))];
@@ -686,7 +841,7 @@ clLib.UI.defaultRefreshHandler = function($element, additionalSelectBoxOptions) 
 	var results = clLib.UI.defaultEntitySearch(entityName, resultColName, dependingPageElements, true, null);
 	clLib.loggi("got results: " + JSON.stringify(results));
 
-	var selectBoxOptions = {
+	var elContentOptions = {
 		selectBoxElement : $element,
 		dataObj : results,
 		preserveCurrentValue : true,
@@ -697,8 +852,14 @@ clLib.UI.defaultRefreshHandler = function($element, additionalSelectBoxOptions) 
 			,value: "__UNKNOWN__"
 		}
 	};
-	$.extend(selectBoxOptions, additionalSelectBoxOptions);
-	clLib.populateSelectBox(selectBoxOptions);
+	$.extend(elContentOptions, additionalOptions);
+	
+	// Assume controlgroups consist of radio buttons..
+	if($element.attr("data-role") == 'controlgroup') {
+		clLib.createRadioButtons(elContentOptions);
+	} else {
+		clLib.populateSelectBox(elContentOptions);
+	}
 }
 
 clLib.UI.getLabelForElement = function($element) {
@@ -742,7 +903,7 @@ clLib.UI.getVal = function(elementName) {
 	var elementConfig = clLib.UI.elements[elementName];
 	var elementValue;
 	if(elementConfig["customVal"]) {
-		elementValue = elementConfig["customVal"]();
+		elementValue = elementConfig["customVal"](clLib.UI.byId$(elementName));
 	} else {
 		elementValue = clLib.UI.byId$(elementName).val();
 	}
@@ -815,15 +976,16 @@ clLib.UI.RESTSaveHandler = function (options, successFunc, errorFunc) {
     }
 
     $.each(clLib.UI.pageElements[currentJqmSlide][currentLayout], function (idx, elementName) {
-        //alert("eaching " + idx + " and " + elementName);
+		//alert("eaching " + idx + " and " + elementName);
         var elementConfig = clLib.UI.elements[elementName];
+		var dbField = elementConfig["dbField"] || elementName;
         if (!elementConfig) {
             alert("will not save " + elementName + ", no config found!");
         } else {
-            saveObj[elementConfig["dbField"]] = clLib.UI.getVal(elementName);
+            saveObj[dbField] = clLib.UI.getVal(elementName);
         }
     });
-    //alert("saveObj is " + JSON.stringify(saveObj));
+    alert("saveObj is " + JSON.stringify(saveObj));
     clLib.localStorage.addInstance("RouteLog", saveObj, "defaultStorage");
     successFunc();
 }
@@ -1085,7 +1247,8 @@ clLib.UI.elementConfig.plainElement = {
 
 
 clLib.prefsCompleteCheck = function () {
-    var prefsComplete = false;
+    //alert("pref complete?");
+	var prefsComplete = false;
     if (localStorage.getItem("currentUser")) {
         prefsComplete = true;
     }
@@ -1104,7 +1267,8 @@ clLib.tryLogin = function() {
 	}
 	return clLib.loggedInCheck(
 	function() {
-		clLib.loggi("loggedin!");
+		//alert("loggedin!");
+		return true;
 	},
 	function(e) {
 		//alert("handling error " + JSON.stringify(e));

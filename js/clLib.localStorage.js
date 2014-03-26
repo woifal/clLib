@@ -781,7 +781,8 @@ clLib.localStorage.refreshNewData = function () {
 };
 
 clLib.localStorage.refreshAllData = function (callbackFunc, errorFunc) {
-    clLib.loggedInCheck(
+    //alert("need to refresh?");
+	clLib.loggedInCheck(
 	function() {
 		clLib.UI.execWithMsg(function() {
 			clLib.UI.showLoading("refreshing from server..");

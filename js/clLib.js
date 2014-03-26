@@ -116,6 +116,7 @@ clLib.calculateScore = function(routeLogs) {
 *   Calculates a score for a single route log based on config in clLib.gradeConfig.
 */ 
 clLib.computeScore = function(routeLogObj) {
+	//alert("computing score for " + JSON.stringify(routeLogObj));
 	if(!(routeLogObj.GradeSystem in clLib.gradeConfig)) {
 		clLib.loggi("unknown grade system " + routeLogObj.GradeSystem);
 		return 0;
@@ -125,17 +126,23 @@ clLib.computeScore = function(routeLogObj) {
 		clLib.loggi("unknown grade " + routeLogObj.Grade);
 		return 0;
 	}
-	if(!(routeLogObj.TickType in gradeSystemScore.tickTypeFactors)) {
+/*	if(!(routeLogObj.TickType in gradeSystemScore.tickTypeFactors)) {
 		clLib.loggi("unknown ticktype " + routeLogObj.TickType);
 		return 0;
 	}
-	
+*/	
 	var score =
 		gradeSystemScore["grades"][routeLogObj.Grade]+ 0
 	;
+	
 	// allow for flexible tick type factors a eval-able expressions...
-	score = eval(score + gradeSystemScore["tickTypeFactors"][routeLogObj.TickType]);
-	;
+	$.each(gradeSystemScore["tickTypeFactors"], function(tickType, expr) {
+		//alert("checking " + tickType + ": " + routeLogObj[tickType]);
+		if(routeLogObj[tickType]) {
+			score = eval(score + gradeSystemScore["tickTypeFactors"][tickType]);
+		}
+	});
+	
 	clLib.loggi("computed score >" + score + "< for route " + JSON.stringify(routeLogObj));
 	return score;
 };
@@ -565,7 +572,7 @@ clLib.login = function(successFunc, errorFunc) {
 		clLib.currentUserId = currentUserId;
 		// Clear any "old" error messages 
 		localStorage.removeItem("loginError");
-		clLib.loggi("logged in, return success");
+		//alert("logged in, return success");
 		return successFunc(returnObj);
 	}
 	, errorFunc
@@ -637,14 +644,14 @@ clLib.loggedInCheck = function (callbackFunc, errorFunc) {
 	if (clLib.sessionToken) {
         return callbackFunc(true);
     }
-	clLib.loggi("no session token!");
+	//alert("no session token!");
 	// no session token found - try to logon using stored credentials
 	//alert("logging in..");
 	return clLib.login(
 		function() {
 			// successfully logged in, return true
-			clLib.loggi("logged in now, returning true");
-			return callbackFunc();
+			//alert("logged in now, returning true");
+			return callbackFunc(true);
 		}
 		, errorFunc
 	);
@@ -660,8 +667,15 @@ clLib.wasOnlineCheck = function () {
         return true;
     }
 
-    if (!clLib.localStorage.refreshAllData()) {
-		alert("You need to go online once to get initial Route(Log) data!");
+    if (!clLib.localStorage.refreshAllData(
+		function() {
+			alert("refreshed!");
+		}
+		,function() {
+			alert("not refreshed!");
+		}
+	)) {
+		//alert("You need to go online once to get initial Route(Log) data!");
 		$.mobile.navigate("clLib_startScreen.html");
 	}
 };
