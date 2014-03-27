@@ -19,7 +19,7 @@ clLib.defaultTickTypeFactors = {
 	"tickType_redpoint" : "+0",
 	"tickType_flash" : "+53",
 	"tickType_attempt" : "*0",
-	"tickType_toprope" : "-150"
+	"tickType_toprope" : "+0"
 };
 
 //
