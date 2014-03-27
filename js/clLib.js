@@ -598,11 +598,14 @@ clLib.formatError = function(e) {
 	clLib.sessionToken = null;
 	
 	var errorMsg = e.message;
-	if(e.message && JSON.parse(e.message)["responseText"]) {
+	if(e.message && e.message["reponseText"] && JSON.parse(e.message)["responseText"]) {
 		errorMsg = JSON.parse(JSON.parse(e.message)["responseText"])["description"];
 	} 
 	else if(e.responseText) {
 		errorMsg = e.responseText;
+	}
+	else if(e.message) {
+		errorMsg = e.message;
 	}
 	else {
 		errorMsg = "Server down.";

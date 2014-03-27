@@ -17,7 +17,6 @@ clLib.UI.pageRequisites = {
     , "newRouteLog": { "pagebeforeshow" : [clLib.prefsCompleteCheck, clLib.tryLogin, clLib.wasOnlineCheck] }
     , "users": { "pagebeforeshow" : [clLib.tryLogin] }
     , "users_verification": { }
-    , "users_signup": { }
     , "stats": { }
     , "diagram": { }
 };
@@ -28,7 +27,6 @@ clLib.UI.saveHandlers= {
     , "newRouteLog": clLib.UI.RESTSaveHandler
     , "startScreen": clLib.UI.RESTSaveHandler
     , "users": clLib.UI.userHandler
-    , "users_signup": clLib.UI.userHandler
 };
 
 clLib.UI.autoLoad = {
@@ -59,13 +57,14 @@ clLib.UI.autoLoad = {
 	,startScreen: {
 		default: [
 			"areaSelect"
-			, "currentUserReadOnly"
+			, "displayName"
 			, "onlineIcon"
 			]
 	}
 	,preferences : {
 		default: [
 			"currentUserReadOnly"
+			, "displayName"
 			, "buddiesStr"
 			, "showTopX"
 			, "defaultLayout"
@@ -85,14 +84,6 @@ clLib.UI.autoLoad = {
 		default: [
 			"currentUser",
 			"notification"
-		]
-	}
-    ,"users_signup" : {
-		default: [
-			"username"
-			,"password",
-			,"email"
-			,"notification"
 		]
 	}
     ,"stats" : {
@@ -122,6 +113,7 @@ clLib.UI.elementsToReset = {
 	]
     , preferences: [
 		"currentUserReadOnly"
+		, "displayName"
 		, "buddiesStr"
         , "showTopX"
         , "defaultLayout"
@@ -181,13 +173,14 @@ clLib.UI.pageElements = {
 	    default: [
 			"areaSelect"
 			, "selectedArea",
-			, "currentUserReadOnly"
+			, "displayName"
 			, "onlineIcon"
 	    ]
 	}
     , preferences: {
         default: [
 			"currentUserReadOnly"
+			, "displayName"
 			, "buddiesStr"
             , "showTopX"
             , "defaultLayout"
@@ -206,14 +199,6 @@ clLib.UI.pageElements = {
     ,"users_verification": {
         default: [
 			"currentUser",
-			"notification"
-        ]
-    }
-    ,"users_signup": {
-        default: [
-			"username",
-			"password",
-			"email",
 			"notification"
         ]
     }
@@ -245,12 +230,53 @@ clLib.UI.elements = {
 	,"currentUserReadOnly": $.extend({}, {
 		"dbField": "username"
     }, clLib.UI.elementConfig.localVar)
+	,"displayName": $.extend({}, clLib.UI.elementConfig.localVar, {
+		"dbField": "displayName"
+		,"refreshHandler": function ($this) {
+			//alert("refreshing " + $this.attr("id"));
+			var elValue;
+			if(localStorage.getItem("displayName") && localStorage.getItem("displayName") != "undefined") {
+				//alert("yes, display name found: >" + localStorage.getItem("displayName") + "<");
+				elValue = localStorage.getItem("displayName");
+			} 
+			else {
+				//alert("no, display name not found, using currentUser..");
+				elValue = localStorage.getItem("currentUser");
+			}
+			var jqmDataRole = $this.attr("data-role");
+			if (jqmDataRole == "button") {
+				$this.text(elValue);
+				$this.button("refresh");
+			} else if($this.is("span")) {
+				$this.text(elValue);
+			}
+			else {
+				$this.val(elValue);
+			}
+			//alert("set value to " + localVarValue);
+			//$("#mypanel").trigger("create");
+		}
+	})
+
     ,"currentUser": $.extend({}, {
 		"dbField": "username"
     }, clLib.UI.elementConfig.localVarSaveImmediately)
-    ,"currentPassword": $.extend({}, {
+	,"currentPassword": $.extend({}, clLib.UI.elementConfig.localVar, {
 		"dbField": "password"
-    }, clLib.UI.elementConfig.localVarSaveImmediately)
+	    ,"refreshHandler": function ($this) {
+			//alert("refreshing currentpwd" + localStorage.getItem("currentPassword"));
+			if(localStorage.getItem("currentPassword")) {
+				$this.val("xxxxxxxx");	
+			} else {
+				$this.val("");
+			}
+			//alert("click handler?");
+			$this.off("click").on("click", function(e) {
+				//alert("password clicked!!");
+				$this.val("");
+			});
+		}
+	})
     , "loginError": $.extend({}, clLib.UI.elementConfig.localVar, {
 	    "refreshHandler": function ($this) {
 			//alert("hiding " + "#" + $this.attr("id") + "Container");
@@ -399,10 +425,11 @@ clLib.UI.elements = {
 		}
 		,"refreshFromEntity" : "Grades"
 		,"refreshHandler" : function($this) {
+			//alert("getting grades for " + localStorage.getItem("defaultGradeSystem") + " and " + localStorage.getItem("defaultGrade"));
 			var selectedValue = clLib.findEquivalentGrade(
 				localStorage.getItem("defaultGradeSystem") || "UIAA"
 				, localStorage.getItem("defaultGrade") || "VI"			
-				, $("#newRouteLog_gradeSystemSelect").val()
+				, clLib.UI.getVal(clLib.UI.elementNameFromId("newRouteLog_gradeSystemSelect"))
 			);
 
 			//alert("preselecting " + selectedValue);

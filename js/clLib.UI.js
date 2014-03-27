@@ -90,7 +90,7 @@ clLib.UI.list.formatStandardRow = function(dataRow) {
 clLib.UI.tickTypeSymbols = {
 	tickType_redpoint : '<span><img style="width:20px; height: 20px" src="files/views/assets/image/redpoint.png"></span>'
 	, tickType_flash : '<span><img style="width:20px; height: 20px" src="files/views/assets/image/flash.png"></span>'
-	, tickType_attempt : '<span><img style="width:20px; height: 20px" src="files/views/assets/image/attempt.png"></span>'
+	, tickType_attempt : '<span><img style="width:20px; height: 20px" src="files/views/assets/image/try.png"></span>'
 	, tickType_toprope : '<span><img style="width:20px; height: 20px" src="files/views/assets/image/toprope.png"></span>'
 };
 
@@ -985,12 +985,16 @@ clLib.UI.RESTSaveHandler = function (options, successFunc, errorFunc) {
             saveObj[dbField] = clLib.UI.getVal(elementName);
         }
     });
-    alert("saveObj is " + JSON.stringify(saveObj));
+    //alert("saveObj is " + JSON.stringify(saveObj));
     clLib.localStorage.addInstance("RouteLog", saveObj, "defaultStorage");
     successFunc();
 }
 
 
+clLib.validateEmail = function(email) { 
+    var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(email);
+};
 
 
 clLib.UI.userHandler = function (options, successFunc, errorFunc) {
@@ -1022,6 +1026,11 @@ clLib.UI.userHandler = function (options, successFunc, errorFunc) {
 	var returnObj = {};
 	var userAction = additionalData["action"];
 
+	// validate that username is an email address..
+	if(!clLib.validateEmail(userObj["username"])) {
+		return errorFunc(new Error("Username must be a valid email address!"));
+	}
+	
 	if (userAction == "create") {
 		return clLib.REST.createUser(userObj, 
 		function(returnObj) {

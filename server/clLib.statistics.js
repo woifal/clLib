@@ -55,7 +55,11 @@ clLib.isFunction = function(functionToCheck) {
  return functionToCheck && getType.toString.call(functionToCheck) === '[object Function]';
 }
 
+/*
+*   Calculates a score for a single route log based on config in clLib.gradeConfig.
+*/ 
 clLib.computeScore = function(routeLogObj) {
+	//alert("computing score for " + JSON.stringify(routeLogObj));
 	if(!(routeLogObj.GradeSystem in clLib.gradeConfig)) {
 		util.log("unknown grade system " + routeLogObj.GradeSystem);
 		return 0;
@@ -65,22 +69,36 @@ clLib.computeScore = function(routeLogObj) {
 		util.log("unknown grade " + routeLogObj.Grade);
 		return 0;
 	}
-	if(!(routeLogObj.TickType in gradeSystemScore.tickTypeFactors)) {
-		util.log("unknown ticktype " + routeLogObj.TickType);
-		return 0;
-	}
-	
+
 	var score =
 		gradeSystemScore["grades"][routeLogObj.Grade]+ 0
 	;
+	
 	// allow for flexible tick type factors a eval-able expressions...
-	score = eval(score + gradeSystemScore["tickTypeFactors"][routeLogObj.TickType]);
-	;
+	
+	$.each(gradeSystemScore["tickTypeFactors"], function(tickType, expr) {
+		//alert("checking " + tickType + ": " + routeLogObj[tickType]);
+		if(routeLogObj[tickType]) {
+			score = eval(score + gradeSystemScore["tickTypeFactors"][tickType]);
+		}
+	});
+	
 	util.log("computed score >" + score + "< for route " + JSON.stringify(routeLogObj));
 	return score;
 };
 
+var $ = {};
+$.each = function(object, callback) {
+	var objKeys = Object.keys(object);
+	var i;
+	for(i = 0; i < objKeys.length; i++) {
+		callback(objKeys[i], object[objKeys[i]]);
+	}
+};
+
 clStats.prototype.ISODayPortion = function(ISODateStr) {
+	//util.log("ISODayPortion for " + JSON.stringify(ISODateStr));
+	ISODateStr = ISODateStr || "";
 	return ISODateStr.substring(0, 10);
 };
 clStats.prototype.ISOMonthPortion = function(ISODateStr) {
@@ -96,6 +114,7 @@ clStats.prototype.ISOHourPortion = function(ISODateStr) {
 clStats.prototype.getRouteLogScoreStats = function(options, callbackFunc, errorFunc) {
 	options.entity = "RouteLog";
 	options.sortBy = function(routeLog) {
+		//util.log("sorting " + JSON.stringify(routeLog));
 		return options.datePortionFunc(routeLog["DateISO"]) + "_" + clLib.computeScore(routeLog);
 	};
 	options.sortDescFlag = true;
@@ -110,6 +129,7 @@ clStats.prototype.getRouteLogScoreStats = function(options, callbackFunc, errorF
 		callbackFunc, 
 		errorFunc
 	);
+	
 }
 clStats.prototype.getEntityStats = function(options, callbackFunc, errorFunc) {
 

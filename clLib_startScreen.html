@@ -52,17 +52,10 @@
 							data-iconpos="right" 
 							id="startScreen_usersButton"
 						>
-							Hi <span data-role="none" id="startScreen_currentUserReadOnly">user</span>
+							Hi <span id="startScreen_displayName">user</span>
 						</a>
 					</div>
 				</li>
-<!--
-				<li data-theme="b" data-icon="gear">
-					<a id="startScreen_usersButton">
-						User: <span data-role="none" id="startScreen_currentUserReadOnly">user</span>
-					</a>
-				</li>
--->
 				<li><a id="startScreen_preferencesButton" href="asdf">Preferences</a></li>
 				<li data-icon="minus" data-mini="true"><a href="#my-header" data-icon="gear" data-rel="close">Close panel</a></li>
 			</ul>
@@ -74,17 +67,18 @@
         >
             <h1>
                 Kurt Climbing	
-				<!--<img id="startScreen_onlineIcon" src="files/views/assets/image/online.jpg" style="width:20px; height:20px"/>-->
             </h1>
-            <!-- preferencesButton -->
-<!--            <a data-role="button"
-				class='ui-btn-right'
-               style='min-height:20px; ' id="startScreen_preferencesButton" data-corners="true"
-               data-icon="gear" data-inline='true'
-               data-mini='true' data-theme="a"
-			data-iconpos="notext">
-            </a>
--->
+
+			<!-- LEFT: refreshRouteStorageButton -->
+            <a data-role="button"
+                class='ui-btn-left' style='min-height:20px; '
+                id="startScreen_refreshRouteStorageButton" data-corners="true" data-icon="refresh"
+                data-inline='true' data-mini='true'
+                data-theme="a" 
+				data-iconpos="notext">
+                <!--Refresh-->
+			</a>
+			<!-- RIGHT: menu panel -->
 			<a href="#menupanel" 
 				data-role="button" 
 				class='ui-btn-right'
@@ -95,16 +89,6 @@
 				data-theme="a"
 				data-iconpos="notext"
 			></a>
-
-			<!-- refreshRouteStorageButton -->
-            <a data-role="button"
-                class='ui-btn-left' style='min-height:20px; '
-                id="startScreen_refreshRouteStorageButton" data-corners="true" data-icon="refresh"
-                data-inline='true' data-mini='true'
-                data-theme="a" 
-				data-iconpos="notext">
-                <!--Refresh-->
-			</a>
         </div>
 
         <div 
@@ -112,14 +96,6 @@
              data-theme=""
         >
 			<ul data-role="listview" data-inset="true" data-divider-theme="c">
-<!--				<li data-role="list-divider">Add Route Log:</li>-->
-<!--
-				<li data-theme="c" data-icon="gear">
-					<a id="startScreen_usersButton">
-						User: <span data-role="none" id="startScreen_currentUserReadOnly">user</span>
-					</a>
-				</li>
--->
 				<li data-role="list-divider">Add Route Log:</li>
 				<li>
 					<!-- Add new route.. -->

@@ -276,51 +276,7 @@ clLib.PAGES.handlers = {
 			clLib.UI.fillUIelements("users_verification", "users_verification");
         }
 	}
-	,"users_signup": {
-	    "pageinit"	: function () {
-			localStorage.setItem("notification", "");
-			var successHandler = function() {
-				clLib.UI.fillUIelements("users_signup", "users_signup");
-			};
-			
 
-			$("#users_signupButton").on("click", function () {
-				clLib.UI.execWithMsg(function() {
-					clLib.UI.save({ additionalData: { action: "create" }}
-					, function(returnObj) {
-						//clLib.UI.fillUIelements("users_signup", "users_signup");
-					
-						//alert("got login response " + JSON.stringify(returnObj));
-						localStorage.setItem("currentUser", returnObj["username"]);
-						localStorage.setItem("currentPassword", returnObj["password"]);
-
-						// login..
-						clLib.login(function() {
-						// ..and return to startPAge..
-						//alert("Successfully signed up!");
-						$.mobile.navigate("clLib_startScreen.html");
-						}
-						, function(e) {
-							clLib.loginErrorHandler(e);
-							clLib.UI.fillUIelements("users_signup", "users_signup");
-						}
-						);
-
-					}
-					, function(e) {
-						clLib.loginErrorHandler(e);
-						clLib.UI.fillUIelements("users_signup", "users_signup");
-					}
-					);
-				}
-				, {text: "creating user.."});
-			});
-
-		}
-        , "pagebeforeshow": function () {
-			clLib.UI.fillUIelements("users_signup", "users_signup");
-        }
-	}
 	,"users": {
 	    "pageinit"	: function () {
 
@@ -328,7 +284,7 @@ clLib.PAGES.handlers = {
 	            clLib.UI.execWithMsg(function() {
 					clLib.UI.save({ additionalData: { action: "login", plainPwd : true }}
 					,function() {
-						clLib.UI.fillUIelements("users", "users");
+						$.mobile.navigate("clLib_startScreen.html");
 					}
 					, function(e) {
 						clLib.loginErrorHandler(e);
@@ -338,6 +294,7 @@ clLib.PAGES.handlers = {
 				}
 				, {text: "logging in"});
 			});
+			
 	        $("#users_logoutButton").on("click", function () {
 				clLib.UI.execWithMsg(function() {
 					clLib.UI.save({ additionalData: { action: "logout" }}
@@ -352,9 +309,39 @@ clLib.PAGES.handlers = {
 				}
 				, {text: "logging out.."});
 	        });
-	        $("#users_newUserButton").on("click", function () {
-				$.mobile.navigate("clLib_users_signup.html");
+			
+			
+			$("#users_signupButton").on("click", function () {
+				clLib.UI.execWithMsg(function() {
+					clLib.UI.save({ additionalData: { action: "create" }}
+					, function(returnObj) {
+						//alert("got login response " + JSON.stringify(returnObj));
+						localStorage.setItem("currentUser", returnObj["username"]);
+						localStorage.setItem("currentPassword", returnObj["password"]);
+
+						// login..
+						clLib.login(function() {
+							// ..and return to startPAge..
+							//alert("Successfully signed up!");
+							$.mobile.navigate("clLib_startScreen.html");
+						}
+						, function(e) {
+							clLib.loginErrorHandler(e);
+							clLib.UI.fillUIelements("users", "users");
+
+						}
+						);
+
+					}
+					, function(e) {
+						clLib.loginErrorHandler(e);
+						clLib.UI.fillUIelements("users", "users");
+					}
+					);
+				}
+				, {text: "creating user.."});
 			});
+			
 	        $("#users_forgotPwdButton").on("click", function () {
 				$.mobile.navigate("clLib_users_verification.html");
 			});
