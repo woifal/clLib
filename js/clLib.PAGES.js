@@ -40,7 +40,8 @@ clLib.PAGES.defaultHandler = function (event, ui) {
 //    }
 };
 clLib.PAGES.handlers = {
-    "preferences": {
+	1 : 1
+	,"preferences": {
         "pageinit": function() {
             //alert("444isave handler..");
             $("#preferences_cancelButton").on("click", function () {

@@ -30,9 +30,15 @@ clLib.UI.saveHandlers= {
 };
 
 clLib.UI.autoLoad = {
+	_COMMON_ : {
+		default: [
+			"displayName"
+		]
+	}, 
 	newRouteLog : {
 		default: [
-			"gradeSystemSelect"
+			1
+			,"gradeSystemSelect"
 			, "searchRoute"
 			, "ratingSelect"
 			, "tickType_redpoint"
@@ -129,9 +135,15 @@ clLib.UI.elementsToReset = {
 };
 
 clLib.UI.pageElements = {
+	_COMMON_ : {
+		default: [
+			"displayName"
+		]
+	}, 
 	newRouteLog : {
 		default: [
-            "currentLayout"
+    		"displayName"
+	        ,"currentLayout"
             , "gradeSystemSelect"
 			, "gradeSelect"
 			, "sectorSelect"
@@ -233,7 +245,7 @@ clLib.UI.elements = {
 	,"displayName": $.extend({}, clLib.UI.elementConfig.localVar, {
 		"dbField": "displayName"
 		,"refreshHandler": function ($this) {
-			//alert("refreshing " + $this.attr("id"));
+			//alert("!!!!!!!!!!!!refreshing " + $this.attr("id"));
 			var elValue;
 			if(localStorage.getItem("displayName") && localStorage.getItem("displayName") != "undefined") {
 				//alert("yes, display name found: >" + localStorage.getItem("displayName") + "<");

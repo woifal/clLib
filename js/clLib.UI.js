@@ -605,14 +605,15 @@ clLib.UI.fillUIelements = function(pageName, currentJqmSlide, layout) {
 		clLib.loggi("layout does not exists for page, using default layout..", 2);
 		layout = "default";
 	}
-	
-	clLib.loggi("elements for page >" + pageName + "< hidden..");
-	//clLib.loggi("populating UI elements for page >" + pageName + "<");
-	$.each(clLib.UI.pageElements[pageName][layout], function(idx, elementName) {
-	    var elementConfig = clLib.UI.elements[elementName];
 
+	var curPageElements =clLib.UI.pageElements[pageName][layout];
+	curPageElements.push.apply(curPageElements, clLib.UI.pageElements["_COMMON_"][layout]);
+	//clLib.loggi("populating UI elements for page >" + pageName + "<");
+	$.each(curPageElements, function(idx, elementName) {
+		var elementConfig = clLib.UI.elements[elementName];
+		
 		if(!elementConfig) {
-			clLib.loggi("Can't find element >" + elementName + "<, breaking loop..");
+			alert("Can't find element >" + elementName + "<, breaking loop..");
 			return;
 		}
 
@@ -640,7 +641,6 @@ clLib.UI.fillUIelements = function(pageName, currentJqmSlide, layout) {
 
 		// populate current element..
 		$element.bind("refresh.clLib", function(event, additionalOptions) {
-			clLib.loggi("refreshing " + $(this).attr("id"));
 			if(!additionalOptions) additionalOptions = {};
 			//clLib.loggi("refreshing element " + elementName + " with " +  JSON.stringify(additionalOptions));
 			if(
@@ -655,9 +655,13 @@ clLib.UI.fillUIelements = function(pageName, currentJqmSlide, layout) {
 		});
 	});
 
+	
 	// populate autoload elements
 	if(clLib.UI.autoLoad[pageName] && clLib.UI.autoLoad[pageName][layout]) {
-		$.each(clLib.UI.autoLoad[pageName][layout], function(idx, elementName) {
+		var curPageAutoload =clLib.UI.autoLoad[pageName][layout];
+		curPageAutoload.push.apply(curPageAutoload, clLib.UI.autoLoad["_COMMON_"][layout]);
+	
+		$.each(curPageAutoload, function(idx, elementName) {
 			clLib.loggi("triggering autoload for " + elementName, 2);
 			clLib.loggi("html:" + clLib.UI.byId$(elementName).html(), 2);
 			var optionObj = {};
