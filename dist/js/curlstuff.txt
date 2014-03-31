@@ -1,0 +1,2 @@
+curl -k -X OPTIONS -H -v --use-ascii http://localhost:1983/requestVerification
+

@@ -1,0 +1,156 @@
+<!DOCTYPE html> 
+<html>
+
+<head>
+	<meta charset="utf-8"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <meta http-equiv="no-cache"/>
+    <meta http-equiv="Expires" content="-1"/>
+    <meta http-equiv="Cache-Control" content="no-cache"/>
+
+	<title>Kurt Climbing</title> 
+    <link rel="stylesheet" href="css/THEMES/default/jqm.min.css" />
+<!--    <link rel="stylesheet" href="css/THEMES/slate/jqm.min.css" />-->
+    <link rel="stylesheet" href="css/clRouteColors.css" />
+    <link rel="stylesheet" href="css/clLib.css" />
+
+
+        <script type="text/javascript" src="js/jquery-1.8.2.js"></script>
+        <script type="text/javascript" src="js/jquery.mobile-1.3.0.js"></script>
+
+        <script type="text/javascript" src="js/clLib.js"></script>
+        <script type="text/javascript" src="js/clLib.gradeConfig.js"></script>
+        <script type="text/javascript" src="js/clLib.localStorage.js"></script>
+        <script type="text/javascript" src="js/clLib.localStorage.indexes.js"></script>
+        <script type="text/javascript" src="js/clLib.UI.js"></script>
+        <script type="text/javascript" src="js/clLib.UI.pageConfig.js"></script>
+        <script type="text/javascript" src="js/clLib.REST.js"></script>
+        <script type="text/javascript" src="js/clLib.PAGES.js"></script>
+		<script type="text/javascript" src="js/Chart.js"></script>
+
+
+		<link rel="stylesheet" href="css/clLib.css" />
+</head> 
+
+
+<body> 
+    <div 
+         id="users_verification" data-role="page" 
+         class="clPage"
+         data-theme="a" data-add-back-btn="false"
+    >
+
+
+
+		<!-- Menu Panel -->
+		<div data-role="panel" id="_COMMON_menupanel" data-display="overlay" data-theme="a">
+			<ul data-role="listview" data-theme="c">
+				<li data-role="list-divider">Kurt Climbing Menu</li>
+				<li>
+					<div>
+						<a 
+							data-role="button" 
+							data-icon="gear" 
+							data-iconpos="right" 
+							id="_COMMON__usersButton"
+						>
+							Hi <span id="users_verification_displayName">user</span>
+						</a>
+					</div>
+				</li>
+				<li><a id="_COMMON__preferencesButton" href="clLib_preferences.html">Preferences</a></li>
+				<li data-icon="minus" data-mini="true"><a href="#my-header" data-icon="gear" data-rel="close">Close panel</a></li>
+			</ul>
+		</div>
+
+		<div 
+             id="users_verification_mobileheader1" data-role="header" 
+             data-theme="a"
+        >
+            <h1>
+                Kurt Climbing	
+            </h1>
+
+			<a href="clLib_startScreen.html">Home</a>
+                
+			<!-- LEFT: refreshRouteStorageButton -->
+<!--
+            <a data-role="button"
+                class='ui-btn-left' style='min-height:20px; '
+                id="startScreen_refreshRouteStorageButton" data-corners="true" data-icon="refresh"
+                data-inline='true' data-mini='true'
+                data-theme="a" 
+				data-iconpos="notext">
+			</a>
+-->
+			<!-- RIGHT: menu panel -->
+			<a href="#_COMMON_menupanel" 
+				data-role="button" 
+				class='ui-btn-right'
+				data-corners="true"
+				data-icon="bars" 
+				data-inline='true'
+				data-mini='true' 
+				data-theme="a"
+				data-iconpos="notext"
+			></a>
+        </div>
+
+        <div 
+             id="users_verification_mobilecontainer1" data-role="content" 
+             data-theme=""
+        >
+
+
+
+				<div id="users_verification_notificationContainer" 
+					style="white-space: normal" data-role="collapsible" data-collapsed="true" data-content-theme="b" data-theme="c" 
+					data-iconpos="right" adata-expanded-icon="alert" adata-collapsed-icon="alert"
+				>
+					<h4 style="white-space: normal" ><span style="white-space: normal" id="users_verification_notification">You're about to change your password.</span></h4>
+				</div>
+
+                <div>
+                    <!-- userName -->
+                    <div>
+                        <label style="font-size: 8px;" for="users_verification_currentUser">User name</label>
+                        <input type="text" id="users_verification_currentUser" name="users_verification_currentUser"
+                               value="" placeholder="Username..." data-theme="a" tabindex="7" />
+                    </div>
+                    <!-- verificationToken-->
+                    <div>
+                        <label style="font-size: 8px;" for="users_verification_token">Verification Token</label>
+                        <input type="text" id="users_verification_token" name="users_verification_token"
+                               value="" placeholder="Verification token" data-theme="a" tabindex="7" />
+                    </div>
+                    <!-- newPassword-->
+                    <div>
+                        <label style="font-size: 8px;" for="users_verification_newPassword">New password</label>
+                        <input type="text" id="users_verification_newPassword" name="users_verification_newPassword"
+                               value="" placeholder="New password" data-theme="a" tabindex="7" />
+                    </div>
+                    
+                    <!-- request token -->
+                    <a data-role="button"
+                       id="users_verification_requestTokenButton" data-corners="true" data-icon="check" data-iconpos="right"
+                       data-mini="false" data-theme="a" tabindex="8">
+                        Request verification token
+                    </a>
+                    <!-- change password  -->
+                    <a data-role="button"
+                       id="users_verification_changePassword" data-corners="true" data-icon="check" data-iconpos="right"
+                       data-mini="false" data-theme="a" tabindex="8">
+                        Change Password
+                    </a>
+                </div>
+				
+			</div>
+            <!-- mobilefooter1 -->
+            <div data-role="footer" data-position="fixed"
+                 id="users_verification_mobilefooter1" data-theme="a">
+            </div>
+        </div>
+</body>
+
+  
+</html>

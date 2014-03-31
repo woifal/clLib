@@ -1,0 +1,145 @@
+.clCSSBg {
+    background-repeat: no-repeat;
+    background-position: 0px 0px;
+    padding-left: 0px; /*8%;*/
+	/*background-image: none;*/
+    background-image: URL('https://cdn2.iconfinder.com/data/icons/flat-ui-icons-24-px/24/lock-24-48.png');
+    background-size: 100%;
+}
+
+li.clCSSBgIconOnly {
+	text-indent: 0px !important;
+}
+div.clCSSBgIconOnly {
+	text-indent: -9999px;
+}
+
+
+.Platte {
+    background-repeat: no-repeat;
+    background-position: 10px 0px;
+    background-size: 40px 40px;
+    padding-left: 40px; /*8%;*/
+	background-image: URL('../files/views/assets/image/platte.jpg');
+}
+.Senkrecht {
+    background-repeat: no-repeat;
+    background-position: 10px 0px;
+    background-size: 40px 40px;
+    padding-left: 40px; /*8%;*/
+    background-image: URL('../files/views/assets/image/senkrecht.jpg');
+}
+.Ueberhaengend {
+    background-repeat: no-repeat;
+    background-position: 10px 0px;
+    background-size: 40px 40px;
+    padding-left: 40px; /*8%;*/
+    background-image: URL('../files/views/assets/image/ueberhaengend.jpg');
+}
+.Dach{
+    background-repeat: no-repeat;
+    background-position: 10px 0px;
+    background-size: 40px 40px;
+    padding-left: 40px; /*8%;*/
+    background-image: URL('../files/views/assets/image/dach.jpg');
+}
+
+.clColorBg {
+    background-repeat: no-repeat;
+    background-position: 0px 0px;
+    padding-left: 0px; /*8%;*/
+	/*background-image: none;*/
+    background-image: URL('https://cdn2.iconfinder.com/data/icons/flat-ui-icons-24-px/24/lock-24-48.png');
+    background-size: 100%;
+}
+.white-green-blue {
+    background-repeat: no-repeat;
+    background-position: 0px 0px;
+    padding-left: 0px; /*8%;*/
+	/*background-image: none;*/
+    background-image: URL('../files/views/assets/image/white-green-blue.png');
+}
+.white-yellow-black {
+    background-repeat: no-repeat;
+    background-position: 0px 0px;
+    padding-left: 0px; /*8%;*/
+	/*background-image: none;*/
+    background-image: URL('../files/views/assets/image/white-yellow-black.png');
+}
+.blue {
+    background-image: none;
+    background-color: #0000FF;
+}
+.green {
+    background-image: none;
+    background-color: #00cd00;
+}
+.red {
+    background-image: none;
+    background-color: #FF0000;    
+}
+.darkred {
+    background-image: none;
+    background-color: #9F000F;    
+}
+.black {
+    background-image: none;
+    background-color: #000000;
+}
+.white {
+    background-image: none;
+    background-color: #ffffff;
+}
+
+.grey{
+    background-image: none;
+    background-color: #A4A4A4;
+}
+
+.brown{
+    background-image: none;
+    background-color: #8A4B08;
+}
+
+.darkbrown{
+    background-image: none;
+    background-color: #61380B;
+}
+
+.sand{
+    background-image: none;
+    background-color: #FFBF00;
+}
+
+.purple{
+    background-image: none;
+    background-color: #A901DB;
+}
+
+.yellow{
+    background-image: none;
+    background-color: #FFFF00;
+}
+.neonyellow{
+    background-image: none;
+    background-color: #F3F315;
+}
+
+.orange{
+    background-image: none;
+    background-color: #FF8000;
+}
+.neonorange{
+    background-image: none;
+    background-color: #FF9933;
+}
+.pink{
+    background-image: none;
+    background-color: #F781D8;
+}
+
+.steelblue{
+    background-image: none;
+    background-color: #58ACFA;
+}
+
