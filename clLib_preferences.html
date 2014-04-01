@@ -4,14 +4,44 @@
 @@include('grunt_includes/html_head.html', {"pageName": "preferences"})
 
 <body> 
-@@include('grunt_includes/html_jqm_page.html', {"pageName": "preferences"})
 
+
+	    <div 
+	         id="preferences" data-role="page" 
+	         class="clPage"
+			 data-theme="a" data-add-back-btn="false"
+	    >
+	        <div id="preferences_mobileHeader1" data-role="header"
+	             adata-position="fixed"
+	        >
+	<!--            <a href="clLib_startScreen.html">Home</a>-->
+	            <a id="preferences_cancelButton"  data-icon="delete" data-role="button" rel="external">Cancel</a> 
+	            <a id="preferences_saveButton"  data-icon="check" data-role="button" rel="external">Save</a> 
+	            <h1>
+	                Preferences
+					<!--<img id="header_onlineIcon" src="files/views/assets/image/online.jpg" style="width:20px; height:20px"/>-->
+	            </h1>
+	        </div>
+	        <!-- mobilecontainer -->
+	        <div 
+	            id="preferences_mobilecontainer" data-role="content" 
+	        >
+	      
 @@include('grunt_includes/html_jqm_menupanel.html', {"pageName": "preferences"})
-@@include('grunt_includes/html_jqm_header.html', {"pageName": "preferences"})
 
-@@include('grunt_includes/html_jqm_content.html', {"pageName": "preferences"})
+		  
+			<label for="selectedGradeSystems">Selected Grade Systems:</label>
+			<fieldset 
+				style="text-align: center"
+				id="preferences_selectedGradeSystems"
+				data-role="controlgroup" data-type="vertical" data-inset="true"
+				cl-data-type="checkbox"
+			>
+<!--						<input name="newRouteLog_gradeSystems_radio" id="gs_UIAA" value="UIAA" checked="checked" type="radio">
+				<label for="gs_UIAA">ddUIAA</label>-->
+			</fieldset>												
 
-            <label for="defaultGradeSystem">Default Grade System:</label>
+			<label for="defaultGradeSystem">Default Grade System:</label>
             <select id="preferences_defaultGradeSystem" name="defaultGradeSystem"
                     data-inline="false" data-mini="false" data-icon="arrow-d" data-iconpos="right"
                     data-native-menu="false" tabindex="4">
@@ -58,13 +88,13 @@
                 <option value="false">false</option>
             </select>
 -->
-			<label style="text-align: center" for="defaultLayout">Layout to use(override):</label>
+			<label style="text-align: center" for="defaultLayout">Simple Tracking:</label>
 			<select id="preferences_defaultLayout" name="defaultLayout" 
 					data-inline="false" data-mini="false"
 					data-role="slider"
 			>
-				<option value="default">default</option>
-				<option value="reduced">reduced</option>
+				<option value="default">no</option>
+				<option value="reduced">yes</option>
 			</select>
 
 		</div>

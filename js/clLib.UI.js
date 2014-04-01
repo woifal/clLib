@@ -224,7 +224,133 @@ clLib.createRadioButtons = function(options) {
 											
 };
 
+clLib.createCheckboxGroup = function(options) {
+	// disable current onChange handler
+	var elementName = clLib.UI.elementNameFromId(options.selectBoxElement.attr("id"));
+	clLib.UI.killEventHandlers(options.selectBoxElement, "change.clLib");
 
+	var needRefresh = clLib.populateCheckboxes_plain(
+		options.selectBoxElement,
+		options.dataObj,
+		options.selectedValue,
+		options.preserveCurrentValue,
+		options.additionalValue
+	);
+
+	var customChangeHandler = clLib.UI.elements[elementName]["changeHandler"];
+	if(customChangeHandler) {
+		//clLib.loggi("custom event handler for " + elementName + "found.." + customChangeHandler);
+	}
+	var changeHandler = customChangeHandler || clLib.UI.defaultChangeHandler;
+
+	options.selectBoxElement.bind("change.clLib", function(event, changeOptions) {
+		changeHandler($(this), changeOptions);
+	});
+
+	
+	if(needRefresh) {
+		clLib.loggi("trigger change on " + options.selectBoxElement.attr("id"));
+		options.selectBoxElement.trigger("change.clLib", options.changeOptions);
+	}
+
+											
+											
+};
+
+clLib.populateCheckboxes_plain = function($selectBox, dataObj, selectedValue, preserveCurrentValue, additionalValue){
+//	alert("populating checkboxes..");	
+	var oldValue = clLib.UI.getVal(clLib.UI.elementNameFromId($selectBox.attr("id")));
+	var oldValueFound = true;
+	if(preserveCurrentValue && oldValue) {
+		clLib.loggi("preserving >" + oldValue + "<");
+		selectedValue = oldValue;
+		oldValueFound = false;
+	}
+	
+
+	var buttonCount = 0;
+	
+	$selectBox.empty();
+	if(additionalValue) {
+		var $option = $('<input data-theme="c" type="checkbox"></input>');
+		$option.attr("name", $selectBox.attr("id") + "_radio");
+		$option.attr("id", $selectBox.attr("id") + "_" + buttonCount);
+
+		var $label = $('<label data-theme="c" for="' + $selectBox.attr("id") + "_" + buttonCount + '"></label>');
+		
+		if(additionalValue instanceof Object) {
+			$option
+				.val(additionalValue["value"])
+			;
+			$label
+				.html(additionalValue["text"]);
+		} else {
+			$option
+				.val(additionalValue)
+			;
+			$label
+				.html(additionalValue);
+		}
+		$selectBox.append($option);
+		$selectBox.append($label);
+		buttonCount++;
+	}
+	
+	if(dataObj instanceof Array && dataObj.length == 1) {
+		clLib.loggi("Yes, array...take first element.." + JSON.stringify(dataObj));
+		selectedValue = dataObj[0];
+	} else if(dataObj instanceof Object && Object.keys(dataObj).length == 1) {
+		clLib.loggi("Yes, object...take first element.." + JSON.stringify(dataObj));
+		selectedValue = Object.keys(dataObj)[0];
+	}
+
+	var i = 0;
+	$.each(dataObj, function(index, value) {
+		//clLib.loggi("adding option " + value);
+		var $option = $('<input data-theme="c" type="checkbox"></input>');
+		$option.attr("name", $selectBox.attr("id") + "_radio");
+		$option.attr("id", $selectBox.attr("id") + "_" + buttonCount);
+
+		var $label = $('<label data-theme="c" for="' + $selectBox.attr("id") + "_" + buttonCount + '"></label>');
+		
+		$option
+			.val(dataObj instanceof Array ? value : index)
+		;
+		$label
+			.html(value);
+
+			//clLib.loggi("comp " + value + " + against " + selectedValue);
+		if(selectedValue.indexOf(value) != -1) {
+			clLib.loggi("Found old value..");
+			$option.attr("checked", "checked");
+			oldValueFound = true;
+		}
+		$selectBox.append($option);
+		$selectBox.append($label);
+		buttonCount++;
+	});
+	
+	
+	//alert("created selectbox group " + $selectBox.html());
+	
+	$selectBox.parent().trigger("create");
+	//controlgroup().controlgroup('refresh');
+	$selectBox.controlgroup();
+	//alert("populated radio buttoins.." + $selectBox.attr("id"));
+	
+	//alert("created selectbox group " + $selectBox.html());
+	
+	clLib.loggi("oldValueFound? " + oldValueFound);
+	if(oldValueFound) {
+		// no refresh necessary..
+		return false;
+	}
+
+	// need to refresh
+	return true;
+	//clLib.loggi("Previous value >" + oldValue + "< is no longer present in the select list.");
+
+};
 
 clLib.populateRadioButtons_plain = function($selectBox, dataObj, selectedValue, preserveCurrentValue, additionalValue){
 	//alert("populating radio buttons..");	
@@ -826,6 +952,45 @@ clLib.UI.elementNameFromId = function(id) {
 	return newId;
 };
 
+clLib.UI.localStorageRefreshHandler = function($element, additionalOptions) {
+	clLib.loggi("refreshing " + $element.attr("id"));
+	var currentLayout = localStorage.getItem("currentLayout") || localStorage.getItem("defaultLayout") || "default";
+	var elementConfig = clLib.UI.elements[clLib.UI.elementNameFromId($element.attr("id"))];
+
+	
+	var results = localStorage.getItem(additionalOptions["localStorageVar"]).split(",");
+	clLib.loggi("got results: " + JSON.stringify(results));
+
+	var elContentOptions = {
+		selectBoxElement : $element,
+		dataObj : results,
+		preserveCurrentValue : true,
+		// additionalValue : clLib.UI.NOTSELECTED
+		additionalValue : {
+			 //text: clLib.UI.elementNameFromId($element.attr("id"))
+			text: clLib.UI.getLabelForElement($element) + "?"
+			,value: "__UNKNOWN__"
+		}
+	};
+	$.extend(elContentOptions, additionalOptions);
+	
+	// Assume controlgroups consist of radio buttons..
+	if($element.attr("data-role") == 'controlgroup') {
+		//alert("cl-data-type ="+ $element.attr("cl-data-type"));
+		if($element.attr("cl-data-type") == 'checkbox') {
+			//alert("creating checkbox group...");
+			clLib.createCheckboxGroup(elContentOptions);
+		} 
+		else {
+			clLib.createRadioButtons(elContentOptions);
+		}
+	} 
+	else {
+		clLib.populateSelectBox(elContentOptions);
+	}
+}
+
+
 clLib.UI.defaultRefreshHandler = function($element, additionalOptions) {
 	clLib.loggi("refreshing " + $element.attr("id"));
 	var currentLayout = localStorage.getItem("currentLayout") || localStorage.getItem("defaultLayout") || "default";
@@ -858,10 +1023,20 @@ clLib.UI.defaultRefreshHandler = function($element, additionalOptions) {
 	};
 	$.extend(elContentOptions, additionalOptions);
 	
+	
+
 	// Assume controlgroups consist of radio buttons..
 	if($element.attr("data-role") == 'controlgroup') {
-		clLib.createRadioButtons(elContentOptions);
-	} else {
+		//alert("cl-data-type ="+ $element.attr("cl-data-type"));
+		if($element.attr("cl-data-type") == 'checkbox') {
+			//alert("creating checkbox group...");
+			clLib.createCheckboxGroup(elContentOptions);
+		} 
+		else {
+			clLib.createRadioButtons(elContentOptions);
+		}
+	} 
+	else {
 		clLib.populateSelectBox(elContentOptions);
 	}
 }

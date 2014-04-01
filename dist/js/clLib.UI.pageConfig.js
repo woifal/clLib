@@ -77,6 +77,7 @@ clLib.UI.autoLoad = {
 			, "defaultGradeSystem"
 			, "defaultGrade"
 			, "onlineMode"
+			, "selectedGradeSystems"
 		]
 	}
     ,users : {
@@ -125,6 +126,7 @@ clLib.UI.elementsToReset = {
         , "defaultLayout"
         , "defaultGradeSystem"
         , "defaultGrade"
+		, "selectedGradeSystems"
     	]
     , users: [
 		"currentUser"
@@ -199,6 +201,7 @@ clLib.UI.pageElements = {
             , "defaultGradeSystem"
             , "defaultGrade"
             , "onlineMode"
+			, "selectedGradeSystems"
         ]
     }
     ,users: {
@@ -372,6 +375,34 @@ clLib.UI.elements = {
 			}
 		}
     }
+	, "selectedGradeSystems" : {
+		"localVarField" : "selectedGradeSystems"
+		,"dbField" : "GradeSystem"
+		,"refreshFromEntity" : "Grades"
+		,"refreshHandler" : function($this) { 
+			return clLib.UI.defaultRefreshHandler($this, {
+				selectedValue : localStorage.getItem("selectedGradeSystems") || "UIAA",
+				preserveCurrentValue : true,
+				additionalValue : null	
+			});
+		}
+		,"refreshOnUpdate" : {
+			default: {
+				"defaultGrade" : {}
+			}
+		}
+		,"customVal" : function($this) {
+			var commaSepVals = [];
+			$.each($this.find("input:checkbox:checked"), function(idx, el) {
+				commaSepVals.push($(el).val());
+			});
+			commaSepVals = commaSepVals.join(",");
+			//alert("commaSepVals = " + commaSepVals);
+			return commaSepVals;
+		}
+
+
+    }
     , "defaultGrade": {
 		"localVarField" : "defaultGrade"
 		,"dbField" : "Grade"
@@ -413,10 +444,11 @@ clLib.UI.elements = {
 		"dbField" : "GradeSystem"
 		,"refreshFromEntity" : "Grades"
 		,"refreshHandler" : function($this) { 
-			return clLib.UI.defaultRefreshHandler($this, {
+			return clLib.UI.localStorageRefreshHandler($this, {
 				selectedValue : localStorage.getItem("defaultGradeSystem") || "UIAA",
 				preserveCurrentValue : true,
-				additionalValue : null	
+				additionalValue : null,
+				localStorageVar : "selectedGradeSystems"
 			});
 		}
 		,"refreshOnUpdate" : {

@@ -19,7 +19,7 @@ clLib.defaultTickTypeFactors = {
 	"tickType_redpoint" : "+0",
 	"tickType_flash" : "+53",
 	"tickType_attempt" : "*0",
-	"tickType_toprope" : "+0"
+	"tickType_toprope" : "-50"
 };
 
 //
@@ -195,7 +195,6 @@ clLib.gradeConfig = {
 			"Fb 8c+" : 1450           
 		}
 	}
-	/*,
 	"USA" : {                      
 		defaultGrade: "5.10a",
 		tickTypeFactors : clLib.defaultTickTypeFactors,
@@ -235,6 +234,6 @@ clLib.gradeConfig = {
 			"5.15b" : 1375            ,
 			"5.15c" : 1450            	
 		}
-	}*/
+	}
 };
 
