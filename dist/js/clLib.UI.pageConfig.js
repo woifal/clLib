@@ -33,12 +33,16 @@ clLib.UI.autoLoad = {
 	_COMMON_ : {
 		default: [
 			"displayName"
+			, "defaultLayoutMenuSwitch"
+		]
+		,reduced: [
+			"displayName"
+			, "defaultLayoutMenuSwitch"
 		]
 	}, 
 	newRouteLog : {
 		default: [
-			1
-			,"gradeSystemSelect"
+			"gradeSystemSelect"
 			, "searchRoute"
 			, "ratingSelect"
 			, "tickType_redpoint"
@@ -63,7 +67,6 @@ clLib.UI.autoLoad = {
 	,startScreen: {
 		default: [
 			"areaSelect"
-			, "displayName"
 			, "onlineIcon"
 			]
 	}
@@ -140,12 +143,16 @@ clLib.UI.pageElements = {
 	_COMMON_ : {
 		default: [
 			"displayName"
+			, "defaultLayoutMenuSwitch"
+		]
+		,reduced: [
+			"displayName"
+			, "defaultLayoutMenuSwitch"
 		]
 	}, 
 	newRouteLog : {
 		default: [
-    		"displayName"
-	        ,"currentLayout"
+    		"currentLayout"
             , "gradeSystemSelect"
 			, "gradeSelect"
 			, "sectorSelect"
@@ -186,8 +193,7 @@ clLib.UI.pageElements = {
 	,startScreen: {
 	    default: [
 			"areaSelect"
-			, "selectedArea",
-			, "displayName"
+			, "selectedArea"
 			, "onlineIcon"
 	    ]
 	}
@@ -358,16 +364,30 @@ clLib.UI.elements = {
     , "showTopX":       clLib.UI.elementConfig.localVar
     , "onlineMode":     clLib.UI.elementConfig.localVar
     , "defaultLayout":  clLib.UI.elementConfig.localVar
+	,"defaultLayoutMenuSwitch": $.extend({}, clLib.UI.elementConfig.localVarSaveImmediately, {
+		"dbField": "username"
+		,"localVar" : "defaultLayout"
+    } )
 	, "defaultGradeSystem" : {
 		"localVarField" : "defaultGradeSystem"
+		,"localStorageVar" : "selectedGradeSystems"
 		,"dbField" : "GradeSystem"
 		,"refreshFromEntity" : "Grades"
 		,"refreshHandler" : function($this) { 
-			return clLib.UI.defaultRefreshHandler($this, {
+			//alert("refreshing defaultGradeSystem..");
+			return clLib.UI.localStorageRefreshHandler($this, {
+				selectedValue : localStorage.getItem("defaultGradeSystem") || "UIAA",
+				preserveCurrentValue : true,
+				additionalValue : null,
+				strDataObj: function() { return clLib.UI.getVal("selectedGradeSystems"); }()
+				,localStorageVar : "selectedGradeSystems"
+			});
+/*
+		return clLib.UI.defaultRefreshHandler($this, {
 				selectedValue : localStorage.getItem("defaultGradeSystem") || "UIAA",
 				preserveCurrentValue : true,
 				additionalValue : null	
-			});
+			});*/
 		}
 		,"refreshOnUpdate" : {
 			default: {
@@ -388,10 +408,11 @@ clLib.UI.elements = {
 		}
 		,"refreshOnUpdate" : {
 			default: {
-				"defaultGrade" : {}
+				"defaultGradeSystem" : {}
 			}
 		}
 		,"customVal" : function($this) {
+			//alert("getting customval for selectedGradeTyoeSystems..");
 			var commaSepVals = [];
 			$.each($this.find("input:checkbox:checked"), function(idx, el) {
 				commaSepVals.push($(el).val());

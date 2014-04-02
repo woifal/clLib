@@ -36,28 +36,48 @@ clLib.PAGES.defaultHandler = function (event, ui) {
     });
 //    if (allTrue) {
         clLib.loggi("calling " + pageId + " and " + eventName);
+        clLib.PAGES.handlers["_COMMON_"][eventName](event, ui);
         clLib.PAGES.handlers[pageId][eventName](event, ui);
 //    }
 };
 clLib.PAGES.handlers = {
 	1 : 1
+	,"_COMMON_" : {
+	    "pageinit": function () {
+	        // Link to preferences page..
+	        $("#_COMMON__preferencesButton").die("click").live("click", function () {
+	            $.mobile.navigate("clLib_preferences.html");
+	        });
+			
+            //alert("binding clinck handler for usersbutton");
+			$("#_COMMON__usersButton").die("click").live("click", function () {
+				$.mobile.navigate("clLib_users.html");
+            });
+	    }
+		, "pagebeforeshow": function (e, ui) {
+		}
+
+	}
 	,"preferences": {
         "pageinit": function() {
             //alert("444isave handler..");
-            $("#preferences_cancelButton").on("click", function () {
+            $("#preferences_cancelButton").die("click").live("click", function () {
                 clLib.UI.fillUIelements("preferences", "preferences");
 //                alert("reset!");
                 history.back();
             });
 
-            $("#preferences_saveButton").on("click", function () {
-				clLib.UI.execWithMsg(function() {
+            $("#preferences_saveButton").die("click").live("click", function () {
+//				clLib.UI.execWithMsg(function() {
                     localStorage.setItem("currentJqmSlide", "preferences");
                     clLib.UI.save({}, function() {
 						clLib.UI.resetUIelements("newRouteLog", "preferences");
-						setTimeout(function () { clLib.UI.hideLoading(); history.back(); }, 1500);
+						clLib.UI.hideLoading(); 
+							//alert("going back.."); 
+							//history.back(); 
+						$.mobile.navigate("clLib_startScreen.html");
 					});
-				}, {text: "Saving preferences..."});
+	//			}, {text: "Saving preferences..."});
             });
 
             $("#preferences_currentUserReadOnly").on("click", function () {

@@ -195,8 +195,7 @@ clLib.gradeConfig = {
 			"Fb 8c+" : 1450           
 		}
 	}
-	/*,
-	"USA" : {                      
+	,"USA" : {                      
 		defaultGrade: "5.10a",
 		tickTypeFactors : clLib.defaultTickTypeFactors,
 		grades : {                    
@@ -235,6 +234,6 @@ clLib.gradeConfig = {
 			"5.15b" : 1375            ,
 			"5.15c" : 1450            	
 		}
-	}*/
+	}
 };
 

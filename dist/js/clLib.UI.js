@@ -305,6 +305,7 @@ clLib.populateCheckboxes_plain = function($selectBox, dataObj, selectedValue, pr
 	}
 
 	var i = 0;
+	//alert("dataObj to each >" + JSON.stringify(dataObj) + "<");
 	$.each(dataObj, function(index, value) {
 		//clLib.loggi("adding option " + value);
 		var $option = $('<input data-theme="c" type="checkbox"></input>');
@@ -512,6 +513,7 @@ clLib.populateSelectBox_plain = function($selectBox, dataObj, selectedValue, pre
 		selectedValue = Object.keys(dataObj)[0];
 	}
 
+	//alert("??? dataObj to each >" + JSON.stringify(dataObj) + "<");
 	var i = 0;
 	$.each(dataObj, function(index, value) {
 		//clLib.loggi("adding option " + value);
@@ -596,7 +598,7 @@ clLib.UI.defaultChangeHandler = function($element, changeOptions) {
 	var elementConfig = clLib.UI.elements[clLib.UI.elementNameFromId($element.attr("id"))];
 	
 	if(!elementConfig) {
-		alert("no element config for element with id " + $element.attr("id") + " and name " + clLib.UI.elementNameFromId($element.attr("id")) + " found..");
+		alert("1no element config for element with id " + $element.attr("id") + " and name " + clLib.UI.elementNameFromId($element.attr("id")) + " found..");
 		alert("currentJqmSlide = " + localStorage.getItem("currentJqmSlide"));
 		
 	}
@@ -732,9 +734,58 @@ clLib.UI.fillUIelements = function(pageName, currentJqmSlide, layout) {
 		layout = "default";
 	}
 
-	var curPageElements =clLib.UI.pageElements[pageName][layout];
-	curPageElements.push.apply(curPageElements, clLib.UI.pageElements["_COMMON_"][layout]);
-	//clLib.loggi("populating UI elements for page >" + pageName + "<");
+	// Create page elements..
+	var curPageElements;
+	curPageElements = clLib.UI.pageElements[pageName][layout];
+	clLib.UI.createElements(curPageElements, currentJqmSlide);
+
+	curPageElements = clLib.UI.pageElements["_COMMON_"][layout];
+	//alert("!!!!!!!!!!!!!!!!!!creating common " + JSON.stringify(curPageElements));
+	clLib.UI.createElements(curPageElements, "_COMMON_");
+
+//	curPageElements.push.apply(curPageElements, clLib.UI.pageElements["_COMMON_"][layout]);
+	
+	// Autoload elements
+	var curPageAutoload = 
+	curPageAutoload = clLib.UI.autoLoad[pageName];
+	if(curPageAutoload) {
+		curPageAutoload = clLib.UI.autoLoad[pageName][layout];
+	}
+	clLib.UI.autoloadElements(curPageAutoload, currentJqmSlide);
+
+	curPageAutoload = clLib.UI.autoLoad["_COMMON_"];
+	if(curPageAutoload) {
+		curPageAutoload = clLib.UI.autoLoad["_COMMON_"][layout];
+	}
+	//alert("autoloading common " + JSON.stringify(curPageAutoload));
+	clLib.UI.autoloadElements(curPageAutoload, "_COMMON_");
+	
+	localStorage.setItem("currentJqmSlide", currentJqmSlide);
+	
+//	curPageAutoload.push.apply(curPageAutoload, clLib.UI.autoLoad["_COMMON_"][layout]);
+
+};
+
+
+clLib.UI.autoloadElements = function(curPageAutoload, currentJqmSlide) {
+	localStorage.setItem("currentJqmSlide", currentJqmSlide);
+	//alert("autoloading...." + JSON.stringify(curPageAutoload) + "," + currentJqmSlide);
+	if(curPageAutoload) {
+		$.each(curPageAutoload, function(idx, elementName) {
+			//alert("triggering autoload for " + elementName, 2);
+			clLib.loggi("html:" + clLib.UI.byId$(elementName).html(), 2);
+			var optionObj = {};
+			//alert("byId is " + clLib.UI.byId$(elementName).attr("id"));
+			clLib.UI.byId$(elementName).trigger("refresh.clLib", 
+				clLib.UI.addObjArr(optionObj,["eventSourcePath"], "AUTOLOAD")
+			);
+		});
+	}
+};
+
+clLib.UI.createElements = function(curPageElements, currentJqmSlide) {
+	localStorage.setItem("currentJqmSlide", currentJqmSlide);
+	//alert("populating UI elements for page >" + currentJqmSlide + "<");
 	$.each(curPageElements, function(idx, elementName) {
 		var elementConfig = clLib.UI.elements[elementName];
 		
@@ -743,8 +794,8 @@ clLib.UI.fillUIelements = function(pageName, currentJqmSlide, layout) {
 			return;
 		}
 
-		clLib.loggi("!!adding events for  element >" + elementName + "<", 2);
-		clLib.loggi("elementConfig >" + JSON.stringify(elementConfig) + "<", 2);
+		//alert("!!adding events for  element >" + elementName + "<", 2);
+		//alert("elementConfig >" + JSON.stringify(elementConfig) + "<", 2);
 		var $element = clLib.UI.byId$(elementName);
 		clLib.loggi("element is " + $element.attr("id") + "<", 2);
 		
@@ -781,21 +832,7 @@ clLib.UI.fillUIelements = function(pageName, currentJqmSlide, layout) {
 		});
 	});
 
-	
-	// populate autoload elements
-	if(clLib.UI.autoLoad[pageName] && clLib.UI.autoLoad[pageName][layout]) {
-		var curPageAutoload =clLib.UI.autoLoad[pageName][layout];
-		curPageAutoload.push.apply(curPageAutoload, clLib.UI.autoLoad["_COMMON_"][layout]);
-	
-		$.each(curPageAutoload, function(idx, elementName) {
-			clLib.loggi("triggering autoload for " + elementName, 2);
-			clLib.loggi("html:" + clLib.UI.byId$(elementName).html(), 2);
-			var optionObj = {};
-			clLib.UI.byId$(elementName).trigger("refresh.clLib", 
-				clLib.UI.addObjArr(optionObj,["eventSourcePath"], "AUTOLOAD")
-			);
-		});
-	}
+
 };
 
 clLib.UI.addObjArr = function(anObj, pathArray, objValue) {
@@ -949,6 +986,7 @@ clLib.UI.byId$ = function(elementName) {
 clLib.UI.elementNameFromId = function(id) {
 	var currentJqmSlide = localStorage.getItem("currentJqmSlide");
 	var newId = id.replace(currentJqmSlide + "_", "");
+	newId = newId.replace("_COMMON_" + "_", "");
 	return newId;
 };
 
@@ -958,8 +996,21 @@ clLib.UI.localStorageRefreshHandler = function($element, additionalOptions) {
 	var elementConfig = clLib.UI.elements[clLib.UI.elementNameFromId($element.attr("id"))];
 
 	
-	var results = localStorage.getItem(additionalOptions["localStorageVar"]).split(",");
-	clLib.loggi("got results: " + JSON.stringify(results));
+	var results;
+	//alert("additional strDataObj" + JSON.stringify(additionalOptions["strDataObj"]));
+	if(additionalOptions["strDataObj"]) {
+		//alert("processing addoptions " + additionalOptions["strDataObj"]);
+		console.log("addoptions BEFORE: " + JSON.stringify(additionalOptions["strDataObj"]));
+		results = additionalOptions["strDataObj"].split(",");
+		console.log("addoptions AFTER: " + JSON.stringify(results));
+	} 
+	else {
+		//alert("getting localstorage for " + additionalOptions["localStorageVar"]);
+		console.log("local var BEFORE: " + JSON.stringify(localStorage.getItem(additionalOptions["localStorageVar"])));
+		results = localStorage.getItem(additionalOptions["localStorageVar"]).split(",");
+		console.log("local var AFTER: " + JSON.stringify(results));
+		//alert("getting localstorage for " + additionalOptions["localStorageVar"]);
+	}
 
 	var elContentOptions = {
 		selectBoxElement : $element,
@@ -986,6 +1037,8 @@ clLib.UI.localStorageRefreshHandler = function($element, additionalOptions) {
 		}
 	} 
 	else {
+		console.log("?!?! populating select " + JSON.stringify(elContentOptions));
+		//alert("?!?!");
 		clLib.populateSelectBox(elContentOptions);
 	}
 }
@@ -1082,6 +1135,7 @@ clLib.UI.getVal = function(elementName) {
 	var elementConfig = clLib.UI.elements[elementName];
 	var elementValue;
 	if(elementConfig["customVal"]) {
+		//alert("customval for " + elementName);
 		elementValue = elementConfig["customVal"](clLib.UI.byId$(elementName));
 	} else {
 		elementValue = clLib.UI.byId$(elementName).val();
@@ -1102,7 +1156,7 @@ clLib.UI.save = function (options, successFunc, errorFunc) {
 
     if (!(saveHandler = clLib.UI.saveHandlers[options["currentJqmSlide"]])) {
         alert("no save handler defined for page >" + options["currentJqmSlide"] + "<");
-        return;
+        return;	
     }
 
     saveHandler(options, successFunc, errorFunc);
@@ -1353,17 +1407,37 @@ clLib.UI.preloadImages = function (imageURLs) {
 clLib.UI.elementConfig.localVarSaveImmediately = {
     "refreshHandler": function ($this) {
         var elementName = clLib.UI.elementNameFromId($this.attr("id"));
-        var localVarValue = localStorage.getItem(elementName);
+
+		var $element = $this;
+
+		var elementConfig = clLib.UI.elements[clLib.UI.elementNameFromId($element.attr("id"))];
+		
+		if(!elementConfig) {
+			alert("2no element config for element with id " + $element.attr("id") + " and name " + clLib.UI.elementNameFromId($element.attr("id")) + " found..");
+			alert("currentJqmSlide = " + localStorage.getItem("currentJqmSlide"));
+			return;
+		}
+
+		var localVarName = elementConfig["localVar"] || elementName;
+		
+        var localVarValue = localStorage.getItem(localVarName);
 		//alert("AAAA setting element " + elementName + " to " + localStorage.getItem(elementName));
         //$this.val(localVarValue).attr('selected', true).siblings('option').removeAttr('selected');
         //$this.selectmenu("refresh", true);
-        var jqmDataRole = $this.attr("data-role");
-        if (jqmDataRole == "button") {
+        
+		var jqmDataRole = $this.attr("data-role");
+        //alert("jqmDataRole is " + jqmDataRole);
+		if (jqmDataRole == "button") {
             //alert("button - " + $this.attr("id") + " setting txt to " + localVarValue);
             $this.text(localVarValue);
 //            $this.find(".ui-btn-text").text(localVarValue);
             $this.button("refresh");
-        } else {
+        } 
+		else if (jqmDataRole == "slider") {
+            $this.val(localVarValue);
+            $this.slider("refresh");
+        } 
+		else {
             $this.val(localVarValue);
         }
         //alert("set value to " + localVarValue);
@@ -1383,8 +1457,19 @@ clLib.UI.elementConfig.localVarSaveImmediately = {
             localVarValue = $this.val();
           //alert("button - " + $this.attr("id") + " changing txt to " + localVarValue);
 //
-        localStorage.setItem(elementName, localVarValue);
+			var $element = $this;
+			//alert("checking elementConfig for " + clLib.UI.elementNameFromId($element.attr("id")) );
+
+			var elementConfig = clLib.UI.elements[clLib.UI.elementNameFromId($element.attr("id"))];
+			if(!elementConfig) {
+				alert("no element config for element with id " + $element.attr("id") + " and name " + clLib.UI.elementNameFromId($element.attr("id")) + " found..");
+				alert("currentJqmSlide = " + localStorage.getItem("currentJqmSlide"));
+				return;
 			}
+			var localVarName = elementConfig["localVar"] || elementName;
+		}
+		//alert("setting localvar " + localVarName);
+		localStorage.setItem(localVarName, localVarValue);
         //clLib.UI.setSelectedValue($this, localVarValue);
     }
 };

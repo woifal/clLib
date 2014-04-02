@@ -54,11 +54,22 @@
 							data-iconpos="right" 
 							id="_COMMON__usersButton"
 						>
-							Hi <span id="stats_displayName">user</span>
+							Hi <span id="_COMMON__displayName">user</span>
 						</a>
 					</div>
 				</li>
 				<li><a id="_COMMON__preferencesButton" href="clLib_preferences.html">Preferences</a></li>
+				<li>
+							<label style="text-align: center" for="defaultLayoutMenuSwitch">Simple?:</label>
+							<select id="_COMMON__defaultLayoutMenuSwitch" name="defaultLayoutMenuSwitch" 
+									data-inline="false" data-mini="false"
+									data-role="slider"
+							>
+								<option value="default">no</option>
+								<option value="reduced">yes</option>
+							</select>
+
+				</li>
 				<li data-icon="minus" data-mini="true"><a href="#my-header" data-icon="gear" data-rel="close">Close panel</a></li>
 			</ul>
 		</div>
