@@ -1007,7 +1007,11 @@ clLib.UI.localStorageRefreshHandler = function($element, additionalOptions) {
 	else {
 		//alert("getting localstorage for " + additionalOptions["localStorageVar"]);
 		console.log("local var BEFORE: " + JSON.stringify(localStorage.getItem(additionalOptions["localStorageVar"])));
-		results = localStorage.getItem(additionalOptions["localStorageVar"]).split(",");
+		var localStorageVarValue = localStorage.getItem(additionalOptions["localStorageVar"]);
+		if(!localStorageVarValue) {
+			localStorageVarValue = "";
+		}
+		results = localStorageVarValue.split(",");
 		console.log("local var AFTER: " + JSON.stringify(results));
 		//alert("getting localstorage for " + additionalOptions["localStorageVar"]);
 	}
@@ -1037,7 +1041,7 @@ clLib.UI.localStorageRefreshHandler = function($element, additionalOptions) {
 		}
 	} 
 	else {
-		console.log("?!?! populating select " + JSON.stringify(elContentOptions));
+		//console.log("?!?! populating select " + JSON.stringify(elContentOptions));
 		//alert("?!?!");
 		clLib.populateSelectBox(elContentOptions);
 	}
