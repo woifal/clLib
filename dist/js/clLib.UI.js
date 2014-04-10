@@ -919,6 +919,9 @@ clLib.UI.buildRatingRadio = function($element) {
 ".ratingSelect > label > input {                                                                                                                                                " +
 "    display: none;                                                                                                                                                             " +
 "}                                                                                                                                                                              " +
+".ratingSelect > label  {                                                                                                                                                " +
+"    float: left;                                                                                                                                                             " +
+"}                                                                                                                                                                              " +
 "                                                                                                                                                                               " +
 ".ratingSelect > label > .img {                                                                                                                                                 " +
 "	float: left;                                                                                                                                                                " +

@@ -20,41 +20,90 @@
 
 				<div data-role="content">
                     <div style="text-align: center">
+						<style>
+						.custom-fieldset .ui-controlgroup-controls {
+							width: 100% !important;
+							border: none !important; /*1px solid red !important;*/
+							border-radius: 0em !important;
+						}
+
+						.custom-fieldset .ui-controlgroup-controls .ui-radio {
+							width: 33.33% !important;
+						}
+						.custom-fieldset .ui-controlgroup-controls .ui-checkbox {
+							width: 25% !important;
+							/*border: 1px solid red !important;*/
+						}
+						
+						.ui-select {
+							margin-top: 0px !important;
+							margin-bottom: 0px !important;
+							border: none !important; /*1px solid yellow !important;*/
+						}
+
+						.ui-shadow {
+							box-shadow: none !important;
+						}
+						.ui-btn-corner-all, .ui-btn.ui-corner-all, .ui-slider-track.ui-corner-all, .ui-flipswitch.ui-corner-all, .ui-li-count {
+							border-radius: 0em;
+						}
+
+						.ui-content {
+							padding: 0px 0px 0px 0px;
+						}
+						
+						.ui-checkbox .ui-btn, .ui-radio .ui-btn {
+							text-align: center;
+						}
+						
+						.kachelTable {
+							width: 100%; 
+							border-spacing: 0px;
+							border-collapse: collapse;
+						}
+						.kachelTable tr {
+							width: 100%; 
+							border-spacing: 0px;
+							border-collapse: collapse;
+						}
+						.kachelTable tr td{
+							width: 100%; 
+							border-spacing: 0px;
+							border-collapse: collapse;
+						}
+						</style>
 						<fieldset 
 							id="newRouteLog_gradeSystemSelect"
 							data-role="controlgroup" data-type="horizontal" data-inset="true"
+							class="custom-fieldset"	
 						>
 						</fieldset>												
 					</div>
 					
 					<div>
-                        <table cellpadding="0" cellspacing="0" style="width: 100%">
-                            <col style="width:50%;" />
-                            <col style="width:50%;" />
+                        <table class="kachelTable" cellpadding="0" cellspacing="0">
+<!--                            <col style="width:50%;" />
+                            <col style="width:50%;" />-->
                             <tr>
                                 <td>
                                     <!-- gradeSelect -->
-                                    <div style="border: 0px solid yellow; padding: 0; margin: 0;">
-                                        <!--<label style="font-size: 8px" for="newRouteLog_gradeSelect">Grade</label>-->
-                                        <select id="newRouteLog_gradeSelect" name="newRouteLog_gradeSelect"
-                                                data-theme="a" data-inline="false" data-mini="false" data-icon="arrow-d" data-iconpos="right"
-                                                data-native-menu="true" tabindex="2"></select>
-                                    </div>
+									<label class="clUIElement" for="newRouteLog_gradeSelect">Grade</label>
+									<select id="newRouteLog_gradeSelect" name="newRouteLog_gradeSelect"
+											data-theme="a" data-inline="false" data-mini="false" data-icon="arrow-d" data-iconpos="right"
+											data-native-menu="true" tabindex="2"
+											class="kurt-select"
+									></select>
                                 </td>
                                 <td>
-                                    <div>
-                                        <!-- colourSelect -->
-                                        <div style="margin-top: 0px; padding-top: 0px;">
-                                            <label class="clUIElement" for="newRouteLog_colourSelect">Colour</label>
-                                            <select id="newRouteLog_colourSelect" name="newRouteLog_colourSelect" data-theme="a"
-                                                    data-inline="false" data-mini="false" data-icon="arrow-d" data-iconpos="right" data-native-menu="false"
-                                                    tabindex="6">
-                                                <option value="" rerender="colourSelect" selected="selected">
-                                                    Colour
-                                                </option>
-                                            </select>
-                                        </div>
-                                    </div>
+									<!-- colourSelect -->
+									<label class="clUIElement" for="newRouteLog_colourSelect">Colour</label>
+									<select id="newRouteLog_colourSelect" name="newRouteLog_colourSelect" data-theme="a"
+											data-inline="false" data-mini="false" data-icon="arrow-d" data-iconpos="right" data-native-menu="false"
+											tabindex="6">
+										<option value="" rerender="colourSelect" selected="selected">
+											Colour
+										</option>
+									</select>
                                 </td>
                             </tr>
 						</table>
@@ -64,8 +113,6 @@
                             <col style="width:70%;" />
                             <col style="width:30%;" />
                             <tr>
-
-							<tr>
 								<td>
 									<!-- sectorSelect -->
 									<label class="clUIElement select" for="newRouteLog_sectorSelect">Sector</label>
@@ -98,6 +145,7 @@
 						style="text-align: center"
 						id="newRouteLog_tickType_ASdf"
 						data-role="controlgroup" data-type="horizontal" data-inset="true"
+						class="custom-fieldset"	
 					>
 					<input id="newRouteLog_tickType_redpoint" type="checkbox">
 					<label for="newRouteLog_tickType_redpoint"><img style="width:30px; height: 30px;" src="files/views/assets/image/redpoint.PNG"></label>
@@ -125,7 +173,7 @@
                     <!-- searchRoute -->
                     <div>
                         <label class="clUIElement" for="newRouteLog_searchRoute">Route Name</label>
-                        <input type="search" id="newRouteLog_searchRoute" name="newRouteLog_searchRoute"
+                        <input data-role="search" type="search" data-iconpos="right" data-iconpos="arrow-d" id="newRouteLog_searchRoute" name="newRouteLog_searchRoute"
                                value="" placeholder="Search Route Name" data-theme="a" tabindex="7" />
                     </div>
 				</div>
@@ -133,7 +181,7 @@
                     <!-- searchRouteResults -->
                     <ul data-role="listview" id="newRouteLog_searchRouteResults"
                         data-inset="true" data-theme="a"
-                        data-divider-theme="a" data-count-theme="a" style="">
+                        data-divider-theme="a" data-count-theme="a">
                         <!-- searchRouteResult -->
 <!--                        <li>
                             <a id="newRouteLog_searchRouteResult"
@@ -144,7 +192,21 @@
 -->
 					</ul>
 				</div>
-<!--
+
+				<div data-role="collapsible" data-mini="true" data-iconpos="right">
+					<h4>Extra</h4>
+					<ul data-role="listview">
+						<li>
+							<label class="clUIElement" for="newRouteLog_commentText">Comment</label>
+							<textarea style="resize: none; height: 30px" id="newRouteLog_commentText" name="newRouteLog_commentText" tabindex="9" placeholder="comments?"></textarea>
+						</li>
+						<li>
+							<div style="border: 0px solid red" data-role="none" id="newRouteLog_ratingSelectWrapper">
+							</div>
+						</li>
+					</ul>
+				</div>				
+				<!--
 				<div>
 					<table style="width: 100%;" cellpadding="0" cellspacing="0">
 						<col style="width:60%;" />

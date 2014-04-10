@@ -734,7 +734,7 @@ clLib.UI.elements = {
 			});
 		}
 		,"setSelectedValueHandler" : function($this, changeOptions) { 
-//			clLib.UI.buildRatingRadio(clLib.UI.byId$("ratingSelectWrapper"));
+			clLib.UI.buildRatingRadio(clLib.UI.byId$("ratingSelectWrapper"));
 
 			if(changeOptions && changeOptions["value"] == clLib.UI.NOTSELECTED.value) {
 				$this.children().addClass("unrated");
