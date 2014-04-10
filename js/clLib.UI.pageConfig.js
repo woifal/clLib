@@ -19,6 +19,7 @@ clLib.UI.pageRequisites = {
     , "users_verification": { }
     , "stats": { }
     , "diagram": { }
+    , "AGB": { }
 };
 
 
@@ -401,7 +402,7 @@ clLib.UI.elements = {
 		,"refreshFromEntity" : "Grades"
 		,"refreshHandler" : function($this) { 
 			return clLib.UI.defaultRefreshHandler($this, {
-				selectedValue : localStorage.getItem("selectedGradeSystems") || "UIAA",
+				selectedValue : localStorage.getItem("selectedGradeSystems") || clLib.UI.varDefaults["selectedGradeSystems"],
 				preserveCurrentValue : true,
 				additionalValue : null	
 			});

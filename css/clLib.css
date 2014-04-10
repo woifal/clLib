@@ -3,6 +3,12 @@ div.clPage {
 	max-width:320px;
 }
 
+.ui-header 
+{
+	margin-top: 10px;
+}
+
+
 /* higher buttons  .. */
 .clHighButton .ui-btn{
 	height: 50px;
@@ -26,7 +32,7 @@ label.rated, label.unrated {
 textarea.ui-input-text { height: inherit; }
 
 /* set text area to height of 30 px */
-.ui-page .ui-content textarea.ui-input-text {
+ui-page .ui-content textarea.ui-input-text {
 	height : 20px;
 }​
 input.ui-input-text, textarea.ui-input-text {

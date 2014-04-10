@@ -19,6 +19,7 @@ clLib.PAGES.defaultHandler = function (event, ui) {
 	var eventName = event.type;
     var pageId = $(event.target).attr("id");
 
+	console.log("checking prerequisites for " + pageId + "." + eventName);
     var allTrue = false;
 	var requisiteFunctions = clLib.UI.pageRequisites[pageId][eventName] || {};
     $.each(requisiteFunctions, function (index, checkFunc) {
@@ -43,12 +44,14 @@ clLib.PAGES.defaultHandler = function (event, ui) {
 clLib.PAGES.handlers = {
 	1 : 1
 	,"_COMMON_" : {
-	    "pageinit": function () {
+	    "pagecreate": function () {
 	        // Link to preferences page..
 	        $("#_COMMON__preferencesButton").die("click").live("click", function () {
 	            $.mobile.navigate("clLib_preferences.html");
 	        });
-			
+	        $("#_COMMON__AGBButton").die("click").live("click", function () {
+	            $.mobile.navigate("clLib_AGB.html");
+	        });
             //alert("binding clinck handler for usersbutton");
 			$("#_COMMON__usersButton").die("click").live("click", function () {
 				$.mobile.navigate("clLib_users.html");
@@ -58,8 +61,15 @@ clLib.PAGES.handlers = {
 		}
 
 	}
+	,"AGB" : {
+	    "pagecreate": function () {
+	    }
+		, "pagebeforeshow": function (e, ui) {
+		}
+
+	}
 	,"preferences": {
-        "pageinit": function() {
+        "pagecreate": function() {
             //alert("444isave handler..");
             $("#preferences_cancelButton").die("click").live("click", function () {
                 clLib.UI.fillUIelements("preferences", "preferences");
@@ -100,7 +110,7 @@ clLib.PAGES.handlers = {
 		}
 	}
 	,"startScreen": {
-	    "pageinit": function () {
+	    "pagecreate": function () {
 	        
 			// pre-fetch newRouteLog page..
 	        // $.mobile.loadPage("clLib_preferences.html");
@@ -170,7 +180,7 @@ clLib.PAGES.handlers = {
 		}
 	}
 	, "newRouteLog": {
-	    "pageinit": function () {
+	    "pagecreate": function () {
 			//alert("init!");
 	        clLib.UI.buildRatingRadio($("#newRouteLog_ratingSelectWrapper"));
 	        $("#newRouteLog_layoutSelect").val(localStorage.getItem("currentLayout"));
@@ -199,7 +209,7 @@ clLib.PAGES.handlers = {
 	}
 
 	, "stats": {
-	    "pageinit": function () {
+	    "pagecreate": function () {
 	        //clLib.UI.fillUIelements("newRouteLog", "newRouteLog", localStorage.getItem("defaultLayout"));
 			$("#stats_todaysDiagram h3").on("click", function (e) {
 				$.mobile.navigate("clLib_diagram.html");
@@ -216,7 +226,7 @@ clLib.PAGES.handlers = {
 	}
 
 	,"diagram": {
-	    "pageinit"	: function () {
+	    "pagecreate"	: function () {
 //	4 Mar 22:22:21 - >{"13":{"count":2,"score":1275},"14":{"count":1,"score":400},"20":{"count":10,"score":3750},"21":{"count":2,"score":700},"22":{"count
 //":1,"score":350},"23":{"count":8,"score":2800}}<
 			var successHandler = function(resultObj) {
@@ -262,7 +272,7 @@ clLib.PAGES.handlers = {
 		}
 	}	
 	,"users_verification": {
-	    "pageinit"	: function () {
+	    "pagecreate"	: function () {
 			localStorage.setItem("notification", "");
 			var userEntity = {
 				"username" : localStorage.getItem("currentUser") 
@@ -299,7 +309,7 @@ clLib.PAGES.handlers = {
 	}
 
 	,"users": {
-	    "pageinit"	: function () {
+	    "pagecreate"	: function () {
 
 	        $("#users_loginButton").on("click", function () {
 	            clLib.UI.execWithMsg(function() {
@@ -379,9 +389,9 @@ clLib.PAGES.handlers = {
 
 
 
-var eventsToBind = "pageinit pagebeforeshow";
+var eventsToBind = "pagecreate pagebeforeshow";
 
-// bind "pageinit"/"pagebeforeshow" events for all pages..
+// bind "pagecreate"/"pagebeforeshow" events for all pages..
 $("div[data-role=page]").die(eventsToBind).live(eventsToBind, function (event, ui) {
     clLib.PAGES.defaultHandler(event, ui);
 });

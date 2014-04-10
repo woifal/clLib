@@ -48,10 +48,14 @@ div.clCSSBgIconOnly {
     background-repeat: no-repeat;
     background-position: 0px 0px;
     padding-left: 0px; /*8%;*/
-	/*background-image: none;*/
+	background-image: none;
     background-image: URL('https://cdn2.iconfinder.com/data/icons/flat-ui-icons-24-px/24/lock-24-48.png');
     background-size: 100%;
+	background-color: white;
 }
+
+
+
 .white-green-blue {
     background-repeat: no-repeat;
     background-position: 0px 0px;
@@ -68,78 +72,80 @@ div.clCSSBgIconOnly {
 }
 .blue {
     background-image: none;
-    background-color: #0000FF;
+    background-color: #0000FF !important;
 }
 .green {
     background-image: none;
-    background-color: #00cd00;
+    background-color: #00cd00 !important;
 }
 .red {
     background-image: none;
-    background-color: #FF0000;    
+    background-color: #FF0000 !important;    
 }
 .darkred {
     background-image: none;
-    background-color: #9F000F;    
+    background-color: #9F000F !important;    
 }
 .black {
     background-image: none;
-    background-color: #000000;
+    background-color: #000000 !important;
 }
 .white {
     background-image: none;
-    background-color: #ffffff;
+    background-color: #ffffff !important;
 }
 
 .grey{
     background-image: none;
-    background-color: #A4A4A4;
+    background-color: #A4A4A4 !important;
 }
 
 .brown{
     background-image: none;
-    background-color: #8A4B08;
+    background-color: #8A4B08 !important;
 }
 
 .darkbrown{
     background-image: none;
-    background-color: #61380B;
+    background-color: #61380B !important;
 }
 
 .sand{
     background-image: none;
-    background-color: #FFBF00;
+    background-color: #FFBF00 !important;
 }
 
 .purple{
     background-image: none;
-    background-color: #A901DB;
+    background-color: #A901DB !important; 
+	color: yellow !important; 
 }
+
 
 .yellow{
     background-image: none;
-    background-color: #FFFF00;
+    background-color: #FFFF00 !important;
 }
 .neonyellow{
     background-image: none;
-    background-color: #F3F315;
+    background-color: #F3F315 !important;
 }
 
 .orange{
     background-image: none;
-    background-color: #FF8000;
+    background-color: #FF8000 !important;
 }
 .neonorange{
     background-image: none;
-    background-color: #FF9933;
+    background-color: #FF9933 !important;
 }
 .pink{
     background-image: none;
-    background-color: #F781D8;
+    background-color: #F781D8 !important;
 }
 
 .steelblue{
     background-image: none;
-    background-color: #58ACFA;
+    background-color: #58ACFA !important;
 }
 

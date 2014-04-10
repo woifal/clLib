@@ -8,15 +8,18 @@
     <meta http-equiv="Expires" content="-1"/>
     <meta http-equiv="Cache-Control" content="no-cache"/>
 
-	<title>Kurt Climbing</title> 
-    <link rel="stylesheet" href="css/THEMES/default/jqm.min.css" />
-<!--    <link rel="stylesheet" href="css/THEMES/slate/jqm.min.css" />-->
+	<title>Kurt Climbing 0408a</title> 
+	<link rel="stylesheet" href="css/THEMES/20140405/kurt_jqm1.4.css" />
+	<link rel="stylesheet" href="css/THEMES/20140405/jquery.mobile.structure-1.4.2.css" />
+	<link rel="stylesheet" href="css/THEMES/20140405/jquery.mobile.icons.min.css" />		
+
     <link rel="stylesheet" href="css/clRouteColors.css" />
     <link rel="stylesheet" href="css/clLib.css" />
 
 
         <script type="text/javascript" src="js/jquery-1.8.2.js"></script>
-        <script type="text/javascript" src="js/jquery.mobile-1.3.0.js"></script>
+        <script type="text/javascript" src="css/THEMES/20140405/jquery.mobile-1.4.2.js"></script>
+
 
         <script type="text/javascript" src="js/clLib.js"></script>
         <script type="text/javascript" src="js/clLib.gradeConfig.js"></script>
@@ -38,14 +41,14 @@
     <div 
          id="newRouteLog" data-role="page" 
          class="clPage"
-         data-theme="a" data-add-back-btn="false"
+         data-theme="a" 
     >
 
 
 
 		<!-- Menu Panel -->
 		<div data-role="panel" id="_COMMON_menupanel" data-display="overlay" data-theme="a">
-			<ul data-role="listview" data-theme="c">
+			<ul data-role="listview" data-theme="a">
 				<li data-role="list-divider">Kurt Climbing Menu</li>
 				<li>
 					<div>
@@ -60,11 +63,13 @@
 					</div>
 				</li>
 				<li><a id="_COMMON__preferencesButton" href="clLib_preferences.html">Preferences</a></li>
+				<li><a id="_COMMON__AGBButton" href="#">AGB</a></li>
+				<li><a id="_COMMON__AppInfoButton" href="#">Impressum</a></li>
 				<li>
-							<label style="text-align: center" for="defaultLayoutMenuSwitch">Simple?:</label>
+							Simple tracking?
 							<select id="_COMMON__defaultLayoutMenuSwitch" name="defaultLayoutMenuSwitch" 
 									data-inline="false" data-mini="false"
-									data-role="slider"
+									data-role="flipswitch"
 							>
 								<option value="default">no</option>
 								<option value="reduced">yes</option>
@@ -77,13 +82,22 @@
 
 		<div 
              id="newRouteLog_mobileheader1" data-role="header" 
+			 data-add-back-btn="false"
              data-theme="a"
         >
             <h1>
                 Kurt Climbing	
             </h1>
 
-			<a href="clLib_startScreen.html">Home</a>
+			<a href="clLib_startScreen.html"
+			data-role="button" 
+				data-corners="true"
+				data-icon="home" 
+				data-inline='true'
+				data-mini='true' 
+				data-theme="a"
+				data-iconpos="notext"
+			></a>
                 
 			<!-- LEFT: refreshRouteStorageButton -->
 <!--
@@ -109,7 +123,7 @@
         </div>
 
         <div 
-             id="newRouteLog_mobilecontainer1" data-role="content" 
+             id="newRouteLog_mobilecontainer1" class="ui-content" role="main" 
              data-theme=""
         >
 
@@ -128,12 +142,12 @@
 								}
 							</style>
 							<td>
-								<!-- gradeSystemSelect -->
-								<div style="border: 0px solid yellow; padding: 0; margin: 0;">
-									<!--<label style="visibility: hidden; font-size: 8px;" class="select" for="newRouteLog_gradeSystemSelect">Grade System</label>-->
-									<select id="newRouteLog_gradeSystemSelect" name="newRouteLog_gradeSystemSelect"
-											data-theme="a" data-inline="false" data-mini="false" data-icon="arrow-d" data-iconpos="right"
-											data-native-menu="true" tabindex="16"></select>
+								<div style="text-align: center">
+									<fieldset 
+										id="newRouteLog_gradeSystemSelect"
+										data-role="controlgroup" data-type="horizontal" data-inset="true"
+									>
+									</fieldset>												
 								</div>
 							</td>
 							<td>
@@ -230,12 +244,12 @@
 				<!-- save_tick -->
 				<a data-role="button"
 				   id="newRouteLog_save_tick" data-corners="true" data-icon="check" data-iconpos="right"
-				   data-mini="false" data-theme="a" tabindex="8" style="height: 60px; line-height: 40px;">
+				   data-mini="false" data-theme="a" tabindex="8">
 					Save Tick!
 				</a>
 			</div>
 
-            <div id="newRouteLog_routeLogContainer" style="margin: 0px 0px 0px 0px; padding: 0px 0px 0px 0px ;" data-role="collapsible-set" data-theme="b" data-content-theme="d">
+            <div id="newRouteLog_routeLogContainer" style="margin: 0px 0px 0px 0px; padding: 0px 0px 0px 0px ;" data-role="collapsible-set" data-theme="a" data-content-theme="a">
                 <div data-role="collapsible" data-collapsed="true">
                     <h2 style="text-align: end">????</h2>
                     <ul data-role="listview" data-theme="d" data-divider-theme="d"></ul>

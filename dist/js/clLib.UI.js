@@ -9,6 +9,13 @@ clLib.UI = {
 clLib.UI.list = {};
 clLib.UI.elementConfig= {};
 
+
+clLib.UI.varDefaults = {};
+clLib.UI.varDefaults["selectedGradeSystems"] = "UIAA,French,Bleau";
+
+
+
+
 clLib.UI.killEventHandlers = function($element, eventName) {
 	$element.die(eventName);
 	$element.off(eventName);
@@ -270,7 +277,7 @@ clLib.populateCheckboxes_plain = function($selectBox, dataObj, selectedValue, pr
 
 	var buttonCount = 0;
 	
-	$selectBox.empty();
+	$selectBox.controlgroup("container").empty();
 	if(additionalValue) {
 		var $option = $('<input data-theme="c" type="checkbox"></input>');
 		$option.attr("name", $selectBox.attr("id") + "_radio");
@@ -291,8 +298,8 @@ clLib.populateCheckboxes_plain = function($selectBox, dataObj, selectedValue, pr
 			$label
 				.html(additionalValue);
 		}
-		$selectBox.append($option);
-		$selectBox.append($label);
+		$selectBox.controlgroup("container").append($option);
+		$selectBox.controlgroup("container").append($label);
 		buttonCount++;
 	}
 	
@@ -307,7 +314,7 @@ clLib.populateCheckboxes_plain = function($selectBox, dataObj, selectedValue, pr
 	var i = 0;
 	//alert("dataObj to each >" + JSON.stringify(dataObj) + "<");
 	$.each(dataObj, function(index, value) {
-		//clLib.loggi("adding option " + value);
+		clLib.loggi("adding option " + value);
 		var $option = $('<input data-theme="c" type="checkbox"></input>');
 		$option.attr("name", $selectBox.attr("id") + "_radio");
 		$option.attr("id", $selectBox.attr("id") + "_" + buttonCount);
@@ -326,17 +333,17 @@ clLib.populateCheckboxes_plain = function($selectBox, dataObj, selectedValue, pr
 			$option.attr("checked", "checked");
 			oldValueFound = true;
 		}
-		$selectBox.append($option);
-		$selectBox.append($label);
+		$selectBox.controlgroup("container").append($option);
+		$selectBox.controlgroup("container").append($label);
 		buttonCount++;
 	});
 	
 	
 	//alert("created selectbox group " + $selectBox.html());
 	
-	$selectBox.parent().trigger("create");
-	//controlgroup().controlgroup('refresh');
-	$selectBox.controlgroup();
+	$selectBox
+		.enhanceWithin()
+		.controlgroup("refresh");
 	//alert("populated radio buttoins.." + $selectBox.attr("id"));
 	
 	//alert("created selectbox group " + $selectBox.html());
@@ -366,7 +373,7 @@ clLib.populateRadioButtons_plain = function($selectBox, dataObj, selectedValue, 
 
 	var buttonCount = 0;
 	
-	$selectBox.empty();
+	$selectBox.controlgroup("container").empty();
 	if(additionalValue) {
 		var $option = $('<input type="radio"></input>');
 		$option.attr("name", $selectBox.attr("id") + "_radio");
@@ -402,7 +409,7 @@ clLib.populateRadioButtons_plain = function($selectBox, dataObj, selectedValue, 
 
 	var i = 0;
 	$.each(dataObj, function(index, value) {
-		//clLib.loggi("adding option " + value);
+		clLib.loggi("adding option " + value);
 		var $option = $('<input type="radio"></input>');
 		$option.attr("name", $selectBox.attr("id") + "_radio");
 		$option.attr("id", $selectBox.attr("id") + "_" + buttonCount);
@@ -420,16 +427,17 @@ clLib.populateRadioButtons_plain = function($selectBox, dataObj, selectedValue, 
 			clLib.loggi("Found old value..");
 			$option.attr("checked", "checked");
 			oldValueFound = true;
-		}
-		$selectBox.append($option);
-		$selectBox.append($label);
+		} 
+		
+		$selectBox.controlgroup("container").append($option);
+		$selectBox.controlgroup("container").append($label);
 		buttonCount++;
 	});
 	
-	
-	$selectBox.parent().trigger("create");
-	//controlgroup().controlgroup('refresh');
-	$selectBox.controlgroup();
+	$selectBox
+		.enhanceWithin()
+		.controlgroup("refresh");
+		
 	//alert("populated radio buttoins.." + $selectBox.attr("id"));
 	
 	clLib.loggi("oldValueFound? " + oldValueFound);
@@ -773,7 +781,7 @@ clLib.UI.autoloadElements = function(curPageAutoload, currentJqmSlide) {
 	if(curPageAutoload) {
 		$.each(curPageAutoload, function(idx, elementName) {
 			//alert("triggering autoload for " + elementName, 2);
-			clLib.loggi("html:" + clLib.UI.byId$(elementName).html(), 2);
+			clLib.loggi("html(" + elementName + "):" + clLib.UI.byId$(elementName).html(), 2);
 			var optionObj = {};
 			//alert("byId is " + clLib.UI.byId$(elementName).attr("id"));
 			clLib.UI.byId$(elementName).trigger("refresh.clLib", 
@@ -1009,7 +1017,12 @@ clLib.UI.localStorageRefreshHandler = function($element, additionalOptions) {
 		console.log("local var BEFORE: " + JSON.stringify(localStorage.getItem(additionalOptions["localStorageVar"])));
 		var localStorageVarValue = localStorage.getItem(additionalOptions["localStorageVar"]);
 		if(!localStorageVarValue) {
-			localStorageVarValue = "";
+			if(clLib.UI.varDefaults[additionalOptions["localStorageVar"]]) {
+				localStorageVarValue = clLib.UI.varDefaults[additionalOptions["localStorageVar"]];
+			} 
+			else {
+				localStorageVarValue = "";
+			}
 		}
 		results = localStorageVarValue.split(",");
 		console.log("local var AFTER: " + JSON.stringify(results));
@@ -1078,6 +1091,7 @@ clLib.UI.defaultRefreshHandler = function($element, additionalOptions) {
 			,value: "__UNKNOWN__"
 		}
 	};
+	//alert("elContentOptions are " + JSON.stringify(additionalOptions));
 	$.extend(elContentOptions, additionalOptions);
 	
 	
@@ -1355,11 +1369,14 @@ clLib.addCSSBackground = function(targetId, options) {
             className = classForText[entry.find("a").html()];
         }
         entry
+			.find("a")
             .addClass("clCSSBg")
             .addClass(className);
-    
+		//entry.find("a").css("background-color", "red");
 		if(options && options["iconOnly"]) {
-			entry.addClass("clCSSBgIconOnly");
+			entry
+				.find("a")
+				.addClass("clCSSBgIconOnly");
 		}
 	});
 	
@@ -1382,10 +1399,10 @@ clLib.addCSSBackground = function(targetId, options) {
 
 	    // Remove CSS class for previously selected color
         if (last_style) {
-            $(this).closest('.ui-select').find('.ui-btn-inner').removeClass(last_style);
+            $(this).closest('.ui-select').find('.ui-btn').removeClass(last_style);
         }
         // Set currently selected color
-        $(this).closest('.ui-select').find('.ui-btn-inner').addClass(className);
+        $(this).closest('.ui-select').find('.ui-btn').addClass(className);
         // Remember currently selected color
         $(this).data("cllast_style", className);
         //alert("remembering last_style " + selection);
@@ -1437,9 +1454,9 @@ clLib.UI.elementConfig.localVarSaveImmediately = {
 //            $this.find(".ui-btn-text").text(localVarValue);
             $this.button("refresh");
         } 
-		else if (jqmDataRole == "slider") {
+		else if (jqmDataRole == "flipswitch") {
             $this.val(localVarValue);
-            $this.slider("refresh");
+            //$this.flipswitch("refresh");
         } 
 		else {
             $this.val(localVarValue);
@@ -1500,10 +1517,10 @@ clLib.UI.elementConfig.localVar = {
 		else if (jqmDataRole == "select" || $this.prop("tagName") == "SELECT") {
             $this.val(localVarValue);
 			//alert("jqmDataRole:" + jqmDataRole + ", $this.prop(tagName) " + $this.prop("tagName") );
-			if(jqmDataRole != 'slider') {
+			if(jqmDataRole != 'flipswitch') {
 				$this.selectmenu("refresh");
 			} else {
-				$this.slider("refresh");
+				//$this.flipswitch("refresh");
 			}
 		}	
 		else if($this.prop("tagName") == "SPAN") {

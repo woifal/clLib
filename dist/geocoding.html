@@ -1,0 +1,216 @@
+<!DOCTYPE html> 
+<html>
+	<head>
+	<meta charset="utf-8"/>
+
+        <script type="text/javascript" src="js/jquery-1.8.2.js"></script>
+</head>
+<body> 
+
+	<form action="#" onSubmit="">
+		<label for="address"/>
+		<input id="address"type="text" value="Erzherzog-Karl-Straße 108"/>
+		<input id="submitForm" type="submit"/>
+	</form>
+	<form action="#" onSubmit="">
+		<input id="submitJSONForm" type="submit" value="JSON"/>
+	</form>
+	<div id="resultsDiv">
+	</div>
+</body>
+
+ <script>
+	$( document ).ready(function() {
+		var addrCompFields = {};
+		var addresses = {};
+		var addressesNotClear = {};
+
+		$("#submitForm").click(function() {
+			var address = $("#address").val();
+			geocodeAddress("from form....", encodeURIComponent(address), formatResults);
+		});
+
+		$("#submitJSONForm").click(function() {
+
+			$.ajax({
+				dataType: "json",
+				url: "../db_data/AreaRawExport.json",
+				success: function(data) {
+					//alert("processing " + data + "=> " + JSON.stringify(data));
+					iterateRawData(data, 0, iterateRawData);
+				},
+				error: function(e) {
+					alert("error!!!" + e.responseText);
+				}
+			});		
+		});
+
+		var iterateRawData = function(data, startIdx, successFunc) {
+			if(data[startIdx]) {
+				//alert("iterating " + data.length + " at " + startIdx + " for " + data[startIdx].Name);
+				var address = 
+					data[startIdx]["Address"] + ", " +
+					data[startIdx]["City Code"] + ", " +
+					data[startIdx]["City"] + ", " +
+					data[startIdx]["Country"]
+				;
+/*
+				var address  ={};
+				address["Address"] = JSON.stringify(data[startIdx]["Address"]);
+				address["City Code"] = JSON.stringify(data[startIdx]["City Code"]);
+				address["City"] = JSON.stringify(data[startIdx]["City"]);
+				address["Country"] = JSON.stringify(data[startIdx]["Country"]);
+				address = JSON.stringify(address);
+*/				
+				$("#resultsDiv").html("<span>" + startIdx + "</span><br>");
+				geocodeAddress(data[startIdx]["Name"], encodeURIComponent(address), function() {
+					successFunc(data, ++startIdx, successFunc);
+				});
+			} 
+			else {
+				//alert("end reached, calling format function..");
+				formatResults();
+			}
+
+		};
+
+		var geocodeAddress = function(areaName, address, successFunc, errorFunc) {
+			$.get( 
+				"https://maps.googleapis.com/maps/api/geocode/json?address=" + address + "&sensor=false&key=AIzaSyCWxWGZgKv5c4COnafd0wIWhA3gtPtjycA"
+				, function( data ) {
+					$( "#resultsDiv" ).html( data );
+					var results = data.results;
+					var resultAddr = [];
+					$.each(results, function(idx, result) {
+						resultAddr[idx] = {};
+						var curAddr = resultAddr[idx];
+						
+						$.each(result["address_components"], function(idx2, addressComp) {
+							var fieldName = addressComp["types"][0];
+							addrCompFields[fieldName] = 1;
+							addrCompFields["lat"] = 1;
+							addrCompFields["lng"] = 1;
+							curAddr[fieldName] = addressComp["long_name"];
+
+							var formatted_address = result.formatted_address;
+							var geometry = result.geometry;
+							var lat = geometry.location.lat;
+							var lng = geometry.location.lng;
+							curAddr["lat"] = lat;
+							curAddr["lng"] = lng;
+
+						});
+					});
+					addresses[areaName] = resultAddr;
+					//alert("addresses is now  " + JSON.stringify(addresses));
+					successFunc();
+				}
+			);
+		}
+		
+		var formatResults = function() {
+//					alert(JSON.stringify(resultAddr));
+//					alert(JSON.stringify(addrCompFields));
+			
+			var lineCount = 1;
+			var $resultTable = $("<table border='1'>");
+			$resultTable.css("border", "1px solid black");
+			var $resultTH = $("<tr>");
+			var $resultTD = $("<td>");
+			$resultTD.append("#");
+			$resultTH.append($resultTD);
+			var $resultTD = $("<td>");
+			$resultTD.append("AreaName");
+			$resultTH.append($resultTD);
+			$.each(addrCompFields, function(fieldName, x) {
+				var $resultTD = $("<td>");
+				$resultTD.append(fieldName);
+				$resultTH.append($resultTD);
+			});
+
+			$resultTable.append($resultTH);
+
+			var $resultTable2 = $("<table border='1'>");
+			$resultTable2.css("border", "1px solid black");
+			var $resultTH = $("<tr>");
+			var $resultTD = $("<td>");
+			$resultTD.append("#");
+			$resultTH.append($resultTD);
+			var $resultTD = $("<td>");
+			$resultTD.append("AreaName");
+			$resultTH.append($resultTD);
+			$.each(addrCompFields, function(fieldName, x) {
+				var $resultTD = $("<td>");
+				$resultTD.append(fieldName);
+				$resultTH.append($resultTD);
+			});
+			$resultTable2.append($resultTH);
+
+			var redCounter = 0;
+			$.each(addresses, function(areaName, addDetails) {
+				var bgCss = "";
+				if(addDetails.length > 1) {
+					bgCss = "red";
+					redCounter++;
+					addressesNotClear[areaName] = addDetails;
+				}
+				$.each(addDetails, function(id, addrDetail) {
+					var $resultTR = $("<tr>");
+					$resultTR.css("background", bgCss);
+					var $resultTD = $("<td>");
+					$resultTD.append(lineCount++);
+					$resultTR.append($resultTD);
+
+					var $resultTD = $("<td>");
+					$resultTD.append(areaName);
+					$resultTR.append($resultTD);
+			
+					$.each(addrCompFields, function(fieldName, x) {
+						var $resultTD = $("<td>");
+						$resultTD.append(addrDetail[fieldName]);
+						$resultTR.append($resultTD);
+					});
+					$resultTable.append($resultTR);
+				});
+			});
+
+			var bgSwitch = 0;
+			var addressCount = 0;
+			lineCount = 0;
+			$.each(addressesNotClear, function(areaName, addDetails) {
+				addressCount++;
+				var bgCss = "";
+				if(addressCount % 2 == 0) {
+					bgCss = "red";
+				}
+				$.each(addDetails, function(id, addrDetail) {
+					var $resultTR = $("<tr>");
+					$resultTR.css("background", bgCss);
+					var $resultTD = $("<td>");
+					$resultTD.append(lineCount++);
+					$resultTR.append($resultTD);
+
+					var $resultTD = $("<td>");
+					$resultTD.append(areaName);
+					$resultTR.append($resultTD);
+			
+					$.each(addrCompFields, function(fieldName, x) {
+						var $resultTD = $("<td>");
+						$resultTD.append(addrDetail[fieldName]);
+						$resultTR.append($resultTD);
+					});
+					$resultTable2.append($resultTR);
+				});
+			});
+
+			$("#resultsDiv").prepend($resultTable);
+			$("#resultsDiv").prepend($resultTable2);
+			$("#resultsDiv").prepend("<span>unexact: " + redCounter + "</span>");
+			
+		};
+	});
+</script>
+</html>
+<!--
+https://maps.googleapis.com/maps/api/geocode/json?address=Erzherzog-Karl-Stra%C3%9Fe+108&sensor=false&key=AIzaSyCWxWGZgKv5c4COnafd0wIWhA3gtPtjycA
+-->

@@ -8,15 +8,18 @@
     <meta http-equiv="Expires" content="-1"/>
     <meta http-equiv="Cache-Control" content="no-cache"/>
 
-	<title>Kurt Climbing</title> 
-    <link rel="stylesheet" href="css/THEMES/default/jqm.min.css" />
-<!--    <link rel="stylesheet" href="css/THEMES/slate/jqm.min.css" />-->
+	<title>Kurt Climbing 0408a</title> 
+	<link rel="stylesheet" href="css/THEMES/20140405/kurt_jqm1.4.css" />
+	<link rel="stylesheet" href="css/THEMES/20140405/jquery.mobile.structure-1.4.2.css" />
+	<link rel="stylesheet" href="css/THEMES/20140405/jquery.mobile.icons.min.css" />		
+
     <link rel="stylesheet" href="css/clRouteColors.css" />
     <link rel="stylesheet" href="css/clLib.css" />
 
 
         <script type="text/javascript" src="js/jquery-1.8.2.js"></script>
-        <script type="text/javascript" src="js/jquery.mobile-1.3.0.js"></script>
+        <script type="text/javascript" src="css/THEMES/20140405/jquery.mobile-1.4.2.js"></script>
+
 
         <script type="text/javascript" src="js/clLib.js"></script>
         <script type="text/javascript" src="js/clLib.gradeConfig.js"></script>
@@ -38,14 +41,14 @@
     <div 
          id="newRouteLog" data-role="page" 
          class="clPage"
-         data-theme="a" data-add-back-btn="false"
+         data-theme="a" 
     >
 
 
 
 		<!-- Menu Panel -->
 		<div data-role="panel" id="_COMMON_menupanel" data-display="overlay" data-theme="a">
-			<ul data-role="listview" data-theme="c">
+			<ul data-role="listview" data-theme="a">
 				<li data-role="list-divider">Kurt Climbing Menu</li>
 				<li>
 					<div>
@@ -60,11 +63,13 @@
 					</div>
 				</li>
 				<li><a id="_COMMON__preferencesButton" href="clLib_preferences.html">Preferences</a></li>
+				<li><a id="_COMMON__AGBButton" href="#">AGB</a></li>
+				<li><a id="_COMMON__AppInfoButton" href="#">Impressum</a></li>
 				<li>
-							<label style="text-align: center" for="defaultLayoutMenuSwitch">Simple?:</label>
+							Simple tracking?
 							<select id="_COMMON__defaultLayoutMenuSwitch" name="defaultLayoutMenuSwitch" 
 									data-inline="false" data-mini="false"
-									data-role="slider"
+									data-role="flipswitch"
 							>
 								<option value="default">no</option>
 								<option value="reduced">yes</option>
@@ -77,13 +82,22 @@
 
 		<div 
              id="newRouteLog_mobileheader1" data-role="header" 
+			 data-add-back-btn="false"
              data-theme="a"
         >
             <h1>
                 Kurt Climbing	
             </h1>
 
-			<a href="clLib_startScreen.html">Home</a>
+			<a href="clLib_startScreen.html"
+			data-role="button" 
+				data-corners="true"
+				data-icon="home" 
+				data-inline='true'
+				data-mini='true' 
+				data-theme="a"
+				data-iconpos="notext"
+			></a>
                 
 			<!-- LEFT: refreshRouteStorageButton -->
 <!--
@@ -109,7 +123,7 @@
         </div>
 
         <div 
-             id="newRouteLog_mobilecontainer1" data-role="content" 
+             id="newRouteLog_mobilecontainer1" class="ui-content" role="main" 
              data-theme=""
         >
 
@@ -120,24 +134,17 @@
 					}
 				</style>
 
-				<div style="text-align: center; afloat:left">
-                    
-
-                    <div style="border: 0px solid green; text-align: center">
+				<div data-role="content">
+                    <div style="text-align: center">
 						<fieldset 
-							style="text-align: center"
 							id="newRouteLog_gradeSystemSelect"
 							data-role="controlgroup" data-type="horizontal" data-inset="true"
 						>
-<!--						<input name="newRouteLog_gradeSystems_radio" id="gs_UIAA" value="UIAA" checked="checked" type="radio">
-							<label for="gs_UIAA">ddUIAA</label>-->
 						</fieldset>												
-									
 					</div>
-
 					
-					<div style="border: 0px solid red">
-                        <table id="newRouteLog_mobilegrid_30" cellpadding="0" cellspacing="0" style="width: 100%">
+					<div>
+                        <table cellpadding="0" cellspacing="0" style="width: 100%">
                             <col style="width:50%;" />
                             <col style="width:50%;" />
                             <tr>
@@ -166,42 +173,40 @@
                                     </div>
                                 </td>
                             </tr>
-                        </table>
-                    </div>
-					
-					
+						</table>
+					</div>
+					<div>
+						<table cellpadding="0" cellspacing="0" style="width: 100%">
+                            <col style="width:70%;" />
+                            <col style="width:30%;" />
+                            <tr>
 
-                </div>
-                <div>
-                    <table style="width: 100%" cellpadding="0" cellspacing="0">
-                        <col style="width:70%;" />
-                        <col style="width:30%;" />
-                        <tr>
-                            <td colspan="1" rowspan="1">
-                                <!-- sectorSelect -->
-                                <label class="clUIElement select" for="newRouteLog_sectorSelect">Sector</label>
-                                <select id="newRouteLog_sectorSelect" name="newRouteLog_sectorSelect"  data-theme="a" data-inline="false"
-                                        data-mini="false" data-icon="arrow-d" data-iconpos="right" data-native-menu="true"
-                                        tabindex="5">
-                                    <option value="" rerender="sectorSelect" selected="selected">
-                                        sectorSelect
-                                    </option>
-                                </select>
-                            </td>
-                            <td>
-                                <!-- lineSelect -->
-                                <label class="clUIElement select" for="newRouteLog_lineSelect">Line</label>
-                                <select id="newRouteLog_lineSelect" name="newRouteLog_lineSelect" data-theme="a" data-inline="false"
-                                        data-mini="false" data-icon="arrow-d" data-iconpos="right" data-native-menu="true"
-                                        tabindex="5">
-                                    <option value="" rerender="lineSelect" selected="selected">
-                                        lineSelect
-                                    </option>
-                                </select>
-                            </td>
-                        </tr>
-                    </table>
-                </div>
+							<tr>
+								<td>
+									<!-- sectorSelect -->
+									<label class="clUIElement select" for="newRouteLog_sectorSelect">Sector</label>
+									<select id="newRouteLog_sectorSelect" name="newRouteLog_sectorSelect"  data-theme="a" data-inline="false"
+											data-mini="false" data-icon="arrow-d" data-iconpos="right" data-native-menu="true"
+											tabindex="5">
+										<option value="" rerender="sectorSelect" selected="selected">
+											sectorSelect
+										</option>
+									</select>
+								</td>
+								<td>
+									<!-- lineSelect -->
+									<label class="clUIElement select" for="newRouteLog_lineSelect">Line</label>
+									<select id="newRouteLog_lineSelect" name="newRouteLog_lineSelect" data-theme="a" data-inline="false"
+											data-mini="false" data-icon="arrow-d" data-iconpos="right" data-native-menu="true"
+											tabindex="5">
+										<option value="" rerender="lineSelect" selected="selected">
+											lineSelect
+										</option>
+									</select>
+								</td>
+							</tr>
+						</table>
+					</div>
 				
 				
 				<div style="border: 0px solid green; text-align: center">
@@ -222,37 +227,7 @@
 								
 				</div>
 
-				
-				
-				<!-- tickType -->
-<!--				
-				<div style="border: 0px solid green">
-                        <table style="width: 100%" cellpadding="0" cellspacing="0">
-                            <col style="width:50%;" />
-                            <col style="width:50%;" />
-                            <tr>
-                                <td colspan="1" rowspan="1">
-                                    <div>
-                                        <div>
-                                            <label class="clUIElement" for="newRouteLog_tickType">TickType</label>
-                                            <select id="newRouteLog_tickType" name="newRouteLog_tickType" data-theme="a"
-                                                    data-inline="false" data-mini="false" data-icon="arrow-d" data-iconpos="right" data-native-menu="true"
-                                                    tabindex="3">
-                                                <option value="" rerender="ticktypes" selected="selected">
-                                                    Tick Type
-                                                </option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td colspan="1" rowspan="1">
-
-                                </td>
-                            </tr>
-                        </table>
-                    </div>
--->
-                    <!-- characterSelect -->
+	                 <!-- characterSelect -->
 <!--
                 <div style="width: 100px">
                     <label class="clUIElement select" for="newRouteLog_characterSelect">Character</label>
@@ -273,8 +248,8 @@
 				<div>
                     <!-- searchRouteResults -->
                     <ul data-role="listview" id="newRouteLog_searchRouteResults"
-                        data-inset="true" data-theme="d"
-                        data-divider-theme="b" data-count-theme="b" style="">
+                        data-inset="true" data-theme="a"
+                        data-divider-theme="a" data-count-theme="a" style="">
                         <!-- searchRouteResult -->
 <!--                        <li>
                             <a id="newRouteLog_searchRouteResult"
@@ -285,33 +260,29 @@
 -->
 					</ul>
 				</div>
+<!--
 				<div>
 					<table style="width: 100%;" cellpadding="0" cellspacing="0">
 						<col style="width:60%;" />
 						<col style="width:40%;" />
 						<tr>
 							<td>
-								<!-- commentText -->
 								<label class="clUIElement" for="newRouteLog_commentText">Comment</label>
 								<textarea style="resize: none; height: 30px" id="newRouteLog_commentText" name="newRouteLog_commentText" tabindex="9" placeholder="comments?"></textarea>
 							</td>
 							<td style="text-align: center; vertical-align: top; border: 0px solid blue;">
-								<!-- rating widget
-								2DO: autosize acc. to parent div..
-								-->
-								<!--<label class="clUIElement" for="newRouteLog_rating">Rating</label>-->
 								<div style="border: 0px solid red" data-role="none" id="newRouteLog_ratingSelectWrapper">
-									<!-- rating goes here.. -->
 								</div>
 							</td>
 						</tr>
 					</table>
 				</div>
+-->
 				<div>
                     <!-- save_tick -->
                     <a data-role="button"
                        id="newRouteLog_save_tick" data-corners="true" data-icon="check" data-iconpos="right"
-                       data-mini="false" data-theme="a" tabindex="8" style="height: 60px; line-height: 40px;">
+                       data-mini="false" data-theme="a" tabindex="8">
                         Save Tick!
                     </a>
                 </div>
@@ -320,8 +291,8 @@
 							id="newRouteLog_routeLogContainer" 
 							style="margin: 0px 0px 0px 0px; padding: 0px 0px 0px 0px ;" 
 							data-role="collapsible-set" 
-							data-theme="b" 
-							data-content-theme="d">
+							data-theme="a" 
+							data-content-theme="a">
                     </div>
                 </div>
             </div>
