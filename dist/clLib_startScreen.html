@@ -128,28 +128,38 @@
         >
 
 
-			<ul data-role="listview" data-inset="true" data-divider-theme="a">
-				<li data-role="list-divider">Add Route Log:</li>
-				<li>
-					<!-- Add new route.. -->
-					<div style="text-align: center">
-						<a id="addRouteButton" href="#"><img src="files/views/assets/image/add_button.png" /></a>
-					</div>
-				</li>
-				<li data-role="list-divider">Current area:</li>
-				<li> 
-					<!-- Area -->
-					<select id="startScreen_areaSelect" name="startScreen_areaSelect" data-theme="a">
-						<!-- Areas go here.. -->
-					</select>
-				</li>
-			</ul>
-					<!-- Statistics -->
-					<a data-role="button"
-                       id="startScreen_statsButton" data-corners="false" data-icon="check" data-iconpos="right"
-                       data-mini="false" data-theme="a" tabindex="8">
-                        Statistics
-                    </a>
+				
+			<!-- Add new route.. -->
+			<a 
+				id="addRouteButton" href="#"
+				data-role="button"
+				data-icon="plus" data-iconpos="top"
+				data-theme="a" 
+			>
+				Start Climbing
+			</a>
+
+					
+			<div class="ui-body ui-body-a ui-corner-all"
+			style="background: url(files/views/assets/image/staticmap.png);
+				background-position: center bottom, left top;
+				background-repeat: no-repeat;
+				height: 100px;
+				padding-top:30px;
+			"
+			>
+				<!-- Area -->
+				<select id="startScreen_areaSelect" name="startScreen_areaSelect" data-theme="a">
+					<!-- Areas go here.. -->
+				</select>
+			</div>
+			
+			<!-- Statistics -->
+			<a data-role="button"
+			   id="startScreen_statsButton" data-corners="false" data-icon="check" data-iconpos="right"
+			   data-mini="false" data-theme="a" tabindex="8">
+				Statistics
+			</a>
 			
 			
         </div>
