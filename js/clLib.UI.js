@@ -1240,7 +1240,12 @@ clLib.UI.RESTSaveHandler = function (options, successFunc, errorFunc) {
         }
     });
     //alert("saveObj is " + JSON.stringify(saveObj));
-    clLib.localStorage.addInstance("RouteLog", saveObj, "defaultStorage");
+	var dbEntity = "RouteLog";
+	//alert("options " + JSON.stringify(options));
+	if(options["additionalData"] && options["additionalData"]["dbEntity"]) {
+		dbEntity = options["additionalData"]["dbEntity"];
+	}
+    clLib.localStorage.addInstance(dbEntity, saveObj, "defaultStorage");
     successFunc();
 }
 

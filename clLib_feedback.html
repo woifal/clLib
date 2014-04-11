@@ -1,0 +1,35 @@
+﻿<!DOCTYPE html> 
+<html>
+
+@@include('grunt_includes/html_head.html', {"pageName": "feedback"})
+
+<body> 
+
+@@include('grunt_includes/html_jqm_page.html', {"pageName": "feedback"})
+
+@@include('grunt_includes/html_jqm_menupanel.html', {"pageName": "feedback"})
+@@include('grunt_includes/html_jqm_header.html', {"pageName": "feedback"})
+
+@@include('grunt_includes/html_jqm_content.html', {"pageName": "feedback"})
+
+
+
+<h1>Feedback</h1>
+							<label class="clUIElement" for="feedback_feedbackText">WTF?</label>
+							<textarea style="resize: none; height: 30px" id="feedback_feedbackText" name="feedback_feedbackText" tabindex="9" placeholder="feedback?"></textarea>
+
+                    <!-- save_tick -->
+                    <a data-role="button"
+                       id="feedback_save" data-corners="true" data-icon="check" data-iconpos="right"
+                       data-mini="false" data-theme="a" tabindex="8">
+                        Send feedback
+                    </a>
+
+							
+@@include('grunt_includes/html_jqm_footer.html', {"pageName": "feedback"})
+	
+	</div>
+</body>
+
+  
+</html>

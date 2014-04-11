@@ -20,6 +20,7 @@ clLib.UI.pageRequisites = {
     , "stats": { }
     , "diagram": { }
     , "AGB": { }
+    , "feedback": { }
 };
 
 
@@ -28,6 +29,7 @@ clLib.UI.saveHandlers= {
     , "newRouteLog": clLib.UI.RESTSaveHandler
     , "startScreen": clLib.UI.RESTSaveHandler
     , "users": clLib.UI.userHandler
+    , "feedback": clLib.UI.RESTSaveHandler
 };
 
 clLib.UI.autoLoad = {
@@ -137,6 +139,9 @@ clLib.UI.elementsToReset = {
 		, "currentPassword"
         , "loginError"
     	]
+	, feedback: [
+		"feedbackText"
+	]
 
 };
 
@@ -235,6 +240,12 @@ clLib.UI.pageElements = {
         default: [
         ]
     }
+	, "feedback": {
+		default: [
+			"feedbackText"
+		]
+	}
+
 };
 
 
@@ -887,6 +898,9 @@ clLib.UI.elements = {
 	}
 	,"commentText" : {
 		"dbField" : "Comment"
+	}
+	,"feedbackText" : {
+		"dbField" : "feedbackText"
 	}
 	,"todaysRouteLogs": {
 		"setSelectedValueHandler" : function($this, changeOptions) { return $this.trigger("refresh.clLib"); }

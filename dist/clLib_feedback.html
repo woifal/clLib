@@ -35,12 +35,11 @@
 		<link rel="stylesheet" href="css/clLib.css" />
 </head> 
 
-	<script type="text/javascript" src="js/Chart.js"></script>
-
 
 <body> 
+
     <div 
-         id="diagram" data-role="page" 
+         id="feedback" data-role="page" 
          class="clPage"
          data-theme="a" 
     >
@@ -83,7 +82,7 @@
 		</div>
 
 		<div 
-             id="diagram_mobileheader1" data-role="header" 
+             id="feedback_mobileheader1" data-role="header" 
 			 data-add-back-btn="false"
              data-theme="a"
         >
@@ -125,25 +124,32 @@
         </div>
 
         <div 
-             id="diagram_mobilecontainer1" class="ui-content" role="main" 
+             id="feedback_mobilecontainer1" class="ui-content" role="main" 
              data-theme=""
         >
 
 
 
-                <div>
-                    <!-- canvas. -->
-                    <div>
-						<canvas id="diagramChart" width="300" height="400"></canvas>
-                    </div>
-                </div>
-				
-			</div>
-            <!-- mobilefooter1 -->
-            <div data-role="footer" data-position="fixed"
-                 id="diagram_mobilefooter1" data-theme="a">
-            </div>
+
+<h1>Feedback</h1>
+							<label class="clUIElement" for="feedback_feedbackText">WTF?</label>
+							<textarea style="resize: none; height: 30px" id="feedback_feedbackText" name="feedback_feedbackText" tabindex="9" placeholder="feedback?"></textarea>
+
+                    <!-- save_tick -->
+                    <a data-role="button"
+                       id="feedback_save" data-corners="true" data-icon="check" data-iconpos="right"
+                       data-mini="false" data-theme="a" tabindex="8">
+                        Send feedback
+                    </a>
+
+							
+        <!-- mobilefooter1 -->
+        <div data-role="footer" data-position="fixed"
+             id="feedback_mobilefooter1" data-theme="a">
         </div>
+
+	
+	</div>
 </body>
 
   

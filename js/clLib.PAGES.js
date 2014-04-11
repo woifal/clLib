@@ -21,7 +21,7 @@ clLib.PAGES.defaultHandler = function (event, ui) {
 
 	console.log("checking prerequisites for " + pageId + "." + eventName);
     var allTrue = false;
-	var requisiteFunctions = clLib.UI.pageRequisites[pageId][eventName] || {};
+	var requisiteFunctions = (clLib.UI.pageRequisites[pageId] && clLib.UI.pageRequisites[pageId][eventName]) || {};
     $.each(requisiteFunctions, function (index, checkFunc) {
         //alert("executing " + index + " >" + JSON.stringify(checkFunc.name));
         if (checkFunc()) {
@@ -52,6 +52,9 @@ clLib.PAGES.handlers = {
 	        $("#_COMMON__AGBButton").die("click").live("click", function () {
 	            $.mobile.navigate("clLib_AGB.html");
 	        });
+	        $("#_COMMON__feedbackButton").die("click").live("click", function () {
+	            $.mobile.navigate("clLib_feedback.html");
+	        });
             //alert("binding clinck handler for usersbutton");
 			$("#_COMMON__usersButton").die("click").live("click", function () {
 				$.mobile.navigate("clLib_users.html");
@@ -67,6 +70,24 @@ clLib.PAGES.handlers = {
 		, "pagebeforeshow": function (e, ui) {
 		}
 
+	}
+	,"feedback" : {
+	    "pagecreate": function () {
+	        $("#feedback_save").on("click", function () {
+				clLib.UI.execWithMsg(function() {
+	                localStorage.setItem("currentJqmSlide", "feedback");
+	                clLib.UI.save({additionalData: { dbEntity: "feedback" }}, function() {
+						alert("feedback sent!");
+						clLib.UI.resetUIelements("feedback", "feedback");
+					});
+	            }, {text: "Sending feedback.."});
+	        });
+		}
+		, "pagebeforeshow": function (e, ui) {
+		}
+
+		
+		
 	}
 	,"preferences": {
         "pagecreate": function() {
