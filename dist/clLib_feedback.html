@@ -131,9 +131,12 @@
 
 
 
-<h1>Feedback</h1>
+<span>Please provide some feedback..</span>
 							<label class="clUIElement" for="feedback_feedbackText">WTF?</label>
-							<textarea style="resize: none; height: 30px" id="feedback_feedbackText" name="feedback_feedbackText" tabindex="9" placeholder="feedback?"></textarea>
+<style>
+	textarea.custom-btn  { height: 300px; width: 100%;}
+</style>
+							<textarea data-role="none" class="custom-btn" id="feedback_feedbackText" name="feedback_feedbackText" tabindex="9" placeholder="feedback?"></textarea>
 
                     <!-- save_tick -->
                     <a data-role="button"

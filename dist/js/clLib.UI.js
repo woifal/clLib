@@ -94,16 +94,36 @@ clLib.UI.list.formatStandardRow = function(dataRow) {
 	return $listItem;
 };
 
-clLib.UI.tickTypeSymbols = {
-	tickType_redpoint : '<span><img style="width:20px; height: 20px" src="files/views/assets/image/redpoint.png"></span>'
-	, tickType_flash : '<span><img style="width:20px; height: 20px" src="files/views/assets/image/flash.png"></span>'
-	, tickType_attempt : '<span><img style="width:20px; height: 20px" src="files/views/assets/image/try.png"></span>'
-	, tickType_toprope : '<span><img style="width:20px; height: 20px" src="files/views/assets/image/toprope.png"></span>'
+clLib.UI.tickTypeSymbolFunc = function(tickTypeName, dataRow) {
+	return clLib.UI.tickTypeSymbols[tickTypeName](dataRow);
 };
 
-clLib.tickTypeSymbol = function(tickTypeName, tickTypeValue) {
-	if(tickTypeValue) {
-		return clLib.UI.tickTypeSymbols[tickTypeName];
+clLib.UI.tickTypeSymbols = {
+	tickType_redpoint : function(dataRow) {
+		return $('<span><img style="margin-left: 5px; width:20px; height: 20px" src="files/views/assets/image/redpoint.png"></span>');
+	}
+	, tickType_flash : function(dataRow) {
+		return $('<span><img style="margin-left: 5px; width:20px; height: 20px" src="files/views/assets/image/flash.png"></span>');
+	}
+	, tickType_attempt :function(dataRow) {
+		return $('<span><img style="margin-left: 5px; width:20px; height: 20px" src="files/views/assets/image/try.png"></span>');
+	}
+	, tickType_toprope : function(dataRow) {
+		return $('<span><img style="margin-left: 5px; width:20px; height: 20px" src="files/views/assets/image/toprope.png"></span>');
+	}
+	, tickType_delete : function(dataRow) {
+		var aLink = $('<span style="text-align=\'right\'"><img style="margin-left: 13px; border: 0px solid red; width:10px; height: 10px" src="files/views/assets/image/delete-route.png"></span>');
+		aLink.click(function() {
+			clLib.localStorage.removeInstance("RouteLog", dataRow["_id"], "defaultStorage");
+			clLib.UI.resetUIelements("newRouteLog", "newRouteLog");
+		});
+		return aLink;
+	}
+};
+
+clLib.tickTypeSymbol = function(tickTypeName, tickTypeValue, dataRow) {
+	if(tickTypeValue || tickTypeName == "tickType_delete") {
+		return clLib.UI.tickTypeSymbolFunc(tickTypeName, dataRow);
 	}
 };
 
@@ -117,10 +137,14 @@ clLib.UI.list.formatRouteLogRow = function(dataRow) {
 			, "tickType_attempt" : clLib.tickTypeSymbol 
 			, "tickType_toprope" : clLib.tickTypeSymbol 
 		}
-		,bubble: "Score"
+		,bubble: {
+			"Score" : null
+			, "tickType_delete" : clLib.tickTypeSymbol 
+		,
+		}
 		,body: {
 			header: "RouteName",
-			items: ["DateISO", "Sector", "Line", "Colour", "Comment"]
+			items: ["deleted", "DateISO", "Sector", "Line", "Colour", "Comment"]
 		}
 	};
 	
@@ -128,7 +152,8 @@ clLib.UI.list.formatRouteLogRow = function(dataRow) {
 	dataRow.Score = clLib.computeScore(dataRow);
 	
 	//alert(JSON.stringify(dataRow));
-	var headerText = [], $bubble, $headerItem, $bodyItem, $bodyHeader;
+	var headerText = $("<div></div>");
+	var $bubble, $headerItem, $bodyItem, $bodyHeader;
 	var listItems = [];
 
 	/* 
@@ -136,20 +161,32 @@ clLib.UI.list.formatRouteLogRow = function(dataRow) {
 	*/
 	$.each(dataFormat["header"], function(headerName, headerFunc) {
 		if(headerFunc) {
-			headerText.push(
-				headerFunc(headerName, dataRow[headerName])
+			headerText.append(
+				headerFunc(headerName, dataRow[headerName], dataRow)
 			);
 		} else {
-			headerText.push(dataRow[headerName]);
+			//alert("no headerfunc foc " + headerName);
+			headerText.append(dataRow[headerName]);
 		}
 	});
 
-	headerText = headerText.join(" ", headerText);
+//	headerText = headerText.join(" ", headerText);
 	
 	$bubble = $("<span>")
 		.addClass("ui-li-count")
-		.append(dataRow[dataFormat["bubble"]])
+//		.append(dataRow[dataFormat["bubble"]])
 	;
+	
+	$.each(dataFormat["bubble"], function(headerName, headerFunc) {
+		if(headerFunc) {
+			$bubble.append(
+				headerFunc(headerName, dataRow[headerName], dataRow)
+			);
+		} else {
+			//alert("no headerfunc foc " + headerName);
+			$bubble.append(dataRow[headerName]);
+		}
+	});	
 
 	$headerItem = $("<li>")
 		.attr("data-role", "list-divider")
@@ -1325,6 +1362,19 @@ clLib.UI.userHandler = function (options, successFunc, errorFunc) {
 		clLib.sessionToken = null;
 		returnObj["sessionToken"] = null;
 		return successFunc();
+	}
+	else if (userAction == "delete") {
+		return clLib.REST.deleteUser(userObj, 
+		function(returnObj) {
+			// Clear any "old" error messages 
+			localStorage.removeItem("loginError");
+
+			localStorage.removeItem("currentPassword");
+			clLib.sessionToken = null;
+			returnObj["sessionToken"] = null;
+			return successFunc(returnObj);
+		}
+		, errorFunc);
 	}
 	else {
 		// could not login - alert error and return false

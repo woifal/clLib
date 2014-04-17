@@ -379,7 +379,7 @@ server.get('/db/:entityName',
 });
 
 server.put('/db/:entityName/:entityId', 
-		authHandler.requiredAuthentication, 
+//		authHandler.requiredAuthentication, 
 		function(req, res) 
 {
 	var errHandler = function(errorObj) {

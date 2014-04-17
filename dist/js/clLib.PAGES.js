@@ -394,6 +394,21 @@ clLib.PAGES.handlers = {
 				, {text: "creating user.."});
 			});
 			
+			$("#users_deleteButton").on("click", function () {
+				clLib.UI.execWithMsg(function() {
+					clLib.UI.save({ additionalData: { action: "delete" }}
+					,function() {
+						clLib.UI.fillUIelements("users", "users");
+					}
+					, function(e) {
+						clLib.loginErrorHandler(e);
+						clLib.UI.fillUIelements("users", "users");
+					}
+					);
+				}
+				, {text: "deleting user.."});
+	        });
+			
 	        $("#users_forgotPwdButton").on("click", function () {
 				$.mobile.navigate("clLib_users_verification.html");
 			});

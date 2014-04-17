@@ -215,6 +215,18 @@ clLib.REST.getEntities = function(entityName, whereObj, successFunc, errorFunc) 
 	, errorFunc);
 }
 
+clLib.REST.updateEntity = function (entityName, entityInstance, successFunc, errorFunc) {
+    var uri = clLib.REST.baseCollectionsURI + entityName + "/" + entityInstance["_id"];
+	delete(entityInstance["_id"]);
+    clLib.REST.executeInsert(uri, 'PUT', entityInstance, 
+	function(AJAXResult) {
+		AJAXResult = clLib.REST.postAJAXprocessing[clLib.REST.baseURI](AJAXResult);
+		successFunc(AJAXResult);
+	}
+	, errorFunc);
+}
+
+
 clLib.REST.storeEntity = function (entityName, entityInstance, successFunc, errorFunc) {
     var uri = clLib.REST.baseCollectionsURI + entityName;
     clLib.REST.executeInsert(uri, 'POST', entityInstance, 
@@ -236,6 +248,15 @@ clLib.REST.createUser = function (userInstance, successFunc, errorFunc) {
 clLib.REST.loginUser = function (userInstance, successFunc, errorFunc) {
     var reqOptions = {};
 	reqOptions["uri"] = clLib.REST.clLibServerURI + "/login";
+	reqOptions["method"] = "GET";
+	reqOptions["params"] = userInstance;
+	reqOptions["allowNoSessionToken"] = true;
+	clLib.REST.execAJAXRequest(reqOptions, successFunc, errorFunc);
+}
+
+clLib.REST.deleteUser = function (userInstance, successFunc, errorFunc) {
+    var reqOptions = {};
+	reqOptions["uri"] = clLib.REST.clLibServerURI + "/deleteUser";
 	reqOptions["method"] = "GET";
 	reqOptions["params"] = userInstance;
 	reqOptions["allowNoSessionToken"] = true;
