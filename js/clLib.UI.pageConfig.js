@@ -639,6 +639,7 @@ clLib.UI.elements = {
 		    clLib.addCSSBackground($this.attr("id"));
 		}
 		,"setSelectedValueHandler" : function($this, changeOptions) { 
+			//alert("Setting selected value..");
 			clLib.UI.setSelectedValueOnlyHandler($this, changeOptions);
 			clLib.addCSSBackground($this.attr("id"));
 		}

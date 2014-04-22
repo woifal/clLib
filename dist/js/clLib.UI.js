@@ -1398,7 +1398,7 @@ clLib.UI.userHandler = function (options, successFunc, errorFunc) {
 *
 */
 clLib.addCSSBackground = function(targetId, options) {
-	//clLib.loggi("adding CSS bg to " + targetId);
+	//alert("adding CSS bg to " + targetId);
 	var $targetEl = $('#' + targetId);
 	clLib.UI.killEventHandlers($targetEl, "change.clLibCSSBackground");
 
@@ -1449,7 +1449,8 @@ clLib.addCSSBackground = function(targetId, options) {
 		var last_style = $(this).data("cllast_style");
 		// Get currently selected element
 
-	    var className = $(this).find(':selected').html();;
+	    var className = $(this).find(':selected').html();
+		//alert("found selected element >" + className + "<");
 	    if (classForText && classForText[className]) {
             className = classForText[className];
         }
@@ -1459,6 +1460,7 @@ clLib.addCSSBackground = function(targetId, options) {
         if (last_style) {
             $(this).closest('.ui-select').find('.ui-btn').removeClass(last_style);
         }
+		//alert("setting laststyle to >" + className + "<");
         // Set currently selected color
         $(this).closest('.ui-select').find('.ui-btn').addClass(className);
         // Remember currently selected color
@@ -1485,7 +1487,10 @@ clLib.UI.preloadImages = function (imageURLs) {
 
 clLib.UI.elementConfig.localVarSaveImmediately = {
     "refreshHandler": function ($this) {
-        var elementName = clLib.UI.elementNameFromId($this.attr("id"));
+		var elementName = clLib.UI.elementNameFromId($this.attr("id"));
+        //if(elementName == "defaultLayoutMenuSwitch") {
+		//	alert("refreshing element " + elementName); //defaultLayoutMenuSwitch
+		//}
 
 		var $element = $this;
 
@@ -1500,8 +1505,11 @@ clLib.UI.elementConfig.localVarSaveImmediately = {
 		var localVarName = elementConfig["localVar"] || elementName;
 		
         var localVarValue = localStorage.getItem(localVarName);
-		//alert("AAAA setting element " + elementName + " to " + localStorage.getItem(elementName));
-        //$this.val(localVarValue).attr('selected', true).siblings('option').removeAttr('selected');
+		//if(elementName == "defaultLayoutMenuSwitch") {
+		//	alert("AAAA setting element " + elementName + " to " + localStorage.getItem(localVarName	));
+        //}
+		
+		//$this.val(localVarValue).attr('selected', true).siblings('option').removeAttr('selected');
         //$this.selectmenu("refresh", true);
         
 		var jqmDataRole = $this.attr("data-role");
@@ -1514,7 +1522,7 @@ clLib.UI.elementConfig.localVarSaveImmediately = {
         } 
 		else if (jqmDataRole == "flipswitch") {
             $this.val(localVarValue);
-            //$this.flipswitch("refresh");
+            $this.flipswitch("refresh");
         } 
 		else {
             $this.val(localVarValue);
@@ -1578,7 +1586,7 @@ clLib.UI.elementConfig.localVar = {
 			if(jqmDataRole != 'flipswitch') {
 				$this.selectmenu("refresh");
 			} else {
-				//$this.flipswitch("refresh");
+				$this.flipswitch("refresh");
 			}
 		}	
 		else if($this.prop("tagName") == "SPAN") {

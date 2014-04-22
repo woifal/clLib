@@ -150,6 +150,40 @@ server.get("/login", function (req, res) {
 
 });
 
+server.get("/deleteUser", function (req, res) {
+	
+	
+	var errHandler = function(errorObj) {
+		return clLib.server.defaults.errorFunc(errorObj, res);
+	}
+
+	util.log("putting.." + JSON.stringify(req.params));
+	var entityName = clLib.server.usersCollectionName;
+	var entityId = req.params.entityId;
+	// verify user.
+	DBHandler.updateEntity({
+		entity : entityName, 
+		id : entityId,
+		data : {"deleted": 1}
+	},
+	function(resultObj) { 
+		// upon success...
+		util.log("updated entity(" + entityName + ")>" + JSON.stringify(resultObj) + "<"); 
+		
+		// User not found=
+		if(!resultObj) {
+			res.send(500, JSON.stringify({
+			result: "Entity(" + entityName + ") not found: >" + entityId + "<"}));
+		}
+		res.send(JSON.stringify(resultObj));
+
+	}
+	, errHandler
+	);
+
+
+});
+
 server.post("/signup", function (req, res) {
 	util.log("authHandler.defaults : >" + JSON.stringify(authHandler.defaults) + "<");
 	var errHandler = function(errorObj) {

@@ -55,6 +55,19 @@ clLib.PAGES.handlers = {
 	        $("#_COMMON__feedbackButton").die("click").live("click", function () {
 	            $.mobile.navigate("clLib_feedback.html");
 	        });
+	        $("#_COMMON__refreshAllButton").die("click").live("click", function () {
+				clLib.localStorage.refreshAllData(
+				function(warnings) {
+					if(typeof(warnings) == "object"  && warnings["warnings"] != "") {
+						alert("warnings: " + JSON.stringify(warnings));
+					}
+					alert("refreshed!");
+				},
+				function(e) {
+					alert("could not refresh due to " + e.getMessage() + " >" + JSON.stringify(e));
+				}
+				);
+	        });
             //alert("binding clinck handler for usersbutton");
 			$("#_COMMON__usersButton").die("click").live("click", function () {
 				$.mobile.navigate("clLib_users.html");
@@ -222,11 +235,17 @@ clLib.PAGES.handlers = {
 
 	        //clLib.UI.fillUIelements("newRouteLog", "newRouteLog", localStorage.getItem("defaultLayout"));
 	    }
-        , "pagebeforeshow": function () {
-			//alert("show!");
-	        localStorage.setItem("currentJqmSlide", "newRouteLog");
-	        clLib.UI.fillUIelements("newRouteLog", "newRouteLog", localStorage.getItem("defaultLayout"));
-        }
+        , "pagebeforeshow": function (e, ui) {
+            var $prevElement = $(ui.prevPage);//.prev();
+			var prevTag = $prevElement.prop("tagName");
+			var prevId = $prevElement.attr("id");
+			//alert("showing page!(prev:" + prevTag + " #" + prevId + ")");
+			
+			if (!prevId || !prevId.endsWith("-dialog")) {
+				localStorage.setItem("currentJqmSlide", "newRouteLog");
+				clLib.UI.fillUIelements("newRouteLog", "newRouteLog", localStorage.getItem("defaultLayout"));
+			}
+		}
 	}
 
 	, "stats": {
