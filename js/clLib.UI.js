@@ -1606,34 +1606,31 @@ clLib.UI.elementConfig.plainElement = {
 };
 
 
-clLib.prefsCompleteCheck = function () {
+clLib.prefsCompleteCheck = function (successFunc, errorFunc) {
     //alert("pref complete?");
 	var prefsComplete = false;
     if (localStorage.getItem("currentUser")) {
-        prefsComplete = true;
+        return successFunc();
     }
-    if (!prefsComplete) {
+	else {
 		localStorage.setItem("loginError", "No username specified.");
-        $.mobile.navigate("clLib_users.html");
-    }
-    return prefsComplete;
-
+		clLib.PAGES.changeTo("clLib_users.html");
+		return errorFunc();
+	}
 };
 
-clLib.tryLogin = function() {
+clLib.tryLogin = function(successFunc, errorFunc) {
 	// offline? no need to try to login..
 	if(!clLib.isOnline()) {
-		return false;
+		return errorFunc();
 	}
 	return clLib.loggedInCheck(
-	function() {
-		//alert("loggedin!");
-		return true;
-	},
+	successFunc,
 	function(e) {
 		//alert("handling error " + JSON.stringify(e));
 		clLib.loginErrorHandler(e);
-		$.mobile.navigate("clLib_users.html");
+		clLib.PAGES.changeTo("clLib_users.html");
+		return errorFunc();
 	}
 	);
 };

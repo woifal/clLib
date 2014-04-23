@@ -534,7 +534,7 @@ clLib.loggi = function(text, priority) {
 	priority = priority || window.priority || 0;
 	if(priority) {
 		if(priority == 1) {
-			alert(text);
+			alert("asdfasdf" + text);
 		} else {
 			console.log(text);
 		}
@@ -663,19 +663,21 @@ clLib.loggedInCheck = function (callbackFunc, errorFunc) {
 	alert("should not get here 45345");
 };
 
-clLib.wasOnlineCheck = function () {
+clLib.wasOnlineCheck = function (successFunc, errorFunc) {
 	//alert("last refresh:" + clLib.localStorage.getLastRefreshDate("defaultStorage"));
 	// data from previous refresh found?
     if (clLib.localStorage.getLastRefreshDate("defaultStorage")) {
-        return true;
+        return successFunc();
     }
 
     if (!clLib.localStorage.refreshAllData(
 		function() {
 			alert("refreshed!");
+			return successFunc();
 		}
 		,function() {
 			alert("not refreshed!");
+			return errorFunc();
 		}
 	)) {
 		//alert("You need to go online once to get initial Route(Log) data!");

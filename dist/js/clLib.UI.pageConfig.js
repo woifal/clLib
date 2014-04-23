@@ -12,10 +12,18 @@ clLib.UI.cssBackgrounds = {
 
 
 clLib.UI.pageRequisites = {
-    "startScreen": { "pagebeforeshow" : [clLib.prefsCompleteCheck, clLib.wasOnlineCheck, clLib.tryLogin] }
-    , "preferences": { "pagebeforeshow" : [] }
-    , "newRouteLog": { "pagebeforeshow" : [clLib.prefsCompleteCheck, clLib.tryLogin, clLib.wasOnlineCheck] }
-    , "users": { "pagebeforeshow" : [clLib.tryLogin] }
+    "startScreen": { "clBeforeChange" : [clLib.prefsCompleteCheck, clLib.wasOnlineCheck, clLib.tryLogin] }
+    , "preferences": {}
+    , "newRouteLog": { 
+		"clBeforeChange" : [clLib.prefsCompleteCheck, clLib.tryLogin, clLib.wasOnlineCheck, 
+			function (callbackFunc, errorFunc) {
+				var options = {};
+				options.uri = clLib.REST.clLibServerURI + "/sleep/5";
+				return clLib.REST.execGET(options, callbackFunc, errorFunc);
+			}
+		] 
+	}
+    , "users": { "clBeforeChange" : [clLib.tryLogin] }
     , "users_verification": { }
     , "stats": { }
     , "diagram": { }

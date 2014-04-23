@@ -607,3 +607,22 @@ server.get('/events', function(req, res) {
 });
 
 
+	
+server.get('/sleep/:seconds', 
+		//authHandler.requiredAuthentication, 
+		function(req, res) 
+{
+	var errHandler = function(errorObj) {
+		return clLib.server.defaults.errorFunc(errorObj, res);
+	}
+
+	util.log("2getting.." + JSON.stringify(req.params));
+	var seconds = req.params.seconds;
+	setTimeout(function() {
+			res.send({"result" : "slept " + seconds + " seconds"});
+		}
+		, seconds * 1000
+	);
+
+});
+

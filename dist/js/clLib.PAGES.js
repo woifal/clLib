@@ -15,13 +15,32 @@ clLib.UI.preloadImages([
 ]);
 
 
-clLib.PAGES.defaultHandler = function (event, ui) {
+clLib.PAGES.defaultHandler = function (event, ui, aPageId) {
 	var eventName = event.type;
-    var pageId = $(event.target).attr("id");
+    var pageId;
+	if(aPageId) {
+		pageId = aPageId;
+	} else {
+		pageId = $(event.target).attr("id");
+	}
 
 	console.log("checking prerequisites for " + pageId + "." + eventName);
     var allTrue = false;
 	var requisiteFunctions = (clLib.UI.pageRequisites[pageId] && clLib.UI.pageRequisites[pageId][eventName]) || {};
+
+	clLib.loggi("requisiteFunctions is " + requisiteFunctions.length);
+	clLib.PAGES.executeChainedFuncs(requisiteFunctions, 
+		function() { 
+			clLib.loggi("success!!"); 
+			clLib.loggi("calling " + pageId + " and " + eventName);
+			clLib.PAGES.handlers["_COMMON_"][eventName](event, ui);
+			clLib.PAGES.handlers[pageId][eventName](event, ui);
+		}, 
+		function() { alert("error!!"); }
+	);
+
+/*
+	
     $.each(requisiteFunctions, function (index, checkFunc) {
         //alert("executing " + index + " >" + JSON.stringify(checkFunc.name));
         if (checkFunc()) {
@@ -36,24 +55,50 @@ clLib.PAGES.defaultHandler = function (event, ui) {
         }
     });
 //    if (allTrue) {
-        clLib.loggi("calling " + pageId + " and " + eventName);
-        clLib.PAGES.handlers["_COMMON_"][eventName](event, ui);
-        clLib.PAGES.handlers[pageId][eventName](event, ui);
 //    }
+*/
 };
+
+
+clLib.PAGES.executeChainedFuncs = function(funcArray, successFunc, errorFunc) {
+	var idx = -1;
+	return clLib.PAGES.executeChainedFunc(funcArray, idx, successFunc, errorFunc);
+};
+clLib.PAGES.executeChainedFunc = function(funcArray, idx, successFunc, errorFunc) {
+	idx++;
+	var curFunc = funcArray[idx];
+	
+	console.log("typeof successFunc is " + typeof(successFunc));
+	// Reached end of chain..
+	console.log("idx = " + idx);
+	if(!curFunc) {
+		return successFunc({"a": "b"});
+	}
+	
+	// Call next function in chain..
+	return curFunc(function() {
+		return clLib.PAGES.executeChainedFunc(
+			funcArray, idx, 
+			successFunc, errorFunc
+		);
+	},
+	errorFunc
+	);
+};
+
 clLib.PAGES.handlers = {
 	1 : 1
 	,"_COMMON_" : {
 	    "pagecreate": function () {
 	        // Link to preferences page..
 	        $("#_COMMON__preferencesButton").die("click").live("click", function () {
-	            $.mobile.navigate("clLib_preferences.html");
+	            clLib.PAGES.changeTo("clLib_preferences.html");
 	        });
 	        $("#_COMMON__AGBButton").die("click").live("click", function () {
-	            $.mobile.navigate("clLib_AGB.html");
+	            clLib.PAGES.changeTo("clLib_AGB.html");
 	        });
 	        $("#_COMMON__feedbackButton").die("click").live("click", function () {
-	            $.mobile.navigate("clLib_feedback.html");
+	            clLib.PAGES.changeTo("clLib_feedback.html");
 	        });
 	        $("#_COMMON__refreshAllButton").die("click").live("click", function () {
 				clLib.localStorage.refreshAllData(
@@ -70,7 +115,7 @@ clLib.PAGES.handlers = {
 	        });
             //alert("binding clinck handler for usersbutton");
 			$("#_COMMON__usersButton").die("click").live("click", function () {
-				$.mobile.navigate("clLib_users.html");
+				clLib.PAGES.changeTo("clLib_users.html");
             });
 	    }
 		, "pagebeforeshow": function (e, ui) {
@@ -119,14 +164,14 @@ clLib.PAGES.handlers = {
 						clLib.UI.hideLoading(); 
 							//alert("going back.."); 
 							//history.back(); 
-						$.mobile.navigate("clLib_startScreen.html");
+						clLib.PAGES.changeTo("clLib_startScreen.html");
 					});
 	//			}, {text: "Saving preferences..."});
             });
 
             $("#preferences_currentUserReadOnly").on("click", function () {
                 //alert("user input field clicked!");
-                $.mobile.navigate("clLib_users.html");
+                clLib.PAGES.changeTo("clLib_users.html");
             });
 
 			//clLib.UI.fillUIelements("preferences", "preferences");
@@ -151,11 +196,11 @@ clLib.PAGES.handlers = {
 
 	        // Link to preferences page..
 	        $("#startScreen_preferencesButton").die("click").click(function () {
-	            $.mobile.navigate("clLib_preferences.html");
+	            clLib.PAGES.changeTo("clLib_preferences.html");
 	        });
 			
 			$("#startScreen_statsButton").die("click").click(function () {
-	            $.mobile.navigate("clLib_stats.html");
+	            clLib.PAGES.changeTo("clLib_stats.html");
 	        });
 
 	        // Link to New Route page..
@@ -185,7 +230,8 @@ clLib.PAGES.handlers = {
 					clLib.loggi("currentLayout set to " + currentLayout);
 					var newRouteLogURL = "clLib_newRouteLog." + currentLayout + ".html";
 
-					$.mobile.navigate(newRouteLogURL);
+					clLib.PAGES.changeTo(newRouteLogURL);
+					//$.mobile.navigate(newRouteLogURL);
 				}, {text: "Loading page.."});
 	        });
 
@@ -205,7 +251,7 @@ clLib.PAGES.handlers = {
 	        });
 
             $("#startScreen_usersButton").on("click", function () {
-                $.mobile.navigate("clLib_users.html");
+                clLib.PAGES.changeTo("clLib_users.html");
             });
 	    }
         , "pagebeforeshow" : function() {
@@ -252,10 +298,10 @@ clLib.PAGES.handlers = {
 	    "pagecreate": function () {
 	        //clLib.UI.fillUIelements("newRouteLog", "newRouteLog", localStorage.getItem("defaultLayout"));
 			$("#stats_todaysDiagram h3").on("click", function (e) {
-				$.mobile.navigate("clLib_diagram.html");
+				clLib.PAGES.changeTo("clLib_diagram.html");
             });
 			$("#stats_monthsDiagram").on("click", function () {
-                $.mobile.navigate("clLib_diagram.html");
+                clLib.PAGES.changeTo("clLib_diagram.html");
             });
 		}
         , "pagebeforeshow": function () {
@@ -355,7 +401,7 @@ clLib.PAGES.handlers = {
 	            clLib.UI.execWithMsg(function() {
 					clLib.UI.save({ additionalData: { action: "login", plainPwd : true }}
 					,function() {
-						$.mobile.navigate("clLib_startScreen.html");
+						clLib.PAGES.changeTo("clLib_startScreen.html");
 					}
 					, function(e) {
 						clLib.loginErrorHandler(e);
@@ -394,7 +440,7 @@ clLib.PAGES.handlers = {
 						clLib.login(function() {
 							// ..and return to startPAge..
 							//alert("Successfully signed up!");
-							$.mobile.navigate("clLib_startScreen.html");
+							clLib.PAGES.changeTo("clLib_startScreen.html");
 						}
 						, function(e) {
 							clLib.loginErrorHandler(e);
@@ -429,11 +475,11 @@ clLib.PAGES.handlers = {
 	        });
 			
 	        $("#users_forgotPwdButton").on("click", function () {
-				$.mobile.navigate("clLib_users_verification.html");
+				clLib.PAGES.changeTo("clLib_users_verification.html");
 			});
 	        
 			$("#users_preferencesButton").die("click").click(function () {
-				$.mobile.navigate("clLib_preferences.html");
+				clLib.PAGES.changeTo("clLib_preferences.html");
 			});
 	    }
         , "pagebeforeshow": function () {
@@ -451,6 +497,25 @@ $("div[data-role=page]").die(eventsToBind).live(eventsToBind, function (event, u
     clLib.PAGES.defaultHandler(event, ui);
 });
 
+
+clLib.PAGES.changeTo = function(newRouteLogURL) {
+	clLib.loggi("changing to " + newRouteLogURL);
+	var pageId = "newRouteLog";
+	var eventName = "clBeforeChange";
+	var requisiteFunctions = (clLib.UI.pageRequisites[pageId] && clLib.UI.pageRequisites[pageId][eventName]) || {};
+
+	clLib.loggi("requisiteFunctions is " + requisiteFunctions.length);
+	clLib.PAGES.executeChainedFuncs(requisiteFunctions, 
+		function() { 
+			clLib.loggi("success!!"); 
+			$.mobile.navigate(newRouteLogURL);	
+		}, 
+		function() { alert("error!!"); }
+	);
+
+
+	
+};
 
 
 
