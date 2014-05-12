@@ -921,7 +921,7 @@ clLib.UI.showAllTodayScores = function(buddyNames, targetElement) {
 
 	var allTodaysScores = [];
 	var buddyArray = (buddyNames && buddyNames.split(",")) || [];
-	buddyArray.push(localStorage.getItem("currentUser"));
+	buddyArray.push(clLib.getUserInfo()["username"]);
 	$.each(buddyArray, function(idx, buddyName) {
 		// build where clause for today's routelogs
 		var buddyWhere = clLib.getRouteLogWhereToday({userName: buddyName});
@@ -1609,7 +1609,7 @@ clLib.UI.elementConfig.plainElement = {
 clLib.prefsCompleteCheck = function (successFunc, errorFunc) {
     //alert("pref complete?");
 	var prefsComplete = false;
-    if (localStorage.getItem("currentUser")) {
+    if (clLib.getUserInfo()["username"]) {
         return successFunc();
     }
 	else {
@@ -1619,7 +1619,7 @@ clLib.prefsCompleteCheck = function (successFunc, errorFunc) {
 	}
 };
 
-clLib.tryLogin = function(successFunc, errorFunc) {
+clLib.tryLogin = function(successFunc, errorFunc, noRedirectFlag) {
 	// offline? no need to try to login..
 	if(!clLib.isOnline()) {
 		return errorFunc();
@@ -1629,8 +1629,10 @@ clLib.tryLogin = function(successFunc, errorFunc) {
 	function(e) {
 		//alert("handling error " + JSON.stringify(e));
 		clLib.loginErrorHandler(e);
-		clLib.PAGES.changeTo("clLib_users.html");
-		return errorFunc();
+        if(!(noRedirectFlag == true)) {
+            clLib.PAGES.changeTo("clLib_users.html");
+		}
+        return errorFunc();
 	}
 	);
 };

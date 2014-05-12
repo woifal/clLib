@@ -20,6 +20,13 @@
 </div>
 
                 <div>
+                    <!-- Authenticate via GOOGLE -->
+                    <a data-role="button"
+                       id="users_googleLoginButton" data-corners="true" data-icon="check" data-iconpos="right"
+                       data-mini="false" data-theme="a" tabindex="8">
+                        Google Login!
+                    </a>
+                    
                     <!-- userName -->
                     <div>
                         <label style="font-size: 8px;" for="users_currentUser">User name</label>
@@ -72,6 +79,9 @@
                  id="users_mobilefooter1" data-theme="a">
             </div>
         </div>
+
+        @@include('grunt_includes/html_auth.google.html', {"pageName": "users"})
+
 </body>
 
   

@@ -177,7 +177,7 @@ clLib.REST.buildAJAXRequest = function(options, successFunc, errorFunc) {
             if(!options["allowNoSessionToken"]) {
 		        // only allow REST calls for authenticated users..
 			    xhr.setRequestHeader("X-Appery-Session-Token", clLib.sessionToken);
-			    xhr.setRequestHeader("clUserName", clLib.currentUser);
+			    xhr.setRequestHeader("clUserName", clLib.getUserInfo()["username"]);
             }
 			if (options["headerParams"]) {
 			    $.each(options["headerParams"], function (paramName, paramValue) {

@@ -324,7 +324,7 @@ clLib.getRoutesWhere_obj = function(restrictionObj) {
 * Builds a mongodb WHERE clause to use for "RouteLog" collection queries.
 * Extends the given "dateWhereObj" where clause by an additional restriction on the "USERNAME" column.
 *
-* The username is taken from the localStorage item "currentUser".
+* The username is taken from clLib.getCurrentUserInfo.
 *
 * Returns the WHERE clause in JSON notation.
 *
@@ -337,9 +337,8 @@ clLib.getRouteLogWhereAt = function(dateWhereObj, additionalWhere) {
 };
 
 clLib.getCurrentUserWhere = function() {
-	return {
-		userName: localStorage.getItem("currentUser")
-	}
+    var userName = clLib.getUserInfo()["username"];
+    return userName;
 }
 
 /*
@@ -560,7 +559,7 @@ clLib.alert = function (text, html) {
 clLib.login = function(successFunc, errorFunc) {
 	//alert("clLib.login called.....");
 	var userObj = {};
-	userObj["username"] = localStorage.getItem("currentUser");
+	userObj["username"] = clLib.getUserInfo()["username"];
 	userObj["password"] = localStorage.getItem("currentPassword");
     return clLib.REST.loginUser(userObj, 
 	function(returnObj) {
@@ -569,7 +568,6 @@ clLib.login = function(successFunc, errorFunc) {
 		//alert("success login!");
 		clLib.loggi("retrieved sessionToken >" + sessionToken + "<");
 		clLib.sessionToken = sessionToken;
-		clLib.currentUserId = currentUserId;
 		// Clear any "old" error messages 
 		localStorage.removeItem("loginError");
 		//alert("logged in, return success");
@@ -749,6 +747,36 @@ clLib.getObjValues = function(resultObj) {
 	return values;
 };
 
+
+
+clLib.getUserInfo = function() {
+    var userObj= {};
+    if(window.userInfo) {
+        alert("userInfo : " + window.userInfo);
+        userObj = window.userInfo;
+    } else {
+        if(localStorage.getItem("userInfo")) {
+            alert("localuserinfo is " + localStorage.getItem("userInfo"));
+            userObj = JSON.parse(localStorage.getItem("userInfo"));
+            window.userInfo = userObj;
+        }
+    }
+    return userObj;
+};
+
+clLib.setUserInfo = function(newUserInfo, replaceFlag) {
+    var curUserInfo = clLib.getUserInfo();
+    if(replaceFlag) {
+        curUserInfo = newUserInfo;
+    }
+    else {
+        $.each(newUserInfo, function(key, value) {
+            curUserInfo[key] = value;
+        });
+    }
+    localStorage.setItem("userInfo", JSON.stringify(curUserInfo));
+    window.userInfo = curUserInfo;
+};
 
 
 //})(jQuery)

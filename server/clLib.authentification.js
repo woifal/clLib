@@ -58,66 +58,71 @@ auth.prototype.requiredAuthentication = function(req, res, next) {
 
 auth.prototype.authenticate = function(authObj, callbackFunc, errorFunc) {
     util.log('authenticating >' + JSON.stringify(authObj) + "<");
+    if(authObj["authType"] == "google") {
+        // verify access token (against username?)
+        return authObj;
+    }
+    else {
+        var userName = authObj.username;
+        var password = authObj.password;
+        var meMyselfAndI = this;
+        
+        if(!userName || userName == "") {
+            return errorFunc("username is missing..");
+        }
 
-	var userName = authObj.username;
-	var password = authObj.password;
-	var meMyselfAndI = this;
-	
-	if(!userName || userName == "") {
-		return errorFunc("username is missing..");
-	}
+        // verify user.
+        DBHandler.getEntities({
+            entity : serverResource.usersCollectionName, 
+            where : {"username": authObj["username"]}
+            , requireResult: true
+        },
+        // upon success...
+        function(userObj) { 
+            userObj = userObj[0];
+            util.log("Found user >" + JSON.stringify(userObj) + "<"); 
 
-	// verify user.
-	DBHandler.getEntities({
-		entity : serverResource.usersCollectionName, 
-		where : {"username": authObj["username"]}
-		, requireResult: true
-	},
-	// upon success...
-	function(userObj) { 
-		userObj = userObj[0];
-		util.log("Found user >" + JSON.stringify(userObj) + "<"); 
+            //util.log(JSON.stringify(this));
+            
+            var realPwd = userObj["password"];
+            
+            function checkPassword(givenPwd, realPwd, callbackFunc, errorFunc) {
+                util.log("comparing " + givenPwd + " and " + realPwd);
+                // Password hashes match?
+                if (givenPwd == realPwd) {
+                    util.log("passwords match!");
+                    var sessionToken = serverResource.generateRandomToken();
+                    // indicate in session that user was authenticated..
+                    userObj["sessionToken"] = sessionToken;
+                    serverResource.runtime["sessionTokens"][userObj["username"]] = sessionToken;
+                    
+                    return callbackFunc(userObj);
+                }
+                // no, they don't..
+                util.log('non-matching passwords..');
+                //errorFunc("asdfasfd");
+                return errorFunc(new Error('invalid password'));
+            };
 
-		//util.log(JSON.stringify(this));
-		
-		var realPwd = userObj["password"];
-		
-		function checkPassword(givenPwd, realPwd, callbackFunc, errorFunc) {
-			util.log("comparing " + givenPwd + " and " + realPwd);
-			// Password hashes match?
-			if (givenPwd == realPwd) {
-				util.log("passwords match!");
-				var sessionToken = serverResource.generateRandomToken();
-				// indicate in session that user was authenticated..
-				userObj["sessionToken"] = sessionToken;
-				serverResource.runtime["sessionTokens"][userObj["username"]] = sessionToken;
-				
-				return callbackFunc(userObj);
-			}
-			// no, they don't..
-			util.log('non-matching passwords..');
-			//errorFunc("asdfasfd");
-			return errorFunc(new Error('invalid password'));
-		};
-
-		util.log("plainPwd >" + authObj["plainPwd"] + "<, >" + (authObj["plainPwd"] != true) + "<");
-		if(authObj["plainPwd"] == "true") {
-			meMyselfAndI.hash(password, userName, 
-			function (hash) {
-				util.log("hash for password >" + password + "< is >" + hash + "<");
-				return checkPassword(hash, realPwd, callbackFunc, errorFunc);
-			},
-			function(err) {
-				util.log('could not generate hash for password..');
-				return errorFunc(new Error('could not generate hash for password..'));
-			}
-			);
-		} else {
-			return checkPassword(password, realPwd, callbackFunc, errorFunc);
-		}
-	}
-	,errorFunc
-	);
+            util.log("plainPwd >" + authObj["plainPwd"] + "<, >" + (authObj["plainPwd"] != true) + "<");
+            if(authObj["plainPwd"] == "true") {
+                meMyselfAndI.hash(password, userName, 
+                function (hash) {
+                    util.log("hash for password >" + password + "< is >" + hash + "<");
+                    return checkPassword(hash, realPwd, callbackFunc, errorFunc);
+                },
+                function(err) {
+                    util.log('could not generate hash for password..');
+                    return errorFunc(new Error('could not generate hash for password..'));
+                }
+                );
+            } else {
+                return checkPassword(password, realPwd, callbackFunc, errorFunc);
+            }
+        }
+        ,errorFunc
+        );
+    }
 };
 
 auth.prototype.defaults = {

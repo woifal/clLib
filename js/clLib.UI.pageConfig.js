@@ -23,7 +23,9 @@ clLib.UI.pageRequisites = {
 			}
 		] 
 	}
-    , "users": { "clBeforeChange" : [clLib.tryLogin] }
+    , "users": { "clBeforeChange" : [function(successFunc, errorFunc) {
+        return clLib.tryLogin(successFunc, errorFunc, true);
+    }] }
     , "users_verification": { }
     , "stats": { }
     , "diagram": { }
@@ -83,7 +85,6 @@ clLib.UI.autoLoad = {
 	}
 	,preferences : {
 		default: [
-			"currentUserReadOnly"
 			, "displayName"
 			, "buddiesStr"
 			, "showTopX"
@@ -133,7 +134,6 @@ clLib.UI.elementsToReset = {
 	, startScreen : [
 	]
     , preferences: [
-		"currentUserReadOnly"
 		, "displayName"
 		, "buddiesStr"
         , "showTopX"
@@ -275,6 +275,30 @@ clLib.UI.elements = {
 		"dbField": "displayName"
 		,"refreshHandler": function ($this) {
 			//alert("!!!!!!!!!!!!refreshing " + $this.attr("id"));
+            var $currentUser;
+            
+            var profileURL = clLib.getUserInfo()["profileURL"];
+            var displayName = clLib.getUserInfo()["displayName"];
+            
+            $currentUser = $("<div>");
+            $currentUser.append(
+                $("<img>")
+                .attr({
+                    "src" : profileURL
+                })
+                .css({
+                    width : "50px"
+                    ,height : "50px"
+                })
+            )
+            .append(
+                $("<span>")
+                    .text(displayName)
+            );
+            
+            $this.replaceWith($currentUser);
+            
+/*
 			var elValue;
 			if(localStorage.getItem("displayName") && localStorage.getItem("displayName") != "undefined") {
 				//alert("yes, display name found: >" + localStorage.getItem("displayName") + "<");
@@ -296,7 +320,8 @@ clLib.UI.elements = {
 			}
 			//alert("set value to " + localVarValue);
 			//$("#mypanel").trigger("create");
-		}
+*/
+        }
 	})
 
     ,"currentUser": $.extend({}, {
@@ -891,9 +916,9 @@ clLib.UI.elements = {
 		}
 	}
 	,"currentUserPref" : {
-		"dbField" : "userName"
+		"dbField" : "username"
 		,"customVal": function() {
-			return localStorage.getItem("currentUser");
+			return clLib.getUserInfo()["username"];
 		}
 	}
 	,"currentDate" : {
@@ -961,7 +986,7 @@ clLib.UI.elements = {
 			var $container = $this;
 			// build where clause for today's routelogs
 			//var where = clLib.getRouteLogWhereToday(clLib.getCurrentUserWhere());
-			var where = clLib.getRouteLogWhereToday({"userName": "asdf"});
+			var where = clLib.getRouteLogWhereToday({"username": "asdf"});
 			
 			var successHandler = function(resultObj) {
 				resultObj = JSON.parse(resultObj);

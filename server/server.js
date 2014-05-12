@@ -137,9 +137,7 @@ server.get("/login", function (req, res) {
 
 	console.log("authHandler.defaults : >" + JSON.stringify(authHandler.defaults) + "<");
 	authHandler.authenticate({
-		username : req.params["username"]
-		,password :  req.params["password"]
-		,plainPwd : req.params["plainPwd"]
+        req.params
 	},
 	function(userObj) {
 		util.log("AUTHENTICATED!!! " + JSON.stringify(userObj));

@@ -51,15 +51,18 @@
 				<li data-role="list-divider">Kurt Climbing Menu</li>
 				<li>
 					<div>
+<!--
 						<a 
 							data-role="button" 
 							data-icon="gear" 
 							data-iconpos="right" 
 							id="_COMMON__usersButton"
 						>
-							Hi <span id="_COMMON__displayName">user</span>
+							<span id="_COMMON__displayName">user</span>
 						</a>
-					</div>
+-->
+                        <span id="_COMMON__displayName">user</span>
+                    </div>
 				</li>
 				<li><a id="_COMMON__preferencesButton" href="clLib_preferences.html">Preferences</a></li>
 				<li><a id="_COMMON__AGBButton" href="#">AGB</a></li>
@@ -85,10 +88,8 @@
 			 data-add-back-btn="false"
              data-theme="a"
         >
-            <h1>
-                Kurt Climbing	
-            </h1>
-
+                <img src="files/views/assets/image/logo.png" style="background: red; width: 40%; height: 40%"/>
+            
 			<a href="clLib_startScreen.html"
 			data-role="button" 
 				data-corners="true"
@@ -137,6 +138,13 @@
 </div>
 
                 <div>
+                    <!-- Authenticate via GOOGLE -->
+                    <a data-role="button"
+                       id="users_googleLoginButton" data-corners="true" data-icon="check" data-iconpos="right"
+                       data-mini="false" data-theme="a" tabindex="8">
+                        Google Login!
+                    </a>
+                    
                     <!-- userName -->
                     <div>
                         <label style="font-size: 8px;" for="users_currentUser">User name</label>
@@ -189,6 +197,102 @@
                  id="users_mobilefooter1" data-theme="a">
             </div>
         </div>
+
+        <button id="authorize-button" >Authorize</button>
+<button id="logout-button" >Logout</button>
+<button id="api-button" >API</button>
+<script type="text/javascript">
+
+document.getElementById('authorize-button').onclick = function() {
+    googleAuth.checkAuth(
+        function(userObj) {
+            alert("success!");
+            alert("with >" + JSON.stringify(userObj));
+        }
+        ,function(error) {
+            alert("error!");
+            alert("with >" + JSON.stringify(error));
+        }
+    );
+};
+
+var loadGoogleAuth = function() {
+};
+
+var googleAuth = {
+    1:1
+    ,clientId : '366201815473-t9u61cghvmf36kh0dgtenahgitvsuea8.apps.googleusercontent.com'
+    ,apiKey : 'AIzaSyAC3yPnDVILjfEyFYU5i15gMhVzMDJO5fs'
+    ,scopes : 'https://www.googleapis.com/auth/plus.me'
+    ,checkAuth : function(successFunc, errorFunc) {
+        console.log("authorizing with " + googleAuth.apiKey + "," + googleAuth.clientId + "," + googleAuth.scopes);
+        gapi.client.setApiKey(googleAuth.apiKey);
+
+        gapi.auth.authorize({
+            client_id: googleAuth.clientId, 
+            scope: googleAuth.scopes, 
+            immediate: false
+        }, 
+        function(authResult) {
+            console.log("auth checked..");
+            console.log(JSON.stringify(authResult.access_token));
+            //console.log(JSON.stringify(gapi.auth.getToken()));
+            
+            var accessToken = authResult.access_token;
+            
+            if (authResult && !authResult.error) {
+                return googleAuth.retrieveUserInfo(accessToken, successFunc, errorFunc);
+            } else {
+                return errorFunc(authResult.error);
+            }
+        }
+        );
+    }
+    ,retrieveUserInfo : function(accessToken, successFunc, errorFunc) {
+        //console.log(JSON.stringify(gapi.auth.getToken()));
+        gapi.client.load('plus', 'v1', function() {
+            var request = gapi.client.plus.people.get({
+                'userId': 'me'
+            });
+            request.execute(function(resp) {
+                if(!resp.image.url) {  
+                    return errorFunc("gapi+ error!");
+                }
+
+                
+                console.log("got gprofile of >" + JSON.stringify(resp) + "<");
+                
+                var userObj = {};
+                userObj["authType"] = "google";
+                userObj["accessToken"] = accessToken;
+                //userObj["displayName"] = resp.displayName;
+                userObj["displayName"] = resp.name.givenName;
+                
+                userObj["profileURL"] = resp.image.url;
+                userObj["username"] = resp.id;
+                
+                console.log("got userObj of >" + JSON.stringify(userObj) + "<");
+                
+                return successFunc(userObj);
+          });
+        });
+      }
+
+/*    var logoutButton = document.getElementById('logout-button');
+    logoutButton.onclick = function() {
+        alert("signing out..");
+        gapi.auth.signOut();
+        gapi.auth.setToken(null);
+        alert(JSON.stringify(gapi.auth.getToken()));
+        alert("signedout..");
+    };
+*/
+};
+</script>
+    <script src="https://apis.google.com/js/client.js?onload=loadGoogleAuth"></script>
+    <div id="content"></div>
+
+
 </body>
 
   

@@ -66,15 +66,18 @@
 				<li data-role="list-divider">Kurt Climbing Menu</li>
 				<li>
 					<div>
+<!--
 						<a 
 							data-role="button" 
 							data-icon="gear" 
 							data-iconpos="right" 
 							id="_COMMON__usersButton"
 						>
-							Hi <span id="_COMMON__displayName">user</span>
+							<span id="_COMMON__displayName">user</span>
 						</a>
-					</div>
+-->
+                        <span id="_COMMON__displayName">user</span>
+                    </div>
 				</li>
 				<li><a id="_COMMON__preferencesButton" href="clLib_preferences.html">Preferences</a></li>
 				<li><a id="_COMMON__AGBButton" href="#">AGB</a></li>
@@ -131,9 +134,11 @@
 				<span id="preferences_currentUserReadOnly">user</span>
 			</a>
 
+<!-- obsolete since clLib.getCurrentUser(..) -->
+<!--
 			<label for="displayName">Display Name:</label>
             <input id="preferences_displayName" type="text" name="displayName" tabindex="2"/>
-			
+-->			
 <!--
             <label for="buddiesStr">Buddies:</label>
             <input id="preferences_buddiesStr" type="text" name="buddiesStr" tabindex="2"/>

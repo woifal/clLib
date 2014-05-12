@@ -361,8 +361,8 @@ clLib.PAGES.handlers = {
 	    "pagecreate"	: function () {
 			localStorage.setItem("notification", "");
 			var userEntity = {
-				"username" : localStorage.getItem("currentUser") 
-					};
+				"username" : clLib.getUserInfo()["username"]
+            };
 			var successHandler = function() {
 				clLib.UI.fillUIelements("users_verification", "users_verification");
 			};
@@ -397,7 +397,24 @@ clLib.PAGES.handlers = {
 	,"users": {
 	    "pagecreate"	: function () {
 
-	        $("#users_loginButton").on("click", function () {
+            $("#users_googleLoginButton").on("click", function () {
+	        
+                googleAuth.checkAuth(
+                    function(userObj) {
+                        alert("success!");
+                        alert("with >" + JSON.stringify(userObj));
+                        clLib.setUserInfo(userObj);
+                        $("#_COMMON__displayName").trigger("refresh");
+                    }
+                    ,function(error) {
+                        alert("error!");
+                        alert("with >" + JSON.stringify(error));
+                    }
+                );
+            });
+            
+            
+            $("#users_loginButton").on("click", function () {
 	            clLib.UI.execWithMsg(function() {
 					clLib.UI.save({ additionalData: { action: "login", plainPwd : true }}
 					,function() {
@@ -433,8 +450,8 @@ clLib.PAGES.handlers = {
 					clLib.UI.save({ additionalData: { action: "create" }}
 					, function(returnObj) {
 						//alert("got login response " + JSON.stringify(returnObj));
-						localStorage.setItem("currentUser", returnObj["username"]);
-						localStorage.setItem("currentPassword", returnObj["password"]);
+						// Override current user info with response from signup callback..
+                        clLib.setUserInfo(returnObj, true);
 
 						// login..
 						clLib.login(function() {
@@ -498,22 +515,34 @@ $("div[data-role=page]").die(eventsToBind).live(eventsToBind, function (event, u
 });
 
 
-clLib.PAGES.changeTo = function(newRouteLogURL) {
-	clLib.loggi("changing to " + newRouteLogURL);
-	var pageId = "newRouteLog";
-	var eventName = "clBeforeChange";
-	var requisiteFunctions = (clLib.UI.pageRequisites[pageId] && clLib.UI.pageRequisites[pageId][eventName]) || {};
+clLib.PAGES.changeTo = function(newURL) {
+	clLib.loggi("changing to " + newURL);
 
-	clLib.loggi("requisiteFunctions is " + requisiteFunctions.length);
-	clLib.PAGES.executeChainedFuncs(requisiteFunctions, 
-		function() { 
-			clLib.loggi("success!!"); 
-			$.mobile.navigate(newRouteLogURL);	
-		}, 
-		function() { alert("error!!"); }
-	);
+    if(newURL.indexOf("clLib_") != -1) {
+        var pageId = "";
+        alert(newURL.indexOf("clLib_") + 6);
+        alert(newURL.indexOf(".") - newURL.indexOf("clLib_"));
+        
+        pageId = newURL.substring(
+            newURL.indexOf("clLib_") + 6, 
+            newURL.indexOf(".") - newURL.indexOf("clLib_")
+           );
 
+        var eventName = "clBeforeChange";
+        var requisiteFunctions = (clLib.UI.pageRequisites[pageId] && clLib.UI.pageRequisites[pageId][eventName]) || {};
 
+        clLib.loggi("requisiteFunctions is " + requisiteFunctions.length);
+        clLib.PAGES.executeChainedFuncs(requisiteFunctions, 
+            function() { 
+                clLib.loggi("success!!"); 
+                $.mobile.navigate(newURL);	
+            }, 
+            function() { alert("error!!"); }
+        );
+        
+    } else {
+        $.mobile.navigate(newRouteLogURL);	
+    }
 	
 };
 
