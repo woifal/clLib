@@ -21,11 +21,14 @@
 
                 <div>
                     <!-- Authenticate via GOOGLE -->
-                    <a data-role="button"
-                       id="users_googleLoginButton" data-corners="true" data-icon="check" data-iconpos="right"
-                       data-mini="false" data-theme="a" tabindex="8">
+                    <button id="users_googleLoginButton" class="ui-btn ui-shadow ui-corner-none ui-btn-icon-right ui-icon-google">
                         Google Login!
-                    </a>
+                    </button>
+
+                    <!-- Authenticate via FACEBOOK -->
+                    <button id="users_facebookLoginButton" class="ui-btn ui-shadow ui-corner-none ui-btn-icon-right ui-icon-facebook">
+                        Facebook Login!
+                    </button>
                     
                     <!-- userName -->
                     <div>
@@ -81,6 +84,7 @@
         </div>
 
         @@include('grunt_includes/html_auth.google.html', {"pageName": "users"})
+        @@include('grunt_includes/html_auth.facebook.html', {"pageName": "users"})
 
 </body>
 
