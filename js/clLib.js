@@ -752,7 +752,7 @@ clLib.getObjValues = function(resultObj) {
 clLib.getUserInfo = function() {
     var userObj= {};
     if(window.userInfo) {
-        alert("userInfo : " + window.userInfo);
+        alert("window.userInfo : " + JSON.stringify(window.userInfo));
         userObj = window.userInfo;
     } else {
         if(localStorage.getItem("userInfo")) {

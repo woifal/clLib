@@ -404,7 +404,24 @@ clLib.PAGES.handlers = {
                         alert("success!");
                         alert("with >" + JSON.stringify(userObj));
                         clLib.setUserInfo(userObj);
-                        $("#_COMMON__displayName").trigger("refresh");
+                        $("#_COMMON__displayName").trigger("refresh.clLib");
+                    }
+                    ,function(error) {
+                        alert("error!");
+                        alert("with >" + JSON.stringify(error));
+                    }
+                );
+            });
+
+            $("#users_facebookLoginButton").on("click", function () {
+	        
+                facebookAuth.checkAuth(
+                    function(userObj) {
+                        alert("success!");
+                        alert("with >" + JSON.stringify(userObj));
+                        clLib.setUserInfo(userObj);
+                        $("#_COMMON__displayName").trigger("refresh.clLib"); 
+//                        $("#users_displayName").trigger("refresh.clLib"); 
                     }
                     ,function(error) {
                         alert("error!");
@@ -413,6 +430,8 @@ clLib.PAGES.handlers = {
                 );
             });
             
+
+
             
             $("#users_loginButton").on("click", function () {
 	            clLib.UI.execWithMsg(function() {

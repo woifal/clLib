@@ -274,7 +274,7 @@ clLib.UI.elements = {
 	,"displayName": $.extend({}, clLib.UI.elementConfig.localVar, {
 		"dbField": "displayName"
 		,"refreshHandler": function ($this) {
-			//alert("!!!!!!!!!!!!refreshing " + $this.attr("id"));
+			alert("!!!!!!!!!!!!refreshing " + $this.attr("id"));
             var $currentUser;
             
             var profileURL = clLib.getUserInfo()["profileURL"];
@@ -294,9 +294,20 @@ clLib.UI.elements = {
             .append(
                 $("<span>")
                     .text(displayName)
+            )
+            .append(
+                $("<img>")
+                .attr({
+                    "src" : clLib.getUserInfo()["authType"] == "google" ? "files/views/assets/image/googleAuth.jpg" : "files/views/assets/image/facebookAuth.png"
+                })
+                .css({
+                    width : "25px"
+                    ,height : "25px"
+                })
             );
             
-            $this.replaceWith($currentUser);
+            $this.empty();
+            $this.append($currentUser);
             
 /*
 			var elValue;
