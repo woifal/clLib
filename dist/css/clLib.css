@@ -69,3 +69,24 @@ input.ui-input-text, textarea.ui-input-text {
 
 
 */
+
+
+.ui-icon-google:after {
+    background-image: url("../files/views/assets/image/googleAuth.jpg");
+    /* Make your icon fit */
+    background-size: 25px 25px;
+    background-color: transparent;
+    box-shadow: none;
+    webkit-border-radius: none;
+    border-radius: none;
+}
+
+.ui-icon-facebook:after {
+    background-image: url("../files/views/assets/image/facebookAuth.png");
+    /* Make your icon fit */
+    background-size: 25px 25px;
+    background-color: transparent;
+    box-shadow: none;
+    webkit-border-radius: none;
+    border-radius: none;
+}

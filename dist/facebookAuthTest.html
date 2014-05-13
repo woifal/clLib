@@ -1,10 +1,3 @@
-<!DOCTYPE html>
-<html>
-<head>
-<title>Facebook Login JavaScript Example</title>
-<meta charset="UTF-8">
-</head>
-<body>
 <button id="login-button" onclick="alert(1)"/>log innn</button>
 <script>
 var foo = function() {
@@ -28,26 +21,26 @@ var facebookAuth = {
     ,checkAuth : function(successFunc, errorFunc) {
         alert("logging in..");
         return FB.login(
-            function(response) {
-                return facebookAuth.statusChangeCallback(response, successFunc, errorFunc);
+            function(resp) {
+                return facebookAuth.statusChangeCallback(resp, successFunc, errorFunc);
             }
             , {scope: 'public_profile,email'}
         );
         alert("logg in");
     }
     // This is called with the results from from FB.getLoginStatus().
-    ,statusChangeCallback : function(response, successFunc, errorFunc) {
+    ,statusChangeCallback : function(resp, successFunc, errorFunc) {
         console.log('statusChangeCallback');
-        console.log(response);
-        // The response object is returned with a status field that lets the
+        console.log(resp);
+        // The resp object is returned with a status field that lets the
         // app know the current login status of the person.
-        // Full docs on the response object can be found in the documentation
+        // Full docs on the resp object can be found in the documentation
         // for FB.getLoginStatus().
-        if (response.status === 'connected') {
+        if (resp.status === 'connected') {
             // Logged into your app and Facebook.
-            console.log("login response is >" + JSON.stringify(response) + "<");
-            return facebookAuth.retrieveUserInfo(successFunc, errorFunc);
-        } else if (response.status === 'not_authorized') {
+            console.log("login resp is >" + JSON.stringify(resp) + "<");
+            return facebookAuth.retrieveUserInfo(resp.accessToken, successFunc, errorFunc);
+        } else if (resp.status === 'not_authorized') {
             return errorFunc("Please log into this app.");;
         } else {
             // The person is not logged into Facebook, so we're not sure if
@@ -59,21 +52,39 @@ var facebookAuth = {
     // Button.  See the onlogin handler attached to it in the sample
     // code below.
     ,checkLoginState : function() {
-        FB.getLoginStatus(function(response) {
-            statusChangeCallback(response);
+        FB.getLoginStatus(function(resp) {
+            statusChangeCallback(resp);
         });
     }
-    ,retrieveUserInfo : function(successFunc, errorFunc) {
+    ,retrieveUserInfo : function(accessToken, successFunc, errorFunc) {
         console.log('Welcome!  Fetching your information.... ');
-        FB.api('/me', function(response) {
-            console.log("response is >" + JSON.stringify(response) + "<");
-            console.log('Successful login for: ' + response.name);
+        FB.api('/me', function(resp) {
+            console.log("resp is >" + JSON.stringify(resp) + "<");
+            console.log('Successful login for: ' + resp.name);
 
             document.getElementById('status').innerHTML =
-                'Thanks for logging in, ' + response.name + '!';
+                'Thanks for logging in, ' + resp.name + '!';
             return FB.api(
                 "/me/picture",
-                successFunc(response)
+                function(picResp) {
+                    
+                    console.log("got fbprofile of >" + JSON.stringify(resp) + "<");
+                    console.log("got fbprofile pic of >" + JSON.stringify(picResp) + "<");
+                    
+                    var userObj = {};
+                    userObj["authType"] = "facebook";
+                    userObj["accessToken"] = accessToken;
+                    //userObj["displayName"] = resp.displayName;
+                    userObj["displayName"] = resp.name;
+                    
+                    userObj["profileURL"] = picResp.data.url;
+                    userObj["username"] = resp.id;
+                    
+                    console.log("got userObj of >" + JSON.stringify(userObj) + "<");
+                    
+                    return successFunc(userObj);
+                    
+                }
             );
         });
         
@@ -88,8 +99,8 @@ window.fbAsyncInit = function() {
         xfbml      : true,  // parse social plugins on this page
         version    : 'v2.0' // use version 2.0
     });
-/*    FB.getLoginStatus(function(response) {
-        facebookAuthstatusChangeCallback(response);
+/*    FB.getLoginStatus(function(resp) {
+        facebookAuthstatusChangeCallback(resp);
     });
 */
 };
@@ -122,8 +133,4 @@ window.fbAsyncInit = function() {
 <fb:login-button scope="public_profile,email" onlogin="checkLoginState();">
 </fb:login-button>
 
-<div id="status">
-</div>
-
-</body>
-</html>
+<div id="status"></div>
