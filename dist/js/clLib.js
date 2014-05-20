@@ -338,7 +338,7 @@ clLib.getRouteLogWhereAt = function(dateWhereObj, additionalWhere) {
 
 clLib.getCurrentUserWhere = function() {
     var userName = clLib.getUserInfo()["username"];
-    return userName;
+    return {"username" : userName};
 }
 
 /*
@@ -557,16 +557,17 @@ clLib.alert = function (text, html) {
 
 
 clLib.login = function(successFunc, errorFunc) {
-	//alert("clLib.login called.....");
+	console.log("clLib.login called.....");
 	var userObj = {};
-	userObj["username"] = clLib.getUserInfo()["username"];
+	userObj = clLib.getUserInfo();
+    //userObj["username"] = clLib.getUserInfo()["username"];
 	userObj["password"] = localStorage.getItem("currentPassword");
     return clLib.REST.loginUser(userObj, 
 	function(returnObj) {
 		var sessionToken = returnObj["sessionToken"];
 		var currentUserId = returnObj["_id"];
 		//alert("success login!");
-		clLib.loggi("retrieved sessionToken >" + sessionToken + "<");
+		console.log("retrieved sessionToken >" + sessionToken + "<");
 		clLib.sessionToken = sessionToken;
 		// Clear any "old" error messages 
 		localStorage.removeItem("loginError");
@@ -580,9 +581,9 @@ clLib.login = function(successFunc, errorFunc) {
 clLib.isOnline = function() {
 	var onlineMode = "" + localStorage.getItem("onlineMode");
 	onlineMode = onlineMode != "false";
-	//alert("currentlyOnline? >" + onlineMode);
+//	alert("currentlyOnline? >" + onlineMode);
 	if(onlineMode) {
-		//alert("yes, fuck you true!!!");
+//		alert("yes, fuck you true!!!");
 	    onlineMode = navigator.onLine;
 	}
 	
@@ -647,12 +648,13 @@ clLib.loggedInCheck = function (callbackFunc, errorFunc) {
     }
 	//alert("no session token!");
 	// no session token found - try to logon using stored credentials
-	//alert("logging in..");
+	console.log("logging in..");
 	return clLib.login(
 		function() {
 			// successfully logged in, return true
 			//alert("logged in now, returning true");
-			return callbackFunc(true);
+            $("#_COMMON__displayName").trigger("refresh.clLib");
+            return callbackFunc(true);
 		}
 		, errorFunc
 	);
@@ -665,6 +667,7 @@ clLib.wasOnlineCheck = function (successFunc, errorFunc) {
 	//alert("last refresh:" + clLib.localStorage.getLastRefreshDate("defaultStorage"));
 	// data from previous refresh found?
     if (clLib.localStorage.getLastRefreshDate("defaultStorage")) {
+        console.log("was refresh already at >" + clLib.localStorage.getLastRefreshDate("defaultStorage") + "<");
         return successFunc();
     }
 
@@ -752,11 +755,11 @@ clLib.getObjValues = function(resultObj) {
 clLib.getUserInfo = function() {
     var userObj= {};
     if(window.userInfo) {
-        alert("window.userInfo : " + JSON.stringify(window.userInfo));
+        //console.log("window.userInfo : " + JSON.stringify(window.userInfo));
         userObj = window.userInfo;
     } else {
         if(localStorage.getItem("userInfo")) {
-            alert("localuserinfo is " + localStorage.getItem("userInfo"));
+            //console.log("localuserinfo is " + localStorage.getItem("userInfo"));
             userObj = JSON.parse(localStorage.getItem("userInfo"));
             window.userInfo = userObj;
         }

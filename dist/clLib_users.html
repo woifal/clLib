@@ -46,30 +46,20 @@
 
 
 		<!-- Menu Panel -->
-		<div data-role="panel" id="_COMMON_menupanel" data-display="overlay" data-theme="a">
+		<div data-role="panel" id="users_menupanel" data-display="overlay" data-theme="a">
 			<ul data-role="listview" data-theme="a">
 				<li data-role="list-divider">Kurt Climbing Menu</li>
 				<li>
 					<div>
-<!--
-						<a 
-							data-role="button" 
-							data-icon="gear" 
-							data-iconpos="right" 
-							id="_COMMON__usersButton"
-						>
-							<span id="_COMMON__displayName">user</span>
-						</a>
--->
-                        <div id="_COMMON__displayName"><span>user</span></div>
+                        <div name="users_displayName" id="users_displayName"><span>user</span></div>
                     </div>
 				</li>
-				<li><a id="_COMMON__preferencesButton" href="clLib_preferences.html">Preferences</a></li>
-				<li><a id="_COMMON__AGBButton" href="#">AGB</a></li>
-				<li><a id="_COMMON__AppInfoButton" href="#">Impressum</a></li>
+				<li><a id="users_preferencesButton" href="clLib_preferences.html">Preferences</a></li>
+				<li><a id="users_AGBButton" href="#">AGB</a></li>
+				<li><a id="users_AppInfoButton" href="#">Impressum</a></li>
 				<li>
 					Simple tracking?
-					<select id="_COMMON__defaultLayoutMenuSwitch" name="defaultLayoutMenuSwitch" 
+					<select id="users_defaultLayoutMenuSwitch" name="defaultLayoutMenuSwitch" 
 							data-inline="false" data-mini="false"
 							data-role="flipswitch"
 					>
@@ -77,8 +67,8 @@
 						<option value="reduced">yes</option>
 					</select>
 				</li>
-				<li><a id="_COMMON__feedbackButton" href="#">Feedback</a></li>
-				<li><a id="_COMMON__refreshAllButton" href="#">..Refresh routes</a></li>
+				<li><a id="users_feedbackButton" href="#">Feedback</a></li>
+				<li><a id="users_refreshAllButton" href="#">..Refresh routes</a></li>
 				<li data-icon="minus" data-mini="true"><a href="#my-header" data-icon="gear" data-rel="close">Close panel</a></li>
 			</ul>
 		</div>
@@ -88,11 +78,12 @@
 			 data-add-back-btn="false"
              data-theme="a"
         >
-                <h1>Kurt Climbing</h1>
-                <img src="files/views/assets/image/logo.png" style="background: red; width: 40%; height: 40%"/>
-            
-			<a href="clLib_startScreen.html"
-			data-role="button" 
+                <!--<h1>Kurt Climbing</h1>-->
+                <img src="files/views/assets/image/logo2_01.jpg" style="text-align: center; background: red; width: 100%;"/>
+
+            <a id="users_homeButton" 
+                href="#"
+                data-role="button" 
 				data-corners="true"
 				data-icon="home" 
 				data-inline='true'
@@ -112,7 +103,7 @@
 			</a>
 -->
 			<!-- RIGHT: menu panel -->
-			<a href="#_COMMON_menupanel" 
+			<a href="#users_menupanel" 
 				data-role="button" 
 				class='ui-btn-right'
 				data-corners="true"
@@ -202,7 +193,8 @@
             </div>
         </div>
 
-        <button id="authorize-button" >Authorize</button>
+/* auth... */
+<button id="authorize-button" >Authorize</button>
 <button id="logout-button" >Logout</button>
 <button id="api-button" >API</button>
 <script type="text/javascript">
@@ -270,7 +262,7 @@ var googleAuth = {
                 userObj["authType"] = "google";
                 userObj["accessToken"] = accessToken;
                 //userObj["displayName"] = resp.displayName;
-                userObj["displayName"] = resp.name.givenName;
+                userObj["displayName"] = resp.name.givenName || resp.displayName;
                 
                 userObj["profileURL"] = resp.image.url;
                 userObj["username"] = resp.id;
@@ -296,7 +288,7 @@ var googleAuth = {
     <script src="https://apis.google.com/js/client.js?onload=loadGoogleAuth"></script>
     <div id="content"></div>
 
-        <!--<button id="login-button" onclick="alert(1)"/>log innn</button>-->
+<!--<button id="login-button" onclick="alert(1)"/>log innn</button>-->
 <script>
 var foo = function() {
     alert("foooing");
@@ -428,6 +420,7 @@ window.fbAsyncInit = function() {
 <div id="status"></div>
 -->
 
+/* end of auth */   
 
 </body>
 

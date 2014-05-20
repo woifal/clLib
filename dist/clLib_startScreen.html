@@ -47,30 +47,20 @@
 
 
 		<!-- Menu Panel -->
-		<div data-role="panel" id="_COMMON_menupanel" data-display="overlay" data-theme="a">
+		<div data-role="panel" id="startScreen_menupanel" data-display="overlay" data-theme="a">
 			<ul data-role="listview" data-theme="a">
 				<li data-role="list-divider">Kurt Climbing Menu</li>
 				<li>
 					<div>
-<!--
-						<a 
-							data-role="button" 
-							data-icon="gear" 
-							data-iconpos="right" 
-							id="_COMMON__usersButton"
-						>
-							<span id="_COMMON__displayName">user</span>
-						</a>
--->
-                        <div id="_COMMON__displayName"><span>user</span></div>
+                        <div name="startScreen_displayName" id="startScreen_displayName"><span>user</span></div>
                     </div>
 				</li>
-				<li><a id="_COMMON__preferencesButton" href="clLib_preferences.html">Preferences</a></li>
-				<li><a id="_COMMON__AGBButton" href="#">AGB</a></li>
-				<li><a id="_COMMON__AppInfoButton" href="#">Impressum</a></li>
+				<li><a id="startScreen_preferencesButton" href="clLib_preferences.html">Preferences</a></li>
+				<li><a id="startScreen_AGBButton" href="#">AGB</a></li>
+				<li><a id="startScreen_AppInfoButton" href="#">Impressum</a></li>
 				<li>
 					Simple tracking?
-					<select id="_COMMON__defaultLayoutMenuSwitch" name="defaultLayoutMenuSwitch" 
+					<select id="startScreen_defaultLayoutMenuSwitch" name="defaultLayoutMenuSwitch" 
 							data-inline="false" data-mini="false"
 							data-role="flipswitch"
 					>
@@ -78,8 +68,8 @@
 						<option value="reduced">yes</option>
 					</select>
 				</li>
-				<li><a id="_COMMON__feedbackButton" href="#">Feedback</a></li>
-				<li><a id="_COMMON__refreshAllButton" href="#">..Refresh routes</a></li>
+				<li><a id="startScreen_feedbackButton" href="#">Feedback</a></li>
+				<li><a id="startScreen_refreshAllButton" href="#">..Refresh routes</a></li>
 				<li data-icon="minus" data-mini="true"><a href="#my-header" data-icon="gear" data-rel="close">Close panel</a></li>
 			</ul>
 		</div>
@@ -89,11 +79,12 @@
 			 data-add-back-btn="false"
              data-theme="a"
         >
-                <h1>Kurt Climbing</h1>
-                <img src="files/views/assets/image/logo.png" style="background: red; width: 40%; height: 40%"/>
-            
-			<a href="clLib_startScreen.html"
-			data-role="button" 
+                <!--<h1>Kurt Climbing</h1>-->
+                <img src="files/views/assets/image/logo2_01.jpg" style="text-align: center; background: red; width: 100%;"/>
+
+            <a id="startScreen_homeButton" 
+                href="#"
+                data-role="button" 
 				data-corners="true"
 				data-icon="home" 
 				data-inline='true'
@@ -113,7 +104,7 @@
 			</a>
 -->
 			<!-- RIGHT: menu panel -->
-			<a href="#_COMMON_menupanel" 
+			<a href="#startScreen_menupanel" 
 				data-role="button" 
 				class='ui-btn-right'
 				data-corners="true"
@@ -173,6 +164,235 @@
 
 	
 	</div>
+/* auth... */
+<button id="authorize-button" >Authorize</button>
+<button id="logout-button" >Logout</button>
+<button id="api-button" >API</button>
+<script type="text/javascript">
+
+document.getElementById('authorize-button').onclick = function() {
+    googleAuth.checkAuth(
+        function(userObj) {
+            alert("success!");
+            alert("with >" + JSON.stringify(userObj));
+        }
+        ,function(error) {
+            alert("error!");
+            alert("with >" + JSON.stringify(error));
+        }
+    );
+};
+
+var loadGoogleAuth = function() {
+};
+
+var googleAuth = {
+    1:1
+    ,clientId : '366201815473-t9u61cghvmf36kh0dgtenahgitvsuea8.apps.googleusercontent.com'
+    ,apiKey : 'AIzaSyAC3yPnDVILjfEyFYU5i15gMhVzMDJO5fs'
+    ,scopes : 'https://www.googleapis.com/auth/plus.me'
+    ,checkAuth : function(successFunc, errorFunc) {
+        console.log("authorizing with " + googleAuth.apiKey + "," + googleAuth.clientId + "," + googleAuth.scopes);
+        gapi.client.setApiKey(googleAuth.apiKey);
+
+        gapi.auth.authorize({
+            client_id: googleAuth.clientId, 
+            scope: googleAuth.scopes, 
+            immediate: false
+        }, 
+        function(authResult) {
+            console.log("auth checked..");
+            console.log(JSON.stringify(authResult.access_token));
+            //console.log(JSON.stringify(gapi.auth.getToken()));
+            
+            var accessToken = authResult.access_token;
+            
+            if (authResult && !authResult.error) {
+                return googleAuth.retrieveUserInfo(accessToken, successFunc, errorFunc);
+            } else {
+                return errorFunc(authResult.error);
+            }
+        }
+        );
+    }
+    ,retrieveUserInfo : function(accessToken, successFunc, errorFunc) {
+        //console.log(JSON.stringify(gapi.auth.getToken()));
+        gapi.client.load('plus', 'v1', function() {
+            var request = gapi.client.plus.people.get({
+                'userId': 'me'
+            });
+            request.execute(function(resp) {
+                if(!resp.image.url) {  
+                    return errorFunc("gapi+ error!");
+                }
+
+                
+                console.log("got gprofile of >" + JSON.stringify(resp) + "<");
+                
+                var userObj = {};
+                userObj["authType"] = "google";
+                userObj["accessToken"] = accessToken;
+                //userObj["displayName"] = resp.displayName;
+                userObj["displayName"] = resp.name.givenName || resp.displayName;
+                
+                userObj["profileURL"] = resp.image.url;
+                userObj["username"] = resp.id;
+                
+                console.log("got userObj of >" + JSON.stringify(userObj) + "<");
+                
+                return successFunc(userObj);
+          });
+        });
+      }
+
+/*    var logoutButton = document.getElementById('logout-button');
+    logoutButton.onclick = function() {
+        alert("signing out..");
+        gapi.auth.signOut();
+        gapi.auth.setToken(null);
+        alert(JSON.stringify(gapi.auth.getToken()));
+        alert("signedout..");
+    };
+*/
+};
+</script>
+    <script src="https://apis.google.com/js/client.js?onload=loadGoogleAuth"></script>
+    <div id="content"></div>
+
+<!--<button id="login-button" onclick="alert(1)"/>log innn</button>-->
+<script>
+var foo = function() {
+    alert("foooing");
+    return facebookAuth.checkAuth(
+        function(userObj) {
+            alert("success!");
+            alert("with >" + JSON.stringify(userObj));
+            console.log("with >" + JSON.stringify(userObj));
+        }
+        ,function(error) {
+            alert("error!");
+            alert("with >" + JSON.stringify(error));
+        }
+    );
+    alert("foooed");
+};
+    
+var facebookAuth = {
+    1:1
+    ,checkAuth : function(successFunc, errorFunc) {
+        alert("logging in..");
+        return FB.login(
+            function(resp) {
+                return facebookAuth.statusChangeCallback(resp, successFunc, errorFunc);
+            }
+            , {scope: 'public_profile,email'}
+        );
+        alert("logg in");
+    }
+    // This is called with the results from from FB.getLoginStatus().
+    ,statusChangeCallback : function(resp, successFunc, errorFunc) {
+        console.log('statusChangeCallback');
+        console.log(resp);
+        // The resp object is returned with a status field that lets the
+        // app know the current login status of the person.
+        // Full docs on the resp object can be found in the documentation
+        // for FB.getLoginStatus().
+        if (resp.status === 'connected') {
+            // Logged into your app and Facebook.
+            console.log("login resp is >" + JSON.stringify(resp) + "<");
+            return facebookAuth.retrieveUserInfo(resp.accessToken, successFunc, errorFunc);
+        } else if (resp.status === 'not_authorized') {
+            return errorFunc("Please log into this app.");;
+        } else {
+            // The person is not logged into Facebook, so we're not sure if
+            // they are logged into this app or not.
+            return errorFunc("Please log into facebook.");
+        }
+    }
+    // This function is called when someone finishes with the Login
+    // Button.  See the onlogin handler attached to it in the sample
+    // code below.
+    ,checkLoginState : function() {
+        FB.getLoginStatus(function(resp) {
+            statusChangeCallback(resp);
+        });
+    }
+    ,retrieveUserInfo : function(accessToken, successFunc, errorFunc) {
+        console.log('Welcome!  Fetching your information.... ');
+        FB.api('/me', function(resp) {
+            console.log("resp is >" + JSON.stringify(resp) + "<");
+            console.log('Successful login for: ' + resp.name);
+
+//            document.getElementById('status').innerHTML =
+//                'Thanks for logging in, ' + resp.name + '!';
+            return FB.api(
+                "/me/picture",
+                function(picResp) {
+                    
+                    console.log("got fbprofile of >" + JSON.stringify(resp) + "<");
+                    console.log("got fbprofile pic of >" + JSON.stringify(picResp) + "<");
+                    
+                    var userObj = {};
+                    userObj["authType"] = "facebook";
+                    userObj["accessToken"] = accessToken;
+                    //userObj["displayName"] = resp.displayName;
+                    userObj["displayName"] = resp.name;
+                    
+                    userObj["profileURL"] = picResp.data.url;
+                    userObj["username"] = resp.id;
+                    
+                    console.log("got userObj of >" + JSON.stringify(userObj) + "<");
+                    
+                    return successFunc(userObj);
+                    
+                }
+            );
+        });
+        
+    }
+};
+
+window.fbAsyncInit = function() {
+    FB.init({
+        appId      : '670107013062528',
+        cookie     : true,  // enable cookies to allow the server to access 
+                            // the session
+        xfbml      : true,  // parse social plugins on this page
+        version    : 'v2.0' // use version 2.0
+    });
+/*    FB.getLoginStatus(function(resp) {
+        facebookAuthstatusChangeCallback(resp);
+    });
+*/
+};
+
+  // Load the SDK asynchronously
+  (function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_US/sdk.js";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));
+
+  // Here we run a very simple test of the Graph API after login is
+  // successful.  See statusChangeCallback() for when this call is made.
+
+    
+  var loginButton  = document.getElementById('login-button');
+    loginButton.onclick = function() {
+        return foo();
+    }
+  </script>
+
+<!--
+<fb:login-button scope="public_profile,email" onlogin="checkLoginState();">
+</fb:login-button>
+<div id="status"></div>
+-->
+
+/* end of auth */   
+
 </body>
 
   
