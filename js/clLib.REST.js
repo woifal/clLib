@@ -8,12 +8,12 @@ clLib.clException= function(name, message) {
 };
 
 //clLib.REST.baseURI = "https://api.appery.io/rest/1/db";
-//clLib.REST.baseURI = "http://localhost:1983/db";
-clLib.REST.baseURI = "http://cllibserver.herokuapp.com/db";
+clLib.REST.baseURI = "http://localhost:1983/db";
+//clLib.REST.baseURI = "http://cllibserver.herokuapp.com/db";
 clLib.REST.baseCollectionsURI = clLib.REST.baseURI+ "/"; // + "/collections/";
 clLib.REST.baseUsersURI = clLib.REST.baseURI + "/users";
-//clLib.REST.clLibServerURI = "http://localhost:1983";
-clLib.REST.clLibServerURI = "http://cllibserver.herokuapp.com";
+clLib.REST.clLibServerURI = "http://localhost:1983";
+//clLib.REST.clLibServerURI = "http://cllibserver.herokuapp.com";
 
 
 
@@ -64,7 +64,7 @@ clLib.REST.appery.postAJAXprocessing = function(AJAXResult) {
 		"_createdAt": clLib.REST.appery.dateStrToISOString,
 		"_updatedAt": clLib.REST.appery.dateStrToISOString
 	};
-	console.log("before:" + AJAXResult.length);
+	console.log("before:" + JSON.stringify(AJAXResult));
 	$.each(AJAXResult, function(index, value) {
 		$.each(colsToRemap, function(colName, remapFunc) {
 			if(AJAXResult[index][colName]) {
@@ -83,15 +83,25 @@ clLib.REST.clNode.postAJAXprocessing = function(AJAXResult) {
 		"_createdAt": clLib.REST.appery.dateStrToISOString,
 		"_updatedAt": clLib.REST.appery.dateStrToISOString
 	};
-	console.log("before:" + AJAXResult.length);
-	$.each(AJAXResult, function(index, value) {
-		$.each(colsToRemap, function(colName, remapFunc) {
-			if(AJAXResult[index][colName]) {
-				AJAXResult[index][colName]= remapFunc(AJAXResult[index][colName]);
-			}
-		});
-	});
-	console.log("after:" + AJAXResult.length);
+	console.log("before:" + JSON.stringify(AJAXResult));
+	if(AJAXResult instanceof Array) {
+        $.each(AJAXResult, function(index, value) {
+            $.each(colsToRemap, function(colName, remapFunc) {
+                if(AJAXResult[index][colName]) {
+                    AJAXResult[index][colName]= remapFunc(AJAXResult[index][colName]);
+                }
+            });
+        });
+    } 
+    else if(typeof AJAXResult == "object") {
+        $.each(colsToRemap, function(colName, remapFunc) {
+            if(AJAXResult[colName]) {
+                AJAXResult[colName]= remapFunc(AJAXResult[colName]);
+            }
+        });
+    }
+    
+	console.log("after:" + JSON.stringify(AJAXResult));
 	return AJAXResult;
 };
 
@@ -176,7 +186,7 @@ clLib.REST.buildAJAXRequest = function(options, successFunc, errorFunc) {
 
             if(!options["allowNoSessionToken"]) {
 		        // only allow REST calls for authenticated users..
-			    xhr.setRequestHeader("X-Appery-Session-Token", clLib.sessionToken);
+			    xhr.setRequestHeader("clSessionToken", clLib.sessionToken);
 			    xhr.setRequestHeader("clUserName", clLib.getUserInfo()["username"]);
             }
 			if (options["headerParams"]) {
@@ -229,8 +239,10 @@ clLib.REST.updateEntity = function (entityName, entityInstance, successFunc, err
 
 clLib.REST.storeEntity = function (entityName, entityInstance, successFunc, errorFunc) {
     var uri = clLib.REST.baseCollectionsURI + entityName;
+    console.log("!!inserting " + JSON.stringify(entityInstance));
     clLib.REST.executeInsert(uri, 'POST', entityInstance, 
 	function(AJAXResult) {
+        console.log("inserted at >" + uri + "< and got result >" + JSON.stringify(AJAXResult) + "<");
 		AJAXResult = clLib.REST.postAJAXprocessing[clLib.REST.baseURI](AJAXResult);
 		successFunc(AJAXResult);
 	}

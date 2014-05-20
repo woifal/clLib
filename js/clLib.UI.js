@@ -786,10 +786,11 @@ clLib.UI.fillUIelements = function(pageName, currentJqmSlide, layout) {
 
 	curPageElements = clLib.UI.pageElements["_COMMON_"][layout];
 	//alert("!!!!!!!!!!!!!!!!!!creating common " + JSON.stringify(curPageElements));
-	clLib.UI.createElements(curPageElements, "_COMMON_");
+	clLib.UI.createElements(curPageElements, currentJqmSlide);
 
 //	curPageElements.push.apply(curPageElements, clLib.UI.pageElements["_COMMON_"][layout]);
 	
+    //alert("noew autoloading...");
 	// Autoload elements
 	var curPageAutoload = 
 	curPageAutoload = clLib.UI.autoLoad[pageName];
@@ -803,7 +804,7 @@ clLib.UI.fillUIelements = function(pageName, currentJqmSlide, layout) {
 		curPageAutoload = clLib.UI.autoLoad["_COMMON_"][layout];
 	}
 	//alert("autoloading common " + JSON.stringify(curPageAutoload));
-	clLib.UI.autoloadElements(curPageAutoload, "_COMMON_");
+	clLib.UI.autoloadElements(curPageAutoload, currentJqmSlide);
 	
 	localStorage.setItem("currentJqmSlide", currentJqmSlide);
 	
@@ -814,14 +815,14 @@ clLib.UI.fillUIelements = function(pageName, currentJqmSlide, layout) {
 
 clLib.UI.autoloadElements = function(curPageAutoload, currentJqmSlide) {
 	localStorage.setItem("currentJqmSlide", currentJqmSlide);
-	//alert("autoloading...." + JSON.stringify(curPageAutoload) + "," + currentJqmSlide);
+	console.log("autoloading...." + JSON.stringify(curPageAutoload) + "," + currentJqmSlide);
 	if(curPageAutoload) {
 		$.each(curPageAutoload, function(idx, elementName) {
 			//alert("triggering autoload for " + elementName, 2);
-			clLib.loggi("html(" + elementName + "):" + clLib.UI.byId$(elementName).html(), 2);
+			clLib.loggi("html(" + elementName + "):" + clLib.UI.byId$(elementName, currentJqmSlide).html(), 2);
 			var optionObj = {};
 			//alert("byId is " + clLib.UI.byId$(elementName).attr("id"));
-			clLib.UI.byId$(elementName).trigger("refresh.clLib", 
+			clLib.UI.byId$(elementName, currentJqmSlide).trigger("refresh.clLib", 
 				clLib.UI.addObjArr(optionObj,["eventSourcePath"], "AUTOLOAD")
 			);
 		});
@@ -841,7 +842,7 @@ clLib.UI.createElements = function(curPageElements, currentJqmSlide) {
 
 		//alert("!!adding events for  element >" + elementName + "<", 2);
 		//alert("elementConfig >" + JSON.stringify(elementConfig) + "<", 2);
-		var $element = clLib.UI.byId$(elementName);
+		var $element = clLib.UI.byId$(elementName, currentJqmSlide);
 		clLib.loggi("element is " + $element.attr("id") + "<", 2);
 		
 		// Re-attach event handlers
@@ -877,7 +878,7 @@ clLib.UI.createElements = function(curPageElements, currentJqmSlide) {
 		});
 	});
 
-
+    //alert("created element.."); 
 };
 
 clLib.UI.addObjArr = function(anObj, pathArray, objValue) {
@@ -1018,14 +1019,14 @@ clLib.UI.buildWhereIfVisible = function(whereKeys2Elements) {
 };
 
 
-clLib.UI.getId$ = function(elementName) {
-	var currentJqmSlide = localStorage.getItem("currentJqmSlide");
+clLib.UI.getId$ = function(elementName, pageId) {
+	var currentJqmSlide = pageId || localStorage.getItem("currentJqmSlide");
 	var newSelector = "#" + currentJqmSlide + "_" + elementName;
 	return newSelector;
 };
 
-clLib.UI.byId$ = function(elementName) {
-	var newSelector = clLib.UI.getId$(elementName);
+clLib.UI.byId$ = function(elementName, pageId) {
+	var newSelector = clLib.UI.getId$(elementName, pageId);
 	//alert("returning selector >" + newSelector + "<");
 	return $(newSelector);
 };
@@ -1267,7 +1268,7 @@ clLib.UI.RESTSaveHandler = function (options, successFunc, errorFunc) {
     }
 
     $.each(clLib.UI.pageElements[currentJqmSlide][currentLayout], function (idx, elementName) {
-		//alert("eaching " + idx + " and " + elementName);
+		console.log("eaching " + idx + " and " + elementName);
         var elementConfig = clLib.UI.elements[elementName];
 		var dbField = elementConfig["dbField"] || elementName;
         if (!elementConfig) {
@@ -1276,7 +1277,7 @@ clLib.UI.RESTSaveHandler = function (options, successFunc, errorFunc) {
             saveObj[dbField] = clLib.UI.getVal(elementName);
         }
     });
-    //alert("saveObj is " + JSON.stringify(saveObj));
+    console.log("saveObj is " + JSON.stringify(saveObj));
 	var dbEntity = "RouteLog";
 	//alert("options " + JSON.stringify(options));
 	if(options["additionalData"] && options["additionalData"]["dbEntity"]) {
@@ -1614,25 +1615,27 @@ clLib.prefsCompleteCheck = function (successFunc, errorFunc) {
     }
 	else {
 		localStorage.setItem("loginError", "No username specified.");
-		clLib.PAGES.changeTo("clLib_users.html");
-		return errorFunc();
+		return clLib.PAGES.changeTo("clLib_users.html", {noRedirectFlag: false});
 	}
 };
 
 clLib.tryLogin = function(successFunc, errorFunc, noRedirectFlag) {
-	// offline? no need to try to login..
+	console.log("trying login with " + typeof(noRedirectFlag) + ":" + noRedirectFlag);
+    // offline? no need to try to login..
 	if(!clLib.isOnline()) {
 		return errorFunc();
 	}
 	return clLib.loggedInCheck(
 	successFunc,
 	function(e) {
-		//alert("handling error " + JSON.stringify(e));
-		clLib.loginErrorHandler(e);
-        if(!(noRedirectFlag == true)) {
-            clLib.PAGES.changeTo("clLib_users.html");
+		alert("&/&/&/&/&/&/!!handling error >" + !(noRedirectFlag == true) + "< " + JSON.stringify(e));
+        clLib.loginErrorHandler(e);
+        if((noRedirectFlag == true) == false) {
+            console.log("no login success, redirecting to users page...");
+            return clLib.PAGES.changeTo("clLib_users.html");
 		}
-        return errorFunc();
+        // return with exitFlag=true => to not evaluate subsequent chained funcs..
+        return successFunc(true);
 	}
 	);
 };

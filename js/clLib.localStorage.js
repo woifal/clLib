@@ -374,9 +374,9 @@ Array.prototype.sortBy = function(sortBy, descSortFlag) {
 };
 
 clLib.localStorage.syncAllUp = function(entity, storageName) {
-	clLib.loggi("syncing up all entities for >" + entity + "< in >" + storageName + "<");
+	console.log("syncing up all entities for >" + entity + "< in >" + storageName + "<");
 	var storage = clLib.localStorage.getStorageItems("UNSYNCED_" + storageName);
-	clLib.loggi("currently unsynced items >" + JSON.stringify(storage) + "<");
+	console.log("currently unsynced items >" + JSON.stringify(storage) + "<");
 	$.each(storage[entity], function(dummyId) {
 		var entityInstance = storage[entity][dummyId];
 		//alert("call syncup for >" + dummyId + "< bzw. >" + JSON.stringify(entityInstance) + "<");
@@ -394,7 +394,7 @@ clLib.localStorage.syncUp = function(entity, entityInstance, storageName) {
 	unsyncedStorage = unsyncedStorage[entity];
 	
 	
-	//alert("syncing entity (" + entityInstance["deleted"] + ")" + JSON.stringify(entityInstance));
+	alert("syncing entity (" + entityInstance["deleted"] + ")" + JSON.stringify(entityInstance));
 	if(entityInstance["deleted"] == 1) {
 //		alert("unsynced items:  >" + JSON.stringify(unsyncedStorage) + "<");
 //		alert(">" + dummyId + "< in storagecache? >" + JSON.stringify(entityStorage[dummyId]) + "<");
@@ -450,7 +450,8 @@ clLib.localStorage.syncUp = function(entity, entityInstance, storageName) {
 		var realInstance;
 
 
-		clLib.REST.storeEntity(entity, entityInstance
+		console.log("storing entity " + JSON.stringify(entityInstance));
+        clLib.REST.storeEntity(entity, entityInstance
 		,function(realInstance) {
 			clLib.loggi("synced realInstance >" + JSON.stringify(realInstance) + "<");
 			entityInstance["_id"] = realInstance["_id"];	
@@ -484,7 +485,8 @@ clLib.localStorage.syncUp = function(entity, entityInstance, storageName) {
 
 
 clLib.localStorage.addInstance = function(entity, entityInstance, storageName) {
-    //alert("addinstance called!");
+    alert("addinstance called!");
+    console.log("addinstance >" + entity + "< >" + JSON.stringify(entityInstance) + "<");
     var storage = clLib.localStorage.getStorageItems(storageName);
 	
 	var dummyId = "DUMMY" + new Date().getTime();

@@ -33,9 +33,22 @@ clLib.PAGES.defaultHandler = function (event, ui, aPageId) {
 		function() { 
 			clLib.loggi("success!!"); 
 			clLib.loggi("calling " + pageId + " and " + eventName);
-			clLib.PAGES.handlers["_COMMON_"][eventName](event, ui);
-			clLib.PAGES.handlers[pageId][eventName](event, ui);
-		}, 
+			if(clLib.PAGES.handlers[pageId] && clLib.PAGES.handlers[pageId][eventName]) {
+                clLib.PAGES.handlers[pageId][eventName](event, ui, pageId);
+            }
+            else {
+                console.log("No pagehandler defined for >" + pageId + "< and >" + eventName + "<");
+            }
+
+			clLib.loggi("calling " + pageId + " and " + eventName);
+			if(clLib.PAGES.handlers["_COMMON_"] && clLib.PAGES.handlers["_COMMON_"][eventName]) {
+                clLib.PAGES.handlers["_COMMON_"][eventName](event, ui, pageId);
+            }
+            else {
+                console.log("No _COMMON_ pagehandler defined for >" + pageId + "< and >" + eventName + "<");
+            }
+
+        }, 
 		function() { alert("error!!"); }
 	);
 
@@ -76,11 +89,18 @@ clLib.PAGES.executeChainedFunc = function(funcArray, idx, successFunc, errorFunc
 	}
 	
 	// Call next function in chain..
-	return curFunc(function() {
-		return clLib.PAGES.executeChainedFunc(
-			funcArray, idx, 
-			successFunc, errorFunc
-		);
+	return curFunc(function(exitFlag) {
+        console.log("executing next chained func? " + exitFlag);
+		if(typeof(exitFlag) !== 'undefined' && exitFlag == true) {
+            console.log("No!");
+            return successFunc({"b" : "x"});
+        } else {
+            console.log("Yes!");
+            return clLib.PAGES.executeChainedFunc(
+                funcArray, idx, 
+                successFunc, errorFunc
+            );
+        }
 	},
 	errorFunc
 	);
@@ -88,19 +108,31 @@ clLib.PAGES.executeChainedFunc = function(funcArray, idx, successFunc, errorFunc
 
 clLib.PAGES.handlers = {
 	1 : 1
-	,"_COMMON_" : {
-	    "pagecreate": function () {
-	        // Link to preferences page..
-	        $("#_COMMON__preferencesButton").die("click").live("click", function () {
+    ,"index": {
+        "pagebeforeshow": function () {
+            console.log("showing index, setting timeout for move to startscreen..");
+            setTimeout(function() {
+                //console.log("changing to startscreen..");
+                clLib.PAGES.changeTo("clLib_startScreen.html");
+            }
+            ,1000);
+        }
+    }
+    ,"_COMMON_" : {
+	    "pagecreate": function (event, ui, pageId) {
+	        clLib.UI.byId$("homeButton", pageId).die("click").live("click", function () {
+	            clLib.PAGES.changeTo("clLib_startScreen.html");
+	        });
+	        clLib.UI.byId$("preferencesButton", pageId).die("click").live("click", function () {
 	            clLib.PAGES.changeTo("clLib_preferences.html");
 	        });
-	        $("#_COMMON__AGBButton").die("click").live("click", function () {
+	        clLib.UI.byId$("AGBButton", pageId).die("click").live("click", function () {
 	            clLib.PAGES.changeTo("clLib_AGB.html");
 	        });
-	        $("#_COMMON__feedbackButton").die("click").live("click", function () {
+	        clLib.UI.byId$("feedbackButton", pageId).die("click").live("click", function () {
 	            clLib.PAGES.changeTo("clLib_feedback.html");
 	        });
-	        $("#_COMMON__refreshAllButton").die("click").live("click", function () {
+	        clLib.UI.byId$("refreshAllButton", pageId).die("click").live("click", function () {
 				clLib.localStorage.refreshAllData(
 				function(warnings) {
 					if(typeof(warnings) == "object"  && warnings["warnings"] != "") {
@@ -114,7 +146,7 @@ clLib.PAGES.handlers = {
 				);
 	        });
             //alert("binding clinck handler for usersbutton");
-			$("#_COMMON__usersButton").die("click").live("click", function () {
+			clLib.UI.byId$("usersButton", pageId).die("click").live("click", function () {
 				clLib.PAGES.changeTo("clLib_users.html");
             });
 	    }
@@ -395,8 +427,12 @@ clLib.PAGES.handlers = {
 	}
 
 	,"users": {
-	    "pagecreate"	: function () {
+	    "pagecreate" : function (event, ui, pageId) {
 
+            var errorFunc = function(error) {
+                alert("error!");
+                alert("with >" + JSON.stringify(error));
+            }
             $("#users_googleLoginButton").on("click", function () {
 	        
                 googleAuth.checkAuth(
@@ -404,12 +440,12 @@ clLib.PAGES.handlers = {
                         alert("success!");
                         alert("with >" + JSON.stringify(userObj));
                         clLib.setUserInfo(userObj);
-                        $("#_COMMON__displayName").trigger("refresh.clLib");
+                        clLib.login(function() {
+                            alert("logged in to google..");
+                        }, errorFunc);
+                        clLib.UI.byId$("displayName", pageId).trigger("refresh.clLib");
                     }
-                    ,function(error) {
-                        alert("error!");
-                        alert("with >" + JSON.stringify(error));
-                    }
+                    ,errorFunc
                 );
             });
 
@@ -420,8 +456,7 @@ clLib.PAGES.handlers = {
                         alert("success!");
                         alert("with >" + JSON.stringify(userObj));
                         clLib.setUserInfo(userObj);
-                        $("#_COMMON__displayName").trigger("refresh.clLib"); 
-//                        $("#users_displayName").trigger("refresh.clLib"); 
+                        clLib.UI.byId$("displayName", pageId).trigger("refresh.clLib"); 
                     }
                     ,function(error) {
                         alert("error!");
@@ -480,9 +515,8 @@ clLib.PAGES.handlers = {
 						}
 						, function(e) {
 							clLib.loginErrorHandler(e);
-							clLib.UI.fillUIelements("users", "users");
-
-						}
+                            clLib.PAGES.changeTo("clLib_users.html");
+                        }
 						);
 
 					}
@@ -534,13 +568,13 @@ $("div[data-role=page]").die(eventsToBind).live(eventsToBind, function (event, u
 });
 
 
-clLib.PAGES.changeTo = function(newURL) {
-	clLib.loggi("changing to " + newURL);
+clLib.PAGES.changeTo = function(newURL, urlData) {
+	console.log("changing to " + newURL);
 
     if(newURL.indexOf("clLib_") != -1) {
         var pageId = "";
-        alert(newURL.indexOf("clLib_") + 6);
-        alert(newURL.indexOf(".") - newURL.indexOf("clLib_"));
+        //alert(newURL.indexOf("clLib_") + 6);
+        //alert(newURL.indexOf(".") - newURL.indexOf("clLib_"));
         
         pageId = newURL.substring(
             newURL.indexOf("clLib_") + 6, 
@@ -554,9 +588,10 @@ clLib.PAGES.changeTo = function(newURL) {
         clLib.PAGES.executeChainedFuncs(requisiteFunctions, 
             function() { 
                 clLib.loggi("success!!"); 
-                $.mobile.navigate(newURL);	
+                window.urlData = urlData;
+                $.mobile.navigate(newURL, urlData);	
             }, 
-            function() { alert("error!!"); }
+            function() { alert("clLib.changeTo => error!!"); }
         );
         
     } else {

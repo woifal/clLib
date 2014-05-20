@@ -12,7 +12,16 @@ clLib.UI.cssBackgrounds = {
 
 
 clLib.UI.pageRequisites = {
-    "startScreen": { "clBeforeChange" : [clLib.prefsCompleteCheck, clLib.wasOnlineCheck, clLib.tryLogin] }
+    "startScreen": { 
+        "clBeforeChange" : [
+            function(successFunc, errorFunc) {
+                console.log("!?!?!?! change to users - but WITH redirect!!!!");
+                return clLib.tryLogin(successFunc, errorFunc, false);
+            }
+            ,clLib.prefsCompleteCheck
+            ,clLib.wasOnlineCheck
+        ]
+    }
     , "preferences": {}
     , "newRouteLog": { 
 		"clBeforeChange" : [clLib.prefsCompleteCheck, clLib.tryLogin, clLib.wasOnlineCheck, 
@@ -24,6 +33,7 @@ clLib.UI.pageRequisites = {
 		] 
 	}
     , "users": { "clBeforeChange" : [function(successFunc, errorFunc) {
+        console.log("!!!!!changing to users - but no redirect(=>useless)..");
         return clLib.tryLogin(successFunc, errorFunc, true);
     }] }
     , "users_verification": { }
@@ -274,39 +284,54 @@ clLib.UI.elements = {
 	,"displayName": $.extend({}, clLib.UI.elementConfig.localVar, {
 		"dbField": "displayName"
 		,"refreshHandler": function ($this) {
-			alert("!!!!!!!!!!!!refreshing " + $this.attr("id"));
+			//alert("!!!!!!!!!!!!refreshing " + $this.attr("id") + " with >" + JSON.stringify(clLib.getUserInfo()));
             var $currentUser;
             
             var profileURL = clLib.getUserInfo()["profileURL"];
             var displayName = clLib.getUserInfo()["displayName"];
+            var authType = clLib.getUserInfo()["authType"];
             
             $currentUser = $("<div>");
+            if(profileURL) {
+                $currentUser.append(
+                    $("<img>")
+                    .attr({
+                        "src" : profileURL
+                    })
+                    .css({
+                        width : "25px"
+                        ,height : "25px"
+                    })
+                )
+            }
             $currentUser.append(
-                $("<img>")
-                .attr({
-                    "src" : profileURL
-                })
-                .css({
-                    width : "50px"
-                    ,height : "50px"
-                })
-            )
-            .append(
                 $("<span>")
                     .text(displayName)
             )
-            .append(
-                $("<img>")
-                .attr({
-                    "src" : clLib.getUserInfo()["authType"] == "google" ? "files/views/assets/image/googleAuth.jpg" : "files/views/assets/image/facebookAuth.png"
-                })
-                .css({
-                    width : "25px"
-                    ,height : "25px"
-                })
-            );
+            ;
+            if(authType == 'facebook' || authType == 'google') {
+                var authTypeImgURL = "";
+                if(authType == "google") {
+                    authTypeImgURL = "files/views/assets/image/googleAuth.jpg";
+                }
+                else if(authType == "facebook") {
+                    authTypeImgURL = "files/views/assets/image/facebookAuth.png";
+                }
+                $currentUser.append(
+                    $("<img>")
+                    .attr({
+                        "src" : authTypeImgURL
+                    })
+                    .css({
+                        width : "25px"
+                        ,height : "25px"
+                    })
+                );
+            }
             
+            console.log("emptying userinfo div..");
             $this.empty();
+            console.log("appending new user info.." + $currentUser.html());
             $this.append($currentUser);
             
 /*
@@ -881,12 +906,10 @@ clLib.UI.elements = {
 	,"routeLogContainer": {
 		"setSelectedValueHandler" : function($this, changeOptions) { return $this.trigger("refresh.clLib"); }
 		,"refreshHandler" : function($this) { 
-			//alert("refreshing routelogs..");
-				
 			var $container = $this;
 			// build where clause for today's routelogs
 			var where = clLib.getRouteLogWhereToday(clLib.getCurrentUserWhere());
-			
+			alert("where = "+ JSON.stringify(where));
 			clLib.loggi("getting today's top route logs..");
 			var todaysTopRouteLogs = clLib.localStorage.getEntities(
 					"RouteLog", where, "defaultStorage", clLib.sortByScoreFunc, true, 10);
