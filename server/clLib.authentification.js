@@ -10,6 +10,8 @@ var DBHandler = new DBResource.DBHandler();
 function auth(){};
 exports.auth = auth;
 
+var usersCollName = "Users";
+
 auth.prototype.hash = function(password, salt, callbackFunc, errorFunc) {
 	util.log("hashing...");
 	//callbackFunc(password);
@@ -26,7 +28,7 @@ auth.prototype.requiredAuthentication = function(req, res, next) {
 
 	//var username = req.params.username;
 	var username = req.headers["clUserName"];
-	var sessionToken = req.headers["x-appery-session-token"];
+	var sessionToken = req.headers["clSessionToken"];
 	//var sessionToken = req.params.sessionToken;
 	var cachedSession = serverResource.runtime["sessionTokens"][username] || {};
 	
@@ -55,13 +57,93 @@ auth.prototype.requiredAuthentication = function(req, res, next) {
     }
 }
 
+var $ = {};
+$.extend = function(options, addOptions) {
+    addOptions = addOptions || {};
+    for(var aKey in Object.keys(addOptions)) { var aKey2 = Object.keys(addOptions)[aKey];
+        //console.log("key" + aKey2); 
+        options[aKey2] = addOptions[aKey2];
+    };
+    //console.log("options is >" + JSON.stringify(options) + "<");
+    return options;
+}
+
+auth.prototype.getUser = function(userObj, callbackFunc, errorFunc, addOptions) {
+    util.log("getUser getting user >" + JSON.stringify(userObj) + "<");
+    var authHandler = this;
+    var options = {
+        create : true
+    };
+    $.extend(options, addOptions);
+    util.log("options is >" + JSON.stringify(options) + "<");
+    
+    DBHandler.getEntities({
+        entity : usersCollName, 
+        where : {"username": userObj["username"]},
+        requireResult: false
+    }
+    ,function(resultObj) { 
+        // upon success...
+        var userDetails = resultObj[0];
+        util.log("Found user >" + JSON.stringify(userDetails) + "<"); 
+    
+        // User not found=
+        if(!userDetails) {
+            if(options && options.create && options.create == true) {
+                return authHandler.createUser(userObj, callbackFunc, errorFunc);
+            }
+            // User was mandatory..return error because user was not found.
+            else {
+                return errorFunc(userObj);
+            }
+        }
+        else {
+            util.log("found user..");
+            // user was authenticated on client(google, facebook, ...)? 
+            // save sessionToken to verify against in subsequent request..
+            if(userObj.authType == "google" || userObj.authType == "facebook") {
+                util.log("users is " + JSON.stringify(userObj));
+                userObj["sessionToken"] = userObj["accessToken"];
+                    
+                serverResource.runtime["sessionTokens"][userObj["username"]] = userObj["sessionToken"];
+            }
+            return callbackFunc(userObj);
+        }
+    }
+    ,errorFunc
+    );
+};
+
+auth.prototype.createUser = function(userObj, callbackFunc, errorFunc) {
+    // verify user.
+    DBHandler.insertEntity({
+        entity : usersCollName, 
+        values : userObj
+    }
+    // upon success...
+    ,function(userObj) { 
+        return callbackFunc(userObj);
+    }
+    ,errorFunc
+    );
+
+};
 
 auth.prototype.authenticate = function(authObj, callbackFunc, errorFunc) {
     util.log('authenticating >' + JSON.stringify(authObj) + "<");
-    if(authObj["authType"] == "google") {
-        // verify access token (against username?)
-        return authObj;
+    if(
+        authObj["authType"] == "google"
+    ) {
+        // user exists?
+        return this.getUser(authObj, callbackFunc, errorFunc);
     }
+    else if(
+        authObj["authType"] == "facebook"
+    ) {
+        // user exists?
+        return this.getUser(authObj, callbackFunc, errorFunc);
+    }
+    // username/pwd kurtl authentication
     else {
         var userName = authObj.username;
         var password = authObj.password;
@@ -71,14 +153,10 @@ auth.prototype.authenticate = function(authObj, callbackFunc, errorFunc) {
             return errorFunc("username is missing..");
         }
 
-        // verify user.
-        DBHandler.getEntities({
-            entity : serverResource.usersCollectionName, 
-            where : {"username": authObj["username"]}
-            , requireResult: true
-        },
+        this.getUser(
+        {"username": authObj["username"]}
         // upon success...
-        function(userObj) { 
+        ,function(userObj) { 
             userObj = userObj[0];
             util.log("Found user >" + JSON.stringify(userObj) + "<"); 
 
@@ -121,6 +199,7 @@ auth.prototype.authenticate = function(authObj, callbackFunc, errorFunc) {
             }
         }
         ,errorFunc
+        , { create: false } // basic kurtl authentication: need user to authenticate
         );
     }
 };

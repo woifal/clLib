@@ -66,7 +66,7 @@ function unknownMethodHandler(req, res) {
 		if (res.methods.indexOf('OPTIONS') === -1) res.methods.push('OPTIONS');
 
 		res.header('Access-Control-Allow-Credentials', true);
-		res.header('Access-Control-Allow-Headers', "content-type,x-appery-database-id,x-appery-session-token,clUserName,DNT,accept-language,accept");
+		res.header('Access-Control-Allow-Headers', "content-type,x-appery-database-id,clSessionToken,clUserName,DNT,accept-language,accept");
 		res.header('Access-Control-Allow-Methods', 	res.methods.join(', '));
 		res.header('Access-Control-Allow-Origin', req.headers.origin);
 		console.log("sending 204...\n\n\n");
@@ -136,14 +136,13 @@ server.get("/login", function (req, res) {
 	}
 
 	console.log("authHandler.defaults : >" + JSON.stringify(authHandler.defaults) + "<");
-	authHandler.authenticate({
+	authHandler.authenticate(
         req.params
-	},
-	function(userObj) {
-		util.log("AUTHENTICATED!!! " + JSON.stringify(userObj));
-		return res.send(userObj);
-	},
-	errHandler
+        ,function(userObj) {
+            util.log("AUTHENTICATED!!! " + JSON.stringify(userObj));
+            return res.send(userObj);
+        }
+        ,errHandler
 	);
 
 });
