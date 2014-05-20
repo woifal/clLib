@@ -18,10 +18,10 @@ grunt.initConfig({
 				expand: true,
 				//flatten: true,
 				files: [
-//					{ src: ["js/*", "js/**/*"], dest:"dist/" },
-					{ src: ["js/*"], dest:"dist/" },
-					{ src: ["css/*","css/**/*"],  dest:"dist/" },
-					{ src: ["files/*", "files/**/*"] , dest:"dist/" },
+//					{ src: ["js/*", "js/**/*"], dest:"dist/" }
+					{ src: ["js/*"], dest:"dist/" }
+					,{ src: ["css/*","css/**/*"],  dest:"dist/" }
+					,{ src: ["files/*", "files/**/*"] , dest:"dist/" }
 				]
 			}
 		},
