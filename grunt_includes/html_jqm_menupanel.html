@@ -1,28 +1,18 @@
 		<!-- Menu Panel -->
-		<div data-role="panel" id="_COMMON_menupanel" data-display="overlay" data-theme="a">
+		<div data-role="panel" id="@@pageName_menupanel" data-display="overlay" data-theme="a">
 			<ul data-role="listview" data-theme="a">
 				<li data-role="list-divider">Kurt Climbing Menu</li>
 				<li>
 					<div>
-<!--
-						<a 
-							data-role="button" 
-							data-icon="gear" 
-							data-iconpos="right" 
-							id="_COMMON__usersButton"
-						>
-							<span id="_COMMON__displayName">user</span>
-						</a>
--->
-                        <div id="_COMMON__displayName"><span>user</span></div>
+                        <div name="@@pageName_displayName" id="@@pageName_displayName"><span>user</span></div>
                     </div>
 				</li>
-				<li><a id="_COMMON__preferencesButton" href="clLib_preferences.html">Preferences</a></li>
-				<li><a id="_COMMON__AGBButton" href="#">AGB</a></li>
-				<li><a id="_COMMON__AppInfoButton" href="#">Impressum</a></li>
+				<li><a id="@@pageName_preferencesButton" href="clLib_preferences.html">Preferences</a></li>
+				<li><a id="@@pageName_AGBButton" href="#">AGB</a></li>
+				<li><a id="@@pageName_AppInfoButton" href="#">Impressum</a></li>
 				<li>
 					Simple tracking?
-					<select id="_COMMON__defaultLayoutMenuSwitch" name="defaultLayoutMenuSwitch" 
+					<select id="@@pageName_defaultLayoutMenuSwitch" name="defaultLayoutMenuSwitch" 
 							data-inline="false" data-mini="false"
 							data-role="flipswitch"
 					>
@@ -30,8 +20,8 @@
 						<option value="reduced">yes</option>
 					</select>
 				</li>
-				<li><a id="_COMMON__feedbackButton" href="#">Feedback</a></li>
-				<li><a id="_COMMON__refreshAllButton" href="#">..Refresh routes</a></li>
+				<li><a id="@@pageName_feedbackButton" href="#">Feedback</a></li>
+				<li><a id="@@pageName_refreshAllButton" href="#">..Refresh routes</a></li>
 				<li data-icon="minus" data-mini="true"><a href="#my-header" data-icon="gear" data-rel="close">Close panel</a></li>
 			</ul>
 		</div>

@@ -66,7 +66,7 @@ var googleAuth = {
                 userObj["authType"] = "google";
                 userObj["accessToken"] = accessToken;
                 //userObj["displayName"] = resp.displayName;
-                userObj["displayName"] = resp.name.givenName;
+                userObj["displayName"] = resp.name.givenName || resp.displayName;
                 
                 userObj["profileURL"] = resp.image.url;
                 userObj["username"] = resp.id;
