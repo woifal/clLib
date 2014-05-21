@@ -123,6 +123,9 @@ clLib.PAGES.handlers = {
 	        clLib.UI.byId$("homeButton", pageId).die("click").live("click", function () {
 	            clLib.PAGES.changeTo("clLib_startScreen.html");
 	        });
+	        clLib.UI.byId$("displayName", pageId).die("click").live("click", function () {
+	            clLib.PAGES.changeTo("clLib_users.html");
+	        });
 	        clLib.UI.byId$("preferencesButton", pageId).die("click").live("click", function () {
 	            clLib.PAGES.changeTo("clLib_preferences.html");
 	        });
@@ -430,18 +433,17 @@ clLib.PAGES.handlers = {
 	    "pagecreate" : function (event, ui, pageId) {
 
             var errorFunc = function(error) {
-                alert("error!");
-                alert("with >" + JSON.stringify(error));
+                alert("error >" + JSON.stringify(error));
             }
             $("#users_googleLoginButton").on("click", function () {
 	        
                 googleAuth.checkAuth(
                     function(userObj) {
-                        alert("success!");
-                        alert("with >" + JSON.stringify(userObj));
+                        console.log("success!");
+                        console.log("with >" + JSON.stringify(userObj));
                         clLib.setUserInfo(userObj);
                         clLib.login(function() {
-                            alert("logged in to google..");
+                            console.log("logged in to google..");
                         }, errorFunc);
                         clLib.UI.byId$("displayName", pageId).trigger("refresh.clLib");
                     }
@@ -453,15 +455,14 @@ clLib.PAGES.handlers = {
 	        
                 facebookAuth.checkAuth(
                     function(userObj) {
-                        alert("success!");
-                        alert("with >" + JSON.stringify(userObj));
+                        console.log("success with >" + JSON.stringify(userObj));
                         clLib.setUserInfo(userObj);
+                        clLib.login(function() {
+                            console.log("logged in to facebook..");
+                        }, errorFunc);
                         clLib.UI.byId$("displayName", pageId).trigger("refresh.clLib"); 
                     }
-                    ,function(error) {
-                        alert("error!");
-                        alert("with >" + JSON.stringify(error));
-                    }
+                    ,errorFunc
                 );
             });
             

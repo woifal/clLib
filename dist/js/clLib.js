@@ -644,7 +644,7 @@ clLib.loggedInCheck = function (callbackFunc, errorFunc) {
 	}
 	// online - check for valid sessiontoken
 	if (clLib.sessionToken) {
-        return callbackFunc(true);
+        return callbackFunc(/*true*/);
     }
 	//alert("no session token!");
 	// no session token found - try to logon using stored credentials
@@ -654,7 +654,7 @@ clLib.loggedInCheck = function (callbackFunc, errorFunc) {
 			// successfully logged in, return true
 			//alert("logged in now, returning true");
             $("#_COMMON__displayName").trigger("refresh.clLib");
-            return callbackFunc(true);
+            return callbackFunc(/*true*/);
 		}
 		, errorFunc
 	);

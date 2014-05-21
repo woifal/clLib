@@ -194,11 +194,13 @@
         </div>
 
 /* auth... */
+<!--
 <button id="authorize-button" >Authorize</button>
 <button id="logout-button" >Logout</button>
 <button id="api-button" >API</button>
+-->
 <script type="text/javascript">
-
+/*
 document.getElementById('authorize-button').onclick = function() {
     googleAuth.checkAuth(
         function(userObj) {
@@ -211,7 +213,7 @@ document.getElementById('authorize-button').onclick = function() {
         }
     );
 };
-
+*/
 var loadGoogleAuth = function() {
 };
 
@@ -286,7 +288,9 @@ var googleAuth = {
 };
 </script>
     <script src="https://apis.google.com/js/client.js?onload=loadGoogleAuth"></script>
+<!--
     <div id="content"></div>
+-->
 
 <!--<button id="login-button" onclick="alert(1)"/>log innn</button>-->
 <script>
@@ -407,11 +411,12 @@ window.fbAsyncInit = function() {
   // Here we run a very simple test of the Graph API after login is
   // successful.  See statusChangeCallback() for when this call is made.
 
-    
+  /*  
   var loginButton  = document.getElementById('login-button');
     loginButton.onclick = function() {
         return foo();
     }
+    */
   </script>
 
 <!--

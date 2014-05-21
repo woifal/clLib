@@ -1628,7 +1628,7 @@ clLib.tryLogin = function(successFunc, errorFunc, noRedirectFlag) {
 	return clLib.loggedInCheck(
 	successFunc,
 	function(e) {
-		alert("&/&/&/&/&/&/!!handling error >" + !(noRedirectFlag == true) + "< " + JSON.stringify(e));
+		console.log("&/&/&/&/&/&/!!handling error >" + !(noRedirectFlag == true) + "< " + JSON.stringify(e));
         clLib.loginErrorHandler(e);
         if((noRedirectFlag == true) == false) {
             console.log("no login success, redirecting to users page...");
