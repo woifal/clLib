@@ -24,13 +24,14 @@ clLib.UI.pageRequisites = {
     }
     , "preferences": {}
     , "newRouteLog": { 
-		"clBeforeChange" : [clLib.prefsCompleteCheck, clLib.tryLogin, clLib.wasOnlineCheck, 
-			function (callbackFunc, errorFunc) {
+		"clBeforeChange" : [clLib.prefsCompleteCheck, clLib.tryLogin, clLib.wasOnlineCheck
+/*            ,function (callbackFunc, errorFunc) {
 				var options = {};
 				options.uri = clLib.REST.clLibServerURI + "/sleep/5";
 				return clLib.REST.execGET(options, callbackFunc, errorFunc);
 			}
-		] 
+*/
+        ] 
 	}
     , "users": { "clBeforeChange" : [function(successFunc, errorFunc) {
         console.log("!!!!!changing to users - but no redirect(=>useless)..");
@@ -290,6 +291,14 @@ clLib.UI.elements = {
             var profileURL = clLib.getUserInfo()["profileURL"];
             var displayName = clLib.getUserInfo()["displayName"];
             var authType = clLib.getUserInfo()["authType"];
+
+/*
+<div style="width: 200px; border: 1px solid red">
+<img src="files/views/assets/image/redpoint.PNG" style="float:left; width:35px; height:35px;"/>
+<span style="border: 1px solid green; float: left; margin-top:10px;">woi fal</span>
+<img src="files/views/assets/image/googleAuth.jpg" style="border: 1px solid blue; float:right; vertical-align: middle;width:15px; height:15px;"/>
+
+*/
             
             $currentUser = $("<div>");
             if(profileURL) {
@@ -299,13 +308,19 @@ clLib.UI.elements = {
                         "src" : profileURL
                     })
                     .css({
-                        width : "25px"
+                        float: "left"
+                        ,width : "25px"
                         ,height : "25px"
                     })
                 )
             }
             $currentUser.append(
                 $("<span>")
+                    .css({
+                        float: "left"
+                        ,"margin-left": "10px"
+                        ,border: "0px solid red"
+                    })
                     .text(displayName)
             )
             ;
@@ -325,6 +340,7 @@ clLib.UI.elements = {
                     .css({
                         width : "25px"
                         ,height : "25px"
+                        ,float: "right"
                     })
                 );
             }
@@ -909,7 +925,7 @@ clLib.UI.elements = {
 			var $container = $this;
 			// build where clause for today's routelogs
 			var where = clLib.getRouteLogWhereToday(clLib.getCurrentUserWhere());
-			alert("where = "+ JSON.stringify(where));
+			console.log("where = "+ JSON.stringify(where));
 			clLib.loggi("getting today's top route logs..");
 			var todaysTopRouteLogs = clLib.localStorage.getEntities(
 					"RouteLog", where, "defaultStorage", clLib.sortByScoreFunc, true, 10);
