@@ -30,6 +30,14 @@ var googleAuth = {
         console.log("authorizing with " + googleAuth.apiKey + "," + googleAuth.clientId + "," + googleAuth.scopes);
         gapi.client.setApiKey(googleAuth.apiKey);
 
+
+        gapi.auth.signOut();
+
+// try to log out
+/*
+        $("body").append('<iframe id="logoutframe" src="https://accounts.google.com/logout" style="display: none"></iframe>');
+*/   
+        alert("base auth location is: " + document.location.href);
         gapi.auth.authorize({
             client_id: googleAuth.clientId, 
             scope: googleAuth.scopes, 

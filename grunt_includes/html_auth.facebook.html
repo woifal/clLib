@@ -19,7 +19,27 @@ var foo = function() {
 var facebookAuth = {
     1:1
     ,checkAuth : function(successFunc, errorFunc) {
-        alert("logging in..");
+        //alert("logging in..");
+        // try to logout..
+/*        if(typeof FB.logout == 'function'){
+            if (FB.getAuthResponse()) {
+             FB.logout(function(response) { alert("logged out..."); }); 
+             return;
+            }  else {
+                alert("could not get AuthResponse");
+            }
+        };
+*/
+        /*
+        FB.getLoginStatus(function (response) {
+            if (response.authResponse) {
+                alert("facebook accessToken is >" + response.authResponse.accessToken + "<");
+                FB.logout();
+            } else {
+                alert("could not get login status...");
+            }
+        });
+*/
         return FB.login(
             function(resp) {
                 return facebookAuth.statusChangeCallback(resp, successFunc, errorFunc);
