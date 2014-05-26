@@ -12,6 +12,9 @@ exports.auth = auth;
 
 var usersCollName = "Users";
 
+// Initialize runtime user token collection..
+auth.prototype.userToken = {};
+
 auth.prototype.hash = function(password, salt, callbackFunc, errorFunc) {
 	util.log("hashing...");
 	//callbackFunc(password);
@@ -30,31 +33,21 @@ auth.prototype.requiredAuthentication = function(req, res, next) {
 	var username = req.headers["clUserName"];
 	var sessionToken = req.headers["clSessionToken"];
 	//var sessionToken = req.params.sessionToken;
-	var cachedSession = serverResource.runtime["sessionTokens"][username] || {};
+	var cachedSessions = authHandler.getUserTokens(username);
 	
-	var userSessionToken = cachedSession["token"] ;
-	var userSessionExpiry = cachedSession["expires"];
-	var currentTime = "" + Date.now();
-	if(sessionToken == null || userSessionToken == null) {
-		res.send(500, JSON.stringify({
-			result: "Request session token >" + sessionToken+ "< is not defined or server session token >" + userSessionToken + "< does not exist."
-		}));
-	} 
-	else if(sessionToken == userSessionToken) {
-        if(currentTime > userSessionExpiry) {
-			util.log("Session for user '" + username + "' expired (" + userSessionExpiry + " < " + currentTime + ")");
-			delete serverResource.runtime["sessionTokens"][username];
-			res.send(500, JSON.stringify({
-				result: "Session for user '" + username + "' expired (" + userSessionExpiry + " < " + currentTime + ")"
-			}));
-		}
-		util.log("sessionToken >" + sessionToken + "<for user >" + username + "< is OK!");
-		next();
-    } else {
-		res.send(500, JSON.stringify({
-			result: "Session verification failed: >" + userSesionToken + "< is not equal to >" + sessionToken + "<"
-		}));
+    if(!(sessionToken in cachedSessions)) {
+        res.send(500, JSON.stringify({
+            result: "Request session token >" + sessionToken+ "< is not known"
+        }));
     }
+    else {
+        // verify is session/accestoke is still valid..
+        
+
+        util.log("sessionToken >" + sessionToken + "<for user >" + username + "< is OK!");
+        next();
+    }
+
 }
 
 var $ = {};
@@ -77,7 +70,7 @@ auth.prototype.getUser = function(userObj, callbackFunc, errorFunc, addOptions) 
     $.extend(options, addOptions);
     util.log("options is >" + JSON.stringify(options) + "<");
     
-    DBHandler.getEntities({
+    return DBHandler.getEntities({
         entity : usersCollName, 
         where : {"username": userObj["username"]},
         requireResult: false
@@ -104,9 +97,13 @@ auth.prototype.getUser = function(userObj, callbackFunc, errorFunc, addOptions) 
             if(userObj.authType == "google" || userObj.authType == "facebook") {
                 util.log("users is " + JSON.stringify(userObj));
                 userObj["sessionToken"] = userObj["accessToken"];
-                    
-                serverResource.runtime["sessionTokens"][userObj["username"]] = userObj["sessionToken"];
+                return authHandler.addUserToken(userObj
+                    ,function(userObj) {
+                        return callbackFunc(userObj);
+                    }
+                    ,errorFunc);
             }
+            
             return callbackFunc(userObj);
         }
     }
@@ -115,6 +112,7 @@ auth.prototype.getUser = function(userObj, callbackFunc, errorFunc, addOptions) 
 };
 
 auth.prototype.createUser = function(userObj, callbackFunc, errorFunc) {
+    var authHandler = this;
     // verify user.
     DBHandler.insertEntity({
         entity : usersCollName, 
@@ -122,12 +120,91 @@ auth.prototype.createUser = function(userObj, callbackFunc, errorFunc) {
     }
     // upon success...
     ,function(userObj) { 
-        return callbackFunc(userObj);
+        // save refreshToken if authtype is oauth2
+        authHandler.addUserToken(
+            userObj
+        ,function(userObj) {
+                return callbackFunc(userObj);
+        }
+        ,errorFunc
+        );
     }
     ,errorFunc
     );
 
 };
+
+auth.prototype.getUserTokens = function(userId) {
+    var authHandler = this;
+    if(!authHandler.userTokens) {
+        authHandler.userTokens = {};
+    }
+    return authHandler.userTokens[userId];
+
+};
+
+auth.prototype.addUserToken = function(userObj, callbackFunc, errorFunc) {
+    var authHandler = this;
+    var userTokens = authHandler.getUserTokens(userObj["username"]) || {
+        sessionTokens : {}
+    };
+    
+    // new refreshtoken?
+    // invalidate all other accesstokens for user
+    if(userObj["refreshToken"]) {
+        userTokens["refreshToken"] = userObj["refreshToken"];
+        userTokens["currentAccessToken"] = userObj["accessToken"];
+        userTokens["sessionTokens"] = {};
+        authHandler.userTokens[userObj["username"]] = userTokens;
+    }
+    return authHandler.verifyAccessToken(userObj, function(userObj) {
+        userTokens["currentAccessToken"] = userObj["accessToken"];
+        userTokens["sessionTokens"][userObj["sessionToken"]] = true;
+        authHandler.userTokens[userObj["username"]] = userTokens;
+        return callbackFunc(userObj);
+    }
+    , errorFunc
+    );
+    
+};
+
+auth.prototype.verifyAccessToken = function(userObj, callbackFunc, errorFunc) {
+    if(userObj.authType == "google") {
+        // Retrieve tokens via token exchange explaind above.
+        // Or you can set them.
+        serverResource.oauth2Client.credentials = {
+          access_token: userObj["accessToken"]
+        };
+
+        //return callbackFunc(userObj);
+
+        // Verify token by trying to retrieve profile information..
+        return serverResource.googleapis
+            .discover('plus', 'v1')
+            .execute(function(err, client) {
+                // handle discovery errors
+                client
+                    .plus.people.get({ userId: 'me' })
+                    .withAuthClient(serverResource.oauth2Client)
+                    .execute(function(err, user) {
+                        if(err) {
+                            return errorFunc(err);
+                        }
+                        return callbackFunc(userObj);
+                    });
+            });
+        ;
+    }
+    else if(userObj.authType == "facebook") {
+        return callbackFunc(userObj);
+    }
+    else {
+        return callbackFunc(userObj);
+    }
+        
+
+};
+
 
 auth.prototype.authenticate = function(authObj, callbackFunc, errorFunc) {
     util.log('authenticating >' + JSON.stringify(authObj) + "<");
@@ -172,8 +249,7 @@ auth.prototype.authenticate = function(authObj, callbackFunc, errorFunc) {
                     var sessionToken = serverResource.generateRandomToken();
                     // indicate in session that user was authenticated..
                     userObj["sessionToken"] = sessionToken;
-                    serverResource.runtime["sessionTokens"][userObj["username"]] = sessionToken;
-                    
+                    authHandler.addUserToken(userObj, callbackFunc, errorFunc);                    
                     return callbackFunc(userObj);
                 }
                 // no, they don't..
