@@ -428,7 +428,29 @@ clLib.PAGES.handlers = {
 			clLib.UI.fillUIelements("users_verification", "users_verification");
         }
 	}
+    ,"trickGoogle": {
+	    "pagecreate" : function (event, ui, pageId) {
+            alert("2creating trickGoogle page..");
+            alert("2SETTTTT timeout..");
+            setTimeout(function() {
+                alert("clicking login button..");
+                $("#trickGoogle_googleLoginButton").click();
+                alert("clicked login button..");
+            }, 5000);
 
+            var errorFunc = function(error) {
+                alert("error >" + JSON.stringify(error));
+            }
+            $("#trickGoogle_googleLoginButton").on("click", function () {
+                clLib.auth.login({authType: "google"}
+                    ,function() {
+                        clLib.UI.byId$("displayName", pageId).trigger("refresh.clLib");
+                        clLib.PAGES.changeTo("clLib_startScreen.html");
+					}
+                    ,errorFunc);
+            });
+        }
+    }
 	,"users": {
 	    "pagecreate" : function (event, ui, pageId) {
 
@@ -436,38 +458,28 @@ clLib.PAGES.handlers = {
                 alert("error >" + JSON.stringify(error));
             }
             $("#users_googleLoginButton").on("click", function () {
-	        
-                googleAuth.checkAuth(
-                    function(userObj) {
-                        console.log("success!");
-                        console.log("with >" + JSON.stringify(userObj));
-                        clLib.setUserInfo(userObj);
-                        clLib.login(function() {
-                            console.log("logged in to google..");
-                        }, errorFunc);
+/*
+                var redirectURL = "http://www.kurt-climbing.com/dist/clLib_trickGoogleOAuth2.html"
+                //var redirectURL = "http://www.orf.at";
+                alert("changing to " + redirectURL);
+                clLib.PAGES.changeTo(redirectURL);
+*/
+                clLib.auth.login({authType: "google"}
+                    ,function() {
                         clLib.UI.byId$("displayName", pageId).trigger("refresh.clLib");
-                    }
-                    ,errorFunc
-                );
+                        clLib.PAGES.changeTo("clLib_startScreen.html");
+					}
+                    ,errorFunc);
             });
 
             $("#users_facebookLoginButton").on("click", function () {
-	        
-                facebookAuth.checkAuth(
-                    function(userObj) {
-                        console.log("success with >" + JSON.stringify(userObj));
-                        clLib.setUserInfo(userObj);
-                        clLib.login(function() {
-                            console.log("logged in to facebook..");
-                        }, errorFunc);
-                        clLib.UI.byId$("displayName", pageId).trigger("refresh.clLib"); 
-                    }
-                    ,errorFunc
-                );
+                clLib.auth.login({authType: "facebook"}
+                	,function() {
+						clLib.UI.byId$("displayName", pageId).trigger("refresh.clLib");
+                        clLib.PAGES.changeTo("clLib_startScreen.html");
+					}
+                    ,errorFunc);
             });
-            
-
-
             
             $("#users_loginButton").on("click", function () {
 	            clLib.UI.execWithMsg(function() {
@@ -596,7 +608,9 @@ clLib.PAGES.changeTo = function(newURL, urlData) {
         );
         
     } else {
-        $.mobile.navigate(newRouteLogURL);	
+        alert("navigating to " + newURL);
+        document.location.href = newURL;
+        //$.mobile.navigate(newURL);	
     }
 	
 };

@@ -42,6 +42,7 @@ clLib.UI.pageRequisites = {
     , "diagram": { }
     , "AGB": { }
     , "feedback": { }
+    , "trickGoogle": { }
 };
 
 

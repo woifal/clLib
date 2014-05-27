@@ -263,7 +263,12 @@ clLib.REST.loginUser = function (userInstance, successFunc, errorFunc) {
 	reqOptions["method"] = "GET";
 	reqOptions["params"] = userInstance;
 	reqOptions["allowNoSessionToken"] = true;
-	clLib.REST.execAJAXRequest(reqOptions, successFunc, errorFunc);
+	clLib.REST.execAJAXRequest(reqOptions
+        ,function(userObj) {
+            alert("success login with >" + JSON.stringify(userObj) + "<");
+            return successFunc(userObj);
+        }
+        ,errorFunc);
 }
 
 clLib.REST.deleteUser = function (userInstance, successFunc, errorFunc) {
