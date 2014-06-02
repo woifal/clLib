@@ -12,6 +12,39 @@ exports.auth = auth;
 
 var usersCollName = "Users";
 
+
+var RESTServerURL;
+RESTServerURL = "http://cllibserver.herokuapp.com";
+//RESTServerURL = "http://localhost:1983";
+
+var HTMLServerURL;
+HTMLServerURL = "http://www.kurt-climbing.com";
+
+
+/* 
+*   Google OAuth2 objects.. 
+*/
+var googleapis = require('googleapis');
+var OAuth2 = googleapis.auth.OAuth2;
+
+var CLIENT_ID = "366201815473-t9u61cghvmf36kh0dgtenahgitvsuea8.apps.googleusercontent.com";
+var CLIENT_SECRET = "vwccCUw-n8ufYFQYom9FIrX7";
+var REDIRECT_URL = RESTServerURL + "/verifyGoogleAuth";
+                    
+var oauth2Client = new OAuth2(CLIENT_ID, CLIENT_SECRET, REDIRECT_URL);
+
+// generates a url that allows offline access and asks permissions
+// for Google+ scope.
+var scopes = [
+  'https://www.googleapis.com/auth/plus.me',
+  'https://www.googleapis.com/auth/calendar'
+];
+
+
+
+
+
+
 // Initialize runtime user token collection..
 auth.prototype.userToken = {};
 
@@ -24,6 +57,76 @@ auth.prototype.hash = function(password, salt, callbackFunc, errorFunc) {
 		callbackFunc(hash);
 	});
 }
+
+auth.prototype.generateAuthURL = function(authObj) {
+    var url;
+    if(authObj["authType"] == "google") {
+        //var fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
+        
+        url = oauth2Client.generateAuthUrl({
+          access_type: 'offline',
+          scope: scopes.join(" ") // space delimited string of scopes
+        });
+    } else {
+        url = HTMLServerURL;
+    }
+    return url;
+}
+
+auth.prototype.verifyOAuth2Code = function(code, req, res) {
+    return oauth2Client.getToken(
+        code, 
+        function(err, tokens) {
+            // contains an access_token and optionally a refresh_token.
+            // save them permanently.
+            util.log("got errors >" + JSON.stringify(err ) + "<");
+            util.log("got params >" + JSON.stringify(Object.keys(tokens)) + "<");
+            util.log("got tokens >" + JSON.stringify(tokens) + "<");
+            var stateParams = JSON.parse(req.params.state);
+            util.log("got STATE params >" + JSON.stringify(stateParams) + "<");
+            util.log("got STATE param keys >" + JSON.stringify(Object.keys(stateParams)) + "<");
+            
+            
+            // Retrieve tokens via token exchange explaind above.
+            // Or you can set them.
+            oauth2Client.credentials = {
+              access_token: tokens.access_token,
+              refresh_token: tokens.refresh_token
+            };
+
+            return googleapis
+                .discover('plus', 'v1')
+                .execute(function(err, client) {
+                    // handle discovery errors
+                    client
+                        .plus.people.get({ userId: 'me' })
+                        .withAuthClient(oauth2Client)
+                        .execute(function(err, user) {
+                            util.log("google+ err >" + JSON.stringify(err) + "<");
+                            util.log("google+ user >" + JSON.stringify(user) + "<");
+                            
+                            user["accessToken"] = tokens.access_token;
+                            user["refreshToken"] = tokens.refresh_token;
+                            user["authType"] = "google";
+
+                            util.log("google+ user(incl. tokens) >" + JSON.stringify(user) + "<");
+                            
+                            delete(user["kind"]);
+                            
+                            var redirectURL = stateParams["clLib.redirectURL"];
+                            util.log("redirecting to >" + redirectURL);
+                             
+                            // redirect back to clLib app 
+//                            res.header('Location', HTMLServerURL + "/dist/index.html?authObj=" + encodeURI(JSON.stringify(user)));
+                            res.header('Location', redirectURL + "?authObj=" + encodeURI(JSON.stringify(user)));
+                            res.send(302); 
+                        });
+                })
+            ;
+        }
+    );
+
+};
 
 auth.prototype.requiredAuthentication = function(req, res, next) {
 	util.log("req" + JSON.stringify(Object.keys(req)));
@@ -172,20 +275,20 @@ auth.prototype.verifyAccessToken = function(userObj, callbackFunc, errorFunc) {
     if(userObj.authType == "google") {
         // Retrieve tokens via token exchange explaind above.
         // Or you can set them.
-        serverResource.oauth2Client.credentials = {
+        oauth2Client.credentials = {
           access_token: userObj["accessToken"]
         };
 
         //return callbackFunc(userObj);
 
         // Verify token by trying to retrieve profile information..
-        return serverResource.googleapis
+        return googleapis
             .discover('plus', 'v1')
             .execute(function(err, client) {
                 // handle discovery errors
                 client
                     .plus.people.get({ userId: 'me' })
-                    .withAuthClient(serverResource.oauth2Client)
+                    .withAuthClient(oauth2Client)
                     .execute(function(err, user) {
                         if(err) {
                             return errorFunc(err);
