@@ -350,6 +350,7 @@ clLib.UI.elements = {
             $this.empty();
             console.log("appending new user info.." + $currentUser.html());
             $this.append($currentUser);
+            //$this.trigger("refresh");
             
 /*
 			var elValue;
