@@ -2,7 +2,17 @@ module.exports = function(grunt) {
 grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
 		includereplace: {
-			your_target: {
+			dev: {
+				options: {
+					flatten: true
+				// Task-specific options go here.
+				},
+				// Files to perform replacements and includes with
+				src: ['*.html'],
+				// Destination directory to copy files to
+				dest: 'dist/'
+			}
+			,prod: {
 				options: {
 					flatten: true
 				// Task-specific options go here.
@@ -14,12 +24,20 @@ grunt.initConfig({
 			}
 		},
 		copy: {
-			your_target: {
+			dev: {
 				expand: true,
 				//flatten: true,
 				files: [
-//					{ src: ["js/*", "js/**/*"], dest:"dist/" }
-					{ src: ["js/*"], dest:"dist/" }
+					{ src: ["js/*", "js/**/*"], dest:"dist/" }
+					,{ src: ["js/*"], dest:"dist/" }
+				]
+			}
+			, prod: {
+				expand: true,
+				//flatten: true,
+				files: [
+					{ src: ["js/*", "js/**/*"], dest:"dist/" }
+					,{ src: ["js/*"], dest:"dist/" }
 					,{ src: ["css/*","css/**/*"],  dest:"dist/" }
 					,{ src: ["files/*", "files/**/*"] , dest:"dist/" }
 				]
@@ -31,6 +49,7 @@ grunt.initConfig({
 	grunt.loadNpmTasks('grunt-contrib-copy');
 	
     // 4. Where we tell Grunt what to do when we type "grunt" into the terminal.
-    grunt.registerTask('default', ['includereplace', 'copy']);
+    grunt.registerTask('dev', ['includereplace:dev', 'copy:dev']);
+    grunt.registerTask('prod', ['includereplace:prod', 'copy:prod']);
 
 };
