@@ -39,8 +39,6 @@ clLib.server.defaults = {
 		res.send(500, "error >" + errorStr + "<");
 	}
 };
-
-
  
  
 //Create the server
@@ -623,26 +621,33 @@ server.get('/sleep/:seconds',
 
 });
 
+/* 
+* - Generate URL to authenticate via google OAuth2 at
+* - Redirect to this url..
+*/
+server.get('/getOAuth2URL', 
+		function(req, res) 
+{
+    var authType;
+    if(req.params.authType) {
+        authType = req.params.authType;
+    } else {
+        // default to google auth..
+        authType = "google";
+    }
+    var authURL = authHandler.generateAuthURL({
+        "authType": authType
+    });
+    
+    
+    util.log("-");
+    util.log("REDIRECT URL IS >" + req.params.redirectURL + "<");
+    util.log("-");
+    res.header('clLib.redirectURL', req.params.redirectURL);
+    res.header('Location', authURL + "&state=" + JSON.stringify(req.params));
+    res.send(302); 
 
-var googleapis = require('googleapis'),
-    OAuth2 = googleapis.auth.OAuth2;
-
-var CLIENT_ID = "366201815473-t9u61cghvmf36kh0dgtenahgitvsuea8.apps.googleusercontent.com";
-var CLIENT_SECRET = "vwccCUw-n8ufYFQYom9FIrX7";
-var REDIRECT_URL = "http://localhost:1983/verifyGoogleAuth";
-                    
-var oauth2Client =
-    new OAuth2(CLIENT_ID, CLIENT_SECRET, REDIRECT_URL);
-
-clLib.server.googleapis = googleapis;    
-clLib.server.oauth2Client = oauth2Client;
-// generates a url that allows offline access and asks permissions
-// for Google+ scope.
-var scopes = [
-  'https://www.googleapis.com/auth/plus.me',
-  'https://www.googleapis.com/auth/calendar'
-];
-
+});
 
 	
 server.get('/verifyGoogleAuth', 
@@ -654,38 +659,10 @@ server.get('/verifyGoogleAuth',
 
 	util.log("GOOGLE verifying.." + JSON.stringify(req.params));
     
-    oauth2Client.getToken(req.params.code, function(err, tokens) {
-      // contains an access_token and optionally a refresh_token.
-      // save them permanently.
-        util.log("got errors >" + JSON.stringify(err ) + "<");
-        util.log("got params >" + JSON.stringify(Object.keys(tokens)) + "<");
-        util.log("got tokens >" + JSON.stringify(tokens) + "<");
-        
-        
-        // Retrieve tokens via token exchange explaind above.
-        // Or you can set them.
-        oauth2Client.credentials = {
-          access_token: tokens.access_token,
-          refresh_token: tokens.refresh_token
-        };
-
-
-        googleapis
-            .discover('plus', 'v1')
-            .execute(function(err, client) {
-                // handle discovery errors
-                client
-                    .plus.people.get({ userId: 'me' })
-                    .withAuthClient(oauth2Client)
-                    .execute(function(err, user) {
-                        util.log("google+ err >" + JSON.stringify(err) + "<");
-                        util.log("google+ user >" + JSON.stringify(user) + "<");
-                        // redirect back to clLib app 
-                        res.header('Location', "http://www.kurt-climbing.com/dist/clLib_handleAuthObj.html?authObj=" + JSON.stringify(user));
-                        res.send(302); 
-                    });
-            });
-        
-    });
+    return authHandler.verifyOAuth2Code(
+        req.params.code
+        ,req
+        ,res
+    );
 });
 
