@@ -22,6 +22,7 @@
 
 
         <script type="text/javascript" src="js/clLib.js"></script>
+        <script type="text/javascript" src="js/clLib.auth.js"></script>
         <script type="text/javascript" src="js/clLib.gradeConfig.js"></script>
         <script type="text/javascript" src="js/clLib.localStorage.js"></script>
         <script type="text/javascript" src="js/clLib.localStorage.indexes.js"></script>
@@ -29,6 +30,7 @@
         <script type="text/javascript" src="js/clLib.UI.pageConfig.js"></script>
         <script type="text/javascript" src="js/clLib.REST.js"></script>
         <script type="text/javascript" src="js/clLib.PAGES.js"></script>
+
 		<script type="text/javascript" src="js/Chart.js"></script>
 
 
@@ -164,7 +166,7 @@
 
 	
 	</div>
-/* auth... */
+<!-- auth... -->
 <!--
 <button id="authorize-button" >Authorize</button>
 <button id="logout-button" >Logout</button>
@@ -197,6 +199,14 @@ var googleAuth = {
         console.log("authorizing with " + googleAuth.apiKey + "," + googleAuth.clientId + "," + googleAuth.scopes);
         gapi.client.setApiKey(googleAuth.apiKey);
 
+
+        gapi.auth.signOut();
+
+// try to log out
+/*
+        $("body").append('<iframe id="logoutframe" src="https://accounts.google.com/logout" style="display: none"></iframe>');
+*/   
+        console.log("base auth location is: " + document.location.href);
         gapi.auth.authorize({
             client_id: googleAuth.clientId, 
             scope: googleAuth.scopes, 
@@ -284,7 +294,27 @@ var foo = function() {
 var facebookAuth = {
     1:1
     ,checkAuth : function(successFunc, errorFunc) {
-        alert("logging in..");
+        //alert("logging in..");
+        // try to logout..
+/*        if(typeof FB.logout == 'function'){
+            if (FB.getAuthResponse()) {
+             FB.logout(function(response) { alert("logged out..."); }); 
+             return;
+            }  else {
+                alert("could not get AuthResponse");
+            }
+        };
+*/
+        /*
+        FB.getLoginStatus(function (response) {
+            if (response.authResponse) {
+                alert("facebook accessToken is >" + response.authResponse.accessToken + "<");
+                FB.logout();
+            } else {
+                alert("could not get login status...");
+            }
+        });
+*/
         return FB.login(
             function(resp) {
                 return facebookAuth.statusChangeCallback(resp, successFunc, errorFunc);
@@ -396,7 +426,7 @@ window.fbAsyncInit = function() {
 <div id="status"></div>
 -->
 
-/* end of auth */   
+<!-- end of auth -->
 
 </body>
 

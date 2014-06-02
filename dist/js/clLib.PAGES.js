@@ -109,13 +109,79 @@ clLib.PAGES.executeChainedFunc = function(funcArray, idx, successFunc, errorFunc
 clLib.PAGES.handlers = {
 	1 : 1
     ,"index": {
-        "pagebeforeshow": function () {
-            console.log("showing index, setting timeout for move to startscreen..");
-            setTimeout(function() {
-                //console.log("changing to startscreen..");
-                clLib.PAGES.changeTo("clLib_startScreen.html");
+        "pagebeforeshow": function (event, ui, pageId) {
+            var errorFunc = function(error) {
+                alert("error >" + JSON.stringify(error));
             }
-            ,1000);
+
+            console.log("showing index, setting timeout for move to startscreen..");
+
+            console.log("trying to get authObj from URL params");
+            var urlAuthObj;
+
+            if(document.location.href.indexOf("?authObj") != -1) {
+                urlAuthObj = decodeURIComponent(
+                    document.location.href.substring(
+                        document.location.href.indexOf("?authObj") + 9
+                    )
+                );
+            }
+
+            console.log("Got authObj from URL params");
+            if(!urlAuthObj) {
+                alert("NO external authentication, proceeding standard way..");
+                setTimeout(function() {
+                    //console.log("changing to startscreen..");
+                    clLib.PAGES.changeTo("clLib_startScreen.html");
+                }
+                ,2000);
+            }
+            if(urlAuthObj) {
+                console.log("Getting VALID authObj from URL params >" + urlAuthObj + "<");
+                var authObj = JSON.parse(urlAuthObj);
+                alert("GOT VALID authObj from URL params");
+                
+                if(authObj) {
+                    alert("authObj found...trying to process OAuth2 results..");
+                    console.log("authObj found...trying to process OAuth2 results..");
+                    console.log("authObj >" + JSON.stringify(authObj) + "<");
+    //                console.log("authObj2 >" + JSON.stringify(JSON.parse(decodeURI(authObj))) + "<");
+                    
+                    var userObj = {};
+                    userObj["authType"] = "google";
+                    userObj["accessToken"] = authObj["accessToken"];
+                    userObj["displayName"] = authObj.name.givenName || authObj.displayName;
+                    
+                    userObj["profileURL"] = authObj.image.url;
+                    userObj["username"] = authObj.id;
+                    
+                    console.log("got userObj of >" + JSON.stringify(userObj) + "<");
+                    
+                    clLib.setUserInfo(userObj);
+                    return clLib.login(
+                    function() {
+                            console.log("logged in to " + userObj["authType"] + "..");
+                            clLib.UI.byId$("displayName", pageId).trigger("refresh.clLib");
+
+                            setTimeout(function() {
+                                //console.log("changing to startscreen..");
+                                clLib.PAGES.changeTo("clLib_startScreen.html");
+                            }
+                            ,2000);
+
+                    }
+                    ,errorFunc);
+                }
+                else {
+                    alert("something weird happened, proceeding to start screen");
+                    setTimeout(function() {
+                        //console.log("changing to startscreen..");
+                        clLib.PAGES.changeTo("clLib_startScreen.html");
+                    }
+                    ,2000);
+                }
+            };
+
         }
     }
     ,"_COMMON_" : {
@@ -124,7 +190,7 @@ clLib.PAGES.handlers = {
 	            clLib.PAGES.changeTo("clLib_startScreen.html");
 	        });
 	        clLib.UI.byId$("displayName", pageId).die("click").live("click", function () {
-	            clLib.PAGES.changeTo("clLib_users.html");
+                clLib.PAGES.changeTo("clLib_users.html");
 	        });
 	        clLib.UI.byId$("preferencesButton", pageId).die("click").live("click", function () {
 	            clLib.PAGES.changeTo("clLib_preferences.html");
@@ -428,7 +494,29 @@ clLib.PAGES.handlers = {
 			clLib.UI.fillUIelements("users_verification", "users_verification");
         }
 	}
+    ,"trickGoogle": {
+	    "pagecreate" : function (event, ui, pageId) {
+            alert("2creating trickGoogle page..");
+            alert("2SETTTTT timeout..");
+            setTimeout(function() {
+                alert("clicking login button..");
+                $("#trickGoogle_googleLoginButton").click();
+                alert("clicked login button..");
+            }, 5000);
 
+            var errorFunc = function(error) {
+                alert("error >" + JSON.stringify(error));
+            }
+            $("#trickGoogle_googleLoginButton").on("click", function () {
+                clLib.auth.login({authType: "google"}
+                    ,function() {
+                        clLib.UI.byId$("displayName", pageId).trigger("refresh.clLib");
+                        clLib.PAGES.changeTo("clLib_startScreen.html");
+					}
+                    ,errorFunc);
+            });
+        }
+    }
 	,"users": {
 	    "pagecreate" : function (event, ui, pageId) {
 
@@ -436,38 +524,32 @@ clLib.PAGES.handlers = {
                 alert("error >" + JSON.stringify(error));
             }
             $("#users_googleLoginButton").on("click", function () {
-	        
-                googleAuth.checkAuth(
-                    function(userObj) {
-                        console.log("success!");
-                        console.log("with >" + JSON.stringify(userObj));
-                        clLib.setUserInfo(userObj);
-                        clLib.login(function() {
-                            console.log("logged in to google..");
-                        }, errorFunc);
+                var redirectURL = "";
+                //redirectURL = "http://www.kurt-climbing.com/dist/clLib_trickGoogleOAuth2.html"
+                //redirectURL = "http://www.orf.at";
+                
+                redirectURL = clLib.REST.clLibServerURI + "/getOAuth2URL?authType=google&clLib.redirectURL=" + window.location.protocol + "//" + window.location.host + "/dist/index.html";
+                alert("this url is " + window.location.pathname);
+                alert("changing to " + redirectURL);
+                clLib.UI.byId$("displayName", pageId).trigger("refresh.clLib");
+                clLib.PAGES.changeTo(redirectURL);
+/*                clLib.auth.login({authType: "google"}
+                    ,function() {
                         clLib.UI.byId$("displayName", pageId).trigger("refresh.clLib");
-                    }
-                    ,errorFunc
-                );
+                        clLib.PAGES.changeTo("clLib_startScreen.html");
+					}
+                    ,errorFunc);
+*/
             });
 
             $("#users_facebookLoginButton").on("click", function () {
-	        
-                facebookAuth.checkAuth(
-                    function(userObj) {
-                        console.log("success with >" + JSON.stringify(userObj));
-                        clLib.setUserInfo(userObj);
-                        clLib.login(function() {
-                            console.log("logged in to facebook..");
-                        }, errorFunc);
-                        clLib.UI.byId$("displayName", pageId).trigger("refresh.clLib"); 
-                    }
-                    ,errorFunc
-                );
+                clLib.auth.login({authType: "facebook"}
+                	,function() {
+						clLib.UI.byId$("displayName", pageId).trigger("refresh.clLib");
+                        clLib.PAGES.changeTo("clLib_startScreen.html");
+					}
+                    ,errorFunc);
             });
-            
-
-
             
             $("#users_loginButton").on("click", function () {
 	            clLib.UI.execWithMsg(function() {
@@ -552,9 +634,25 @@ clLib.PAGES.handlers = {
 			$("#users_preferencesButton").die("click").click(function () {
 				clLib.PAGES.changeTo("clLib_preferences.html");
 			});
+            
+
+
+            
+            
 	    }
-        , "pagebeforeshow": function () {
-			clLib.UI.fillUIelements("users", "users");
+        , "pagebeforeshow": function (event, ui, pageId) {
+            alert("refreshing displayName..");
+            clLib.UI.byId$("displayName", pageId).trigger("refresh.clLib");
+            alert("refreshed displayName..");
+            
+			var errorFunc = function(error) {
+                alert("error >" + JSON.stringify(error));
+            }
+            
+            clLib.UI.fillUIelements("users", "users");
+            
+
+
         }
 	}
 };
@@ -596,7 +694,9 @@ clLib.PAGES.changeTo = function(newURL, urlData) {
         );
         
     } else {
-        $.mobile.navigate(newRouteLogURL);	
+        alert("navigating to " + newURL);
+        document.location.href = newURL;
+        //$.mobile.navigate(newURL);	
     }
 	
 };

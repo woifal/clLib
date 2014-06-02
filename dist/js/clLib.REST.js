@@ -7,12 +7,11 @@ clLib.clException= function(name, message) {
    this.name = name;
 };
 
-//clLib.REST.baseURI = "https://api.appery.io/rest/1/db";
-//clLib.REST.baseURI = "http://localhost:1983/db";
+clLib.REST.baseURI = "http://localhost:1983/db";
 clLib.REST.baseURI = "http://cllibserver.herokuapp.com/db";
 clLib.REST.baseCollectionsURI = clLib.REST.baseURI+ "/"; // + "/collections/";
 clLib.REST.baseUsersURI = clLib.REST.baseURI + "/users";
-//clLib.REST.clLibServerURI = "http://localhost:1983";
+clLib.REST.clLibServerURI = "http://localhost:1983";
 clLib.REST.clLibServerURI = "http://cllibserver.herokuapp.com";
 
 
@@ -263,7 +262,12 @@ clLib.REST.loginUser = function (userInstance, successFunc, errorFunc) {
 	reqOptions["method"] = "GET";
 	reqOptions["params"] = userInstance;
 	reqOptions["allowNoSessionToken"] = true;
-	clLib.REST.execAJAXRequest(reqOptions, successFunc, errorFunc);
+	clLib.REST.execAJAXRequest(reqOptions
+        ,function(userObj) {
+            alert("success login with >" + JSON.stringify(userObj) + "<");
+            return successFunc(userObj);
+        }
+        ,errorFunc);
 }
 
 clLib.REST.deleteUser = function (userInstance, successFunc, errorFunc) {

@@ -394,7 +394,7 @@ clLib.localStorage.syncUp = function(entity, entityInstance, storageName) {
 	unsyncedStorage = unsyncedStorage[entity];
 	
 	
-	alert("syncing entity (" + entityInstance["deleted"] + ")" + JSON.stringify(entityInstance));
+	console.log("syncing entity (" + entityInstance["deleted"] + ")" + JSON.stringify(entityInstance));
 	if(entityInstance["deleted"] == 1) {
 //		alert("unsynced items:  >" + JSON.stringify(unsyncedStorage) + "<");
 //		alert(">" + dummyId + "< in storagecache? >" + JSON.stringify(entityStorage[dummyId]) + "<");
@@ -406,7 +406,10 @@ clLib.localStorage.syncUp = function(entity, entityInstance, storageName) {
 			clLib.localStorage.removeStorageItem("UNSYNCED_" + storageName, entity, dummyId);
 
 			alert("route was local only, so just delete from UNSYNCED_ storage..");
-			return "x";
+            //
+            // ???????????????????????????
+            //
+            "x";
 		}
 		// need to mark "as-deleted" on server as well..
 		else {
@@ -485,7 +488,6 @@ clLib.localStorage.syncUp = function(entity, entityInstance, storageName) {
 
 
 clLib.localStorage.addInstance = function(entity, entityInstance, storageName) {
-    alert("addinstance called!");
     console.log("addinstance >" + entity + "< >" + JSON.stringify(entityInstance) + "<");
     var storage = clLib.localStorage.getStorageItems(storageName);
 	

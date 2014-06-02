@@ -836,7 +836,7 @@ clLib.UI.createElements = function(curPageElements, currentJqmSlide) {
 		var elementConfig = clLib.UI.elements[elementName];
 		
 		if(!elementConfig) {
-			alert("Can't find element >" + elementName + "<, breaking loop..");
+			console.log("Can't find element >" + elementName + "<, breaking loop..");
 			return;
 		}
 
@@ -1362,7 +1362,7 @@ clLib.UI.userHandler = function (options, successFunc, errorFunc) {
 		localStorage.removeItem("currentPassword");
 		clLib.sessionToken = null;
 		returnObj["sessionToken"] = null;
-		return successFunc();
+		return successFunc(returnObj);
 	}
 	else if (userAction == "delete") {
 		return clLib.REST.deleteUser(userObj, 
