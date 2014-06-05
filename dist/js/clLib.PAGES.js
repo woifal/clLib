@@ -52,24 +52,7 @@ clLib.PAGES.defaultHandler = function (event, ui, aPageId) {
 		function() { alert("error!!"); }
 	);
 
-/*
-	
-    $.each(requisiteFunctions, function (index, checkFunc) {
-        //alert("executing " + index + " >" + JSON.stringify(checkFunc.name));
-        if (checkFunc()) {
-            //alert("checkfunc was true!");
-			allTrue = true;
-        } else {
-            //alert("checkfunc was false!");
-            allTrue = false;
-        }
-        if (!allTrue) {
-            return false;
-        }
-    });
-//    if (allTrue) {
-//    }
-*/
+
 };
 
 
@@ -527,9 +510,30 @@ clLib.PAGES.handlers = {
                 var redirectURL = "";
                 //redirectURL = "http://www.kurt-climbing.com/dist/clLib_trickGoogleOAuth2.html"
                 //redirectURL = "http://www.orf.at";
+                var appEntryURL = "";
+                alert(1);
+                var protocol = window.location.protocol;
+                var host = window.location.host;
+                var path = window.location.pathname;
+
+                alert("document.location.href:" + document.location.href);
+                alert("protocol:" + protocol);
+                alert("host:" + host);
+                alert("path:" + path);
+                if(protocol && protocol != "") {
+                    appEntryURL += protocol + "//";
+                }
+                if(host && host != "") {
+                    appEntryURL += host + "/";
+                }
+/*                if(path.indexOf("/") == 0) {
+                    path = path.substr(1);
+                }*/
+                appEntryURL += path.substring(0, path.lastIndexOf("/"));
+                appEntryURL += "/index.html";
                 
-                redirectURL = clLib.REST.clLibServerURI + "/getOAuth2URL?authType=google&clLib.redirectURL=" + window.location.protocol + "//" + window.location.host + "/dist/index.html";
-                alert("this url is " + window.location.pathname);
+                //redirectURL = clLib.REST.clLibServerURI + "/getOAuth2URL?authType=google&clLib.redirectURL=" + window.location.protocol + "//" + window.location.host + "/dist/index.html";
+                redirectURL = clLib.REST.clLibServerURI + "/getOAuth2URL?authType=google&clLib.redirectURL=" + appEntryURL;
                 alert("changing to " + redirectURL);
                 clLib.UI.byId$("displayName", pageId).trigger("refresh.clLib");
                 clLib.PAGES.changeTo(redirectURL);
