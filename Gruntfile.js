@@ -43,13 +43,53 @@ grunt.initConfig({
 				]
 			}
 		},
-});
+        compress: {
+          dev: {
+            options: {
+              archive: 'dist/archive.zip'
+            },
+            files: [
+              {
+              expand: true,
+              src: [
+                //1
+                '**'
+                ,
+                '!archive.zip',
+              ]
+              , dest: '.'
+              , cwd: 'dist/'
+              }, // includes files in path
+            ]
+          }
+          ,prod: {
+            options: {
+              archive: 'dist/archive.zip'
+            },
+            files: [
+              {
+              expand: true,
+              src: [
+                //1
+                '**'
+                ,
+                '!archive.zip',
+              ]
+              , dest: '.'
+              , cwd: 'dist/'
+              }, // includes files in path
+            ]
+          }
+
+          }
+    });
 
     grunt.loadNpmTasks('grunt-include-replace');
 	grunt.loadNpmTasks('grunt-contrib-copy');
-	
+    grunt.loadNpmTasks('grunt-contrib-compress');	
+    
     // 4. Where we tell Grunt what to do when we type "grunt" into the terminal.
-    grunt.registerTask('dev', ['includereplace:dev', 'copy:dev']);
-    grunt.registerTask('prod', ['includereplace:prod', 'copy:prod']);
+    grunt.registerTask('dev', ['includereplace:dev', 'copy:dev', 'compress:dev']);
+    grunt.registerTask('prod', ['includereplace:prod', 'copy:prod', 'compress:prod']);
 
 };
