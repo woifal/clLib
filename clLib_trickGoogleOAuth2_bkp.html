@@ -1,0 +1,40 @@
+﻿<!DOCTYPE html> 
+<html>
+
+@@include('grunt_includes/html_head.html', {"pageName": "trickGoogle"})
+
+<body> 
+@@include('grunt_includes/html_jqm_page.html', {"pageName": "trickGoogle"})
+
+@@include('grunt_includes/html_jqm_menupanel.html', {"pageName": "trickGoogle"})
+@@include('grunt_includes/html_jqm_header.html', {"pageName": "trickGoogle"})
+
+@@include('grunt_includes/html_jqm_content.html', {"pageName": "trickGoogle"})
+
+
+<div id="trickGoogle_loginErrorContainer" style="white-space: normal" data-role="collapsible" data-collapsed="true" data-content-theme="b" data-theme="c" data-iconpos="right" adata-expanded-icon="alert" adata-collapsed-icon="alert">
+    <h4 style="white-space: normal" ><span style="white-space: normal" id="trickGoogle_loginError">Not logged in.</span></h4>
+	<p>1) You can proceed with the app by simply providing a (currently unauthenticated) username below and setting online mode to "false" on the <a href="clLib_preferences.html">general preferences</a> - but your routes will be saved locally and will only by synced to the server after you successfully log in.</p>
+	<p>2) Provide a valid username and password and login</p>
+	<p>3) Create a new user</p>
+</div>
+
+                <div>
+                    <!-- Authenticate via GOOGLE -->
+                    <button id="trickGoogle_googleLoginButton" class="ui-btn ui-shadow ui-corner-none ui-btn-icon-right ui-icon-google">
+                        Google Login!
+                    </button>
+                </div>
+				
+			</div>
+            <!-- mobilefooter1 -->
+            <div data-role="footer" data-position="fixed"
+                 id="trickGoogle_mobilefooter1" data-theme="a">
+            </div>
+        </div>
+
+@@include('grunt_includes/html_bodyBottom.html', {"pageName": "trickGoogle"})
+
+</body>
+  
+</html>
