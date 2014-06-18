@@ -643,21 +643,21 @@ server.get('/getOAuth2URL',
     util.log("-");
     util.log("REDIRECT URL IS >" + req.params.redirectURL + "<");
     util.log("-");
-    res.header('clLib.redirectURL', req.params.redirectURL);
+    //res.header('clLib.redirectURL', req.params.redirectURL);
     res.header('Location', authURL + "&state=" + JSON.stringify(req.params));
     res.send(302); 
 
 });
 
 	
-server.get('/verifyGoogleAuth', 
+server.get('/verifyOAuth2Code', 
 		function(req, res) 
 {
 	var errHandler = function(errorObj) {
 		return clLib.server.defaults.errorFunc(errorObj, res);
 	}
 
-	util.log("GOOGLE verifying.." + JSON.stringify(req.params));
+	util.log("OAuth2 verifying.." + JSON.stringify(req.params));
     
     return authHandler.verifyOAuth2Code(
         req.params.code
