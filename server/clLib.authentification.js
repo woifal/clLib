@@ -24,23 +24,60 @@ HTMLServerURL = "http://www.kurt-climbing.com";
 /* 
 *   Google OAuth2 objects.. 
 */
-var googleapis = require('googleapis');
-var OAuth2 = googleapis.auth.OAuth2;
-
-var CLIENT_ID = "366201815473-t9u61cghvmf36kh0dgtenahgitvsuea8.apps.googleusercontent.com";
-var CLIENT_SECRET = "vwccCUw-n8ufYFQYom9FIrX7";
-var REDIRECT_URL = RESTServerURL + "/verifyGoogleAuth";
-                    
-var oauth2Client = new OAuth2(CLIENT_ID, CLIENT_SECRET, REDIRECT_URL);
-
-// generates a url that allows offline access and asks permissions
-// for Google+ scope.
-var scopes = [
+var gApi = require('googleapis');
+var gOAuth2 = gApi.auth.OAuth2;
+var gCLIENT_ID = "366201815473-t9u61cghvmf36kh0dgtenahgitvsuea8.apps.googleusercontent.com";
+var gCLIENT_SECRET = "vwccCUw-n8ufYFQYom9FIrX7";
+var gREDIRECT_URL = RESTServerURL + "/verifyOAuth2Code";
+var gOAuth2Client = new gOAuth2(gCLIENT_ID, gCLIENT_SECRET, gREDIRECT_URL);
+// generates a url that allows offline access and asks permissions for Google+ scope.
+var gScopes = [
   'https://www.googleapis.com/auth/plus.me',
   'https://www.googleapis.com/auth/calendar'
 ];
 
 
+var fbOAuth2Client = {
+    CLIENT_ID : "670107013062528"
+    ,CLIENT_SECRET : "57c6d062add4e475d125cdf1b742b98d"
+    ,REDIRECT_URL : RESTServerURL + "/verifyOAuth2Code"
+    ,scopes : [
+        "public_profile"
+        ,"email"
+    ]
+    ,generateAuthUrl : function() {
+        var url = "";
+        url += "https://www.facebook.com/dialog/oauth?";
+        url += "client_id=" + CLIENT_ID;
+        url += "&redirect_uri=" + REDIRECT_URL;
+        url += "&response_type=" + "code";
+        url += "&scope=" + scopes.join(',');
+        return url;
+    }
+    ,getToken : function(code, callbackFunc) {
+        var url = "";
+        url += "https://graph.facebook.com/oauth/access_token?";
+        url += "client_id=" + CLIENT_ID;
+        url += "&redirect_uri=" + REDIRECT_URL;
+        url += "&client_secret=" + CLIENT_SECRET;
+        url += "&code=" + code;
+
+        return authHandler.REST.executeRequest(url, "GET", "" 
+        ,function(resultObj) {
+            return callbackFunc(null, resultObj);
+        }
+        ,function(errorObj) { 
+            return callbackFunc(errorObj, null);
+        });
+    }
+    ,getGraphInfo : function(path, access_token, callbackFunc, errorFunc) {
+        var url = "";
+        url += "https://graph.facebook.com" + path + "?";
+        url += "access_token=" + access_token;
+
+        return authHandler.REST.executeRequest(url, "GET", "", callbackFunc, errorFunc);
+    }
+};
 
 
 
@@ -63,69 +100,98 @@ auth.prototype.generateAuthURL = function(authObj) {
     if(authObj["authType"] == "google") {
         //var fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
         
-        url = oauth2Client.generateAuthUrl({
-          access_type: 'offline',
-          scope: scopes.join(" ") // space delimited string of scopes
+        url = gOAuth2Client.generateAuthUrl({
+            access_type: 'offline'
+            ,scope: gScopes.join(" ") // space delimited string of scopes
         });
-    } else {
+    } 
+    else if(authObj["authType"] == "facebook") {
+        url = fbOAuth2Client.generateAuthUrl();
+    }
+    else {
         url = HTMLServerURL;
     }
     return url;
 }
 
 auth.prototype.verifyOAuth2Code = function(code, req, res) {
-    return oauth2Client.getToken(
-        code, 
-        function(err, tokens) {
-            // contains an access_token and optionally a refresh_token.
-            // save them permanently.
-            util.log("got errors >" + JSON.stringify(err ) + "<");
-            util.log("got params >" + JSON.stringify(Object.keys(tokens)) + "<");
-            util.log("got tokens >" + JSON.stringify(tokens) + "<");
-            var stateParams = JSON.parse(req.params.state);
-            util.log("got STATE params >" + JSON.stringify(stateParams) + "<");
-            util.log("got STATE param keys >" + JSON.stringify(Object.keys(stateParams)) + "<");
-            
-            
-            // Retrieve tokens via token exchange explaind above.
-            // Or you can set them.
-            oauth2Client.credentials = {
-              access_token: tokens.access_token,
-              refresh_token: tokens.refresh_token
-            };
+    var stateParams = JSON.parse(req.params.state);
+    if(stateParams.authType == "facebook") {
+        return fbOAuth2Client.getToken(
+            code,
+            function(err, tokens) {
+                util.log("fb err >" + JSON.stringify(err) + "<");
+                util.log("fb tokens >" + JSON.stringify(tokens) + "<");
+                return fbOAuth2Client.getGraphInfo("/me", tokens, function(userObj) {
+                    util.log("fb user >" + JSON.stringify(userObj) + "<");
+                    
+                    userObj["accessToken"] = tokens.access_token;
+                    user["authType"] = "facebook";
 
-            return googleapis
-                .discover('plus', 'v1')
-                .execute(function(err, client) {
-                    // handle discovery errors
-                    client
-                        .plus.people.get({ userId: 'me' })
-                        .withAuthClient(oauth2Client)
-                        .execute(function(err, user) {
-                            util.log("google+ err >" + JSON.stringify(err) + "<");
-                            util.log("google+ user >" + JSON.stringify(user) + "<");
-                            
-                            user["accessToken"] = tokens.access_token;
-                            user["refreshToken"] = tokens.refresh_token;
-                            user["authType"] = "google";
+                    util.log("fb user(incl. tokens) >" + JSON.stringify(user) + "<");
+                    
+                    var redirectURL = stateParams["clLib.redirectURL"];
+                    util.log("redirecting to >" + redirectURL);
+                    // redirect back to clLib app 
+                    res.header('Location', redirectURL + "?authObj=" + encodeURI(JSON.stringify(user)));
+                    res.send(302); 
+                    
+                });
+            }
+        );
+    }
+    else if(stateParams.authType == "google") {
+        return gOAuth2Client.getToken(
+            code, 
+            function(err, tokens) {
+                // contains an access_token and optionally a refresh_token.
+                // save them permanently.
+                util.log("got errors >" + JSON.stringify(err ) + "<");
+                util.log("got params >" + JSON.stringify(Object.keys(tokens)) + "<");
+                util.log("got tokens >" + JSON.stringify(tokens) + "<");
+                util.log("got STATE params >" + JSON.stringify(stateParams) + "<");
+                util.log("got STATE param keys >" + JSON.stringify(Object.keys(stateParams)) + "<");
+                
+                
+                // Retrieve tokens via token exchange explaind above.
+                // Or you can set them.
+                gOAuth2Client.credentials = {
+                  access_token: tokens.access_token,
+                  refresh_token: tokens.refresh_token
+                };
 
-                            util.log("google+ user(incl. tokens) >" + JSON.stringify(user) + "<");
-                            
-                            delete(user["kind"]);
-                            
-                            var redirectURL = stateParams["clLib.redirectURL"];
-                            util.log("redirecting to >" + redirectURL);
-                             
-                            // redirect back to clLib app 
-//                            res.header('Location', HTMLServerURL + "/dist/index.html?authObj=" + encodeURI(JSON.stringify(user)));
-                            res.header('Location', redirectURL + "?authObj=" + encodeURI(JSON.stringify(user)));
-                            res.send(302); 
-                        });
-                })
-            ;
-        }
-    );
+                return gApi
+                    .discover('plus', 'v1')
+                    .execute(function(err, client) {
+                        // handle discovery errors
+                        client
+                            .plus.people.get({ userId: 'me' })
+                            .withAuthClient(gOAuth2Client)
+                            .execute(function(err, user) {
+                                util.log("google+ err >" + JSON.stringify(err) + "<");
+                                util.log("google+ user >" + JSON.stringify(user) + "<");
+                                
+                                user["accessToken"] = tokens.access_token;
+                                user["refreshToken"] = tokens.refresh_token;
+                                user["authType"] = "google";
 
+                                util.log("google+ user(incl. tokens) >" + JSON.stringify(user) + "<");
+                                
+                                delete(user["kind"]);
+                                
+                                var redirectURL = stateParams["clLib.redirectURL"];
+                                util.log("redirecting to >" + redirectURL);
+                                //a
+                                // redirect back to clLib app 
+    //                            res.header('Location', HTMLServerURL + "/dist/index.html?authObj=" + encodeURI(JSON.stringify(user)));
+                                res.header('Location', redirectURL + "?authObj=" + encodeURI(JSON.stringify(user)));
+                                res.send(302); 
+                            });
+                    })
+                ;
+            }
+        );
+    }
 };
 
 auth.prototype.requiredAuthentication = function(req, res, next) {
@@ -275,20 +341,20 @@ auth.prototype.verifyAccessToken = function(userObj, callbackFunc, errorFunc) {
     if(userObj.authType == "google") {
         // Retrieve tokens via token exchange explaind above.
         // Or you can set them.
-        oauth2Client.credentials = {
+        gOAuth2Client.credentials = {
           access_token: userObj["accessToken"]
         };
 
         //return callbackFunc(userObj);
 
         // Verify token by trying to retrieve profile information..
-        return googleapis
+        return gApi
             .discover('plus', 'v1')
             .execute(function(err, client) {
                 // handle discovery errors
                 client
                     .plus.people.get({ userId: 'me' })
-                    .withAuthClient(oauth2Client)
+                    .withAuthClient(gOAuth2Client)
                     .execute(function(err, user) {
                         if(err) {
                             return errorFunc(err);
@@ -390,4 +456,103 @@ auth.prototype.defaults = {
 		//responseStream.send(500, new Error(JSON.stringify(resultObj)));
 	}
 };
+
+
+
+auth.prototype.REST = {};
+auth.prototype.REST.executeRequest = function(uri, method, params, callbackFunc, errorFunc) {
+	var reqOptions = {};
+	reqOptions["params"] =  params;
+
+	var resultObj = {};
+	
+	if(!errorFunc) {
+		errorFunc = this.defaults["errorFunc"];
+	}
+
+	var URLObj = URL.parse(uri);
+	reqOptions["host"] = URLObj.host;
+	reqOptions["path"] =  URLObj.pathname;
+
+	var prepareFunc;
+	if(method == "GET") {
+		prepareFunc = this.prepareGETRequest;
+	} else if(method == "POST") {
+		prepareFunc = this.preparePOSTRequest;
+	} else if(method == "PUT") {
+		prepareFunc = this.preparePOSTRequest;
+	}
+	prepareFunc(reqOptions);
+	
+	reqOptions.host = reqOptions.host;
+	reqOptions.port = '443';
+	reqOptions.path = reqOptions.path;
+	reqOptions.method = reqOptions.method;
+	reqOptions.headers = reqOptions.httpHeaders;
+
+	util.log("reqOptions: " + reqOptions);
+	
+	// Set up the request */
+	var req = https.request(reqOptions, 
+    function(res) {
+		var statusCode = res.statusCode;
+		util.log("checking response with status " + statusCode);
+		util.log("response keys:" + JSON.stringify(Object.keys(res)));
+		
+		//res.setEncoding('utf8');
+		res.on('data', function(d) {
+//			try {
+				resultObj["statusCode"] = statusCode;
+				util.log('result received(' + statusCode + ').');
+				util.log('data received.' + d);
+				//process.stdout.write(d);
+				resultObj.data = JSON.parse(d);
+				util.log("parsed result: " + JSON.stringify(resultObj).substr(0, 1000));
+				
+				if(statusCode == 200) {
+					return callbackFunc(resultObj);
+				} else {
+                    return errorFunc(resultObj);
+				}
+//			} catch(e) { throw new Error("ERROR OF TYPE "  + e.name + " IS " + e.message + " !!!"); };
+		
+		});
+	});
+
+	req.on('error', function(errorObj) {
+		return errorFunc(errorObj);
+	});
+	
+	if(method != "GET") {
+		util.log("writing to request: >" + reqOptions.postData + "<");
+		util.log("Content-length: >" + contentLength + "," + Buffer.byteLength(reqOptions.postData) + "<");
+		req.write(reqOptions.postData); //, "utf-8");
+	}
+	
+	req.end();
+};
+
+
+auth.prototype.REST.prepareGETRequest = function(options) {
+	util.log("OLD path >" + JSON.stringify(options.path) + "<");
+	options.path += "?" + options.params;
+	util.log("NEW path >" + JSON.stringify(options.path) + "<");
+}
+	
+auth.prototype.REST.preparePOSTRequest = function(options) {
+	options.postData = JSON.stringify(options.params);
+	options.postData = JSON.stringify(options.params);
+	util.log("POST DATA >" + options.postData + "<");
+
+	options.httpHeaders['Accept'] = "application/json"; //, text/javascript, */*; q=0.01";
+	options.httpHeaders['Accept-Encoding'] = "gzip, deflate";
+	options.httpHeaders['Accept-Language'] = "de-de,de;q=0.8,en-us;q=0.5,en;q=0.3";
+	options.httpHeaders['Connection'] = "keep-alive";
+	options.httpHeaders['DNT'] = "1";
+	options.httpHeaders['User-Agent'] = "curl/7.32.0";
+	options.httpHeaders['Host'] = "api.appery.io";
+	options.httpHeaders['Content-Type'] = 'application/json';//; charset=UTF-8';
+
+};
+
 
