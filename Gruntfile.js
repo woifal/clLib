@@ -5,20 +5,26 @@ grunt.initConfig({
 			dev: {
 				options: {
 					flatten: true
+                    ,globals: {
+                        NOWW: "xxxxx"
+                    }
 				// Task-specific options go here.
 				},
 				// Files to perform replacements and includes with
-				src: ['*.html'],
+				src: ['*.html', "*.xml"],
 				// Destination directory to copy files to
 				dest: 'dist/'
 			}
 			,prod: {
 				options: {
 					flatten: true
+                    ,globals: {
+                        NOWW: new Date()
+                    }
 				// Task-specific options go here.
 				},
 				// Files to perform replacements and includes with
-				src: ['*.html'],
+				src: ['*.html', "*.xml"],
 				// Destination directory to copy files to
 				dest: 'dist/'
 			}
