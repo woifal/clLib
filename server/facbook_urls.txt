@@ -1,0 +1,20 @@
+https://www.facebook.com/dialog/oauth?client_id=670107013062528&redirect_uri=http://www.kurt-climbing.com/asdf&response_type=token&scope=public_profile
+
+https://graph.facebook.com/me?access_token=CAAJhdXJ5n4ABAEEs3pIyoxi7h9c8pYIiC6EBZBx4tx2xufrZBCPomw82ixEEZBov5nr6uNDnhDEqYZBb7EDnplSIBxEfXzZA37zghNmtCJy2GTyZBdTglHWObKNb5t6D0PUyBXso74g0ZBB2t0XsbFwosXKlhmJ4mzpYkJYr9fIUNcs239FbNhVpEe4w7oj66gZD
+
+https://graph.facebook.com/me/picture?access_token=CAAJhdXJ5n4ABAG9zkmKa5nTqMpdyncaiO0pvAfmodiZBaIe22f6HbXeGjdERjNkWZApG9yvxaOKZC5plzHmzFnsbdwx8cQZCDKWETeV2wusCZAaODehaZC5VmW70q8bVuPQdeOZASqw6b6W07kEmWMrOBXV5HOhlFjaKsfDMzdwKdukJyhVdXzdDB24CRpu6iIZD
+
+{
+   "id": "100008291101749",
+   "email": "kurtclimbing\u0040gmail.com",
+   "first_name": "Kurt",
+   "gender": "male",
+   "last_name": "Climbing",
+   "link": "https://www.facebook.com/profile.php?id=100008291101749",
+   "locale": "de_DE",
+   "name": "Kurt Climbing",
+   "timezone": 2,
+   "updated_time": "2014-04-24T18:33:46+0000",
+   "verified": true
+}
+
