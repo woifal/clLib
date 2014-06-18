@@ -264,7 +264,7 @@ clLib.REST.loginUser = function (userInstance, successFunc, errorFunc) {
 	reqOptions["allowNoSessionToken"] = true;
 	clLib.REST.execAJAXRequest(reqOptions
         ,function(userObj) {
-            alert("success login with >" + JSON.stringify(userObj) + "<");
+//            alert("success login with >" + JSON.stringify(userObj) + "<");
             return successFunc(userObj);
         }
         ,errorFunc);
