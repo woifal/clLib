@@ -17,6 +17,9 @@
     <link rel="stylesheet" href="css/clLib.css" />
 
 
+        <!-- phonegap integration? -->
+        <script type="text/javascript" charset="utf-8" src="cordova.js"></script>  
+        
         <script type="text/javascript" src="js/jquery-1.8.2.js"></script>
         <script type="text/javascript" src="css/THEMES/20140405/jquery.mobile-1.4.2.js"></script>
 
@@ -40,7 +43,8 @@
 </head> 
 
 
-<body> 
+<body onload="onLoad()">
+
     <div 
          id="index" data-role="page" 
          class="clPage"
@@ -63,7 +67,7 @@
                     />
 
                 </div>
-				
+<!-- <a href="javascript:openChild()">open child</a>				-->
 			</div>
         </div>
 <!-- auth... -->
@@ -330,5 +334,36 @@ window.fbAsyncInit = function() {
 
 </body>
 
+<script>
+    localStorage.clear();
+    // Wait for device API libraries to load
+    //
+    function onLoad() {
+        document.addEventListener("deviceready", onDeviceReady, false);
+    }
+
+    function openChild() {
+        // Now safe to use device APIs
+            var ref = window.open('http://apache.org', '_blank', 'location=yes');
+            ref.addEventListener('loadstart', function(event) { alert('1start: ' + event.url); });
+            ref.addEventListener('loadstop', function(event) { alert('1stop: ' + event.url); });
+            ref.addEventListener('loaderror', function(event) { alert('1error: ' + event.message); });
+            ref.addEventListener('exit', function(event) { alert("1exit" + event.type); });
+
+    };
+    // device APIs are available
+    //
+    function onDeviceReady() {
+        //alert("device is ready!");
+
+        /*setTimeout(function() {
+            openChild();
+        }, 3000
+        );*/
+
+    }
+
+
+</script>
   
 </html>

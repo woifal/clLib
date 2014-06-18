@@ -557,7 +557,7 @@ clLib.alert = function (text, html) {
 
 
 clLib.login = function(successFunc, errorFunc) {
-	console.log("clLib.login called.....");
+	//alert("clLib.login called.....");
 	var userObj = {};
 	userObj = clLib.getUserInfo();
     //userObj["username"] = clLib.getUserInfo()["username"];

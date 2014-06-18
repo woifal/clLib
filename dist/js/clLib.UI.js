@@ -892,23 +892,27 @@ clLib.UI.addObjArr = function(anObj, pathArray, objValue) {
 *
 */
 clLib.UI.execWithMsg = function(func, spinnerParams) {
-	clLib.UI.showLoading(spinnerParams);
+/*
 	setTimeout(function() {
-		func();
+        clLib.UI.showLoading(spinnerParams);
+    }, 10);
+*/
+    //	setTimeout(function() {
+        func();
+/*
 		clLib.UI.hideLoading();
-	},10);
+*/
+//	},3000);
 	
 };
 
 clLib.UI.showLoading = function(spinnerParams) {
-        //clLib.loggi("shwoing..");
-        $.mobile.loading('show', {
-            text: spinnerParams["text"],
-            textVisible: true,
-            theme: 'e',
-            html: spinnerParams["html"]
-        });
-        //clLib.loggi("showed..");
+    $.mobile.loading('show', {
+        text: spinnerParams["text"],
+        textVisible: true,
+        theme: 'e',
+        html: spinnerParams["html"]
+    });
 };
 
 clLib.UI.hideLoading = function() {
