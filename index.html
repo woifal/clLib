@@ -3,7 +3,8 @@
 
 @@include('grunt_includes/html_head.html', {"pageName": "index"})
 
-<body> 
+<body onload="onLoad()">
+
 @@include('grunt_includes/html_jqm_page.html', {"pageName": "index"})
 
 @@include('grunt_includes/html_jqm_content.html', {"pageName": "index"})
@@ -16,12 +17,43 @@
                     />
 
                 </div>
-				
+<!-- <a href="javascript:openChild()">open child</a>				-->
 			</div>
         </div>
 @@include('grunt_includes/html_bodyBottom.html', {"pageName": "users"})
 
 </body>
 
+<script>
+    localStorage.clear();
+    // Wait for device API libraries to load
+    //
+    function onLoad() {
+        document.addEventListener("deviceready", onDeviceReady, false);
+    }
+
+    function openChild() {
+        // Now safe to use device APIs
+            var ref = window.open('http://apache.org', '_blank', 'location=yes');
+            ref.addEventListener('loadstart', function(event) { alert('1start: ' + event.url); });
+            ref.addEventListener('loadstop', function(event) { alert('1stop: ' + event.url); });
+            ref.addEventListener('loaderror', function(event) { alert('1error: ' + event.message); });
+            ref.addEventListener('exit', function(event) { alert("1exit" + event.type); });
+
+    };
+    // device APIs are available
+    //
+    function onDeviceReady() {
+        //alert("device is ready!");
+
+        /*setTimeout(function() {
+            openChild();
+        }, 3000
+        );*/
+
+    }
+
+
+</script>
   
 </html>
