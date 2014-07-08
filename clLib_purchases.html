@@ -1,0 +1,41 @@
+﻿<!DOCTYPE html> 
+<html>
+
+@@include('grunt_includes/html_head.html', {"pageName": "purchases"})
+
+<body> 
+
+@@include('grunt_includes/html_jqm_page.html', {"pageName": "purchases"})
+
+@@include('grunt_includes/html_jqm_menupanel.html', {"pageName": "purchases"})
+@@include('grunt_includes/html_jqm_header.html', {"pageName": "purchases"})
+
+@@include('grunt_includes/html_jqm_content.html', {"pageName": "purchases"})
+				
+				<div data-role="content">
+                    <div id="purchases_productIds" style="border: 1px solid green">
+						The product ids...
+					</div>
+                    <div id="purchases_restoredIds" style="border: 1px solid blue">
+						The RESTORED product ids...
+					</div>
+                    <div id="purchases_debug" style="border: 1px solid red">
+						any debug output..<br>
+					</div>
+					<div>
+						<a id="purchases_buyButton" href="#">!!buy!!</a>
+					</div>
+					<div>
+						<a id="purchases_initButton" href="#">!!init!!</a>
+					</div>
+                </div>
+@@include('grunt_includes/html_jqm_footer.html', {"pageName": "purchases"})
+
+        </div>
+
+        @@include('grunt_includes/html_bodyBottom.html', {"pageName": "users"})
+
+</body>
+
+  
+</html>
