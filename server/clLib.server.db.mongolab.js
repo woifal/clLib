@@ -114,22 +114,26 @@ mongolab.prototype.updateEntity = function(options, callbackFunc, errorFunc) {
 	var updateObj = {"$set": entityData};
 
 	util.log("1updating " + entityName + " with id " + entityId + " and values >" + JSON.stringify(updateObj) + "<");
-	db.collection(entityName).update({"_id" : entityId}, updateObj, {safe: true}, function(err, rowCount) {
-		util.log("x" + JSON.stringify(err));
-		util.log("ERROR(" + rowCount + ")?" + JSON.stringify(err));
-		if (JSON.stringify(err) != "undefined" && JSON.stringify(err) != "{}" && JSON.stringify(err) != "null") {
-			util.log("ERROR:" + JSON.stringify(err));	
-			resultObj["error"] = JSON.stringify(err);
-			return errorFunc(resultObj);
-		}
-		util.log("updated >" + rowCount + "< rows.");
+	try {
+		db.collection(entityName).update({"_id" : entityId}, updateObj, {safe: true}, function(err, rowCount) {
+			util.log("x" + JSON.stringify(err));
+			util.log("ERROR(" + rowCount + ")?" + JSON.stringify(err));
+			if (JSON.stringify(err) != "undefined" && JSON.stringify(err) != "{}" && JSON.stringify(err) != "null") {
+				util.log("ERROR:" + JSON.stringify(err));	
+				resultObj["error"] = JSON.stringify(err);
+				return errorFunc(resultObj);
+			}
+			util.log("updated >" + rowCount + "< rows.");
 
-		if(callbackFunc) {
-			util.log("Calling callback function, result OK!");
-			callbackFunc(entityData);
-		}
-	});
-
+			if(callbackFunc) {
+				util.log("Calling callback function, result OK!");
+				return callbackFunc(entityData);
+			}
+		});
+	} catch(e) {
+		util.log("Exception caught: " + e + "(" + JSON.stringify(e) + ")");
+		return errorFunc(e);
+	}
 };
 
 mongolab.prototype.defaults = {
