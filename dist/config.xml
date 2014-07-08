@@ -7,7 +7,7 @@
 
     <!-- versionCode is optional and Android only -->
 
-    <name>Kurtl "2014-06-18T22:16:34.717Z"
+    <name>Kurtl "2014-07-03T21:53:11.573Z"
 
     </name>
 
@@ -18,14 +18,18 @@
     <author href="http://www.kurt-climbing.com" email="admin@kurt-climbing.com">
         owifal
     </author>
-    <icon src="files/views/assets/image/Kurt Climbing 2 Icon.png" />
+
+    <icon src="files/views/assets/image/splashLogo.png" />
      
     <gap:platform name="ios" />
     
     <gap:plugin name="org.apache.cordova.InAppBrowser" />
+<!--    
     <gap:plugin name="com.phonegap.plugin.statusbar">
         <preference name="StatusBarBackgroundColor" value="#000000" />
     </gap:plugin>
+-->
+    <gap:plugin name="cc.fovea.plugins.inapppurchase"/>    
     
     <access origin="*" />
     
