@@ -891,32 +891,42 @@ clLib.UI.addObjArr = function(anObj, pathArray, objValue) {
 *	Executes function "func" and displays spinner with "spinnerParams" while executing..
 *
 */
-clLib.UI.execWithMsg = function(func, spinnerParams) {
-/*
+clLib.UI.execWithMsg = function(func, spinnerParams, timeoutMillis) {
 	setTimeout(function() {
         clLib.UI.showLoading(spinnerParams);
     }, 10);
-*/
-    //	setTimeout(function() {
+    if(timeoutMillis && timeoutMillis > 0) {
+    	setTimeout(function() {
+            func();
+            clLib.UI.hideLoading();
+    	}, timeoutMillis);
+	} 
+    else {
         func();
-/*
-		clLib.UI.hideLoading();
-*/
-//	},3000);
-	
+        clLib.UI.hideLoading();
+    }
 };
 
 clLib.UI.showLoading = function(spinnerParams) {
+	$(".clLoading").html(
+		spinnerParams["text"]
+	).
+	show();
+/*	
     $.mobile.loading('show', {
         text: spinnerParams["text"],
         textVisible: true,
         theme: 'e',
         html: spinnerParams["html"]
     });
+*/
 };
 
 clLib.UI.hideLoading = function() {
+	$(".clLoading").hide();
+/*
 	$.mobile.loading( "hide");
+*/
 };
 
 

@@ -95,7 +95,7 @@ clLib.PAGES.executeChainedFunc = function(funcArray, idx, successFunc, errorFunc
 clLib.PAGES.handlers = {
 	1 : 1
     ,"index": {
-        "pagebeforeshow": function (event, ui, pageId) {
+        "pagecreate": function (event, ui, pageId) {
             var errorFunc = function(error) {
                 alert("error >" + JSON.stringify(error));
             }
@@ -115,17 +115,15 @@ clLib.PAGES.handlers = {
 
             console.log("Got authObj from URL params");
             if(!urlAuthObj) {
-                //alert("NO external authentication, proceeding standard way..");
-/*
+            //alert("NO external authentication, proceeding standard way..");
                 clLib.UI.execWithMsg(function() {
-                    clLib.PAGES.changeTo("clLib_startScreen.html");
-	            }, {text: "Loading app.."});
-*/
-                setTimeout(function() {
-                    //console.log("changing to startscreen..");
-                    clLib.PAGES.changeTo("clLib_startScreen.html");
-                }
-                ,2500);
+//                    setTimeout(function() {
+                        //console.log("changing to startscreen..");
+                        clLib.PAGES.changeTo("clLib_startScreen.html", null, event, 2500);
+//                    }
+//                    ,2500);
+	            }, {text: "Loading app.."}, 10);
+                
 /*
 2DO:
     why 2500?
@@ -133,13 +131,18 @@ clLib.PAGES.handlers = {
 */
             }
             if(urlAuthObj) {
-                clLib.PAGES.processAuthObj(urlAuthObj);
+                clLib.UI.execWithMsg(function() {
+                    clLib.PAGES.processAuthObj(urlAuthObj);
+	            }, {text: "Processing authentication.."}, 10);
             };
 
         }
     }
     ,"_COMMON_" : {
 	    "pagecreate": function (event, ui, pageId) {
+	        clLib.UI.byId$("purchasesButton", pageId).die("click").live("click", function () {
+	            clLib.PAGES.changeTo("clLib_purchases.html");
+	        });
 	        clLib.UI.byId$("homeButton", pageId).die("click").live("click", function () {
 	            clLib.PAGES.changeTo("clLib_startScreen.html");
 	        });
@@ -365,6 +368,34 @@ clLib.PAGES.handlers = {
 	        clLib.UI.fillUIelements("stats", "stats", localStorage.getItem("defaultLayout"));
         }
 	}
+	, "purchases": {
+	    "pagebeforeshow": function () {
+			alert("XXXXshowing purchases..");
+			$("#purchases_initButton").on("click", function (e) {
+				alert("re-init..");
+				clLib.IAP.initialize();
+				alert("re-inited..");
+            });
+			$("#purchases_buyButton").on("click", function (e) {
+				alert("buying..");
+				clLib.IAP.buy('com.kurtclimbing.consumable', function(a,b,c) {
+					alert("a:" + JSON.stringify(a));
+					alert("b:" + JSON.stringify(b));
+					alert("c:" + JSON.stringify(c));
+				});
+
+            });
+			//alert("initializing...");
+			clLib.IAP.initialize();
+			//alert("IAP initialized!");
+			clLib.IAP.restore();
+			//alert("IAP restored!");
+			//renderIAPs(document.getElementById('purchases_restoredIds'));
+			//alert("IAP rendered!");
+			alert("IAP done..");	
+
+		}
+	}
 
 	,"diagram": {
 	    "pagecreate"	: function () {
@@ -474,6 +505,7 @@ clLib.PAGES.handlers = {
 	,"users": {
 	    "pagecreate" : function (event, ui, pageId) {
 
+            //clLib.IAP.buy("Kurt_FullVersion", function(productId) { alert("buying..." + productId); });
             
             var clientOnlyAuth = function(authType) {
                 clLib.auth.login({authType: authType}
@@ -572,7 +604,7 @@ clLib.PAGES.handlers = {
                 clLib.UI.byId$("displayName", pageId).trigger("refresh.clLib");
 
 //                clLib.PAGES.changeTo(redirectURL);
-                var ref = window.open(redirectURL, '_blank', 'location=yes');
+                var ref = window.open(redirectURL, '_blank', 'location=no');
 //                ref.addEventListener('loadstart', function(event) { 
                 clLib.detectChildURLChange(ref, 
                 function(event) { 
@@ -750,37 +782,46 @@ $("div[data-role=page]").die(eventsToBind).live(eventsToBind, function (event, u
 });
 
 
-clLib.PAGES.changeTo = function(newURL, urlData) {
+clLib.PAGES.changeTo = function(newURL, urlData, event, timeoutMillis) {
 	console.log("changing to " + newURL);
 
-    if(newURL.indexOf("clLib_") != -1) {
-        var pageId = "";
-        //alert(newURL.indexOf("clLib_") + 6);
-        //alert(newURL.indexOf(".") - newURL.indexOf("clLib_"));
+    clLib.UI.execWithMsg(function() {
         
-        pageId = newURL.substring(
-            newURL.indexOf("clLib_") + 6, 
-            newURL.indexOf(".") - newURL.indexOf("clLib_")
-           );
+        // If event is passed in, stop propagating it..
+        if(event) {
+            event.stopPropagation();
+        }
+        if(newURL.indexOf("clLib_") != -1) {
+            var pageId = "";
+            //alert(newURL.indexOf("clLib_") + 6);
+            //alert(newURL.indexOf(".") - newURL.indexOf("clLib_"));
+            
+            pageId = newURL.substring(
+                newURL.indexOf("clLib_") + 6, 
+                newURL.indexOf(".") - newURL.indexOf("clLib_")
+               );
 
-        var eventName = "clBeforeChange";
-        var requisiteFunctions = (clLib.UI.pageRequisites[pageId] && clLib.UI.pageRequisites[pageId][eventName]) || {};
+            var eventName = "clBeforeChange";
+            var requisiteFunctions = (clLib.UI.pageRequisites[pageId] && clLib.UI.pageRequisites[pageId][eventName]) || {};
 
-        clLib.loggi("requisiteFunctions is " + requisiteFunctions.length);
-        clLib.PAGES.executeChainedFuncs(requisiteFunctions, 
-            function() { 
-                clLib.loggi("success!!"); 
-                window.urlData = urlData;
-                $.mobile.navigate(newURL, urlData);	
-            }, 
-            function() { alert("clLib.changeTo => error!!"); }
-        );
-        
-    } else {
-        alert("navigating to " + newURL);
-        document.location.href = newURL;
-        //$.mobile.navigate(newURL);	
-    }
+            clLib.loggi("requisiteFunctions is " + requisiteFunctions.length);
+            clLib.PAGES.executeChainedFuncs(requisiteFunctions, 
+                function() { 
+                    clLib.loggi("success!!"); 
+                    window.urlData = urlData;
+                    $.mobile.navigate(newURL, urlData);	
+                }, 
+                function() { alert("clLib.changeTo => error!!"); }
+            );
+            
+        } else {
+            alert("navigating to " + newURL);
+            document.location.href = newURL;
+            //$.mobile.navigate(newURL);	
+        }
+
+    }, {text: "changing pagiii.."}, timeoutMillis);
+
 	
 };
 
@@ -804,11 +845,11 @@ clLib.PAGES.processAuthObj = function(urlAuthObj) {
 //                console.log("authObj2 >" + JSON.stringify(JSON.parse(decodeURI(authObj))) + "<");
         
         var userObj = {};
-        userObj["authType"] = "google";
+        userObj["authType"] = authObj["authType"];;
         userObj["accessToken"] = authObj["accessToken"];
         userObj["displayName"] = authObj.name.givenName || authObj.displayName;
         
-        userObj["profileURL"] = authObj.image.url;
+        userObj["imageURL"] = authObj.image.url;
         userObj["username"] = authObj.id;
         
 //        alert("got userObj of >" + JSON.stringify(userObj) + "<");

@@ -43,6 +43,7 @@ clLib.UI.pageRequisites = {
     , "AGB": { }
     , "feedback": { }
     , "trickGoogle": { }
+    , "purchases": { }
 };
 
 
@@ -289,7 +290,7 @@ clLib.UI.elements = {
 			//alert("!!!!!!!!!!!!refreshing " + $this.attr("id") + " with >" + JSON.stringify(clLib.getUserInfo()));
             var $currentUser;
             
-            var profileURL = clLib.getUserInfo()["profileURL"];
+            var imageURL = clLib.getUserInfo()["imageURL"];
             var displayName = clLib.getUserInfo()["displayName"];
             var authType = clLib.getUserInfo()["authType"];
 
@@ -302,11 +303,11 @@ clLib.UI.elements = {
 */
             
             $currentUser = $("<div>");
-            if(profileURL) {
+            if(imageURL) {
                 $currentUser.append(
                     $("<img>")
                     .attr({
-                        "src" : profileURL
+                        "src" : imageURL
                     })
                     .css({
                         float: "left"
