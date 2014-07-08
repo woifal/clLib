@@ -12,37 +12,69 @@
 
 @@include('grunt_includes/html_jqm_content.html', {"pageName": "startScreen"})
 				
-			<!-- Add new route.. -->
-			<a 
-				id="addRouteButton" href="#"
-				data-role="button"
-				data-icon="plus" data-iconpos="top"
-				data-theme="a" 
+			<div 
+				id="start_top"
+				style="
+					background: url(files/views/assets/image/home_background_320.png);
+					background-position: top bottom, left top;
+					background-repeat: no-repeat;
+					background-color: red;
+					padding-left: 0px;
+					padding-top: 20px;
+					margin-left: 0px;
+					border: 0px solid yellow;
+					width: 100%;	
+				"
 			>
-				Start Climbing
-			</a>
+				<!-- Add new route.. -->
+				<a 
+					id="addRouteButton" href="#"
+					data-role="none"
+				>
+					<img
+					src="files/views/assets/image/start_climbing.png"
+						style="
+							width: 200px;
+							height: 200px;
+							padding-left: 60px;
+					"					
+					/>			
+				</a>
 
-					
-			<div class="ui-body ui-body-a ui-corner-all"
-			style="background: url(files/views/assets/image/staticmap.png);
-				background-position: center bottom, left top;
-				background-repeat: no-repeat;
-				height: 100px;
-				padding-top:30px;
-			"
-			>
 				<!-- Area -->
-				<select id="startScreen_areaSelect" name="startScreen_areaSelect" data-theme="a">
-					<!-- Areas go here.. -->
-				</select>
+				<div
+					style="
+						padding: 0px 30px 40px 30px;
+					"
+				>
+					<select id="startScreen_areaSelect" name="startScreen_areaSelect" data-theme="a">
+					</select>
+				</div>
 			</div>
-			
-			<!-- Statistics -->
-			<a data-role="button"
-			   id="startScreen_statsButton" data-corners="false" data-icon="check" data-iconpos="right"
-			   data-mini="false" data-theme="a" tabindex="8">
-				Statistics
-			</a>
+			<div 
+				id="start_bottom"
+				style="
+					border-top: 5px solid #073e78;
+					padding-top: 20px;
+					padding-left: 0px;
+					margin-left: 0px;
+				"
+			>
+				<!-- Statistics -->
+				<a 
+					data-role="none"
+					id="startScreen_statsButton"
+				>
+					<img
+					src="files/views/assets/image/stats_button.png"
+						style="
+							width: 250px;
+							height: 90px;
+							padding-left: 40px;
+					"					
+					/>
+				</a>
+			</div>
 			
 			
         </div>
