@@ -1,3 +1,14 @@
+.clLoading {
+	background: red;
+	width: 400px;
+	height: 400px;
+	top: 200px;
+	left: 200px;
+}
+.clHidden {
+	visibility: hidden;
+}
+
 div.clPage {
 	min-height:480px; 
 	max-width:320px;
