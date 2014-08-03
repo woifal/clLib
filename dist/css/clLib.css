@@ -16,7 +16,11 @@ div.clPage {
 
 .ui-header 
 {
-	margin-top: 17px;
+	margin-top: 17x;
+
+	/*margin-top: 0px;
+	/*padding-top: 17px;*/
+	/*background-color: red;*/
 }
 
 
@@ -30,7 +34,7 @@ div.clPage {
 }
 
 label.clUIElement{
-	font-size: 8px;
+	font-size: 0px;
 	visibility: hidden;
 	height: 0px;
 	width: 0px;
@@ -101,3 +105,433 @@ input.ui-input-text, textarea.ui-input-text {
     webkit-border-radius: none;
     border-radius: none;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* outer button outline.. */
+.clButton {
+    width: 280px;
+	padding: 9px;
+    border-radius: 8px;
+	box-shadow: inset 0px 2px 2px 1px #DDD;
+	margin: 20px 10px;
+	background: #FFFFFF;
+}
+
+/* inner button outline.. */
+.clButton>div {
+    background: url(../files/views/assets/image/button_gradient_bg_1_90.png);
+    height: 72px;
+    clear: both;
+    padding-left: 10px;
+	padding-top: 7px;
+	padding-bottom: 10px;
+    border-radius: 5px;
+	font-size: 1.4em;
+	line-height: 1em;
+	box-shadow: 0px 1px 2px #888;
+	
+
+}
+
+/* outer image ring.. */
+.clButton >div >a {
+    display:block;
+    width:70px;
+    height:70px;
+    border-radius: 50%;
+	box-shadow: inset 0px 1px 1px 1px #BBB;
+    background: white;
+    float:left;
+	padding-top: 0px;
+	padding-left: 0px;
+	padding-right: 0px;
+	padding-bottom: 0px;
+}
+/* inner inner image background */
+.clButton >div >a >div{
+    display:block;
+	float:left;
+	position: relative;
+	top: 4px;
+	left: 4px;
+	width:62px;
+    height: 62px;
+	border-radius: 50%;
+    background: #073f7c;
+}
+/* actual button image... */
+.clButton >div >a >div >img {
+    float:left;
+	position: relative;
+	top: 11px;
+	left: 11px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    
+}
+
+.clButton:hover >div >a >div {
+    background: #075fCC;
+}
+.clButton:hover >div > span {
+    color: #075fCC;
+}
+
+.clButton >div > span {
+    font-weight: bold;    
+    float:left;
+    padding-top: 23px;
+    padding-left: 12px;
+    color: #092E56;
+}
+
+
+
+
+
+
+
+.ui-icon-cl_home:after {
+    background-image: url("../files/views/assets/image/img_22_22/nav_home.png") !important;
+}
+.ui-icon-cl_menu:after {
+    background-image: url("../files/views/assets/image/img_22_22/nav_menu.png") !important;
+}
+.ui-icon-cl_plus:after {
+    background-image: url("../files/views/assets/image/img_16_16/button_plus_white.png") !important;
+}
+.ui-icon-cl_minus:after {
+    background-image: url("../files/views/assets/image/img_16_16/button_minus_white.png") !important;
+}
+
+.ui-icon-cl_plus_blue:after {
+    background-image: url("../files/views/assets/image/img_16_16/button_plus_blue.png") !important;
+}
+.ui-icon-cl_minus_blue:after {
+    background-image: url("../files/views/assets/image/img_16_16/button_minus_blue.png") !important;
+}
+
+	
+/* positioning for icon area */
+.clIcon.ui-btn-icon-notext:after, .clIcon.ui-btn-icon-top:after, .clIcon.ui-btn-icon-bottom:after {
+    left: 50%;
+    margin-left: -20px;
+}
+/* positioning for icon area */
+.clIcon.ui-btn-icon-notext:after, .clIcon.ui-btn-icon-left:after, .clIcon.ui-btn-icon-right:after {
+    margin-top: -20px;
+    top: 50%;
+}
+/* content area for icon */
+.clIcon.ui-btn-icon-left:after, .clIcon.ui-btn-icon-right:after, .clIcon.ui-btn-icon-top:after, .clIcon.ui-btn-icon-bottom:after, .clIcon.ui-btn-icon-notext:after {
+    content: "";
+    display: block;
+    position: absolute;
+    width: 40px;
+    height: 40px;
+	border: 0px solid red;
+}
+/* background for icon */
+.clIcon.ui-btn-icon-left:after, .clIcon.ui-btn-icon-right:after, .clIcon.ui-btn-icon-top:after, .clIcon.ui-btn-icon-bottom:after, .clIcon.ui-btn-icon-notext:after {
+    background-color: #073E78;
+    background-position: center center;
+    background-repeat: no-repeat;
+    border-radius: 50% 50% 50% 50%;
+}
+
+/* border around icon... */
+/********
+	.ui-page-theme-a .ui-btn, html .ui-bar-a .ui-btn, html .ui-body-a .ui-btn, html body .ui-group-theme-a .ui-btn, html head + body .ui-btn.ui-btn-a, .ui-page-theme-a .ui-btn:visited, html .ui-bar-a .ui-btn:visited, html .ui-body-a .ui-btn:visited, html body .ui-group-theme-a .ui-btn:visited, html head + body .ui-btn.ui-btn-a:visited {
+		background-color: #053160;
+		border-color: #053160;
+		text-shadow: 0 0 0 #F3F3F3;
+	}
+**********/
+
+.clIcon.ui-btn-icon-notext.ui-btn-corner-all, .clIcon.ui-btn-icon-notext.ui-corner-all {
+    border-radius: 50% 50% 50% 50%;
+}
+
+.clIcon.ui-btn-icon-notext {
+    height: 44px;
+    padding: 0;
+    text-indent: -9999px;
+    white-space: nowrap !important;
+    width: 44px;
+}
+
+
+/* positioning for icon area */
+.clIconCollapsible  .ui-btn-icon-notext:after, .clIconCollapsible  .ui-btn-icon-top:after, .clIconCollapsible  .ui-btn-icon-bottom:after {
+    left: 50%;
+    margin-left: -20px;
+}
+/* positioning for icon area */
+.clIconCollapsible  .ui-btn-icon-notext:after, .clIconCollapsible  .ui-btn-icon-left:after, .clIconCollapsible  .ui-btn-icon-right:after {
+    margin-top: -20px;
+    top: 50%;
+}
+/* content area for icon */
+.clIconCollapsible  .ui-btn-icon-left:after, .clIconCollapsible  .ui-btn-icon-right:after, .clIconCollapsible  .ui-btn-icon-top:after, .clIconCollapsible  .ui-btn-icon-bottom:after, .clIconCollapsible  .ui-btn-icon-notext:after {
+    content: "";
+    display: block;
+    position: absolute;
+    width: 40px;
+    height: 40px;
+	border: 0px solid red;
+}
+/* background for icon */
+.clIconCollapsible  .ui-btn-icon-left:after, .clIconCollapsible  .ui-btn-icon-right:after, .clIconCollapsible  .ui-btn-icon-top:after, .clIconCollapsible  .ui-btn-icon-bottom:after, .clIconCollapsible  .ui-btn-icon-notext:after {
+    background-color: #073E78;
+    background-position: center center;
+    background-repeat: no-repeat;
+    border-radius: 50% 50% 50% 50%;
+}
+
+/* background for icon */
+.clIconCollapsible .clIconBlue .ui-btn-icon-left:after, .clIconCollapsible  .ui-btn-icon-right:after, .clIconCollapsible  .ui-btn-icon-top:after, .clIconCollapsible  .ui-btn-icon-bottom:after, .clIconCollapsible  .ui-btn-icon-notext:after {
+    background-color: #FFFFFF; /*#073E78;*/
+	border: 2px solid #073E78;;
+}
+
+.clIconCollapsible .clIconBlue .ui-btn {
+    background-color: #00FF00; /*#073E78;*/
+    border-color: #00FF00; /*#073E78;*/
+}
+
+
+
+/* border around icon... */
+/********
+	.ui-page-theme-a .ui-btn, html .ui-bar-a .ui-btn, html .ui-body-a .ui-btn, html body .ui-group-theme-a .ui-btn, html head + body .ui-btn.ui-btn-a, .ui-page-theme-a .ui-btn:visited, html .ui-bar-a .ui-btn:visited, html .ui-body-a .ui-btn:visited, html body .ui-group-theme-a .ui-btn:visited, html head + body .ui-btn.ui-btn-a:visited {
+		background-color: #053160;
+		border-color: #053160;
+		text-shadow: 0 0 0 #F3F3F3;
+	}
+**********/
+
+.clIconCollapsible  .ui-btn-icon-notext.ui-btn-corner-all, .clIconCollapsible  .ui-btn-icon-notext.ui-corner-all {
+    border-radius: 50% 50% 50% 50%;
+}
+
+.clIconCollapsible  .ui-btn-icon-notext {
+    height: 44px;
+    padding: 0;
+    text-indent: -9999px;
+    white-space: nowrap !important;
+    width: 44px;
+
+}
+
+
+.clStats.ui-listview {
+	font-weight: bold;
+	font-size: 1.1em;
+}
+.clStats.ui-listview > li {
+	padding-top: 10px !important;
+	padding-bottom: 24px !important;
+	background-color: #EAF1F0 !important;
+	color: #002a6f !important; /*#092E56;*/
+}
+.clStats.ui-listview .ui-li-count {
+	margin-right: 10px;
+	font-weight: bold;
+}
+
+.clIconCollapsible .ui-collapsible-heading-toggle {
+	border-top: 1px solid #CCC !important;
+	border-bottom: 1px solid #CCC !important;
+	border-right: none;
+	border-left: none;
+	border-radius: 0 !important;
+
+    background: url(../files/views/assets/image/button_gradient_bg_1_90.png);
+	
+	padding-top: 20px;
+	padding-bottom: 20px;
+	color: #002A6F !important;
+    padding-left: 60px !important;
+	text-align: center !important;
+	
+}
+
+
+
+
+/*
+	All clFieldset classes...
+*/
+.clFieldset.ui-controlgroup, fieldset.clFieldset.ui-controlgroup {
+	margin: 0px 0 0;
+	padding: 0;
+}
+.clFieldset .ui-select, .ui-select {
+	margin-top: 0px !important;
+	margin-bottom: 0px !important;
+	border: none !important; /*1px solid yellow !important;*/
+}
+.clFieldset .ui-checkbox .ui-btn, .clFieldset .ui-radio .ui-btn {
+	text-align: center;
+}
+
+/* grade system fieldset */
+.clFieldset.clGradeSystem .ui-controlgroup-controls {
+	width: 100%;
+	border: none;
+	border-radius: 0em;
+}
+/* SELECTED gradetype */
+.clFieldset.clGradeSystem .ui-controlgroup-controls .ui-btn.ui-btn-active{
+	border: 0px solid red;
+	background-color: #063a72;
+	color: #FFFFFF;
+	font-weight: bold;
+	font-size: 1.0em !important;
+	line-height: 1.1em !important;
+	letter-spacing: 2px;
+	text-shadow: none;
+}
+/* UNselected gradetype */
+.clFieldset.clGradeSystem .ui-controlgroup-controls .ui-btn{
+	padding-top: 13px;
+	padding-bottom: 13px;
+	background-color: #bac1cb;
+	color: #195ea9;
+	font-weight: normal;
+	font-size: 1.0em !important;
+	line-height: 1.1em !important;
+	text-shadow: 0px 0px 1px black;
+	 letter-spacing: 2px;
+}
+.clFieldset.clGradeSystem .ui-controlgroup-controls .ui-radio{
+	width: 33.3333% !important;
+}
+.clFieldset.clGradeSystem .ui-controlgroup-controls .ui-btn {
+	border: none;
+	border-radius: 6px 6px 0px 0px !important;
+	margin: 1px;
+	font-size: 15px;
+}
+
+
+
+
+
+.clFieldset.clTicktypes .ui-controlgroup-controls {
+	width: 100% !important;
+	border: none !important; /*1px solid red !important;*/
+	border-radius: 5px !important;
+	background: none;
+}
+.clFieldset.clTicktypes .ui-controlgroup-controls .ui-btn {
+	border: none !important; /*1px solid red !important;*/
+	background-image: url("../files/views/assets/image/ticktype_gradient_bg_1_60.png") !important;
+	padding-top: 5px;
+	height: 55px;
+}
+
+.clFieldset.clTicktypes .ui-controlgroup-controls .ui-checkbox {
+	border: 1px solid #cccccc;
+	width: 24% !important;
+	/*border: 1px solid red !important;*/
+}
+.clFieldset.clTicktypes .ui-btn {
+	padding: 3px 0px 0px 0px;
+	height: 40px;
+}
+
+
+
+
+.clRouteDropdown {
+	margin-top: 0px !important;
+	margin-bottom: 0px  !important;
+	padding-top: 1px  !important;
+	padding-bottom: 1px  !important;
+	background-color: #AAA;
+	width: 50%;
+	float:left;
+	border: 0px solid red;
+	border-bottom: 1px solid #CCC;
+	box-shadow: 0px 0px 1px 1px #CCC;
+	
+	}
+		
+.clRouteDropdown .ui-shadow {
+	box-shadow: none !important;
+}
+
+.clRouteDropdown .ui-select .ui-btn span {
+	padding-top: 20px !important;
+	padding-bottom: 20px !important;
+	border: 0px solid green;
+}
+.clRouteDropdown .ui-select {
+	background-color: transparent !important;
+}
+.clRouteDropdown .ui-select > .ui-btn {
+	background-color: transparent !important;
+
+	border: 1px solid #CCCCCC !important;
+	border-radius: 0em !important;
+
+	/* background for dropdowns.. */
+	background-image: url("../files/views/assets/image/dropdown_gradient_bg_1_85.png") !important;
+	background-repeat: repeat-x;
+	background-size: 50px 85px;
+	color: #2b67AA;
+}
+
+
+
+.ui-icon-clRouteDropdownIcon:after {
+	background-image: url("../files/views/assets/image/routelog_dropdown_arrow.png") !important;
+	/* Make your icon fit */
+	background-size: 52px 52px;
+	height: 52px;
+	width: 52px;
+	top: 28px;
+	background-color: transparent !important;
+}
+	
+.ui-icon-clRouteDropdownIcon.ui-btn-icon-left:after {
+	left: 0px;
+	padding-left: 0px;
+}
+.ui-icon-clRouteDropdownIcon.ui-btn-icon-left {
+	padding-left: 55px;
+	padding-right: 5px;
+}
+.ui-icon-clRouteDropdownIcon.ui-btn-icon-right:after {
+	right: 0px;
+	padding-right: 0px;
+}
+.ui-icon-clRouteDropdownIcon.ui-btn-icon-right{
+	padding-left: 5px;
+	padding-right: 55px;
+}
+
+.ui-icon-clRouteDropdownIcon span {
+	border: 3px solid green;
+	width: 100%;
+	overflow: hidden; 
+	text-overflow: ellipsis;
+}
+	
+	

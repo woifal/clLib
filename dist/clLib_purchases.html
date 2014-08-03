@@ -42,7 +42,9 @@
 <script src="http://192.168.0.13:8080/target/target-script-min.js#anonymous"></script>
 -->
 		<link rel="stylesheet" href="css/clLib.css" />
-</head> 
+		<link rel='stylesheet' type='text/css' href='http://fonts.googleapis.com/css?family=Open+Sans:700,400' />
+
+		</head> 
 
 
 <body> 
@@ -89,65 +91,71 @@
              id="purchases_mobileheader1" data-role="header" 
 			 data-add-back-btn="false"
              data-theme="a"
-        >
+			 style="
+				height: 55px;
+			 "
+		 >
 			<img src="files/views/assets/image/header_logo.png" 
 				style="
 					text-align: center; 
 					background: none; 
-					width: 90px;
-					padding: 0px 20px 10px  115px;
-					margin-top: 10px;
+					width: 100px;
+					padding: 0px 20px 0px  110px;
+					margin-top: 15px;
 				"
 			/>
-
-
+			
             <a id="purchases_homeButton" 
                 href="#"
                 data-role="button" 
 				data-corners="true"
-				data-icon="home" 
+				data-icon="cl_home" 
 				data-inline='true'
 				data-mini='true' 
 				data-theme="a"
 				data-iconpos="notext"
+				class="clIcon"
 			></a>
                 
-			<!-- LEFT: refreshRouteStorageButton -->
-<!--
-            <a data-role="button"
-                class='ui-btn-left' style='min-height:20px; '
-                id="startScreen_refreshRouteStorageButton" data-corners="true" data-icon="refresh"
-                data-inline='true' data-mini='true'
-                data-theme="a" 
-				data-iconpos="notext">
-			</a>
--->
 			<!-- RIGHT: menu panel -->
 			<a href="#purchases_menupanel" 
 				data-role="button" 
-				class='ui-btn-right'
 				data-corners="true"
-				data-icon="bars" 
+				data-icon="cl_menu" 
 				data-inline='true'
 				data-mini='true' 
 				data-theme="a"
 				data-iconpos="notext"
+				class="clIcon"
 			></a>
         </div>
 
         <div 
              id="purchases_mobilecontainer1" class="ui-content" role="main" 
              data-theme=""
-			 style="padding: 0px 0px 0px 0px; margin:  0px 0px 0px 0px;"
+			 style="
+				 padding: 0px 0px 0px 0px; 
+				 margin:  0px 0px 0px 0px;
+				 background-color: #F0F0F0;
+			 "
 		 >
 
 				
 				<div data-role="content">
-                    <div id="purchases_productIds" style="border: 1px solid green">
+					<div id="purchases_productIds_header" style="border: 1px solid green">
 						The product ids...
+					</div>
+					<div id="purchases_productIds" style="border: 1px solid green">
+						The product ids...
+					</div>
+                    <div id="purchases_restoredIds_header" style="border: 1px solid blue">
+						The RESTORED product ids...
 					</div>
                     <div id="purchases_restoredIds" style="border: 1px solid blue">
 						The RESTORED product ids...
+					</div>
+                    <div id="purchases_debug_header" style="border: 1px solid red">
+						any debug output..<br>
 					</div>
                     <div id="purchases_debug" style="border: 1px solid red">
 						any debug output..<br>
