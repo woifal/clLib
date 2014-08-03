@@ -1168,7 +1168,8 @@ clLib.UI.defaultRefreshHandler = function($element, additionalOptions) {
 }
 
 clLib.UI.getLabelForElement = function($element) {
-	return $element.parents("td").find("label[for=" + $element.attr("id") + "]").html();
+	return $element.parent().siblings("label[for=" + $element.attr("id") + "]").html();
+	//return $element.parents("td").find("label[for=" + $element.attr("id") + "]").html();
 };
 
 clLib.UI.defaultEntitySearch = function(entityName, resultColName, dependentPageElements, distinctFlag, additionalWhereObj, storageName) {
