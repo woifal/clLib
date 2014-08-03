@@ -372,3 +372,166 @@ input.ui-input-text, textarea.ui-input-text {
 }
 
 
+
+
+/*
+	All clFieldset classes...
+*/
+.clFieldset.ui-controlgroup, fieldset.clFieldset.ui-controlgroup {
+	margin: 0px 0 0;
+	padding: 0;
+}
+.clFieldset .ui-select, .ui-select {
+	margin-top: 0px !important;
+	margin-bottom: 0px !important;
+	border: none !important; /*1px solid yellow !important;*/
+}
+.clFieldset .ui-checkbox .ui-btn, .clFieldset .ui-radio .ui-btn {
+	text-align: center;
+}
+
+/* grade system fieldset */
+.clFieldset.clGradeSystem .ui-controlgroup-controls {
+	width: 100%;
+	border: none;
+	border-radius: 0em;
+}
+/* SELECTED gradetype */
+.clFieldset.clGradeSystem .ui-controlgroup-controls .ui-btn.ui-btn-active{
+	border: 0px solid red;
+	background-color: #063a72;
+	color: #FFFFFF;
+	font-weight: bold;
+	font-size: 1.0em !important;
+	line-height: 1.1em !important;
+	letter-spacing: 2px;
+	text-shadow: none;
+}
+/* UNselected gradetype */
+.clFieldset.clGradeSystem .ui-controlgroup-controls .ui-btn{
+	padding-top: 13px;
+	padding-bottom: 13px;
+	background-color: #bac1cb;
+	color: #195ea9;
+	font-weight: normal;
+	font-size: 1.0em !important;
+	line-height: 1.1em !important;
+	text-shadow: 0px 0px 1px black;
+	 letter-spacing: 2px;
+}
+.clFieldset.clGradeSystem .ui-controlgroup-controls .ui-radio{
+	width: 33.3333% !important;
+}
+.clFieldset.clGradeSystem .ui-controlgroup-controls .ui-btn {
+	border: none;
+	border-radius: 6px 6px 0px 0px !important;
+	margin: 1px;
+	font-size: 15px;
+}
+
+
+
+
+
+.clFieldset.clTicktypes .ui-controlgroup-controls {
+	width: 100% !important;
+	border: none !important; /*1px solid red !important;*/
+	border-radius: 5px !important;
+	background: none;
+}
+.clFieldset.clTicktypes .ui-controlgroup-controls .ui-btn {
+	border: none !important; /*1px solid red !important;*/
+	background-image: url("../files/views/assets/image/ticktype_gradient_bg_1_60.png") !important;
+	padding-top: 5px;
+	height: 55px;
+}
+
+.clFieldset.clTicktypes .ui-controlgroup-controls .ui-checkbox {
+	border: 1px solid #cccccc;
+	width: 24% !important;
+	/*border: 1px solid red !important;*/
+}
+.clFieldset.clTicktypes .ui-btn {
+	padding: 3px 0px 0px 0px;
+	height: 40px;
+}
+
+
+
+
+.clRouteDropdown {
+	margin-top: 0px !important;
+	margin-bottom: 0px  !important;
+	padding-top: 1px  !important;
+	padding-bottom: 1px  !important;
+	background-color: #AAA;
+	width: 50%;
+	float:left;
+	border: 0px solid red;
+	border-bottom: 1px solid #CCC;
+	box-shadow: 0px 0px 1px 1px #CCC;
+	
+	}
+		
+.clRouteDropdown .ui-shadow {
+	box-shadow: none !important;
+}
+
+.clRouteDropdown .ui-select .ui-btn span {
+	padding-top: 20px !important;
+	padding-bottom: 20px !important;
+	border: 0px solid green;
+}
+.clRouteDropdown .ui-select {
+	background-color: transparent !important;
+}
+.clRouteDropdown .ui-select > .ui-btn {
+	background-color: transparent !important;
+
+	border: 1px solid #CCCCCC !important;
+	border-radius: 0em !important;
+
+	/* background for dropdowns.. */
+	background-image: url("../files/views/assets/image/dropdown_gradient_bg_1_85.png") !important;
+	background-repeat: repeat-x;
+	background-size: 50px 85px;
+	color: #2b67AA;
+}
+
+
+
+.ui-icon-clRouteDropdownIcon:after {
+	background-image: url("../files/views/assets/image/routelog_dropdown_arrow.png") !important;
+	/* Make your icon fit */
+	background-size: 52px 52px;
+	height: 52px;
+	width: 52px;
+	top: 28px;
+	background-color: transparent !important;
+}
+	
+.ui-icon-clRouteDropdownIcon.ui-btn-icon-left:after {
+	left: 0px;
+	padding-left: 0px;
+}
+.ui-icon-clRouteDropdownIcon.ui-btn-icon-left {
+	padding-left: 55px;
+	padding-right: 5px;
+}
+.ui-icon-clRouteDropdownIcon.ui-btn-icon-right:after {
+	right: 0px;
+	padding-right: 0px;
+}
+.ui-icon-clRouteDropdownIcon.ui-btn-icon-right{
+	padding-left: 5px;
+	padding-right: 55px;
+}
+
+.ui-icon-clRouteDropdownIcon span {
+	border: 3px solid green;
+	width: 100%;
+	overflow: hidden; 
+	text-overflow: ellipsis;
+}
+	
+	
