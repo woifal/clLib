@@ -12,17 +12,16 @@
 
 @@include('grunt_includes/html_jqm_content.html', {"pageName": "startScreen"})
 				
+
 			<div 
 				id="start_top"
 				style="
 					background: url(files/views/assets/image/home_background_320.png);
 					background-position: top bottom, left top;
 					background-repeat: no-repeat;
-					background-color: red;
 					padding-left: 0px;
 					padding-top: 20px;
 					margin-left: 0px;
-					border: 0px solid yellow;
 					width: 100%;	
 				"
 			>
@@ -55,27 +54,31 @@
 				id="start_bottom"
 				style="
 					border-top: 5px solid #073e78;
-					padding-top: 20px;
+					padding-top: 5px;
 					padding-left: 0px;
 					margin-left: 0px;
 				"
 			>
 				<!-- Statistics -->
-				<a 
-					data-role="none"
+				<div 
 					id="startScreen_statsButton"
+					class="clButton"
+					data-role="none"
 				>
-					<img
-					src="files/views/assets/image/stats_button.png"
-						style="
-							width: 250px;
-							height: 90px;
-							padding-left: 40px;
-					"					
-					/>
-				</a>
+					<div>
+					<a>
+						<div>
+							<img src="files/views/assets/image/img_40_40/button_stats_white.png"></img>
+						</div>
+					</a>
+					<span>STATISTICS</span>
+					</div>
+				</div>
 			</div>
 			
+					
+					
+					
 			
         </div>
 
