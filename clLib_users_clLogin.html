@@ -1,0 +1,135 @@
+﻿<!DOCTYPE html> 
+<html>
+
+@@include('grunt_includes/html_head.html', {"pageName": "users_clLogin"})
+
+<body> 
+@@include('grunt_includes/html_jqm_page.html', {"pageName": "users_clLogin"})
+
+@@include('grunt_includes/html_jqm_menupanel.html', {"pageName": "users_clLogin"})
+@@include('grunt_includes/html_jqm_header.html', {"pageName": "users_clLogin"})
+
+@@include('grunt_includes/html_jqm_content.html', {"pageName": "users_clLogin"})
+
+
+
+	<div
+	
+					style="
+					abackground: url(files/views/assets/image/home_background_320.png);
+					abackground-position: top bottom, left top;
+					abackground-repeat: no-repeat;
+					background-color: #f5f5f5; /*#073f7c;*/
+					padding-left: 0px;
+					padding-top: 20px;
+					margin-left: 0px;
+					border: 0px solid yellow;
+					width: 100%;	
+				"
+
+	
+	>
+<!--
+		<div id="users_clLogin_loginErrorContainer" style="display: none; white-space: normal" data-role="collapsible" data-collapsed="true" data-content-theme="b" data-theme="c" data-iconpos="right" adata-expanded-icon="alert" adata-collapsed-icon="alert">
+			<h4 style="white-space: normal" ><span style="white-space: normal" id="users_clLogin_loginError">Not logged in.</span></h4>
+			<p>1) You can proceed with the app by simply providing a (currently unauthenticated) username below and setting online mode to "false" on the <a href="clLib_preferences.html">general preferences</a> - but your routes will be saved locally and will only by synced to the server after you successfully log in.</p>
+			<p>2) Provide a valid username and password and login</p>
+			<p>3) Create a new user</p>
+		</div>
+-->
+<style>
+	.ui-input-text {
+		margin: 0px 20px;
+		border: 0px solid red;
+	}
+</style>		
+		
+                    <!-- userName -->
+                    <div>
+                        <label class="clUIElement" style="font-size: 8px;" for="users_clLogin_currentUser">User name</label>
+                        <input type="text" id="users_clLogin_currentUser" name="users_clLogin_currentUser"
+                               value="" placeholder="Username..." data-theme="a" tabindex="7" />
+                    </div>
+                    <!-- password -->
+                    <div>
+                        <label class="clUIElement" style="font-size: 8px;" for="users_clLogin_currentPassword">Password</label>
+                        <input type="password" id="users_clLogin_currentPassword" name="users_clLogin_currentPassword"
+                               type="text" value="" placeholder="Password..." data-theme="a" tabindex="7" />
+                    </div>
+					<br>
+
+                    <!-- Login user -->
+					<div id="users_clLogin_loginButton" class="clButton clSmall">
+						<div>
+						<a>
+							<div>
+								<img src="files/views/assets/image/img_40_40/button_check.png"></img>
+							</div>
+						</a>
+						<span>Log in</span>
+						</div>
+					</div>
+
+
+                    <!-- Create new user -->
+					<div id="users_clLogin_signupButton" class="clButton clSmall">
+						<div>
+						<a>
+							<div>
+								<img src="files/views/assets/image/img_40_40/button_check.png"></img>
+							</div>
+						</a>
+						<span>Sign up!</span>
+						</div>
+					</div>
+
+                    <!-- Logout user -->
+                    <div id="users_clLogin_logoutButton" class="clButton clSmall">
+						<div>
+						<a>
+							<div>
+								<img src="files/views/assets/image/img_40_40/button_check.png"></img>
+							</div>
+						</a>
+						<span>Log out</span>
+						</div>
+					</div>
+
+                    <!-- Forgot password -->
+					<div id="users_clLogin_forgotPwdButton" class="clButton clSmall">
+						<div>
+						<a>
+							<div>
+								<img src="files/views/assets/image/img_40_40/button_check.png"></img>
+							</div>
+						</a>
+						<span>Forgot Passwd.</span>
+						</div>
+					</div>
+
+                    <!-- Delete user -->
+					<div id="users_clLogin_deleteButton" class="clButton clSmall">
+						<div>
+						<a>
+							<div>
+								<img src="files/views/assets/image/img_40_40/button_check.png"></img>
+							</div>
+						</a>
+						<span>Delete user</span>
+						</div>
+					</div>
+                </div>
+				
+			</div>
+            <!-- mobilefooter1 -->
+            <div data-role="footer" data-position="fixed"
+                 id="users_clLogin_mobilefooter1" data-theme="a">
+            </div>
+        </div>
+
+@@include('grunt_includes/html_bodyBottom.html', {"pageName": "users_clLogin"})
+
+</body>
+
+  
+</html>
