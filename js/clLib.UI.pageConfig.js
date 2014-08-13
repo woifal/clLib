@@ -37,6 +37,10 @@ clLib.UI.pageRequisites = {
         console.log("!!!!!changing to users - but no redirect(=>useless)..");
         return clLib.tryLogin(successFunc, errorFunc, true);
     }] }
+    , "users_clLogin": { "clBeforeChange" : [function(successFunc, errorFunc) {
+        console.log("!!!!!changing to users - but no redirect(=>useless)..");
+        return clLib.tryLogin(successFunc, errorFunc, true);
+    }] }
     , "users_verification": { }
     , "stats": { }
     , "diagram": { }
@@ -52,6 +56,7 @@ clLib.UI.saveHandlers= {
     , "newRouteLog": clLib.UI.RESTSaveHandler
     , "startScreen": clLib.UI.RESTSaveHandler
     , "users": clLib.UI.userHandler
+    , "users_clLogin": clLib.UI.userHandler
     , "feedback": clLib.UI.RESTSaveHandler
 };
 
@@ -115,6 +120,13 @@ clLib.UI.autoLoad = {
 			"loginError"
 		]
 	}
+    ,"users_clLogin": {
+		default: [
+			"currentUser",
+			"currentPassword",
+			"loginError"
+		]
+	}
     ,"users_verification" : {
 		default: [
 			"currentUser",
@@ -156,6 +168,11 @@ clLib.UI.elementsToReset = {
 		, "selectedGradeSystems"
     	]
     , users: [
+		"currentUser"
+		, "currentPassword"
+        , "loginError"
+    	]
+    , users_clLogin: [
 		"currentUser"
 		, "currentPassword"
         , "loginError"
@@ -238,6 +255,13 @@ clLib.UI.pageElements = {
         ]
     }
     ,users: {
+        default: [
+			"currentUser"
+			,"currentPassword"
+			,"loginError"
+        ]
+    }
+    ,users_clLogin: {
         default: [
 			"currentUser"
 			,"currentPassword"
