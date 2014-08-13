@@ -1,6 +1,5 @@
 "use strict";
 
-//window.priority = 1;
 
 var profiledFnCall = function(iterations, aFunc) {
 	var totalDuration = 0;
@@ -17,6 +16,8 @@ var profiledFnCall = function(iterations, aFunc) {
 var clLib = {};
 clLib.UI = {};
 
+//window.priority = 1;
+clLib.VERIFY_LOGIN = 0;
 
 
 /*
@@ -643,7 +644,8 @@ clLib.loggedInCheck = function (callbackFunc, errorFunc) {
 		return errorFunc(false);
 	}
 	// online - check for valid sessiontoken
-	if (clLib.sessionToken) {
+	// if VERIFY_LOGIN is not set, don't login user
+	if (!clLib.VERIFY_LOGIN || clLib.sessionToken) {
         return callbackFunc(/*true*/);
     }
 	//alert("no session token!");
