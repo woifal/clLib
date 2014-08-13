@@ -12,69 +12,61 @@
 @@include('grunt_includes/html_jqm_content.html', {"pageName": "users"})
 
 
-<div id="users_loginErrorContainer" style="white-space: normal" data-role="collapsible" data-collapsed="true" data-content-theme="b" data-theme="c" data-iconpos="right" adata-expanded-icon="alert" adata-collapsed-icon="alert">
-    <h4 style="white-space: normal" ><span style="white-space: normal" id="users_loginError">Not logged in.</span></h4>
-	<p>1) You can proceed with the app by simply providing a (currently unauthenticated) username below and setting online mode to "false" on the <a href="clLib_preferences.html">general preferences</a> - but your routes will be saved locally and will only by synced to the server after you successfully log in.</p>
-	<p>2) Provide a valid username and password and login</p>
-	<p>3) Create a new user</p>
-</div>
 
-                <div>
-                    <!-- Authenticate via GOOGLE -->
-                    <button id="users_googleLoginButton" class="ui-btn ui-shadow ui-corner-none ui-btn-icon-right ui-icon-google">
-                        Google Login!
-                    </button>
+	<div
+	
+					style="
+					abackground: url(files/views/assets/image/home_background_320.png);
+					abackground-position: top bottom, left top;
+					abackground-repeat: no-repeat;
+					background-color: #f5f5f5; /*#073f7c;*/
+					padding-left: 0px;
+					padding-top: 20px;
+					margin-left: 0px;
+					border: 0px solid yellow;
+					width: 100%;	
+				"
 
-                    <!-- Authenticate via FACEBOOK -->
-                    <button id="users_facebookLoginButton" class="ui-btn ui-shadow ui-corner-none ui-btn-icon-right ui-icon-facebook">
-                        Facebook Login!
-                    </button>
-                    
-                    <!-- userName -->
-                    <div>
-                        <label style="font-size: 8px;" for="users_currentUser">User name</label>
-                        <input type="text" id="users_currentUser" name="users_currentUser"
-                               value="" placeholder="Username..." data-theme="a" tabindex="7" />
-                    </div>
-                    <!-- password -->
-                    <div>
-                        <label style="font-size: 8px;" for="users_currentPassword">Password</label>
-                        <input type="password" id="users_currentPassword" name="users_currentPassword"
-                               value="" placeholder="Password..." data-theme="a" tabindex="7" />
-                    </div>
-                    <!-- Logout user -->
+	
+	>
+		<div id="users_loginErrorContainer" style="white-space: normal" data-role="collapsible" data-collapsed="true" data-content-theme="b" data-theme="c" data-iconpos="right" adata-expanded-icon="alert" adata-collapsed-icon="alert">
+			<h4 style="white-space: normal" ><span style="white-space: normal" id="users_loginError">Not logged in.</span></h4>
+			<p>1) You can proceed with the app by simply providing a (currently unauthenticated) username below and setting online mode to "false" on the <a href="clLib_preferences.html">general preferences</a> - but your routes will be saved locally and will only by synced to the server after you successfully log in.</p>
+			<p>2) Provide a valid username and password and login</p>
+			<p>3) Create a new user</p>
+		</div>
 
-                    <a data-role="button"
-                       id="users_logoutButton" data-corners="true" data-icon="check" data-iconpos="right"
-                       data-mini="false" data-theme="a" tabindex="8">
-                        Logout!
-                    </a>
+		<div id="users_googleLoginButton" class="clButton clSmall">
+			<div>
+			<a>
+				<div>
+					<img src="http://www.kurt-climbing.com/dist/files/views/assets/image/googleAuth.jpg"></img>
+				</div>
+			</a>
+			<span>Google</span>
+			</div>
+		</div>
+		<div  id="users_facebookLoginButton" class="clButton clSmall">
+			<div>
+			<a>
+				<div>
+					<img src="http://www.kurt-climbing.com/dist/files/views/assets/image/facebookAuth.png"></img>
+				</div>
+			</a>
+			<span>Facebook</span>
+		</div>
+		</div>
+		<div id="users_clLoginButton" class="clButton clSmall">
+			<div>
+			<a>
+				<div>
+					<img src="files/views/assets/image/img_40_40/button_plus_white.png"></img>
+				</div>
+			</a>
+			<span>KURT</span>
+		</div>
+	</div>
 
-                    <!-- Login user -->
-                    <a data-role="button"
-                       id="users_loginButton" data-corners="true" data-icon="check" data-iconpos="right"
-                       data-mini="false" data-theme="a" tabindex="8">
-                        <!--(Re)l-->Login!
-                    </a>
-                    <!-- Forgot password -->
-                    <a data-role="button"
-                       id="users_forgotPwdButton" data-corners="true" data-icon="check" data-iconpos="right"
-                       data-mini="false" data-theme="a" tabindex="8">
-                        Forgot Password
-                    </a>
-                    <!-- Create new user -->
-                    <a data-role="button"
-                       id="users_signupButton" data-corners="true" data-icon="check" data-iconpos="right"
-                       data-mini="false" data-theme="a" tabindex="8">
-                        Create new user!
-                    </a>
-                    <!-- Delete user -->
-                    <a data-role="button"
-                       id="users_deleteButton" data-corners="true" data-icon="check" data-iconpos="right"
-                       data-mini="false" data-theme="a" tabindex="8">
-                        Delete user!
-                    </a>
-                </div>
 				
 			</div>
             <!-- mobilefooter1 -->
