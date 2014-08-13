@@ -1,3 +1,7 @@
+body {
+	background-color: #000000 !important;
+}
+
 .clLoading {
 	background: red;
 	width: 400px;
@@ -131,6 +135,17 @@ input.ui-input-text, textarea.ui-input-text {
 	background: #FFFFFF;
 }
 
+.clButton.clFullWidth {
+	width: 300px;
+    margin: 20px 0px;
+	border-radius: 0px;
+	background: #C3cbd6;
+	box-shadow: inset 0px 4px 4px -3px #000;
+	padding-left: 10px;
+}
+
+
+
 /* inner button outline.. */
 .clButton>div {
     background: url(../files/views/assets/image/button_gradient_bg_1_90.png);
@@ -143,8 +158,6 @@ input.ui-input-text, textarea.ui-input-text {
 	font-size: 1.4em;
 	line-height: 1em;
 	box-shadow: 0px 1px 2px #888;
-	
-
 }
 
 /* outer image ring.. */
@@ -161,6 +174,7 @@ input.ui-input-text, textarea.ui-input-text {
 	padding-right: 0px;
 	padding-bottom: 0px;
 }
+
 /* inner inner image background */
 .clButton >div >a >div{
     display:block;
@@ -198,9 +212,59 @@ input.ui-input-text, textarea.ui-input-text {
     padding-top: 23px;
     padding-left: 12px;
     color: #092E56;
+	}
+
+.clButton.clFullWidth > div > span {
+    text-align: center !important;
+	width: 70%;
 }
 
 
+
+
+/* outer button outline.. */
+.clButton.clSmall {
+	margin: 0px 10px !important;
+}
+
+/* inner button outline.. */
+.clButton.clSmall>div {
+    height: 42px;
+    padding-top: 7px;
+	font-size: 1em;
+	text-align: center;
+	width: 100%;
+}
+
+/* outer image ring.. */
+.clButton.clSmall >div >a {
+    width:40px;
+    height:40px;
+	float: left;
+}
+
+/* inner inner image background */
+.clButton.clSmall >div >a >div{
+	top: 4px;
+	left: 4px;
+	width:32px;
+    height: 32px;
+}
+/* actual button image... */
+.clButton.clSmall >div >a >div >img {
+    top: 6px;
+	left: 6px;
+    width: 20px;
+    height: 20px;
+}
+
+.clButton.clSmall >div > span {
+	float: left;
+	width: 60%;
+    font-size: 1.4em;
+	padding-top: 13px;
+    padding-left: 12px;
+}
 
 
 
@@ -368,6 +432,20 @@ input.ui-input-text, textarea.ui-input-text {
 	color: #002A6F !important;
     padding-left: 60px !important;
 	text-align: center !important;
+	
+}
+
+.clIconCollapsible.clBgWhite  {
+	padding: 10px 10px 10px 10px; 
+border: 1px solid red;
+							}
+							
+.clIconCollapsible.clBgWhite .ui-collapsible-heading-toggle {
+    background-color: #FFFFFF !important;
+	background: none;
+	
+	margin:  0px 0px 0px 00px;
+
 	
 }
 
