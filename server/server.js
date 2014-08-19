@@ -133,16 +133,19 @@ server.get("/login", function (req, res) {
 		return clLib.server.defaults.errorFunc(errorObj, res);
 	}
 
-	console.log("authHandler.defaults : >" + JSON.stringify(authHandler.defaults) + "<");
-	authHandler.authenticate(
-        req.params
-        ,function(userObj) {
-            util.log("AUTHENTICATED!!! " + JSON.stringify(userObj));
-            return res.send(userObj);
-        }
-        ,errHandler
-	);
-
+	try {
+		console.log("authHandler.defaults : >" + JSON.stringify(authHandler.defaults) + "<");
+		authHandler.authenticate(
+			req.params
+			,function(userObj) {
+				util.log("AUTHENTICATED!!! " + JSON.stringify(userObj));
+				return res.send(userObj);
+			}
+			,errHandler
+		);
+	} catch(e) {
+		errHandler(new Error("UNHANDLED SERVER ERROR "  + e.name + " IS " + e.message + " !!!");
+	}
 });
 
 server.get("/deleteUser", function (req, res) {
@@ -152,30 +155,33 @@ server.get("/deleteUser", function (req, res) {
 		return clLib.server.defaults.errorFunc(errorObj, res);
 	}
 
-	util.log("putting.." + JSON.stringify(req.params));
-	var entityName = clLib.server.usersCollectionName;
-	var entityId = req.params.entityId;
-	// verify user.
-	DBHandler.updateEntity({
-		entity : entityName, 
-		id : entityId,
-		data : {"deleted": 1}
-	},
-	function(resultObj) { 
-		// upon success...
-		util.log("updated entity(" + entityName + ")>" + JSON.stringify(resultObj) + "<"); 
-		
-		// User not found=
-		if(!resultObj) {
-			res.send(500, JSON.stringify({
-			result: "Entity(" + entityName + ") not found: >" + entityId + "<"}));
+	try {
+		util.log("putting.." + JSON.stringify(req.params));
+		var entityName = clLib.server.usersCollectionName;
+		var entityId = req.params.entityId;
+		// verify user.
+		DBHandler.updateEntity({
+			entity : entityName, 
+			id : entityId,
+			data : {"deleted": 1}
+		},
+		function(resultObj) { 
+			// upon success...
+			util.log("updated entity(" + entityName + ")>" + JSON.stringify(resultObj) + "<"); 
+			
+			// User not found=
+			if(!resultObj) {
+				res.send(500, JSON.stringify({
+				result: "Entity(" + entityName + ") not found: >" + entityId + "<"}));
+			}
+			res.send(JSON.stringify(resultObj));
+
 		}
-		res.send(JSON.stringify(resultObj));
-
+		, errHandler
+		);
+	} catch(e) {
+		errHandler(new Error("UNHANDLED SERVER ERROR "  + e.name + " IS " + e.message + " !!!");
 	}
-	, errHandler
-	);
-
 
 });
 
@@ -185,86 +191,91 @@ server.post("/signup", function (req, res) {
 		return clLib.server.defaults.errorFunc(errorObj, res);
 	}
 	
-	var userObj = req.body;
-	util.log("USEROBJ to insert " + JSON.stringify(userObj));
-	var foo = this;
-	
-	var plainPwd = userObj.password;
-	
-	authHandler.hash(userObj.password, userObj.username, 
-	function(hashpwd) {
-		util.log("HASHPWD IS >" + hashpwd + "<");
-		userObj.password = hashpwd;
+	try {
+		var userObj = req.body;
+		util.log("USEROBJ to insert " + JSON.stringify(userObj));
+		var foo = this;
 		
-		// verify user.
-		DBHandler.insertEntity({
-			entity : clLib.server.usersCollectionName, 
-			values : userObj
-		},
-		// upon success...
-		function(userObj) { 
-			//userObj = userObj[0];
-			util.log("Created user >" + JSON.stringify(userObj) + "<"); 
-
-			// generate new verification token
-			var initialToken = clLib.server.generateRandomToken();
-			util.log("updating with token");
-			DBHandler.updateEntity({
-				entity : clLib.server.usersCollectionName,
-				id : userObj["_id"],
-				data : {"initialToken": initialToken}
+		var plainPwd = userObj.password;
+		
+		authHandler.hash(userObj.password, userObj.username, 
+		function(hashpwd) {
+			util.log("HASHPWD IS >" + hashpwd + "<");
+			userObj.password = hashpwd;
+			
+			// verify user.
+			DBHandler.insertEntity({
+				entity : clLib.server.usersCollectionName, 
+				values : userObj
 			},
-			function(resultObj) {
-				util.log("updatied with token");
-		
-				util.log("Token >" + initialToken + "< stored at >" + resultObj + "<");
-				
-				userObj["initialToken"] = initialToken;
-				
-				var sendInitialEmail = false;
-				if(!sendInitialEmail) {
-					util.log("NO email sent!!!");
-					util.log("AUTHENTICATED!!! " + JSON.stringify(userObj));
-					res.send(userObj);
-				}
-				else {
-					// send token to user..
-					util.log("Sending email..");
-					var options = {
-						"template": {
-							name: "initialEmail",
-							vars: userObj
-						},
-						"to": userObj["email"]
-					}
+			// upon success...
+			function(userObj) { 
+				//userObj = userObj[0];
+				util.log("Created user >" + JSON.stringify(userObj) + "<"); 
+
+				// generate new verification token
+				var initialToken = clLib.server.generateRandomToken();
+				util.log("updating with token");
+				DBHandler.updateEntity({
+					entity : clLib.server.usersCollectionName,
+					id : userObj["_id"],
+					data : {"initialToken": initialToken}
+				},
+				function(resultObj) {
+					util.log("updatied with token");
+			
+					util.log("Token >" + initialToken + "< stored at >" + resultObj + "<");
 					
-					mailHandler.send(
-						{"emailOptions" : options}, 
-						function(responseObj) {
-							authHandler.authenticate({
-								username : userObj["username"]
-								,password :  plainPwd
+					userObj["initialToken"] = initialToken;
+					
+					var sendInitialEmail = false;
+					if(!sendInitialEmail) {
+						util.log("NO email sent!!!");
+						util.log("AUTHENTICATED!!! " + JSON.stringify(userObj));
+						res.send(userObj);
+					}
+					else {
+						// send token to user..
+						util.log("Sending email..");
+						var options = {
+							"template": {
+								name: "initialEmail",
+								vars: userObj
 							},
-							function(userObj) {
-								util.log("email sent!!! " + JSON.stringify(responseObj));
-								util.log("AUTHENTICATED!!! " + JSON.stringify(userObj));
-								res.send(userObj);
-							}
-							,errHandler
-							);
+							"to": userObj["email"]
 						}
-						, errHandler
-					)
+						
+						mailHandler.send(
+							{"emailOptions" : options}, 
+							function(responseObj) {
+								authHandler.authenticate({
+									username : userObj["username"]
+									,password :  plainPwd
+								},
+								function(userObj) {
+									util.log("email sent!!! " + JSON.stringify(responseObj));
+									util.log("AUTHENTICATED!!! " + JSON.stringify(userObj));
+									res.send(userObj);
+								}
+								,errHandler
+								);
+							}
+							, errHandler
+						)
+					}
 				}
-			}
-			, errHandler
+				, errHandler
+				);
+			},
+			errHandler
 			);
-		},
-		errHandler
+		}
+		, errHandler
 		);
+	} catch(e) {
+		errHandler(new Error("UNHANDLED SERVER ERROR "  + e.name + " IS " + e.message + " !!!");
 	}
-	, errHandler
-	);
+
 });
 
 
@@ -274,61 +285,66 @@ server.get('/requestVerification', function(req, res) {
 		return clLib.server.defaults.errorFunc(errorObj, res);
 	}
 
-	util.log("getting.." + JSON.stringify(req.params));
-	var resText = [];
-	var resCount = 0;
-	// verify user.
-	DBHandler.getEntities({
-		entity : clLib.server.usersCollectionName, 
-		where : {"username": req.params["username"]},
-		requireResult: true
-	}, 
-	function(resultObj) { 
-		// upon success...
-		var userDetails = resultObj[0];
-		util.log("Found user >" + fooFunc(userDetails) + "<"); 
-		
-		// User not found=
-		if(!userDetails) {
-			res.send(500, JSON.stringify({
-			result: "User not found: >" + req.params["username"] + "<"}));
-		}
-
-		
-		// store newly generated token
-		var verificationToken = clLib.server.generateRandomToken();
-		DBHandler.updateEntity({
-			entity : clLib.server.usersCollectionName,
-			id : userDetails["_id"],
-			data : {"username": req.params["username"], "verificationToken": verificationToken}
-		},
-		function(resultObj) {
-			util.log("Resultobj " + JSON.stringify(resultObj));
-			util.log("Token >" + verificationToken + "< stored at >" + resultObj["_updatedAt"] + "<");
+	try {
+		util.log("getting.." + JSON.stringify(req.params));
+		var resText = [];
+		var resCount = 0;
+		// verify user.
+		DBHandler.getEntities({
+			entity : clLib.server.usersCollectionName, 
+			where : {"username": req.params["username"]},
+			requireResult: true
+		}, 
+		function(resultObj) { 
+			// upon success...
+			var userDetails = resultObj[0];
+			util.log("Found user >" + fooFunc(userDetails) + "<"); 
 			
-			userDetails["verificationToken"] = verificationToken;
-			// send token to user..
-			util.log("Sending email..");
-			var options = {
-				"template": {
-					name: "verificationEmail",
-					vars: userDetails
-				},
-				"to": userDetails["email"]
+			// User not found=
+			if(!userDetails) {
+				res.send(500, JSON.stringify({
+				result: "User not found: >" + req.params["username"] + "<"}));
 			}
+
 			
-			mailHandler.send(
-				{"emailOptions" : options}, 
-			function(responseObj) {
-				util.log("email sent!!! " + JSON.stringify(responseObj));
-				res.send("email sent >" + JSON.stringify(responseObj) + "<");
+			// store newly generated token
+			var verificationToken = clLib.server.generateRandomToken();
+			DBHandler.updateEntity({
+				entity : clLib.server.usersCollectionName,
+				id : userDetails["_id"],
+				data : {"username": req.params["username"], "verificationToken": verificationToken}
+			},
+			function(resultObj) {
+				util.log("Resultobj " + JSON.stringify(resultObj));
+				util.log("Token >" + verificationToken + "< stored at >" + resultObj["_updatedAt"] + "<");
+				
+				userDetails["verificationToken"] = verificationToken;
+				// send token to user..
+				util.log("Sending email..");
+				var options = {
+					"template": {
+						name: "verificationEmail",
+						vars: userDetails
+					},
+					"to": userDetails["email"]
+				}
+				
+				mailHandler.send(
+					{"emailOptions" : options}, 
+				function(responseObj) {
+					util.log("email sent!!! " + JSON.stringify(responseObj));
+					res.send("email sent >" + JSON.stringify(responseObj) + "<");
+				}
+				,errHandler
+				);
 			}
 			,errHandler
 			);
-		}
-		,errHandler
-		);
-	});
+		});
+	} catch(e) {
+		errHandler(new Error("UNHANDLED SERVER ERROR "  + e.name + " IS " + e.message + " !!!");
+	}
+
 });
 	
 	
@@ -341,37 +357,42 @@ server.get('/db/:entityName/:entityId',
 		return clLib.server.defaults.errorFunc(errorObj, res);
 	}
 
-	util.log("getting.." + JSON.stringify(req.params));
-	var entityName = req.params.entityName;
-	var entityId = req.params.entityId;
-	if(typeof(entityId) == "string") {
-		entityId = new BSON.ObjectID(entityId);
-	}
-	util.log("ENTITY ID IS " + entityId);
-	
-
-	// verify user.
-	DBHandler.getEntities({
-		entity : entityName, 
-		where : {_id: entityId},
-		requireResult: true
-	},
-	function(resultObj) { 
-		// upon success...
-		var entityDetails = resultObj[0];
-		util.log("Found entity(" + entityName + ")>" + fooFunc(entityDetails) + "<"); 
-		
-		// User not found=
-		if(!entityDetails) {
-			res.send(500, JSON.stringify({
-			result: "Entity(" + entityName + ") not found: >" + JSON.stringify(req.params["where"]) + "<"}));
-			return;
+	try {
+		util.log("getting.." + JSON.stringify(req.params));
+		var entityName = req.params.entityName;
+		var entityId = req.params.entityId;
+		if(typeof(entityId) == "string") {
+			entityId = new BSON.ObjectID(entityId);
 		}
-		res.send(JSON.stringify(resultObj));
+		util.log("ENTITY ID IS " + entityId);
+		
 
+		// verify user.
+		DBHandler.getEntities({
+			entity : entityName, 
+			where : {_id: entityId},
+			requireResult: true
+		},
+		function(resultObj) { 
+			// upon success...
+			var entityDetails = resultObj[0];
+			util.log("Found entity(" + entityName + ")>" + fooFunc(entityDetails) + "<"); 
+			
+			// User not found=
+			if(!entityDetails) {
+				res.send(500, JSON.stringify({
+				result: "Entity(" + entityName + ") not found: >" + JSON.stringify(req.params["where"]) + "<"}));
+				return;
+			}
+			res.send(JSON.stringify(resultObj));
+
+		}
+		, errHandler
+		);
+	} catch(e) {
+		errHandler(new Error("UNHANDLED SERVER ERROR "  + e.name + " IS " + e.message + " !!!");
 	}
-	, errHandler
-	);
+
 });
 	
 server.get('/db/:entityName', 
@@ -381,30 +402,35 @@ server.get('/db/:entityName',
 	var errHandler = function(errorObj) {
 		return clLib.server.defaults.errorFunc(errorObj, res);
 	}
+	
+	try {
+		util.log("2getting.." + JSON.stringify(req.params));
+		var entityName = req.params.entityName;
+		// verify user.
+		DBHandler.getEntities({
+			entity : entityName, 
+			where : JSON.parse(req.params["where"])
+		},
+		function(resultObj) { 
+			// upon success...
+			var entityDetails = resultObj[0];
+			util.log("Found entity(" + entityName + ")>" + fooFunc(entityDetails) + "<"); 
+			
+			// User not found=
+			if(!entityDetails) {
+				res.send(500, JSON.stringify({
+				result: "Entity(" + entityName + ") not found: >" + JSON.stringify(req.params["where"]) + "<"}));
+				return;
+			}
+			res.send(JSON.stringify(resultObj));
 
-	util.log("2getting.." + JSON.stringify(req.params));
-	var entityName = req.params.entityName;
-	// verify user.
-	DBHandler.getEntities({
-		entity : entityName, 
-		where : JSON.parse(req.params["where"])
-	},
-	function(resultObj) { 
-		// upon success...
-		var entityDetails = resultObj[0];
-		util.log("Found entity(" + entityName + ")>" + fooFunc(entityDetails) + "<"); 
-		
-		// User not found=
-		if(!entityDetails) {
-			res.send(500, JSON.stringify({
-			result: "Entity(" + entityName + ") not found: >" + JSON.stringify(req.params["where"]) + "<"}));
-			return;
 		}
-		res.send(JSON.stringify(resultObj));
-
+		, errHandler
+		);
+	} catch(e) {
+		errHandler(new Error("UNHANDLED SERVER ERROR "  + e.name + " IS " + e.message + " !!!");
 	}
-	, errHandler
-	);
+
 });
 
 server.put('/db/:entityName/:entityId', 
@@ -415,29 +441,34 @@ server.put('/db/:entityName/:entityId',
 		return clLib.server.defaults.errorFunc(errorObj, res);
 	}
 
-	util.log("putting.." + JSON.stringify(req.params));
-	var entityName = req.params.entityName;
-	var entityId = req.params.entityId;
-	// verify user.
-	DBHandler.updateEntity({
-		entity : entityName, 
-		id : entityId,
-		data : req.body
-	},
-	function(resultObj) { 
-		// upon success...
-		util.log("updated entity(" + entityName + ")>" + JSON.stringify(resultObj) + "<"); 
-		
-		// User not found=
-		if(!resultObj) {
-			res.send(500, JSON.stringify({
-			result: "Entity(" + entityName + ") not found: >" + entityId + "<"}));
-		}
-		res.send(JSON.stringify(resultObj));
+	try {
+		util.log("putting.." + JSON.stringify(req.params));
+		var entityName = req.params.entityName;
+		var entityId = req.params.entityId;
+		// verify user.
+		DBHandler.updateEntity({
+			entity : entityName, 
+			id : entityId,
+			data : req.body
+		},
+		function(resultObj) { 
+			// upon success...
+			util.log("updated entity(" + entityName + ")>" + JSON.stringify(resultObj) + "<"); 
+			
+			// User not found=
+			if(!resultObj) {
+				res.send(500, JSON.stringify({
+				result: "Entity(" + entityName + ") not found: >" + entityId + "<"}));
+			}
+			res.send(JSON.stringify(resultObj));
 
+		}
+		, errHandler
+		);
+	} catch(e) {
+		errHandler(new Error("UNHANDLED SERVER ERROR "  + e.name + " IS " + e.message + " !!!");
 	}
-	, errHandler
-	);
+	
 });
 
 server.post('/db/:entityName', 
@@ -448,25 +479,30 @@ server.post('/db/:entityName',
 		return clLib.server.defaults.errorFunc(errorObj, res);
 	}
 
-	util.log("posting.." + JSON.stringify(req.body));
-	var entityName = req.params.entityName;
-	DBHandler.insertEntity({
-		entity : entityName,
-		values : req.body
-	},
-	function(resultObj) { 
-		// upon success...
-		util.log("insertED entity(" + entityName + ")>" + JSON.stringify(resultObj) + "<"); 
-		
-		// User not found=
-		if(!resultObj) {
-			res.send(500, JSON.stringify({
-			result: "Entity(" + entityName + ") not found: >" + entityId + "<"}));
-		}
-		res.send(JSON.stringify(resultObj));
+	try {
+		util.log("posting.." + JSON.stringify(req.body));
+		var entityName = req.params.entityName;
+		DBHandler.insertEntity({
+			entity : entityName,
+			values : req.body
+		},
+		function(resultObj) { 
+			// upon success...
+			util.log("insertED entity(" + entityName + ")>" + JSON.stringify(resultObj) + "<"); 
+			
+			// User not found=
+			if(!resultObj) {
+				res.send(500, JSON.stringify({
+				result: "Entity(" + entityName + ") not found: >" + entityId + "<"}));
+			}
+			res.send(JSON.stringify(resultObj));
 
+		}
+		,errHandler);
+	} catch(e) {
+		errHandler(new Error("UNHANDLED SERVER ERROR "  + e.name + " IS " + e.message + " !!!");
 	}
-	,errHandler);
+
 });
 	
 server.get('/setPassword', function(req, res) {
@@ -474,61 +510,66 @@ server.get('/setPassword', function(req, res) {
 		return clLib.server.defaults.errorFunc(errorObj, res);
 	}
 	
-	// verify user.
-	DBHandler.getEntities({
-		entity : clLib.server.usersCollectionName, 
-		where : {"username": req.params["username"]},
-		requireResult : true
-	},
-	function(resultObj) { 
-	// upon success...
-		var userDetails = resultObj[0];
-		util.log("Found user >" + fooFunc(userDetails) + "<"); 
-		
-		// store newly generated token
-		var dbVerificationToken = userDetails["verificationToken"];
-		util.log("verificationToken is >" + dbVerificationToken + "<");
-		if(req.params["verificationToken"] == dbVerificationToken) {
-			DBHandler.updateEntity({
-				entity : clLib.server.usersCollectionName,
-				id : userDetails["_id"],
-				data : {
-					"verificationToken": "",
-					"password": req.params["password"]
-				},
-			}
-			, function(resultObj) {
-				util.log("Token updated, password stored at >" + resultObj.data["_updatedAt"] + "<");
-				
-				// send token to user..
-				util.log("Sending email..");
-
-				
-				userDetails["newPassword"] = req.params["password"];
-				var options = {
-					"template": {
-						name: "passwordChanged",
-						vars: userDetails
+	try {
+		// verify user.
+		DBHandler.getEntities({
+			entity : clLib.server.usersCollectionName, 
+			where : {"username": req.params["username"]},
+			requireResult : true
+		},
+		function(resultObj) { 
+		// upon success...
+			var userDetails = resultObj[0];
+			util.log("Found user >" + fooFunc(userDetails) + "<"); 
+			
+			// store newly generated token
+			var dbVerificationToken = userDetails["verificationToken"];
+			util.log("verificationToken is >" + dbVerificationToken + "<");
+			if(req.params["verificationToken"] == dbVerificationToken) {
+				DBHandler.updateEntity({
+					entity : clLib.server.usersCollectionName,
+					id : userDetails["_id"],
+					data : {
+						"verificationToken": "",
+						"password": req.params["password"]
 					},
-					"to": userDetails["email"]
 				}
-				mailHandler.send(
-					{"emailOptions" : options}, 
-				function(responseObj) {
-					util.log("email sent!!! " + JSON.stringify(responseObj));
-					res.send("email sent >" + JSON.stringify(responseObj) + "<");
+				, function(resultObj) {
+					util.log("Token updated, password stored at >" + resultObj.data["_updatedAt"] + "<");
+					
+					// send token to user..
+					util.log("Sending email..");
+
+					
+					userDetails["newPassword"] = req.params["password"];
+					var options = {
+						"template": {
+							name: "passwordChanged",
+							vars: userDetails
+						},
+						"to": userDetails["email"]
+					}
+					mailHandler.send(
+						{"emailOptions" : options}, 
+					function(responseObj) {
+						util.log("email sent!!! " + JSON.stringify(responseObj));
+						res.send("email sent >" + JSON.stringify(responseObj) + "<");
+					}
+					,errHandler
+					);
 				}
-				,errHandler
+				, errHandler
 				);
+			} else {
+				res.send("tokens: >" + req.params["verificationToken"] + "< and >" + dbVerificationToken+ 	 "< do not match!");
 			}
-			, errHandler
-			);
-		} else {
-			res.send("tokens: >" + req.params["verificationToken"] + "< and >" + dbVerificationToken+ 	 "< do not match!");
 		}
+		,errHandler
+		);
+	} catch(e) {
+		errHandler(new Error("UNHANDLED SERVER ERROR "  + e.name + " IS " + e.message + " !!!");
 	}
-	,errHandler
-	);
+
 });
 	
 server.get('/stats', 
@@ -539,26 +580,31 @@ server.get('/stats',
 		return clLib.server.defaults.errorFunc(errorObj, res);
 	}
 
-	util.log("2getting.." + JSON.stringify(req.params));
+	try {
+		
+		util.log("2getting.." + JSON.stringify(req.params));
 
 
-	statsHandler.getRouteLogScoreStats({
-		datePortionFunc : statsHandler.ISODayPortion
-		//datePortionFunc : statsHandler.ISOMonthPortion
-		//datePortionFunc : statsHandler.ISODayHourPortion
-		//datePortionFunc : statsHandler.ISOHourPortion
-	}
-	, function(resultObj) {
-		util.log("2retrieved result:");
-		util.log(">" + JSON.stringify(resultObj) + "<");
-		for (var i = 0; i < resultObj.length; i++) {
-			util.log(JSON.stringify(resultObj[i]));
+		statsHandler.getRouteLogScoreStats({
+			datePortionFunc : statsHandler.ISODayPortion
+			//datePortionFunc : statsHandler.ISOMonthPortion
+			//datePortionFunc : statsHandler.ISODayHourPortion
+			//datePortionFunc : statsHandler.ISOHourPortion
 		}
-		util.log("sending response..");
-		res.send(JSON.stringify(resultObj));
+		, function(resultObj) {
+			util.log("2retrieved result:");
+			util.log(">" + JSON.stringify(resultObj) + "<");
+			for (var i = 0; i < resultObj.length; i++) {
+				util.log(JSON.stringify(resultObj[i]));
+			}
+			util.log("sending response..");
+			res.send(JSON.stringify(resultObj));
+		}
+		, errHandler
+		);
+	} catch(e) {
+		errHandler(new Error("UNHANDLED SERVER ERROR "  + e.name + " IS " + e.message + " !!!");
 	}
-	, errHandler
-	);
 
 
 });
@@ -572,32 +618,41 @@ clLib.server.generateRandomToken = function() {
 
 // send emails as per emailParams
 server.get('/sendmail', function(emailParams, res) {
-	util.log("sending gmail..");
-	var mailHandler = new mailResource.mail() ;
-	mailHandler.send(emailParams);
+	try {
+		util.log("sending gmail..");
+		
+		var mailHandler = new mailResource.mail() ;
+		mailHandler.send(emailParams);
 
-	util.log("sent mail..");
+		util.log("sent mail..");
 
-	res = ["sent mail to >" + emailParams["to"] + "<"];
+		res = ["sent mail to >" + emailParams["to"] + "<"];
+	} catch(e) {
+		errHandler(new Error("UNHANDLED SERVER ERROR "  + e.name + " IS " + e.message + " !!!");
+	}
 
 });
 
 //DEFINE THE URIs THE SERVER IS RESPONDING TO
 server.get('/events', function(req, res) {
-	util.log("GET request:" + fooFunc(req.params));
-	var events = new eventsResource.Events() ;
-   
-	//Get all events from DB
-	events.getAllEvents(req.params, function(result){
-     
-    var allEvents = result;
- 
-    //If no events exist return 200 and and empty JSON
-    if(allEvents.length == 0) {
-		res.send(200, []);
-		return;
-    }else res.send(200, result);
-  });   
+	try {
+		util.log("GET request:" + fooFunc(req.params));
+		var events = new eventsResource.Events() ;
+	   
+		//Get all events from DB
+		events.getAllEvents(req.params, function(result){
+		 
+		var allEvents = result;
+	 
+		//If no events exist return 200 and and empty JSON
+		if(allEvents.length == 0) {
+			res.send(200, []);
+			return;
+		}else res.send(200, result);
+	  });   
+	} catch(e) {
+		errHandler(new Error("UNHANDLED SERVER ERROR "  + e.name + " IS " + e.message + " !!!");
+	}
  
 });
 
@@ -611,13 +666,17 @@ server.get('/sleep/:seconds',
 		return clLib.server.defaults.errorFunc(errorObj, res);
 	}
 
-	util.log("2getting.." + JSON.stringify(req.params));
-	var seconds = req.params.seconds;
-	setTimeout(function() {
-			res.send({"result" : "slept " + seconds + " seconds"});
-		}
-		, seconds * 1000
-	);
+	try {
+		util.log("2getting.." + JSON.stringify(req.params));
+		var seconds = req.params.seconds;
+		setTimeout(function() {
+				res.send({"result" : "slept " + seconds + " seconds"});
+			}
+			, seconds * 1000
+		);
+	} catch(e) {
+		errHandler(new Error("UNHANDLED SERVER ERROR "  + e.name + " IS " + e.message + " !!!");
+	}
 
 });
 
@@ -628,24 +687,28 @@ server.get('/sleep/:seconds',
 server.get('/getOAuth2URL', 
 		function(req, res) 
 {
-    var authType;
-    if(req.params.authType) {
-        authType = req.params.authType;
-    } else {
-        // default to google auth..
-        authType = "google";
-    }
-    var authURL = authHandler.generateAuthURL({
-        "authType": authType
-    });
-    
-    
-    util.log("-");
-    util.log("REDIRECT URL IS >" + req.params.redirectURL + "<");
-    util.log("-");
-    //res.header('clLib.redirectURL', req.params.redirectURL);
-    res.header('Location', authURL + "&state=" + JSON.stringify(req.params));
-    res.send(302); 
+    try {
+		var authType;
+		if(req.params.authType) {
+			authType = req.params.authType;
+		} else {
+			// default to google auth..
+			authType = "google";
+		}
+		var authURL = authHandler.generateAuthURL({
+			"authType": authType
+		});
+		
+		
+		util.log("-");
+		util.log("REDIRECT URL IS >" + req.params.redirectURL + "<");
+		util.log("-");
+		//res.header('clLib.redirectURL', req.params.redirectURL);
+		res.header('Location', authURL + "&state=" + JSON.stringify(req.params));
+		res.send(302); 
+	} catch(e) {
+		errHandler(new Error("UNHANDLED SERVER ERROR "  + e.name + " IS " + e.message + " !!!");
+	}
 
 });
 
@@ -656,13 +719,17 @@ server.get('/verifyOAuth2Code',
 	var errHandler = function(errorObj) {
 		return clLib.server.defaults.errorFunc(errorObj, res);
 	}
+	try {
+		util.log("OAuth2 verifying.." + JSON.stringify(req.params));
+		
+		return authHandler.verifyOAuth2Code(
+			req.params.code
+			,req
+			,res
+		);
+	} catch(e) {
+		errHandler(new Error("UNHANDLED SERVER ERROR "  + e.name + " IS " + e.message + " !!!");
+	}
 
-	util.log("OAuth2 verifying.." + JSON.stringify(req.params));
-    
-    return authHandler.verifyOAuth2Code(
-        req.params.code
-        ,req
-        ,res
-    );
 });
 
