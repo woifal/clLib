@@ -233,7 +233,6 @@ input.ui-input-text, textarea.ui-input-text {
     padding-top: 7px;
 	font-size: 1em;
 	text-align: center;
-	width: 100%;
 }
 
 /* outer image ring.. */
@@ -612,4 +611,26 @@ border: 1px solid red;
 	text-overflow: ellipsis;
 }
 	
+.ui-input-text {
+		margin: 0px 20px;
+		border: 0px solid red;
+}
+.ui-input-search {
+		margin: 0px 2px;
+		border: 0px solid red;
+}
 	
+.ui-input-text .clTextInput::-webkit-input-placeholder { /* WebKit browsers */
+    color:    #092E56 !important;
+}
+.ui-input-text .clTextInput:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+    color:    #092E56 !important;
+    opacity:  1;
+}
+.ui-input-text .clTextInput::-moz-placeholder, .ui-input-search .clTextInput::-moz-placeholder { /* Mozilla Firefox 19+ */
+    color:    #092E56 !important;
+    opacity:  1;
+}
+.ui-input-text .clTextInput:-ms-input-placeholder { /* Internet Explorer 10+ */
+    color:    #092E56;
+}
