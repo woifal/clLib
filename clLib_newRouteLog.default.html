@@ -89,11 +89,31 @@
 					<label for="newRouteLog_tickType_toprope"> <img style="width:45px; height: 45px;" src="files/views/assets/image/img_40_40/ticktype_toprope.png"></label>
 					</fieldset>												
 				</div>
+				
+				<div id="newRouteLog_save_tick" class="clButton clFullWidth">
+					<div>
+					<a>
+						<div>
+							<img src="files/views/assets/image/img_40_40/button_stats_white.png"></img>
+						</div>
+					</a>
+					<span>Save Tick!</span>
+					</div>
+				</div>
+				
+
+				<!-- Today's route logs -->
+				<div id="newRouteLog_routeLogContainer">
+				</div>
+						
+				
 				<div>
-                    <!-- searchRoute -->
+
+				<!-- searchRoute -->
                     <div>
                         <label class="clUIElement" for="newRouteLog_searchRoute">Route Name</label>
-                        <input data-role="search" type="search" data-iconpos="left" data-iconpos="arrow-d" id="newRouteLog_searchRoute" name="newRouteLog_searchRoute"
+                        <input data-role="search" class="clTextInput" type="search" data-iconpos="left" data-iconpos="arrow-d" 
+								id="newRouteLog_searchRoute" name="newRouteLog_searchRoute"
                                value="" placeholder="Search Route Name" data-theme="a" tabindex="7" />
                     </div>
 				</div>
@@ -126,23 +146,6 @@
 						</li>
 					</ul>
 				</div>				
-				<div>
-                    <!-- save_tick -->
-                    <a data-role="button"
-                       id="newRouteLog_save_tick" data-corners="true" data-icon="check" data-iconpos="left"
-                       data-mini="false" data-theme="a" tabindex="8">
-                        Save Tick!
-                    </a>
-                </div>
-                <div style="afloat: left">
-                    <div 
-							id="newRouteLog_routeLogContainer" 
-							style="margin: 0px 0px 0px 0px; padding: 0px 0px 0px 0px ;" 
-							data-role="collapsible-set" 
-							data-theme="a" 
-							data-content-theme="a">
-                    </div>
-                </div>
             </div>
 @@include('grunt_includes/html_jqm_footer.html', {"pageName": "newRouteLog"})
 
