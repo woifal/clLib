@@ -842,7 +842,10 @@ clLib.PAGES.changeTo = function(newURL, urlData, event, timeoutMillis) {
                     window.urlData = urlData;
                     $.mobile.navigate(newURL, urlData);	
                 }, 
-                function() { alert("clLib.changeTo => error!!"); }
+                function(e) { 
+					alert("clLib.changeTo => error: " + e + "!!"); 
+					return false;
+				}
             );
             
         } else {
