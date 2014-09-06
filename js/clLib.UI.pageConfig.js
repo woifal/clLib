@@ -42,8 +42,16 @@ clLib.UI.pageRequisites = {
         return clLib.tryLogin(successFunc, errorFunc, true);
     }] }
     , "users_verification": { }
-    , "stats": { }
-    , "diagram": { }
+    , "stats": {
+		"clBeforeChange" : [
+			clLib.IAP.hasFullVersion
+		]
+	}
+    , "diagram": {
+		"clBeforeChange" : [
+			clLib.IAP.hasFullVersion
+		]
+	}
     , "AGB": { }
     , "feedback": { }
     , "trickGoogle": { }
@@ -951,14 +959,17 @@ clLib.UI.elements = {
 		,"refreshHandler" : function($this) { 
 			var $container = $this;
 			// build where clause for today's routelogs
-			var where = clLib.getRouteLogWhereToday(clLib.getCurrentUserWhere());
+			
+			
+			var where;
+			// TESTING: return all routelogs for now..
+			//var where = clLib.getRouteLogWhereToday(clLib.getCurrentUserWhere());
+			where = {};
+			
 			console.log("where = "+ JSON.stringify(where));
 			clLib.loggi("getting today's top route logs..");
 			var todaysTopRouteLogs = clLib.localStorage.getEntities(
 					"RouteLog", where, "defaultStorage", clLib.sortByScoreFunc, true, 10);
-			//alert("items retrieved(high-scored first) " + JSON.stringify(todaysTopRouteLogs));
-			//alert("items retrieved(high-scored first) " + todaysTopRouteLogs.length);
-			//alert("items retrieved(latest first) " + JSON.stringify(todaysRouteLogs));
 
 			// calculate today's score
 			var todaysTopScore = clLib.calculateScore(todaysTopRouteLogs);
@@ -971,18 +982,34 @@ clLib.UI.elements = {
 		    // retrieve today's routelogs (sorted by Date)
 			var todaysRouteLogs = clLib.localStorage.getEntities(
 					"RouteLog", where, "defaultStorage", "DateISO", true);
-			// retrieve today's 10 top scored routelogs
-			//alert("got today's top route logs.." + JSON.stringify(todaysRouteLogs));
-			//alert("got today's top route logs.." + todaysRouteLogs.length);
-
 			
-			clLib.UI.addCollapsible({
-				collapsibleSet : $container
-				,titleText : titleText
-				,listItems : todaysRouteLogs
+			//alert("got today's routelogs..");
+			//alert(JSON.stringify(todaysRouteLogs));
+			//$container.append("<h3>asdfasfs" + titleText + "</h3>");
+			
+			
+			var $containerContent = $("<div>")
+				.attr("cl-role", "content")
+				.attr("data-role", "collapsible")
+				.attr("data-content-theme", "a")
+				.attr("data-theme", "a")
+				.attr("data-collapsed-icon", "cl_plus_blue")
+				.attr("data-expanded-icon", "cl_minus_blue")
+				.attr("data-inset", "false")
+				.addClass("clRouteLogs clIconCollapsible clIconBlue")
+			;
+			
+			$containerContent
+				.append("<h3>" + titleText + "</h3>")
+			;
+			
+			$container.append($containerContent);
+			clLib.UI.addCollapsiblesNEW({
+				container : $container
+				,items : todaysRouteLogs
 				,clearCurrentItems : true
 			});
-		
+			
 		
 		}
 	}
