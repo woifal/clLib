@@ -1657,7 +1657,6 @@ clLib.tryLogin = function(successFunc, errorFunc, noRedirectFlag) {
 
 
 
-
 clLib.UI.addCollapsible = function(options) {
 	var $container = options["collapsibleSet"];
 	var titleText = options["titleText"];
@@ -1701,3 +1700,250 @@ clLib.UI.addCollapsible = function(options) {
 	
 
 };
+
+clLib.UI.addCollapsiblesNEW = function(options) {
+	var $container = options["container"];
+	var items = options["items"];
+	var clearCurrentItems = options["clearCurrentItems"];
+	var $containerContent;
+	var needToAppendContent = true;
+	$containerContent = $("div[cl-role=content]", $container).first();
+	$containerContent.css("border", "1px solid red");
+	
+	
+	/* 
+		Need to check if container was alreay jqm-enhanced...
+		If yes
+			- content was alreay appended to container
+			- content element was already created (and has to be reused)
+	*/
+	if($(".ui-collapsible-content", $container).length > 0) {
+		$containerContent = $(".ui-collapsible-content", $container).first();
+		needToAppendContent = false;
+	}
+	//alert("building collapsible");
+	clLib.loggi("refreshing listItems..");
+
+	if(clearCurrentItems) {
+		//alert("yes, clearing current collapsible items...");
+		$containerContent.children("div[data-role=collapsible]").remove();
+	}
+	
+	clLib.UI.addCollapsiblesChildren($containerContent, items, clLib.UI.collapsible.formatRouteLogRow, 2, false); //true);
+	if(needToAppendContent) {
+		$container.append($containerContent);
+	}
+	//alert("added coll children..");
+
+	$(".addMore *", $containerContent)
+		.off("click")
+		.on("click", function() {
+			//alert("addmore clicked!");
+			clLib.UI.addCollapsiblesNEW({
+				container : $container
+				,items : items
+				,clearCurrentItems : false
+			});
+			$container.trigger("create");
+	
+	});
+	$container.trigger("create");
+	
+};
+
+
+
+clLib.UI.addCollapsiblesChildren = function($containerEl, dataObj, createItemFunc, count, startWithEmptycontainerEl) {
+	if(startWithEmptycontainerEl) {
+		$containerEl.empty();
+		$containerEl.data("itemsShown", 0);
+	}
+	createItemFunc = createItemFunc || clLib.UI.collapsible.formatStandardRow;
+	count = count || 2;
+	var itemsShown = $containerEl.data("itemsShown") || 0;
+	//alert("old count: " + itemsShown);
+
+	//alert("adding >" + count + "< items (now: >" + itemsShown + "< from >" + JSON.stringify(dataObj.length) + "<");
+	
+	if(!dataObj || Object.keys(dataObj).length == 0) {
+		dataObj = [];
+	}
+	$.each(dataObj.slice(itemsShown, itemsShown + count), function(index, dataRow) {
+		var $itemsToAdd = createItemFunc(dataRow);
+
+		/* 
+			Add item to containerEl..
+		*/
+		if($itemsToAdd instanceof Array) {
+			$.each($itemsToAdd, function(index, $item) {
+				$containerEl.append($item);
+			});
+		} else {
+			$containerEl.append($itemsToAdd);
+		}
+	});
+
+	var $addMoreElement = $containerEl.find(".addMore").remove();
+	$addMoreElement = $("<div>")
+		.addClass("addMore")
+		.attr("data-role", "collapsible")
+		.attr("data-theme", "c")
+		.attr("data-iconpos", "none")
+		.append("<h1>...</h1>")
+		.css("text-align", "center")
+		.attr("data-collapsed-icon", "cl_plus_blue")
+		.attr("data-expanded-icon", "cl_minus_blue")
+	;
+	
+	
+
+	if(itemsShown + count < dataObj.length) {
+		$containerEl.append($addMoreElement);
+	}
+	
+	//$containerEl.trigger('create'); //('refresh', false);
+
+	$containerEl
+		.data(
+			"itemsShown", 
+			itemsShown + count
+		)
+	;
+	//alert("new count: " + $containerEl.data("itemsShown"));
+	return $containerEl;
+};
+
+
+
+clLib.UI.collapsible = {};
+clLib.UI.collapsible.formatRouteLogRow = function(dataRow) {
+	var dataFormat = {
+		header: {
+			/*"GradeSystem" : null*/
+			"Grade": null
+			, "tickType_redpoint" : clLib.tickTypeSymbol 
+			, "tickType_flash" : clLib.tickTypeSymbol 
+			, "tickType_attempt" : clLib.tickTypeSymbol 
+			, "tickType_toprope" : clLib.tickTypeSymbol 
+		}
+		,bubble: {
+			"Score" : null
+			, "tickType_delete" : clLib.tickTypeSymbol 
+		,
+		}
+		,body: {
+			header: "RouteName",
+			items: ["deleted", "DateISO", "Sector", "Line", "Colour", "Comment"]
+		}
+	};
+	
+	// compute score
+	dataRow.Score = clLib.computeScore(dataRow);
+	
+	//alert(JSON.stringify(dataRow));
+	var headerText = $("<div></div>");
+	var $bubble, $headerItem, $bodyItem, $bodyHeader;
+	var listItems = [];
+
+	/* 
+		Clickable header item
+	*/
+	$.each(dataFormat["header"], function(headerName, headerFunc) {
+		if(headerFunc) {
+			headerText.append(
+				headerFunc(headerName, dataRow[headerName], dataRow)
+			);
+		} else {
+			//alert("no headerfunc foc " + headerName);
+			headerText.append(dataRow[headerName]);
+		}
+	});
+
+//	headerText = headerText.join(" ", headerText);
+	
+	$bubble = $("<span>")
+		.addClass("ui-li-count")
+//		.append(dataRow[dataFormat["bubble"]])
+	;
+	
+	$.each(dataFormat["bubble"], function(headerName, headerFunc) {
+		if(headerFunc) {
+			$bubble.append(
+				headerFunc(headerName, dataRow[headerName], dataRow)
+			);
+		} else {
+			//alert("no headerfunc foc " + headerName);
+			$bubble.append(dataRow[headerName]);
+		}
+	});	
+
+/*
+<div data-role="collapsible">
+	<!-- header for routelog -->
+	<h3>Section 1</h3>
+	<!-- route log details -->
+	<div data-role="collapsible">
+		<h3>section 1 header</h3>
+		<p>I'm the collapsible content for section 1</p>
+	</div>
+	
+</div>
+
+*/	
+	
+	$headerItem = $("<h3>")
+		.append(headerText)
+		.append($bubble)
+	;
+
+	/* 
+		Body contents..
+	*/
+	$bodyHeader = $("<h1>")
+		.html(dataRow[dataFormat["body"]["header"]])
+	;
+
+	$bodyItem = $("<p>")
+		//.attr("data-role", "collapsible")
+		.append($bodyHeader);
+	;
+
+	$.each(dataFormat["body"]["items"], function(index, keyName) {
+		var $someStrong = $("<strong>")
+			.html(keyName + ": ");
+		var $someP = $("<p>")
+			.append($someStrong)
+			.append(dataRow[keyName])
+		;
+		$bodyItem
+			.append($someP)
+		;
+
+	});
+
+
+	// Hide body initially
+	$bodyItem.hide();
+	
+	// Show body on header click
+	$headerItem.click(function() {
+		$bodyItem.toggle();
+	});
+	
+	var $collapsibleItem = $("<div>")
+		.attr("data-role", "collapsible")
+		.attr("data-collapsed-icon", "cl_plus_blue")
+		.attr("data-expanded-icon", "cl_minus_blue")
+	;
+	
+	$collapsibleItem
+		.append($headerItem)
+		.append($bodyItem)
+	;
+	
+	$collapsibleItem.trigger("create");
+	
+	return $collapsibleItem;
+
+};
+
