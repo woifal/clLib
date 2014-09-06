@@ -144,7 +144,7 @@ server.get("/login", function (req, res) {
 			,errHandler
 		);
 	} catch(e) {
-		errHandler(new Error("UNHANDLED SERVER ERROR "  + e.name + " IS " + e.message + " !!!");
+		errHandler(new Error("UNHANDLED SERVER ERROR "  + e.name + " IS " + e.message + " !!!"));
 	}
 });
 
