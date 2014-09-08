@@ -30,10 +30,10 @@
         <script type="text/javascript" src="js/clLib.localStorage.js"></script>
         <script type="text/javascript" src="js/clLib.localStorage.indexes.js"></script>
         <script type="text/javascript" src="js/clLib.UI.js"></script>
-        <script type="text/javascript" src="js/clLib.UI.pageConfig.js"></script>
         <script type="text/javascript" src="js/clLib.REST.js"></script>
         <script type="text/javascript" src="js/clLib.PAGES.js"></script>
         <script type="text/javascript" src="js/clLib.IAP.js"></script>
+        <script type="text/javascript" src="js/clLib.UI.pageConfig.js"></script>
         
 
 		<script type="text/javascript" src="js/Chart.js"></script>
@@ -41,8 +41,6 @@
 <!--
 <script src="http://192.168.0.13:8080/target/target-script-min.js#anonymous"></script>
 -->
-		<link rel="stylesheet" href="css/clLib.css" />
-		<link rel='stylesheet' type='text/css' href='http://fonts.googleapis.com/css?family=Open+Sans:700,400' />
 
 		</head> 
 
@@ -154,7 +152,7 @@
 				>
 					<div 
 							id="stats_todaysRouteLogs" 
-							data-role="collapsible" 
+							data-role="collapsibleset" 
 							data-inset="false"
 							data-content-theme="a"
 							data-theme="a"
@@ -167,15 +165,31 @@
 							data-content-theme="a"
 							data-theme="a"
 					>
-						<h3>A Route List..</h3>
 
-						<div data-role="collapsibleset" data-theme="a" data-content-theme="a"
-						data-collapsed-icon="cl_plus_blue" data-expanded-icon="cl_minus_blue"
-						class="clIconCollapsible clIconBlue"
+						<div id="testRouteLogsToday">
+						</div>
+						<!-- header for routelogs -->
+						<h3>A Route List..</h3>
+						<!-- container for routeLogs -->
+						<div 
+							data-role="collapsibleset" data-theme="a" data-content-theme="a"
+							data-collapsed-icon="cl_plus_blue" data-expanded-icon="cl_minus_blue"
+							class="clIconCollapsible clIconBlue"
 						>
+							<!-- list items for routeLogs.. -->
 							<div data-role="collapsible">
+								<!-- header for routelog -->
 								<h3>Section 1</h3>
-							<p>I'm the collapsible content for section 1</p>
+								<!-- route log details -->
+								<div data-role="collapsible">
+									<h3>section 1a header</h3>
+									<p>I'm the collapsible content for section 1a</p>
+								</div>
+								<div data-role="collapsible">
+									<h3>section 1b header</h3>
+									<p>I'm the collapsible content for section 1b</p>
+								</div>
+								
 							</div>
 							<div data-role="collapsible">
 								<h3>Section 2</h3>

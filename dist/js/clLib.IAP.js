@@ -1,10 +1,25 @@
 'use strict';
 
-clLib.IAP = {};
+clLib.IAP = {
+	 purchases: {}
+	,fullVersionProductId: "com.kurtclimbing.consumable"
+	,availability: false
+	,list: [ 'com.kurtclimbing.consumable' /*, '870172895', 'Kurt_FullVersion', 'kurt_FullVersion', 'kurt_fullVersion' */]
+	,products : {}
+};
 
+clLib.IAP.hasFullVersion = function(successFunc, errorFunc) {
+	return clLib.IAP.hasPurchased(clLib.IAP.fullVersionProductId, successFunc, errorFunc);
+}
 
-clLib.IAP.list = [ 'com.kurtclimbing.consumable' /*, '870172895', 'Kurt_FullVersion', 'kurt_FullVersion', 'kurt_fullVersion' */];
-clLib.IAP.products =  {};
+clLib.IAP.hasPurchased = function(productId, successFunc, errorFunc) {
+	if(clLib.IAP.products[productId] && clLib.IAP.products[productId]["purchased"]) {
+		return successFunc();
+	}
+	else {
+		return errorFunc("Product >" + productId + "< not purchased.");
+	}
+}
 
 clLib.IAP.initialize = function () {
     // Check availability of the storekit plugin
@@ -12,16 +27,23 @@ clLib.IAP.initialize = function () {
         clLib.IAP.alertAndLog('In-App Purchases not available');
         return;
     } else {
-        //clLib.IAP.alertAndLog("IAP available!!");
+		try {
+			// Initialize
+			storekit.init({
+				ready:    clLib.IAP.onReady,
+				purchase: clLib.IAP.onPurchase,
+				restore:  clLib.IAP.onRestore,
+				error:    clLib.IAP.onError
+			});
+		}
+		catch(e) {
+			clLib.IAP.alertAndLog("error during IAP initialization: " + e);
+		}
+		
+		clLib.IAP.availability = true;
+		clLib.IAP.alertAndLog("IAP available!!");
     }
 
-    // Initialize
-    storekit.init({
-        ready:    clLib.IAP.onReady,
-        purchase: clLib.IAP.onPurchase,
-        restore:  clLib.IAP.onRestore,
-        error:    clLib.IAP.onError
-    });
 };
 
 clLib.IAP.alertAndLog = function(text, elId) {
@@ -55,11 +77,10 @@ clLib.IAP.onReady = function () {
 };
 
 clLib.IAP.onPurchase = function (transactionId, productId/*, receipt*/) {
-    var n = (localStorage['storekit.' + productId]|0) + 1;
-    localStorage['storekit.' + productId] = n;
-    if (clLib.IAP.purchaseCallback) {
+    clLib.IAP.products[productId]["purchased"] = transactionId;
+    
+	if (clLib.IAP.purchaseCallback) {
         clLib.IAP.purchaseCallback(productId);
-        delete clLib.IAP.purchaseCallbackl;
     }
 };
 
@@ -68,10 +89,9 @@ clLib.IAP.onError = function (errorCode, errorMessage) {
 };
 
 clLib.IAP.onRestore = function (transactionId, productId/*, transactionReceipt*/) {
-    clLib.IAP.alertAndLog("restoring product id >" + productId + "<" + "with transid " + transactionId + ".."
+    clLib.IAP.alertAndLog("restored product id >" + productId + "<" + "with transid " + transactionId + ".."
 	, "purchases_restoredIds");
-//    var n = (localStorage['storekit.' + productId]|0) + 1;
-//    localStorage['storekit.' + productId] = n;
+	clLib.IAP.products[productId]["purchased"] = transactionId;
 };
 
 clLib.IAP.buy = function (productId, callback) {
@@ -81,12 +101,16 @@ clLib.IAP.buy = function (productId, callback) {
 
 clLib.IAP.restore = function () {
     clLib.IAP.alertAndLog("restoring..");
-    storekit.restore();
+	try  {
+		storekit.restore();
+	}
+	catch(e) {
+		clLib.IAP.alertAndLog("error during IAP initialization: " + e);
+	}
+		
+    
 };
 
-clLib.IAP.fullVersion = function () {
-    return localStorage['storekit.babygooinapp1'];
-};
 
 
 clLib.IAP.renderIAPs = function (el) {

@@ -1,3 +1,23 @@
+body {
+	background-color: #000000 !important;
+}
+
+/* 		<link rel='stylesheet' type='text/css' href='http://fonts.googleapis.com/css?family=Open+Sans:700,400' /> */
+
+@font-face {
+  font-family: 'Open Sans';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Open Sans'), local('OpenSans'), url(http://fonts.gstatic.com/s/opensans/v10/cJZKeOuBrn4kERxqtaUH3T8E0i7KZn-EPnyo3HZu7kw.woff) format('woff');
+}
+@font-face {
+  font-family: 'Open Sans';
+  font-style: normal;
+  font-weight: 700;
+  src: local('Open Sans Bold'), local('OpenSans-Bold'), url(http://fonts.gstatic.com/s/opensans/v10/k3k702ZOKiLJc3WVjuplzHhCUOGz7vYGh680lGh-uXM.woff) format('woff');
+}
+
+
 .clLoading {
 	background: red;
 	width: 400px;
@@ -31,6 +51,17 @@ div.clPage {
 
 .clSmallFont {
 	font-size: 10pt;
+}
+
+.clExtra {
+	background-color: #bac1cb;
+}
+
+.clRouteDropdown a:visited  span{
+	color: #2B67AA !important;
+}
+.clRouteDropdown a:hover  span{
+	color: #2B67AA !important;
 }
 
 label.clUIElement{
@@ -131,6 +162,24 @@ input.ui-input-text, textarea.ui-input-text {
 	background: #FFFFFF;
 }
 
+.clButton.clFullWidth {
+	width: 300px;
+    margin: 20px 0px;
+	border-radius: 0px;
+	abackground: red; /*#C3cbd6;*/
+	box-shadow: inset 0px 4px 4px -3px #RED;
+	padding-left: 10px;
+}
+
+.clButton.clFullWidth.clNewRouteLog {
+	background-color #ebf1g9;
+	box-shadow: 0 0 0 0 0;
+	margin: 0px 0px;
+	/*#ebf1g9;*/
+}
+
+
+
 /* inner button outline.. */
 .clButton>div {
     background: url(../files/views/assets/image/button_gradient_bg_1_90.png);
@@ -143,8 +192,6 @@ input.ui-input-text, textarea.ui-input-text {
 	font-size: 1.4em;
 	line-height: 1em;
 	box-shadow: 0px 1px 2px #888;
-	
-
 }
 
 /* outer image ring.. */
@@ -161,6 +208,7 @@ input.ui-input-text, textarea.ui-input-text {
 	padding-right: 0px;
 	padding-bottom: 0px;
 }
+
 /* inner inner image background */
 .clButton >div >a >div{
     display:block;
@@ -177,11 +225,17 @@ input.ui-input-text, textarea.ui-input-text {
 .clButton >div >a >div >img {
     float:left;
 	position: relative;
-	top: 11px;
+/*	top: 11px;
 	left: 11px;
     width: 40px;
     height: 40px;
     border-radius: 50%;
+*/
+	top: 16px; 
+	left: 16px; 
+	width: 30px; 
+	height: 30px; 
+	border-radius: 0px;	
     
 }
 
@@ -198,9 +252,59 @@ input.ui-input-text, textarea.ui-input-text {
     padding-top: 23px;
     padding-left: 12px;
     color: #092E56;
+	}
+
+.clButton.clFullWidth > div > span {
+    text-align: center !important;
+	width: 70%;
 }
 
 
+
+
+/* outer button outline.. */
+.clButton.clSmall {
+	margin: 0px 10px !important;
+}
+
+/* inner button outline.. */
+.clButton.clSmall>div {
+    height: 42px;
+    padding-top: 7px;
+	font-size: 1em;
+	text-align: center;
+}
+
+/* outer image ring.. */
+.clButton.clSmall >div >a {
+    width:40px;
+    height:40px;
+	float: left;
+}
+
+/* inner inner image background */
+.clButton.clSmall >div >a >div{
+	top: 4px;
+	left: 4px;
+	width:32px;
+    height: 32px;
+}
+/* actual button image... */
+.clButton.clSmall >div >a >div >img {
+    top: 6px;
+	left: 6px;
+    width: 20px;
+    height: 20px;
+	border-radius: 50%;
+}
+
+.clButton.clSmall >div > span {
+	float: left;
+	width: 60%;
+    font-size: 1.4em;
+	padding-top: 13px;
+    padding-left: 12px;
+}
 
 
 
@@ -304,14 +408,18 @@ input.ui-input-text, textarea.ui-input-text {
 }
 
 /* background for icon */
-.clIconCollapsible .clIconBlue .ui-btn-icon-left:after, .clIconCollapsible  .ui-btn-icon-right:after, .clIconCollapsible  .ui-btn-icon-top:after, .clIconCollapsible  .ui-btn-icon-bottom:after, .clIconCollapsible  .ui-btn-icon-notext:after {
+.clIconCollapsible.clIconBlue .ui-btn-icon-left:after, 
+.clIconCollapsible.clIconBlue .ui-btn-icon-right:after, 
+.clIconCollapsible.clIconBlue .ui-btn-icon-top:after, 
+.clIconCollapsible.clIconBlue .ui-btn-icon-bottom:after, 
+.clIconCollapsible.clIconBlue .ui-btn-icon-notext:after {
     background-color: #FFFFFF; /*#073E78;*/
 	border: 2px solid #073E78;;
 }
 
-.clIconCollapsible .clIconBlue .ui-btn {
-    background-color: #00FF00; /*#073E78;*/
-    border-color: #00FF00; /*#073E78;*/
+.clIconCollapsible.clIconBlue .ui-btn {
+    abackground-color: #00FF00; /*#073E78;*/
+    aborder-color: #00FF00; /*#073E78;*/
 }
 
 
@@ -368,6 +476,20 @@ input.ui-input-text, textarea.ui-input-text {
 	color: #002A6F !important;
     padding-left: 60px !important;
 	text-align: center !important;
+	
+}
+
+.clIconCollapsible.clBgWhite  {
+	padding: 10px 10px 10px 10px; 
+border: 1px solid red;
+							}
+							
+.clIconCollapsible.clBgWhite .ui-collapsible-heading-toggle {
+    background-color: #FFFFFF !important;
+	background: none;
+	
+	margin:  0px 0px 0px 00px;
+
 	
 }
 
@@ -436,14 +558,23 @@ input.ui-input-text, textarea.ui-input-text {
 .clFieldset.clTicktypes .ui-controlgroup-controls {
 	width: 100% !important;
 	border: none !important; /*1px solid red !important;*/
-	border-radius: 5px !important;
+	border-radius: 0px !important;
 	background: none;
 }
 .clFieldset.clTicktypes .ui-controlgroup-controls .ui-btn {
 	border: none !important; /*1px solid red !important;*/
-	background-image: url("../files/views/assets/image/ticktype_gradient_bg_1_60.png") !important;
+	/* fucked up borders due to .png files => no clue what to do in PS */
+	background-image: url("../files/views/assets/image/ticktype_gradient_bg_1_60.png")/* !important */;
 	padding-top: 5px;
 	height: 55px;
+}
+.clFieldset.clTicktypes .ui-controlgroup-controls .ui-btn.ui-checkbox-on{
+	/* TESTING: use dummy background for now..need to find selected-state-color */
+	background-image: url("../files/views/assets/image/ticktype_gradient_bg_1_60.png")/* !important */;
+}
+.clFieldset.clTicktypes .ui-controlgroup-controls .ui-btn.ui-checkbox-off{
+	background-image: none;
+	background-color: #bac1cb !important; /*1px solid red !important;*/
 }
 
 .clFieldset.clTicktypes .ui-controlgroup-controls .ui-checkbox {
@@ -456,8 +587,31 @@ input.ui-input-text, textarea.ui-input-text {
 	height: 40px;
 }
 
-
-
+.clTicktypes img {
+	margin-left: 13px;
+	text-align: center;
+	align: center;
+	display: block;
+	width:45px; 
+	height: 45px;
+	border-radius: 50%;
+}
+.clTicktypes img.redpoint {
+	border: 1px solid red; 
+	background: url("../files/views/assets/image/img_45_45/ticktype_redpoint.png");
+}
+.clTicktypes img.toprope {
+	border: 1px solid red; 
+	background: url("../files/views/assets/image/img_45_45/ticktypes_toprope.png");
+}
+.clTicktypes img.flash {
+	border: 1px solid white; 
+	background: url("../files/views/assets/image/img_45_45/ticktypes_flash.png");
+}
+.clTicktypes img.try {
+	border: 1px solid white; 
+	background: url("../files/views/assets/image/img_45_45/ticktypes_try.png");
+}
 
 .clRouteDropdown {
 	margin-top: 0px !important;
@@ -470,9 +624,36 @@ input.ui-input-text, textarea.ui-input-text {
 	border: 0px solid red;
 	border-bottom: 1px solid #CCC;
 	box-shadow: 0px 0px 1px 1px #CCC;
+}
+
+.clRouteDropdown.clFullWidth {
+	padding-top: 0px  !important;
+	padding-bottom: 0px  !important;
+	width: 100%;
+}
+
+.clRouteDropdown.clFullWidth:first-child{
+	padding-top: 2px  !important;
+}
+
+
+.clRouteDropdown.clFullWidth {
+}
+.clRouteDropdown.clFullWidth .ui-select .ui-btn {
+	height: 2em;
+}
+
+.clRouteDropdown.clFullWidth .ui-icon-clRouteDropdownIcon:after {
+	top: 50%;
+	margin-top: -28px;
 	
-	}
+}
 		
+.clRouteDropdown.clFullWidth .ui-select .ui-btn span {
+	padding-top: 5px !important;
+	padding-bottom: 0px !important;
+	border: 0px solid green;
+}
 .clRouteDropdown .ui-shadow {
 	box-shadow: none !important;
 }
@@ -494,20 +675,24 @@ input.ui-input-text, textarea.ui-input-text {
 	/* background for dropdowns.. */
 	background-image: url("../files/views/assets/image/dropdown_gradient_bg_1_85.png") !important;
 	background-repeat: repeat-x;
-	background-size: 50px 85px;
+	background-size: 54px 85px;
 	color: #2b67AA;
+	
 }
 
 
 
 .ui-icon-clRouteDropdownIcon:after {
 	background-image: url("../files/views/assets/image/routelog_dropdown_arrow.png") !important;
+	
 	/* Make your icon fit */
-	background-size: 52px 52px;
-	height: 52px;
-	width: 52px;
+	background-size: 54px 54px;
+	height: 56px;
+	width: 56px;
 	top: 28px;
+	/* TESTING: set to black to tackle border unschärfen */
 	background-color: transparent !important;
+	
 }
 	
 .ui-icon-clRouteDropdownIcon.ui-btn-icon-left:after {
@@ -534,4 +719,51 @@ input.ui-input-text, textarea.ui-input-text {
 	text-overflow: ellipsis;
 }
 	
+.ui-input-text {
+		margin: 0px 20px;
+		border: 0px solid red;
+}
+.ui-input-search {
+		margin: 0px 2px;
+		margin-top: 10px;
+		border: 1px solid #073E78;
+		font-size: 1.2em;
+}
 	
+.ui-input-text .clTextInput::-webkit-input-placeholder { /* WebKit browsers */
+    color:    #092E56 !important;
+}
+.ui-input-text .clTextInput:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+    color:    #092E56 !important;
+    opacity:  1;
+}
+.ui-input-text .clTextInput::-moz-placeholder, .ui-input-search .clTextInput::-moz-placeholder { /* Mozilla Firefox 19+ */
+    color:    #092E56 !important;
+    opacity:  1;
+}
+.ui-input-text .clTextInput:-ms-input-placeholder { /* Internet Explorer 10+ */
+    color:    #092E56;
+}
+
+
+
+
+
+
+/* todaysroutelogs header */
+.clRouteLogs >.ui-collapsible-heading>.ui-btn{
+	font-size: 1.6em;
+	background-color: #FFFFFF !important;
+	background-image: none;
+	
+}
+
+.addMore .ui-collapsible-heading-toggle {
+	background: #CCCCCC !important;
+	margin-top: 0px;
+	padding-top: 0px;
+	height: 10px !important; 
+	border-radius: 10px 10px 10px 10px ;
+	border: 1px solid red;
+}
+

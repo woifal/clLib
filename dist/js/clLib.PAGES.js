@@ -26,7 +26,6 @@ clLib.PAGES.defaultHandler = function (event, ui, aPageId) {
 	} else {
 		pageId = $(event.target).attr("id");
 	}
-
 	console.log("checking prerequisites for " + pageId + "." + eventName);
     var allTrue = false;
 	var requisiteFunctions = (clLib.UI.pageRequisites[pageId] && clLib.UI.pageRequisites[pageId][eventName]) || {};
@@ -666,7 +665,33 @@ clLib.PAGES.handlers = {
                 return authFunc("facebook");
             });
             
-            $("#users_loginButton").on("click", function () {
+			
+			$("#users_preferencesButton").die("click").click(function () {
+				clLib.PAGES.changeTo("clLib_preferences.html");
+			});
+            
+			$("#users_clLoginButton").die("click").click(function () {
+				clLib.PAGES.changeTo("clLib_users_clLogin.html");
+			});
+            
+            
+	    }
+        , "pagebeforeshow": function (event, ui, pageId) {
+            //alert("refreshing displayName..");
+            clLib.UI.byId$("displayName", pageId).trigger("refresh.clLib");
+            //alert("refreshed displayName..");
+            
+			var errorFunc = function(error) {
+                alert("error >" + JSON.stringify(error));
+            }
+            
+            clLib.UI.fillUIelements("users", "users");
+        }
+	}
+	,"users_clLogin": {
+	    "pagecreate" : function (event, ui, pageId) {
+            $("#users_clLogin_loginButton").on("click", function () {
+				alert("login button clicked!");
 	            clLib.UI.execWithMsg(function() {
 					clLib.UI.save({ additionalData: { action: "login", plainPwd : true }}
 					,function() {
@@ -674,22 +699,23 @@ clLib.PAGES.handlers = {
 					}
 					, function(e) {
 						clLib.loginErrorHandler(e);
-						clLib.UI.fillUIelements("users", "users");
+						clLib.UI.fillUIelements("users_clLogin", "users_clLogin");
 					}
 					); 
 				}
 				, {text: "logging in"});
+				
 			});
 			
-	        $("#users_logoutButton").on("click", function () {
+	        $("#users_clLogin_logoutButton").on("click", function () {
 				clLib.UI.execWithMsg(function() {
 					clLib.UI.save({ additionalData: { action: "logout" }}
 					,function() {
-						clLib.UI.fillUIelements("users", "users");
+						clLib.UI.fillUIelements("users_clLogin", "users_clLogin");
 					}
 					, function(e) {
 						clLib.loginErrorHandler(e);
-						clLib.UI.fillUIelements("users", "users");
+						clLib.UI.fillUIelements("users_clLogin", "users_clLogin");
 					}
 					);
 				}
@@ -697,7 +723,8 @@ clLib.PAGES.handlers = {
 	        });
 			
 			
-			$("#users_signupButton").on("click", function () {
+			$("#users_clLogin_signupButton").on("click", function () {
+				alert("signup button clicked!");
 				clLib.UI.execWithMsg(function() {
 					clLib.UI.save({ additionalData: { action: "create" }}
 					, function(returnObj) {
@@ -719,23 +746,24 @@ clLib.PAGES.handlers = {
 
 					}
 					, function(e) {
+						alert("error " + JSON.stringify(e));
 						clLib.loginErrorHandler(e);
-						clLib.UI.fillUIelements("users", "users");
+						clLib.UI.fillUIelements("users_clLogin", "users_clLogin");
 					}
 					);
 				}
 				, {text: "creating user.."});
 			});
 			
-			$("#users_deleteButton").on("click", function () {
+			$("#users_clLogin_deleteButton").on("click", function () {
 				clLib.UI.execWithMsg(function() {
 					clLib.UI.save({ additionalData: { action: "delete" }}
 					,function() {
-						clLib.UI.fillUIelements("users", "users");
+						clLib.UI.fillUIelements("users_clLogin", "users_clLogin");
 					}
 					, function(e) {
 						clLib.loginErrorHandler(e);
-						clLib.UI.fillUIelements("users", "users");
+						clLib.UI.fillUIelements("users_clLogin", "users_clLogin");
 					}
 					);
 				}
@@ -764,13 +792,16 @@ clLib.PAGES.handlers = {
                 alert("error >" + JSON.stringify(error));
             }
             
-            clLib.UI.fillUIelements("users", "users");
+            clLib.UI.fillUIelements("users_clLogin", "users_clLogin");
             
 
 
         }
 	}
-};
+
+	
+	
+	};
 
 
 
@@ -811,7 +842,10 @@ clLib.PAGES.changeTo = function(newURL, urlData, event, timeoutMillis) {
                     window.urlData = urlData;
                     $.mobile.navigate(newURL, urlData);	
                 }, 
-                function() { alert("clLib.changeTo => error!!"); }
+                function(e) { 
+					alert("clLib.changeTo => error: " + e + "!!"); 
+					return false;
+				}
             );
             
         } else {

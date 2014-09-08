@@ -924,7 +924,8 @@ clLib.localStorage.refreshAllData = function (callbackFunc, errorFunc) {
 			$.extend(storageObjects, userRoutes);
 
 			var userRouteLogs;
-			clLib.REST.getEntities("RouteLog", $.extend({}, clLib.getRouteLogWhereToday(), 
+			// TESTING: returl ALL routelogs..
+			clLib.REST.getEntities("RouteLog", $.extend({}, //clLib.getRouteLogWhereToday(), 
 				{
 					"deleted" : {
 						"$ne": 1
