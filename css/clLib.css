@@ -53,6 +53,17 @@ div.clPage {
 	font-size: 10pt;
 }
 
+.clExtra {
+	background-color: #bac1cb;
+}
+
+.clRouteDropdown a:visited  span{
+	color: #2B67AA !important;
+}
+.clRouteDropdown a:hover  span{
+	color: #2B67AA !important;
+}
+
 label.clUIElement{
 	font-size: 0px;
 	visibility: hidden;
@@ -547,16 +558,23 @@ border: 1px solid red;
 .clFieldset.clTicktypes .ui-controlgroup-controls {
 	width: 100% !important;
 	border: none !important; /*1px solid red !important;*/
-	border-radius: 5px !important;
+	border-radius: 0px !important;
 	background: none;
 }
 .clFieldset.clTicktypes .ui-controlgroup-controls .ui-btn {
 	border: none !important; /*1px solid red !important;*/
 	/* fucked up borders due to .png files => no clue what to do in PS */
-	abackground-color: #000000;
-	background-image: url("../files/views/assets/image/ticktype_gradient_bg_1_60.png") !important;
+	background-image: url("../files/views/assets/image/ticktype_gradient_bg_1_60.png")/* !important */;
 	padding-top: 5px;
 	height: 55px;
+}
+.clFieldset.clTicktypes .ui-controlgroup-controls .ui-btn.ui-checkbox-on{
+	/* TESTING: use dummy background for now..need to find selected-state-color */
+	background-image: url("../files/views/assets/image/ticktype_gradient_bg_1_60.png")/* !important */;
+}
+.clFieldset.clTicktypes .ui-controlgroup-controls .ui-btn.ui-checkbox-off{
+	background-image: none;
+	background-color: #bac1cb !important; /*1px solid red !important;*/
 }
 
 .clFieldset.clTicktypes .ui-controlgroup-controls .ui-checkbox {
@@ -595,7 +613,6 @@ border: 1px solid red;
 	background: url("../files/views/assets/image/img_45_45/ticktypes_try.png");
 }
 
-
 .clRouteDropdown {
 	margin-top: 0px !important;
 	margin-bottom: 0px  !important;
@@ -607,9 +624,36 @@ border: 1px solid red;
 	border: 0px solid red;
 	border-bottom: 1px solid #CCC;
 	box-shadow: 0px 0px 1px 1px #CCC;
+}
+
+.clRouteDropdown.clFullWidth {
+	padding-top: 0px  !important;
+	padding-bottom: 0px  !important;
+	width: 100%;
+}
+
+.clRouteDropdown.clFullWidth:first-child{
+	padding-top: 2px  !important;
+}
+
+
+.clRouteDropdown.clFullWidth {
+}
+.clRouteDropdown.clFullWidth .ui-select .ui-btn {
+	height: 2em;
+}
+
+.clRouteDropdown.clFullWidth .ui-icon-clRouteDropdownIcon:after {
+	top: 50%;
+	margin-top: -28px;
 	
-	}
+}
 		
+.clRouteDropdown.clFullWidth .ui-select .ui-btn span {
+	padding-top: 5px !important;
+	padding-bottom: 0px !important;
+	border: 0px solid green;
+}
 .clRouteDropdown .ui-shadow {
 	box-shadow: none !important;
 }
@@ -646,7 +690,8 @@ border: 1px solid red;
 	height: 56px;
 	width: 56px;
 	top: 28px;
-	background-color: black !important;
+	/* TESTING: set to black to tackle border unschärfen */
+	background-color: transparent !important;
 	
 }
 	
@@ -680,7 +725,9 @@ border: 1px solid red;
 }
 .ui-input-search {
 		margin: 0px 2px;
-		border: 0px solid red;
+		margin-top: 10px;
+		border: 1px solid #073E78;
+		font-size: 1.2em;
 }
 	
 .ui-input-text .clTextInput::-webkit-input-placeholder { /* WebKit browsers */
@@ -706,20 +753,9 @@ border: 1px solid red;
 /* todaysroutelogs header */
 .clRouteLogs >.ui-collapsible-heading>.ui-btn{
 	font-size: 1.6em;
-	background: white;
+	background-color: #FFFFFF !important;
+	background-image: none;
 	
-}
-/* background for icon */
-.aclIconCollapsible.clRouteLogs  .ui-btn-icon-left:after, 
-.aclIconCollapsible.clRouteLogs  .ui-btn-icon-right:after, 
-.aclIconCollapsible.clRouteLogs  .ui-btn-icon-top:after, 
-.aclIconCollapsible.clRouteLogs  .ui-btn-icon-bottom:after, 
-.aclIconCollapsible.clRouteLogs  .ui-btn-icon-notext:after {
-    background-color: white;
-    background-position: center center;
-    background-repeat: no-repeat;
-    border-radius: 50% 50% 50% 50%;
-	border: 2px solid #073E78;;
 }
 
 .addMore .ui-collapsible-heading-toggle {
@@ -731,55 +767,3 @@ border: 1px solid red;
 	border: 1px solid red;
 }
 
-/* todaysroutelogs entries.. */
-/*
-.clRouteLogs .ui-collapsible-content.ui-body-a{
-	background: red;
-	margin: 0px 0px;
-	padding: 0px 0px;
-}
-
-
-
-
-.clRouteLogs .ui-collapsible-content.ui-body-a .ui-collapsible {
-	background-color: yellow;
-	margin: 0px 0px;
-	padding: 0px 0px;
-	aheight: 40px;
-	border: 1px solid blue;
-}
-
-.clRouteLogs .ui-collapsible-content.ui-body-a .ui-collapsible .ui-collapsible-heading {
-	border: 0px solid green;
-}
-.clRouteLogs .ui-collapsible-content.ui-body-a .ui-collapsible .ui-collapsible-heading  a{
-	aborder: 4px solid blue;
-	aheight: 55px;
-	margin-top: 0px;
-	margin-bottom: 0px;
-	padding-top: 10px;
-	padding-bottom: 10px;
-}
-.clRouteLogs .ui-collapsible-content.ui-body-a .ui-collapsible .ui-collapsible-heading  a.ui-icon-plus:after{
-	background-image: url("../files/views/assets/image/img_22_22/button_plus_blue.png");
-	height: 28px;
-	width: 28px;
-    background-size: 22px 22px;
-    background-color: transparent;
-    background-color: white;
-	border: 1px solid blue;
-	margin-top: 5px;
-	top: 0px;
-
-	}
-.clRouteLogs .ui-collapsible-content.ui-body-a .ui-collapsible .ui-collapsible-heading  a.ui-icon-minus:after{
-	background-image: url("../files/views/assets/image/img_22_22/button_minus_blue.png");
-	height: 28px;
-	width: 28px;
-    background-size: 22px 22px;
-    background-color: transparent;
-    background-color: white;
-	border: 1px solid blue;
-}
-*/
