@@ -218,7 +218,6 @@ clLib.UI.pageElements = {
 			, "tickType_flash"
 			, "tickType_attempt"
 			, "tickType_toprope"
-			, "routeLogContainer"
 			, "selectedArea"
 			, "currentUserPref"
 			, "currentDate"
@@ -1003,7 +1002,10 @@ clLib.UI.elements = {
 				.append("<h3>" + titleText + "</h3>")
 			;
 			
-			$container.append($containerContent);
+			$container
+				.empty()
+				.append($containerContent);
+				
 			clLib.UI.addCollapsiblesNEW({
 				container : $container
 				,items : todaysRouteLogs
@@ -1046,8 +1048,13 @@ clLib.UI.elements = {
 
 				
 			var $container = $this;
+			
+			var where;
+			// TESTING: return all routelogs for now..
 			// build where clause for today's routelogs
-			var where = clLib.getRouteLogWhereToday(clLib.getCurrentUserWhere());
+			//var where = clLib.getRouteLogWhereToday(clLib.getCurrentUserWhere());
+			where = {};
+			
 			
 			clLib.loggi("getting today's top route logs..");
 			var todaysTopRouteLogs = clLib.localStorage.getEntities(
@@ -1071,14 +1078,38 @@ clLib.UI.elements = {
 			//alert("got today's top route logs.." + JSON.stringify(todaysRouteLogs));
 			//alert("got today's top route logs.." + todaysRouteLogs.length);
 
+
+			var $containerContent = $("<div>")
+				.attr("cl-role", "content")
+				.attr("data-role", "collapsible")
+				.attr("data-content-theme", "a")
+				.attr("data-theme", "a")
+				.attr("data-collapsed-icon", "cl_plus_blue")
+				.attr("data-expanded-icon", "cl_minus_blue")
+				.attr("data-inset", "false")
+				.addClass("clRouteLogs clIconCollapsible clIconBlue")
+			;
 			
+			$containerContent
+				.append("<h3>" + titleText + "</h3>")
+			;
+			
+			$container.append($containerContent);
+			clLib.UI.addCollapsiblesNEW({
+				container : $container
+				,items : todaysRouteLogs
+				,clearCurrentItems : true
+			});
+
+
+/*			
 			clLib.UI.addCollapsible({
 				collapsibleSet : $container,
 				titleText : titleText,
 				listItems : todaysRouteLogs
 				,clearCurrentItems : true
 			});
-		
+	*/	
 		
 		}
 	}	
