@@ -1478,10 +1478,10 @@ clLib.addCSSBackground = function(targetId, options) {
         }
 		//alert("setting laststyle to >" + className + "<");
         // Set currently selected color
-        $(this).closest('.ui-select').find('.ui-btn').addClass(className);
+        $(this).closest('.ui-select').find('.ui-btn span').addClass(className);
         // Remember currently selected color
         $(this).data("cllast_style", className);
-        //alert("remembering last_style " + selection);
+        //alert("remembering last_style " + className);
 		//$(this).change();
     });
 
@@ -1708,7 +1708,7 @@ clLib.UI.addCollapsiblesNEW = function(options) {
 	var $containerContent;
 	var needToAppendContent = true;
 	$containerContent = $("div[cl-role=content]", $container).first();
-	$containerContent.css("border", "1px solid red");
+	//$containerContent.css("border", "1px solid red"); 
 	
 	
 	/* 
