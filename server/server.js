@@ -687,6 +687,10 @@ server.get('/sleep/:seconds',
 server.get('/getOAuth2URL', 
 		function(req, res) 
 {
+	var errHandler = function(errorObj) {
+		return clLib.server.defaults.errorFunc(errorObj, res);
+	}
+
     try {
 		var authType;
 		if(req.params.authType) {
@@ -701,6 +705,7 @@ server.get('/getOAuth2URL',
 		
 		
 		util.log("-");
+		util.log("AUTH URL IS >" + authURL + "<");
 		util.log("REDIRECT URL IS >" + req.params.redirectURL + "<");
 		util.log("-");
 		//res.header('clLib.redirectURL', req.params.redirectURL);
