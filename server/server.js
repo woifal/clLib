@@ -180,7 +180,7 @@ server.get("/deleteUser", function (req, res) {
 		, errHandler
 		);
 	} catch(e) {
-		errHandler(new Error("UNHANDLED SERVER ERROR "  + e.name + " IS " + e.message + " !!!");
+		errHandler(new Error("UNHANDLED SERVER ERROR "  + e.name + " IS " + e.message + " !!!"));
 	}
 
 });
@@ -273,7 +273,7 @@ server.post("/signup", function (req, res) {
 		, errHandler
 		);
 	} catch(e) {
-		errHandler(new Error("UNHANDLED SERVER ERROR "  + e.name + " IS " + e.message + " !!!");
+		errHandler(new Error("UNHANDLED SERVER ERROR "  + e.name + " IS " + e.message + " !!!"));
 	}
 
 });
@@ -342,7 +342,7 @@ server.get('/requestVerification', function(req, res) {
 			);
 		});
 	} catch(e) {
-		errHandler(new Error("UNHANDLED SERVER ERROR "  + e.name + " IS " + e.message + " !!!");
+		errHandler(new Error("UNHANDLED SERVER ERROR "  + e.name + " IS " + e.message + " !!!"));
 	}
 
 });
@@ -390,7 +390,7 @@ server.get('/db/:entityName/:entityId',
 		, errHandler
 		);
 	} catch(e) {
-		errHandler(new Error("UNHANDLED SERVER ERROR "  + e.name + " IS " + e.message + " !!!");
+		errHandler(new Error("UNHANDLED SERVER ERROR "  + e.name + " IS " + e.message + " !!!"));
 	}
 
 });
@@ -428,7 +428,7 @@ server.get('/db/:entityName',
 		, errHandler
 		);
 	} catch(e) {
-		errHandler(new Error("UNHANDLED SERVER ERROR "  + e.name + " IS " + e.message + " !!!");
+		errHandler(new Error("UNHANDLED SERVER ERROR "  + e.name + " IS " + e.message + " !!!"));
 	}
 
 });
@@ -466,7 +466,7 @@ server.put('/db/:entityName/:entityId',
 		, errHandler
 		);
 	} catch(e) {
-		errHandler(new Error("UNHANDLED SERVER ERROR "  + e.name + " IS " + e.message + " !!!");
+		errHandler(new Error("UNHANDLED SERVER ERROR "  + e.name + " IS " + e.message + " !!!"));
 	}
 	
 });
@@ -500,7 +500,7 @@ server.post('/db/:entityName',
 		}
 		,errHandler);
 	} catch(e) {
-		errHandler(new Error("UNHANDLED SERVER ERROR "  + e.name + " IS " + e.message + " !!!");
+		errHandler(new Error("UNHANDLED SERVER ERROR "  + e.name + " IS " + e.message + " !!!"));
 	}
 
 });
@@ -567,7 +567,7 @@ server.get('/setPassword', function(req, res) {
 		,errHandler
 		);
 	} catch(e) {
-		errHandler(new Error("UNHANDLED SERVER ERROR "  + e.name + " IS " + e.message + " !!!");
+		errHandler(new Error("UNHANDLED SERVER ERROR "  + e.name + " IS " + e.message + " !!!"));
 	}
 
 });
@@ -603,7 +603,7 @@ server.get('/stats',
 		, errHandler
 		);
 	} catch(e) {
-		errHandler(new Error("UNHANDLED SERVER ERROR "  + e.name + " IS " + e.message + " !!!");
+		errHandler(new Error("UNHANDLED SERVER ERROR "  + e.name + " IS " + e.message + " !!!"));
 	}
 
 
@@ -628,7 +628,7 @@ server.get('/sendmail', function(emailParams, res) {
 
 		res = ["sent mail to >" + emailParams["to"] + "<"];
 	} catch(e) {
-		errHandler(new Error("UNHANDLED SERVER ERROR "  + e.name + " IS " + e.message + " !!!");
+		errHandler(new Error("UNHANDLED SERVER ERROR "  + e.name + " IS " + e.message + " !!!"));
 	}
 
 });
@@ -651,7 +651,7 @@ server.get('/events', function(req, res) {
 		}else res.send(200, result);
 	  });   
 	} catch(e) {
-		errHandler(new Error("UNHANDLED SERVER ERROR "  + e.name + " IS " + e.message + " !!!");
+		errHandler(new Error("UNHANDLED SERVER ERROR "  + e.name + " IS " + e.message + " !!!"));
 	}
  
 });
@@ -675,7 +675,7 @@ server.get('/sleep/:seconds',
 			, seconds * 1000
 		);
 	} catch(e) {
-		errHandler(new Error("UNHANDLED SERVER ERROR "  + e.name + " IS " + e.message + " !!!");
+		errHandler(new Error("UNHANDLED SERVER ERROR "  + e.name + " IS " + e.message + " !!!"));
 	}
 
 });
@@ -712,7 +712,7 @@ server.get('/getOAuth2URL',
 		res.header('Location', authURL + "&state=" + JSON.stringify(req.params));
 		res.send(302); 
 	} catch(e) {
-		errHandler(new Error("UNHANDLED SERVER ERROR "  + e.name + " IS " + e.message + " !!!");
+		errHandler(new Error("UNHANDLED SERVER ERROR "  + e.name + " IS " + e.message + " !!!"));
 	}
 
 });
@@ -733,7 +733,7 @@ server.get('/verifyOAuth2Code',
 			,res
 		);
 	} catch(e) {
-		errHandler(new Error("UNHANDLED SERVER ERROR "  + e.name + " IS " + e.message + " !!!");
+		errHandler(new Error("UNHANDLED SERVER ERROR "  + e.name + " IS " + e.message + " !!!"));
 	}
 
 });
