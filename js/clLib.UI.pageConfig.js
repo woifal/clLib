@@ -44,12 +44,34 @@ clLib.UI.pageRequisites = {
     , "users_verification": { }
     , "stats": {
 		"clBeforeChange" : [
-			clLib.IAP.hasFullVersion
+			function(successFunc, errorFunc) {
+				//alert("checking for full version...");
+				return clLib.IAP.hasFullVersion(function() {
+					//alert("yes, has full version...");
+					return successFunc();
+				}, 
+				function(e) {
+					//alert("no, no full version >" + e + "<")
+					return clLib.PAGES.changeTo("clLib_purchases.html");
+				}
+				);
+			}
 		]
 	}
     , "diagram": {
 		"clBeforeChange" : [
-			clLib.IAP.hasFullVersion
+			function(successFunc, errorFunc) {
+				//alert("checking for full version...");
+				return clLib.IAP.hasFullVersion(function() {
+					//alert("yes, has full version...");
+					return successFunc();
+				}, 
+				function(e) {
+					//alert("no, no full version >" + e + "<")
+					return clLib.PAGES.changeTo("clLib_purchases.html");
+				}
+				);
+			}
 		]
 	}
     , "AGB": { }
@@ -431,6 +453,7 @@ clLib.UI.elements = {
 	})
     , "loginError": $.extend({}, clLib.UI.elementConfig.localVar, {
 	    "refreshHandler": function ($this) {
+			//alert("loginError with id >" + $this.attr("id") + "<");
 			//alert("hiding " + "#" + $this.attr("id") + "Container");
 			$("#" + $this.attr("id") + "Container").hide();
 			var elementName = clLib.UI.elementNameFromId($this.attr("id"));
@@ -961,9 +984,9 @@ clLib.UI.elements = {
 			
 			
 			var where;
+			where = clLib.getRouteLogWhereToday(clLib.getCurrentUserWhere());
 			// TESTING: return all routelogs for now..
-			//var where = clLib.getRouteLogWhereToday(clLib.getCurrentUserWhere());
-			where = {};
+			//where = {};
 			
 			console.log("where = "+ JSON.stringify(where));
 			clLib.loggi("getting today's top route logs..");
@@ -1050,10 +1073,10 @@ clLib.UI.elements = {
 			var $container = $this;
 			
 			var where;
+			where = clLib.getRouteLogWhereToday(clLib.getCurrentUserWhere());
 			// TESTING: return all routelogs for now..
 			// build where clause for today's routelogs
-			//var where = clLib.getRouteLogWhereToday(clLib.getCurrentUserWhere());
-			where = {};
+			//where = {};
 			
 			
 			clLib.loggi("getting today's top route logs..");
