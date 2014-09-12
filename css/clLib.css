@@ -721,7 +721,8 @@ border: 1px solid red;
 	
 .ui-input-text {
 		margin: 0px 20px;
-		border: 0px solid red;
+		border: 1px solid #073E78;
+		font-size: 1.2em;
 }
 .ui-input-search {
 		margin: 0px 2px;
