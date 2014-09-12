@@ -1168,7 +1168,7 @@ clLib.UI.defaultRefreshHandler = function($element, additionalOptions) {
 }
 
 clLib.UI.getLabelForElement = function($element) {
-	return $element.parent().siblings("label[for=" + $element.attr("id") + "]").html();
+	return $element.parents(".ui-select").first().siblings("label[for=" + $element.attr("id") + "]").html();
 	//return $element.parents("td").find("label[for=" + $element.attr("id") + "]").html();
 };
 
