@@ -3,7 +3,7 @@
 
 @@include('grunt_includes/html_head.html', {"pageName": "users"})
 
-<body> 
+<body id="clBody"> 
 @@include('grunt_includes/html_jqm_page.html', {"pageName": "users"})
 
 @@include('grunt_includes/html_jqm_menupanel.html', {"pageName": "users"})
@@ -36,6 +36,17 @@
 			<p>3) Create a new user</p>
 		</div>
 
+		<div id="users_clLogoutButton" class="clButton clSmall">
+			<div>
+			<a>
+				<div>
+					<img src="files/views/assets/image/img_40_40/button_minus_white.png"></img>
+				</div>
+			</a>
+			<span>Logout</span>
+			</div>
+		</div>
+		
 		<div id="users_googleLoginButton" class="clButton clSmall">
 			<div>
 			<a>
@@ -54,7 +65,7 @@
 				</div>
 			</a>
 			<span>Facebook</span>
-		</div>
+			</div>
 		</div>
 		<div id="users_clLoginButton" class="clButton clSmall">
 			<div>
@@ -64,8 +75,8 @@
 				</div>
 			</a>
 			<span>KURT</span>
+			</div>
 		</div>
-	</div>
 
 				
 			</div>
