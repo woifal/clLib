@@ -877,10 +877,10 @@ clLib.PAGES.processAuthObj = function(urlAuthObj) {
     
     if(authObj) {
 		try {
-			alert("authObj found...trying to process OAuth2 results..");
-			alert("authObj found(" + typeof(authObj) + "...trying to process OAuth2 results..");
-			alert("authObj keys: " + Object.keys(authObj));
-			alert("authObj >" + JSON.stringify(authObj) + "<");
+			//alert("authObj found...trying to process OAuth2 results..");
+			//alert("authObj found(" + typeof(authObj) + "...trying to process OAuth2 results..");
+			//alert("authObj keys: " + Object.keys(authObj));
+			//alert("authObj >" + JSON.stringify(authObj) + "<");
 	//                console.log("authObj2 >" + JSON.stringify(JSON.parse(decodeURI(authObj))) + "<");
 			
 			var userObj = {};
