@@ -130,7 +130,7 @@ clLib.IAP.restore = function () {
 
 
 clLib.IAP.renderIAPs = function (el) {
-  alert("rendering iaps..");
+  //alert("rendering iaps..");
   if (clLib.IAP.loaded) {
     var html = "<ul>";
     for (var id in clLib.IAP.products) {
