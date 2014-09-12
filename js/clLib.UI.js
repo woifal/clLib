@@ -144,7 +144,7 @@ clLib.UI.list.formatRouteLogRow = function(dataRow) {
 		}
 		,body: {
 			header: "RouteName",
-			items: ["deleted", "DateISO", "Sector", "Line", "Colour", "Comment"]
+			items: [/*"deleted", */"DateISO", "Sector", "Line", "Colour", "Comment"]
 		}
 	};
 	
@@ -1343,6 +1343,7 @@ clLib.UI.userHandler = function (options, successFunc, errorFunc) {
 		return errorFunc(new Error("Username must be a valid email address!"));
 	}
 	
+	//alert("userAction=" + userAction);
 	if (userAction == "create") {
 		return clLib.REST.createUser(userObj, 
 		function(returnObj) {
@@ -1352,6 +1353,7 @@ clLib.UI.userHandler = function (options, successFunc, errorFunc) {
 			var sessionToken = returnObj["sessionToken"];
 			//alert("retrieved sessionToken >" + sessionToken + "<");
 			clLib.sessionToken = sessionToken;
+			localStorage.setItem("currentPassword", returnObj["password"]);
 			
 			return successFunc(returnObj);
 		}
