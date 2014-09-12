@@ -1143,15 +1143,13 @@ clLib.UI.elements = {
 				
 			var $container = $this;
 			// build where clause for today's routelogs
-			//var where = clLib.getRouteLogWhereToday(clLib.getCurrentUserWhere());
-			var where = clLib.getRouteLogWhereToday({"username": "asdf"});
+			var where = clLib.getRouteLogWhereToday(clLib.getCurrentUserWhere());
 			
 			var successHandler = function(resultObj) {
 				resultObj = JSON.parse(resultObj);
 				//alert("success!!" + typeof(resultObj) + "-" + JSON.stringify(resultObj));
 
 				$("#stats_monthScoreBubble").html("????");
-
 
 				var i;
 				var aggResultKeys = Object.keys(resultObj);
