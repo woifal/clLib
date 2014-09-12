@@ -17,7 +17,10 @@ var clLib = {};
 clLib.UI = {};
 
 //window.priority = 1;
-clLib.VERIFY_LOGIN = 0;
+//
+// TESTING: Set to 0 to disable login need...
+//
+clLib.VERIFY_LOGIN = 1;
 
 
 /*
@@ -562,7 +565,7 @@ clLib.login = function(successFunc, errorFunc) {
 	var userObj = {};
 	userObj = clLib.getUserInfo();
     //userObj["username"] = clLib.getUserInfo()["username"];
-	userObj["password"] = localStorage.getItem("currentPassword");
+	//userObj["password"] = localStorage.getItem("currentPassword");
     return clLib.REST.loginUser(userObj, 
 	function(returnObj) {
 		var sessionToken = returnObj["sessionToken"];
@@ -646,7 +649,8 @@ clLib.loggedInCheck = function (callbackFunc, errorFunc) {
 	// online - check for valid sessiontoken
 	// if VERIFY_LOGIN is not set, don't login user
 	if (!clLib.VERIFY_LOGIN || clLib.sessionToken) {
-        return callbackFunc(/*true*/);
+        //alert("yes, logged in mofu!");
+		return callbackFunc(/*true*/);
     }
 	//alert("no session token!");
 	// no session token found - try to logon using stored credentials
@@ -675,7 +679,7 @@ clLib.wasOnlineCheck = function (successFunc, errorFunc) {
 
     if (!clLib.localStorage.refreshAllData(
 		function() {
-			alert("refreshed!");
+			//alert("refreshed!");
 			return successFunc();
 		}
 		,function() {
