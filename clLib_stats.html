@@ -9,29 +9,75 @@
 @@include('grunt_includes/html_jqm_menupanel.html', {"pageName": "stats"})
 @@include('grunt_includes/html_jqm_header.html', {"pageName": "stats"})
 
-@@include('grunt_includes/html_jqm_content.html', {"pageName": "stats"})
+@@include('grunt_includes/html_jqm_content_stats.html', {"pageName": "stats"})
 
-				<h2>
-					<ul data-role="listview"  data-theme="c">
+
+
+					<ul data-role="listview"  data-theme="a" class="clStats">
 						<li><span id="stats_todaysTopScoreBubble" class="ui-li-count"></span>Today</li>
 					</ul>
-				</h2>
 				<div 
-						style="margin: 0px 0px 0px 0px; padding: 0px 0px 0px 0px ;" 
+						astyle="margin: 0px 0px 0px 0px; padding: 0px 0px 0px 0px ;" 
 						data-role="collapsible-set" 
-						data-theme="a" 
-						data-content-theme="a"
 						data-inset="false"
+						data-collapsed-icon="cl_plus" data-expanded-icon="cl_minus"
+						class="clIconCollapsible"
 				>
 					<div 
 							id="stats_todaysRouteLogs" 
-							style="margin: 0px 0px 0px 0px; padding: 0px 0px 0px 0px ;" 
-							data-role="collapsible" 
+							data-role="collapsibleset" 
 							data-inset="false"
 							data-content-theme="a"
 							data-theme="a"
 					>
 					</div>
+
+					<div 
+							id="stats_todaysRouteLogsasdf" 
+							data-role="collapsible" 
+							data-inset="false"
+							data-content-theme="a"
+							data-theme="a"
+							style="display: none"
+					>
+
+						<div id="testRouteLogsToday">
+						</div>
+						<!-- header for routelogs -->
+						<h3>A Route List..</h3>
+						<!-- container for routeLogs -->
+						<div 
+							data-role="collapsibleset" data-theme="a" data-content-theme="a"
+							data-collapsed-icon="cl_plus_blue" data-expanded-icon="cl_minus_blue"
+							class="clIconCollapsible clIconBlue"
+						>
+							<!-- list items for routeLogs.. -->
+							<div data-role="collapsible">
+								<!-- header for routelog -->
+								<h3>Section 1</h3>
+								<!-- route log details -->
+								<div data-role="collapsible">
+									<h3>section 1a header</h3>
+									<p>I'm the collapsible content for section 1a</p>
+								</div>
+								<div data-role="collapsible">
+									<h3>section 1b header</h3>
+									<p>I'm the collapsible content for section 1b</p>
+								</div>
+								
+							</div>
+							<div data-role="collapsible">
+								<h3>Section 2</h3>
+							<p>I'm the collapsible content for section 2</p>
+							</div>
+							<div data-role="collapsible">
+								<h3>Section 3</h3>
+							<p>I'm the collapsible content for section 3</p>
+							</div>
+						</div>
+					</div>
+
+
 					<div id="stats_todaysDiagram" data-role="collapsible" data-inset="false">
 						<h3>Show diagram</h3>
 						<p>some stats...</p>
@@ -51,6 +97,7 @@
 						data-theme="a" 
 						data-content-theme="a"
 						data-inset="false"
+						data-collapsed-icon="cl_home"
 				>
 					<div id="stats_todaysDiagram" data-role="collapsible" data-inset="false">
 						<h3>Show Diagram</h3>
