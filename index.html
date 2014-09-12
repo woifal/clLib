@@ -10,10 +10,10 @@
 @@include('grunt_includes/html_jqm_content.html', {"pageName": "index"})
 
 
-                <div>
+                <div style="background-color: #073E78">
                     <img 
-                        src="files/views/assets/image/splashLogo.png" 
-                        style="text-align: center; background: none; width: 400px; height: 400px; top: 400px;"
+                        src="files/views/assets/image/header_logo.png" 
+                        style="border: 0px solid red; margin-left: 100px; margin-top: 200px; padding-left: 0px; padding-top: 0px; background: none; width: 200px; aheight: 200px;"
                     />
 
                 </div>
@@ -25,27 +25,21 @@
 </body>
 
 <script>
-    localStorage.clear();
+	// TESTING: clear localstorage before doing anything..
+    //localStorage.clear();
+
+
     // Wait for device API libraries to load
     //
     function onLoad() {
         document.addEventListener("deviceready", onDeviceReady, false);
     }
 
-    function openChild() {
-        // Now safe to use device APIs
-            var ref = window.open('http://apache.org', '_blank', 'location=yes');
-            ref.addEventListener('loadstart', function(event) { alert('1start: ' + event.url); });
-            ref.addEventListener('loadstop', function(event) { alert('1stop: ' + event.url); });
-            ref.addEventListener('loaderror', function(event) { alert('1error: ' + event.message); });
-            ref.addEventListener('exit', function(event) { alert("1exit" + event.type); });
-
-    };
     // device APIs are available
     //
     function onDeviceReady() {
-        alert("device is ready!");
-        //clLib.IAP.initialize();
+        //alert("device is ready!");
+        clLib.IAP.initialize();
         //alert("IAP initialized!");
 /*
 		clLib.IAP.restore();
