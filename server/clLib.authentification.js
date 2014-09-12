@@ -2,6 +2,10 @@
 "use strict";
 
 var util = require("util");
+var URL = require('url');
+var querystring = require('querystring');
+
+var https = require('https');
 var clCrypto = require("pwd");
 var DBResource = require("./clLib.server.db.mongolab");
 var serverResource = require("./server").server;
@@ -48,21 +52,26 @@ var fbOAuth2Client = {
     ,generateAuthUrl : function() {
         var url = "";
         url += "https://www.facebook.com/dialog/oauth?";
-        url += "client_id=" + CLIENT_ID;
-        url += "&redirect_uri=" + REDIRECT_URL;
+        url += "client_id=" + this.CLIENT_ID;
+        url += "&redirect_uri=" + this.REDIRECT_URL;
         url += "&response_type=" + "code";
-        url += "&scope=" + scopes.join(',');
+        url += "&scope=" + this.scopes.join(',');
         return url;
     }
     ,getToken : function(code, callbackFunc) {
         var url = "";
         url += "https://graph.facebook.com/oauth/access_token?";
-        url += "client_id=" + CLIENT_ID;
-        url += "&redirect_uri=" + REDIRECT_URL;
-        url += "&client_secret=" + CLIENT_SECRET;
+        url += "client_id=" + this.CLIENT_ID;
+        url += "&redirect_uri=" + this.REDIRECT_URL;
+        url += "&client_secret=" + this.CLIENT_SECRET;
         url += "&code=" + code;
 
-        return authHandler.REST.executeRequest(url, "GET", "" 
+        var xauth;
+		util.log("xauthing..");
+		xauth = new exports.auth();
+		util.log("xauth2 is " + typeof(xauth));
+
+		return xauth.REST.executeRequest(url, "GET", "" 
         ,function(resultObj) {
             return callbackFunc(null, resultObj);
         }
@@ -75,7 +84,24 @@ var fbOAuth2Client = {
         url += "https://graph.facebook.com" + path + "?";
         url += "access_token=" + access_token;
 
-        return authHandler.REST.executeRequest(url, "GET", "", callbackFunc, errorFunc);
+        var xauth;
+		util.log("xauthing..");
+		xauth = new exports.auth();
+		util.log("xauth2 is " + typeof(xauth));
+
+        return xauth.REST.executeRequest(url, "GET", "", callbackFunc, errorFunc);
+    }
+    ,getPictureInfo : function(path, access_token, callbackFunc, errorFunc) {
+        var url = "";
+        url += "https://graph.facebook.com" + path + "?";
+        url += "access_token=" + access_token + "&redirect=0";
+
+        var xauth;
+		util.log("xauthing..");
+		xauth = new exports.auth();
+		util.log("xauth2 is " + typeof(xauth));
+
+        return xauth.REST.executeRequest(url, "GET", "", callbackFunc, errorFunc);
     }
 };
 
@@ -119,24 +145,50 @@ auth.prototype.verifyOAuth2Code = function(code, req, res) {
     if(stateParams.authType == "facebook") {
         return fbOAuth2Client.getToken(
             code,
-            function(err, tokens) {
+            function(err, resultObj) {
                 util.log("fb err >" + JSON.stringify(err) + "<");
-                util.log("fb tokens >" + JSON.stringify(tokens) + "<");
-                return fbOAuth2Client.getGraphInfo("/me", tokens, function(userObj) {
-                    util.log("fb user >" + JSON.stringify(userObj) + "<");
-                    
-                    userObj["accessToken"] = tokens.access_token;
-                    user["authType"] = "facebook";
+                util.log("fb data >" + JSON.stringify(resultObj) + "<");
 
-                    util.log("fb user(incl. tokens) >" + JSON.stringify(user) + "<");
+				var x = querystring.parse(resultObj.strData + "");
+				util.log("x is " + JSON.stringify(x));
+				var access_token = x.access_token;
+				
+                return fbOAuth2Client.getGraphInfo("/me", access_token, function(graphInfoObj) {
+					var userObj = {};
+					userObj = JSON.parse(graphInfoObj["strData"]);
+					
+					util.log("fb user >" + JSON.stringify(userObj) + "<");
                     
-                    var redirectURL = stateParams["clLib.redirectURL"];
-                    util.log("redirecting to >" + redirectURL);
-                    // redirect back to clLib app 
-                    res.header('Location', redirectURL + "?authObj=" + encodeURI(JSON.stringify(user)));
-                    res.send(302); 
+                    userObj["accessToken"] = access_token;
+                    userObj["authType"] = "facebook";
+
+                    util.log("fb user(incl. tokens) >" + JSON.stringify(userObj) + "<");
+
+					return fbOAuth2Client.getPictureInfo("/me/picture", access_token, function(pictureInfoObj) {
+						var pictureObj = {};
+						var pictureObjData = {};
+						pictureObj = JSON.parse(pictureInfoObj["strData"]);
+						pictureObjData = pictureObj["data"];
+						util.log("fb picturr >" + JSON.stringify(pictureObj) + "<");
+						util.log("fb picturr data>" + JSON.stringify(pictureObjData) + "<");
                     
-                });
+						userObj["image"] = {};
+						userObj["image"]["url"] = pictureObjData["url"];
+
+						util.log("222222222fb user(incl. tokens) >" + JSON.stringify(userObj) + "<");
+                    
+						var redirectURL = stateParams["clLib.redirectURL"];
+						util.log("redirecting to >" + redirectURL);
+						// redirect back to clLib app 
+						res.header('Location', redirectURL + "?authObj=" + encodeURI(JSON.stringify(userObj)));
+						res.send(302); 
+                    
+					}, function(e) {
+						throw new Error("FACEBOOKERROR OF TYPE "  + e["name"] + " IS " + e["message"] + ": " + JSON.stringify(e) + " !!!"); 
+					});
+                }, function(e) {
+				    throw new Error("FACEBOOKERROR OF TYPE "  + e["name"] + " IS " + e["message"] + ": " + JSON.stringify(e) + " !!!"); 
+				});
             }
         );
     }
@@ -256,7 +308,7 @@ auth.prototype.getUser = function(userObj, callbackFunc, errorFunc, addOptions) 
             }
             // User was mandatory..return error because user was not found.
             else {
-                return errorFunc(userObj);
+                return errorFunc("User not found>" + JSON.stringify(userObj) + "<");
             }
         }
         else {
@@ -273,7 +325,7 @@ auth.prototype.getUser = function(userObj, callbackFunc, errorFunc, addOptions) 
                     ,errorFunc);
             }
             
-            return callbackFunc(userObj);
+            return callbackFunc(userDetails);
         }
     }
     ,errorFunc
@@ -376,7 +428,8 @@ auth.prototype.verifyAccessToken = function(userObj, callbackFunc, errorFunc) {
 
 
 auth.prototype.authenticate = function(authObj, callbackFunc, errorFunc) {
-    util.log('authenticating >' + JSON.stringify(authObj) + "<");
+    var authHandler = this;
+	util.log('authenticating >' + JSON.stringify(authObj) + "<");
     if(
         authObj["authType"] == "google"
     ) {
@@ -399,12 +452,11 @@ auth.prototype.authenticate = function(authObj, callbackFunc, errorFunc) {
             return errorFunc("username is missing..");
         }
 
-        this.getUser(
+        return this.getUser(
         {"username": authObj["username"]}
         // upon success...
         ,function(userObj) { 
-            userObj = userObj[0];
-            util.log("Found user >" + JSON.stringify(userObj) + "<"); 
+            util.log("!!!!!! Found user >" + JSON.stringify(userObj) + "<"); 
 
             //util.log(JSON.stringify(this));
             
@@ -418,8 +470,9 @@ auth.prototype.authenticate = function(authObj, callbackFunc, errorFunc) {
                     var sessionToken = serverResource.generateRandomToken();
                     // indicate in session that user was authenticated..
                     userObj["sessionToken"] = sessionToken;
-                    authHandler.addUserToken(userObj, callbackFunc, errorFunc);                    
-                    return callbackFunc(userObj);
+                    return authHandler.addUserToken(userObj, function(userObj) {
+						return callbackFunc(userObj);
+					}, errorFunc);                    
                 }
                 // no, they don't..
                 util.log('non-matching passwords..');
@@ -429,7 +482,7 @@ auth.prototype.authenticate = function(authObj, callbackFunc, errorFunc) {
 
             util.log("plainPwd >" + authObj["plainPwd"] + "<, >" + (authObj["plainPwd"] != true) + "<");
             if(authObj["plainPwd"] == "true") {
-                meMyselfAndI.hash(password, userName, 
+                return meMyselfAndI.hash(password, userName, 
                 function (hash) {
                     util.log("hash for password >" + password + "< is >" + hash + "<");
                     return checkPassword(hash, realPwd, callbackFunc, errorFunc);
@@ -472,7 +525,9 @@ auth.prototype.REST.executeRequest = function(uri, method, params, callbackFunc,
 
 	var URLObj = URL.parse(uri);
 	reqOptions["host"] = URLObj.host;
-	reqOptions["path"] =  URLObj.pathname;
+	reqOptions["path"] = URLObj.path;
+
+	reqOptions["params"] =  params;
 
 	var prepareFunc;
 	if(method == "GET") {
@@ -490,7 +545,7 @@ auth.prototype.REST.executeRequest = function(uri, method, params, callbackFunc,
 	reqOptions.method = reqOptions.method;
 	reqOptions.headers = reqOptions.httpHeaders;
 
-	util.log("reqOptions: " + reqOptions);
+	util.log("reqOptions: " + JSON.stringify(reqOptions));
 	
 	// Set up the request */
 	var req = https.request(reqOptions, 
@@ -504,10 +559,10 @@ auth.prototype.REST.executeRequest = function(uri, method, params, callbackFunc,
 //			try {
 				resultObj["statusCode"] = statusCode;
 				util.log('result received(' + statusCode + ').');
-				util.log('data received.' + d);
+				util.log('data received:' + d);
 				//process.stdout.write(d);
-				resultObj.data = JSON.parse(d);
-				util.log("parsed result: " + JSON.stringify(resultObj).substr(0, 1000));
+				resultObj["strData"] = d;
+				util.log("parsed result: " + Object.keys(resultObj));
 				
 				if(statusCode == 200) {
 					return callbackFunc(resultObj);
@@ -535,7 +590,7 @@ auth.prototype.REST.executeRequest = function(uri, method, params, callbackFunc,
 
 auth.prototype.REST.prepareGETRequest = function(options) {
 	util.log("OLD path >" + JSON.stringify(options.path) + "<");
-	options.path += "?" + options.params;
+	//options.path += "?" + options.params;
 	util.log("NEW path >" + JSON.stringify(options.path) + "<");
 }
 	

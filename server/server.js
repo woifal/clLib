@@ -135,7 +135,7 @@ server.get("/login", function (req, res) {
 
 	try {
 		console.log("authHandler.defaults : >" + JSON.stringify(authHandler.defaults) + "<");
-		authHandler.authenticate(
+		return authHandler.authenticate(
 			req.params
 			,function(userObj) {
 				util.log("AUTHENTICATED!!! " + JSON.stringify(userObj));
@@ -733,6 +733,9 @@ server.get('/verifyOAuth2Code',
 			,res
 		);
 	} catch(e) {
+		util.log(">>>>> ----------------");
+		util.log(e.stack);
+		util.log("----------------");
 		errHandler(new Error("UNHANDLED SERVER ERROR "  + e.name + " IS " + e.message + " !!!"));
 	}
 
