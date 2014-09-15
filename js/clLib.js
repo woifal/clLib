@@ -625,6 +625,7 @@ clLib.loginErrorHandler = function(e) {
 	clLib.sessionToken = null;
 	localStorage.setItem("loginError", "Could not login user: " + errorMsg);
 	localStorage.setItem("notification", "Could not login user: " + errorMsg);
+	clLib.UI.byId$("loginError", "users").trigger("refresh.clLib");
 	clLib.loggi("2loginError " + errorMsg);
 	return false;
 };
