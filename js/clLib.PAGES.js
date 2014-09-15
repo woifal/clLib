@@ -337,7 +337,28 @@ clLib.PAGES.handlers = {
 	        });
 
 	        //clLib.UI.fillUIelements("newRouteLog", "newRouteLog", localStorage.getItem("defaultLayout"));
-	    }
+
+			$("#newRouteLog_tickType input[type='checkbox']")
+				.off("click")
+				.on("click", function(e) {
+				if($(this).is(":checked")) {
+					//alert($(this).prop("id") + " is checked!");
+					//alert($(this).parents(".ui-checkbox").siblings().size());
+					$(this).parents(".ui-checkbox").siblings().find("label")
+						.removeClass("ui-checkbox-on")
+						.addClass("ui-checkbox-off")
+					;
+					$(this).parents(".ui-checkbox").siblings().find("input[type='checkbox']")
+						.prop("checked", false)
+					;
+				} else {
+					1;
+					//alert($(this).prop("id") + " is UNchecked!");
+				}
+			});
+			
+
+    }
         , "pagebeforeshow": function (e, ui) {
             var $prevElement = $(ui.prevPage);//.prev();
 			var prevTag = $prevElement.prop("tagName");
