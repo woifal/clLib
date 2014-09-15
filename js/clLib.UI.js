@@ -1705,8 +1705,11 @@ clLib.UI.addCollapsible = function(options) {
 
 clLib.UI.addCollapsiblesNEW = function(options) {
 	var $container = options["container"];
+	//alert("container is " + $container.attr("id"));
+	//$container.css("border", "1px solid blue"); 
 	var items = options["items"];
 	var clearCurrentItems = options["clearCurrentItems"];
+	
 	var $containerContent;
 	var needToAppendContent = true;
 	$containerContent = $("div[cl-role=content]", $container).first();
@@ -1721,6 +1724,7 @@ clLib.UI.addCollapsiblesNEW = function(options) {
 	*/
 	if($(".ui-collapsible-content", $container).length > 0) {
 		$containerContent = $(".ui-collapsible-content", $container).first();
+		//$containerContent.css("border", "2px solid yellow");
 		needToAppendContent = false;
 	}
 	//alert("building collapsible");
@@ -1740,16 +1744,20 @@ clLib.UI.addCollapsiblesNEW = function(options) {
 	$(".addMore *", $containerContent)
 		.off("click")
 		.on("click", function() {
-			//alert("addmore clicked!");
+			//alert("addmore clicked for " + $container.attr("id") + "!");
 			clLib.UI.addCollapsiblesNEW({
 				container : $container
 				,items : items
 				,clearCurrentItems : false
 			});
-			$container.trigger("create");
+			//$container.trigger("create");
 	
 	});
+	// remember number of items  currently shown
+	var itemsShown = $containerContent.data("itemsShown");
 	$container.trigger("create");
+	$containerContent = $(".ui-collapsible-content", $container).first();
+	$containerContent.data("itemsShown", itemsShown);
 	
 };
 
@@ -1757,14 +1765,14 @@ clLib.UI.addCollapsiblesNEW = function(options) {
 
 clLib.UI.addCollapsiblesChildren = function($containerEl, dataObj, createItemFunc, count, startWithEmptycontainerEl) {
 	if(startWithEmptycontainerEl) {
+		//alert("yes, empty container..");
 		$containerEl.empty();
 		$containerEl.data("itemsShown", 0);
 	}
 	createItemFunc = createItemFunc || clLib.UI.collapsible.formatStandardRow;
 	count = count || 2;
 	var itemsShown = $containerEl.data("itemsShown") || 0;
-	//alert("old count: " + itemsShown);
-
+	//alert("old count(" +  $containerEl.attr("id") + "): " + itemsShown);
 	//alert("adding >" + count + "< items (now: >" + itemsShown + "< from >" + JSON.stringify(dataObj.length) + "<");
 	
 	if(!dataObj || Object.keys(dataObj).length == 0) {
@@ -1811,7 +1819,7 @@ clLib.UI.addCollapsiblesChildren = function($containerEl, dataObj, createItemFun
 			itemsShown + count
 		)
 	;
-	//alert("new count: " + $containerEl.data("itemsShown"));
+	//alert("new count(" + $containerEl.attr("id") + "): " + $containerEl.data("itemsShown"));
 	return $containerEl;
 };
 
