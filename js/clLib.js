@@ -653,6 +653,12 @@ clLib.loggedInCheck = function (callbackFunc, errorFunc) {
 		return callbackFunc(/*true*/);
     }
 	//alert("no session token!");
+	
+	// no stored credentials. Ask user to provide some..
+	if(!clLib.getUserInfo("username")["username"]) {
+		return errorFunc(new Error("Please login."));
+	}
+	
 	// no session token found - try to logon using stored credentials
 	console.log("logging in..");
 	return clLib.login(
