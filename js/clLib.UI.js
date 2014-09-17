@@ -914,10 +914,12 @@ clLib.UI.execWithMsg = function(func, spinnerParams, timeoutMillis) {
 };
 
 clLib.UI.showLoading = function(spinnerParams) {
-	$(".clLoading").html(
-		spinnerParams["text"]
-	).
-	show();
+	$(".clLoading")
+		.empty().
+		append(
+			spinnerParams["text"]
+		)
+		.show();
 /*
     $.mobile.loading('show', {
         text: spinnerParams["text"],
