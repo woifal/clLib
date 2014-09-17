@@ -330,7 +330,7 @@ clLib.PAGES.handlers = {
 	                clLib.UI.save({}, function() {
 						clLib.UI.resetUIelements("newRouteLog", "newRouteLog");
 					});
-	            }, {text: "Saving route logs.."});
+	            }, {text: "Saving route logs.."}, 100);
 	        });
 	        $("#newRouteLog_refreshButton").on("click", function () {
 	            clLib.UI.resetUIelements("newRouteLog", "newRouteLog");
@@ -356,9 +356,7 @@ clLib.PAGES.handlers = {
 					//alert($(this).prop("id") + " is UNchecked!");
 				}
 			});
-			
-
-    }
+		}
         , "pagebeforeshow": function (e, ui) {
             var $prevElement = $(ui.prevPage);//.prev();
 			var prevTag = $prevElement.prop("tagName");
@@ -371,7 +369,6 @@ clLib.PAGES.handlers = {
 			}
 		}
 	}
-
 	, "stats": {
 	    "pagecreate": function () {
 	        //clLib.UI.fillUIelements("newRouteLog", "newRouteLog", localStorage.getItem("defaultLayout"));
@@ -706,7 +703,8 @@ clLib.PAGES.handlers = {
             
 	    }
         , "pagebeforeshow": function (event, ui, pageId) {
-            //alert("refreshing displayName..");
+            //alert("showing users page..");
+			//alert("refreshing displayName..");
             clLib.UI.byId$("displayName", pageId).trigger("refresh.clLib");
             //alert("refreshed displayName..");
             
