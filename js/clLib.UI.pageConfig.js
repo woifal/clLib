@@ -129,6 +129,7 @@ clLib.UI.autoLoad = {
 		default: [
 			"areaSelect"
 			, "onlineIcon"
+			, "currentScore"
 			]
 	}
 	,preferences : {
@@ -187,6 +188,7 @@ clLib.UI.elementsToReset = {
 		"characterSelect"
 	]
 	, startScreen : [
+		"currentScore"
 	]
     , preferences: [
 		, "displayName"
@@ -268,6 +270,7 @@ clLib.UI.pageElements = {
 			"areaSelect"
 			, "selectedArea"
 			, "onlineIcon"
+			, "currentScore"
 	    ]
 	}
     , preferences: {
@@ -943,6 +946,28 @@ clLib.UI.elements = {
 			}
 			//alert("src is " + iconSrc);
 			$this.attr("src", iconSrc); 
+		}
+	}
+	, "currentScore" : {
+		"refreshHandler" : function($this) { 
+			var where;
+			where = clLib.getRouteLogWhereToday(clLib.getCurrentUserWhere());
+			// TESTING: return all routelogs for now..
+			//where = {};
+			
+			console.log("where = "+ JSON.stringify(where));
+			clLib.loggi("getting today's top route logs..");
+			var todaysTopRouteLogs = clLib.localStorage.getEntities(
+					"RouteLog", where, "defaultStorage", clLib.sortByScoreFunc, true, 10);
+
+			// calculate today's score
+			var todaysTopScore = clLib.calculateScore(todaysTopRouteLogs);
+			//alert("Todays score is: " + todaysTopScore);
+
+			var currentScoreText = "Score: <strong>" + todaysTopScore + "</strong>"
+
+			$this.empty();
+			$this.append(currentScoreText);
 		}
 	}
 	,"characterSelect": {
