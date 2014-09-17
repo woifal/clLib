@@ -147,6 +147,24 @@ input.ui-input-text, textarea.ui-input-text {
 
 
 /* outer button outline.. */
+.clButton.clCurrentScore {
+    width: 280px;
+	padding-top: 0px 10px;
+    border-radius: 8px;
+	box-shadow: inset 0px 2px 2px 1px #DDD;
+	color: #FFFFFF;
+	background-color: #092E56;
+	font-size: 1.5em;
+	font-weight: bold;
+	text-align: center;
+	margin-bottom: 10px !important;
+}
+
+
+.clSmallMargin > .clButton {
+	margin: 0px 10px;
+}
+/* outer button outline.. */
 .clButton {
     width: 280px;
 	padding: 9px;
