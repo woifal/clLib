@@ -99,20 +99,24 @@ clLib.UI.tickTypeSymbolFunc = function(tickTypeName, dataRow) {
 };
 
 clLib.UI.tickTypeSymbols = {
-	tickType_redpoint : function(dataRow) {
-		return $('<span><img style="margin-left: 5px; width:20px; height: 20px" src="files/views/assets/image/redpoint.png"></span>');
+	Colour : function(dataRow) {
+		return $('<div style="margin-left: 22px; margin-top: 2px; float:left; width: 25%; border-radius: 8px; border: 0px solid yellow; height: 18px;" class="clColorBg ' + dataRow["Colour"].replace(/\//g, '-') + '"></div>');
+	}
+	,tickType_redpoint : function(dataRow) {
+		return $('<span style="float: left; width: 25%; text-align: left; border: 0px solid red;"><img style="padding-top: 0px; padding-bottom: 0px; margin-left: 0px; width:20px; height: 20px" src="files/views/assets/image/redpoint.png"></span>');
 	}
 	, tickType_flash : function(dataRow) {
-		return $('<span><img style="margin-left: 5px; width:20px; height: 20px" src="files/views/assets/image/flash.png"></span>');
+		return $('<span style="float: left; width: 25%; text-align: left; border: 0px solid red;"><img style="padding-top: 0px; padding-bottom: 0px; margin-left: 0px; width:20px; height: 20px" src="files/views/assets/image/flash.png"></span>');
 	}
 	, tickType_attempt :function(dataRow) {
-		return $('<span><img style="margin-left: 5px; width:20px; height: 20px" src="files/views/assets/image/try.png"></span>');
+		return $('<span style="float: left; width: 25%; text-align: left; border: 0px solid red;"><img style="padding-top: 0px; padding-bottom: 0px; margin-left: 0px; width:20px; height: 20px" src="files/views/assets/image/try.png"></span>');
 	}
 	, tickType_toprope : function(dataRow) {
-		return $('<span><img style="margin-left: 5px; width:20px; height: 20px" src="files/views/assets/image/toprope.png"></span>');
+		return $('<span style="float: left; width: 25%; text-align: left; border: 0px solid red;"><img style="padding-top: 0px; padding-bottom: 0px; margin-left: 0px; width:20px; height: 20px" src="files/views/assets/image/toprope.png"></span>');
 	}
 	, tickType_delete : function(dataRow) {
-		var aLink = $('<span style="text-align=\'right\'"><img style="margin-left: 13px; border: 0px solid red; width:10px; height: 10px" src="files/views/assets/image/delete-route.png"></span>');
+		var aLink = $('<span style="text-align: right; border: 0px solid red;"><img style="margin-left: 13px; border: 0px solid red; width:20px; height: 20px" src="files/views/assets/image/delete-route.png"></span>');
+		//aLink = $('<a href="#" class="ui-btn ui-btn-inline ui-icon-delete ui-btn-icon-right">Delete</a>');
 		aLink.click(function() {
 			clLib.localStorage.removeInstance("RouteLog", dataRow["_id"], "defaultStorage");
 			clLib.UI.resetUIelements("newRouteLog", "newRouteLog");
@@ -127,11 +131,13 @@ clLib.tickTypeSymbol = function(tickTypeName, tickTypeValue, dataRow) {
 	}
 };
 
+
 clLib.UI.list.formatRouteLogRow = function(dataRow) {
 	var dataFormat = {
 		header: {
 			/*"GradeSystem" : null*/
-			"Grade": null
+			"Colour": clLib.tickTypeSymbol
+			,"Grade": null
 			, "tickType_redpoint" : clLib.tickTypeSymbol 
 			, "tickType_flash" : clLib.tickTypeSymbol 
 			, "tickType_attempt" : clLib.tickTypeSymbol 
@@ -902,8 +908,8 @@ clLib.UI.execWithMsg = function(func, spinnerParams, timeoutMillis) {
     	}, timeoutMillis);
 	} 
     else {
-        func();
-        clLib.UI.hideLoading();
+		func();
+	clLib.UI.hideLoading();
     }
 };
 
@@ -912,11 +918,11 @@ clLib.UI.showLoading = function(spinnerParams) {
 		spinnerParams["text"]
 	).
 	show();
-/*	
+/*
     $.mobile.loading('show', {
         text: spinnerParams["text"],
         textVisible: true,
-        theme: 'e',
+        theme: 'b',
         html: spinnerParams["html"]
     });
 */
@@ -924,9 +930,7 @@ clLib.UI.showLoading = function(spinnerParams) {
 
 clLib.UI.hideLoading = function() {
 	$(".clLoading").hide();
-/*
-	$.mobile.loading( "hide");
-*/
+//	$.mobile.loading( "hide");
 };
 
 
@@ -1480,7 +1484,10 @@ clLib.addCSSBackground = function(targetId, options) {
         }
 		//alert("setting laststyle to >" + className + "<");
         // Set currently selected color
-        $(this).closest('.ui-select').find('.ui-btn span').addClass(className);
+        $(this).closest('.ui-select').find('.ui-btn span')
+			.addClass(className)
+			.addClass("clColorBg")
+		;
         // Remember currently selected color
         $(this).data("cllast_style", className);
         //alert("remembering last_style " + className);
@@ -1830,7 +1837,8 @@ clLib.UI.collapsible.formatRouteLogRow = function(dataRow) {
 	var dataFormat = {
 		header: {
 			/*"GradeSystem" : null*/
-			"Grade": null
+			  "Colour" : clLib.tickTypeSymbol
+			, "Grade": null
 			, "tickType_redpoint" : clLib.tickTypeSymbol 
 			, "tickType_flash" : clLib.tickTypeSymbol 
 			, "tickType_attempt" : clLib.tickTypeSymbol 
@@ -1838,12 +1846,12 @@ clLib.UI.collapsible.formatRouteLogRow = function(dataRow) {
 		}
 		,bubble: {
 			"Score" : null
-			, "tickType_delete" : clLib.tickTypeSymbol 
+			//, "tickType_delete" : clLib.tickTypeSymbol 
 		,
 		}
 		,body: {
 			header: "RouteName",
-			items: ["deleted", "DateISO", "Sector", "Line", "Colour", "Comment"]
+			items: [/*"deleted", */"DateISO", "Sector", "Line", /*"Colour", */"Comment"]
 		}
 	};
 	
@@ -1851,7 +1859,7 @@ clLib.UI.collapsible.formatRouteLogRow = function(dataRow) {
 	dataRow.Score = clLib.computeScore(dataRow);
 	
 	//alert(JSON.stringify(dataRow));
-	var headerText = $("<div></div>");
+	var headerText = $('<div></div>');
 	var $bubble, $headerItem, $bodyItem, $bodyHeader;
 	var listItems = [];
 
@@ -1865,7 +1873,7 @@ clLib.UI.collapsible.formatRouteLogRow = function(dataRow) {
 			);
 		} else {
 			//alert("no headerfunc foc " + headerName);
-			headerText.append(dataRow[headerName]);
+			headerText.append('<div style="float: left; width: 35%; border: 0px solid blue;">' + dataRow[headerName] + "</div>");
 		}
 	});
 
@@ -1909,9 +1917,12 @@ clLib.UI.collapsible.formatRouteLogRow = function(dataRow) {
 	/* 
 		Body contents..
 	*/
-	$bodyHeader = $("<h1>")
+	$bodyHeader = $("<h3>")
 		.html(dataRow[dataFormat["body"]["header"]])
 	;
+	$bodyHeader.append(
+		clLib.tickTypeSymbol("tickType_delete", null, dataRow)
+	);
 
 	$bodyItem = $("<p>")
 		//.attr("data-role", "collapsible")
