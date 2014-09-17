@@ -5,6 +5,7 @@
 	/*background-image: none;*/
     background-image: URL('https://cdn2.iconfinder.com/data/icons/flat-ui-icons-24-px/24/lock-24-48.png');
     background-size: 100%;
+
 }
 
 li.clCSSBgIconOnly {
@@ -13,7 +14,9 @@ li.clCSSBgIconOnly {
 div.clCSSBgIconOnly {
 	text-indent: -9999px;
 }
-
+.ui-icon-clRouteDropdownIcon span {
+	border-radius: 8px;
+}
 
 .Platte {
     background-repeat: no-repeat;
@@ -49,26 +52,24 @@ div.clCSSBgIconOnly {
     background-position: 0px 0px;
     padding-left: 0px; /*8%;*/
 	background-image: none;
-    background-image: URL('https://cdn2.iconfinder.com/data/icons/flat-ui-icons-24-px/24/lock-24-48.png');
+    abackground-image: URL('https://cdn2.iconfinder.com/data/icons/flat-ui-icons-24-px/24/lock-24-48.png');
     background-size: 100%;
-	background-color: white;
+	background-color: none;
 }
 
 
 
 .white-green-blue {
-    background-repeat: no-repeat;
+    background-repeat: repeat-y;
     background-position: 0px 0px;
     padding-left: 0px; /*8%;*/
-	/*background-image: none;*/
-    background-image: URL('../files/views/assets/image/white-green-blue.png');
+	background-image: URL('../files/views/assets/image/white-green-blue.png');
 }
 .white-yellow-black {
-    background-repeat: no-repeat;
+    background-repeat: repeat-y;
     background-position: 0px 0px;
     padding-left: 0px; /*8%;*/
-	/*background-image: none;*/
-    background-image: URL('../files/views/assets/image/white-yellow-black.png');
+	background-image: URL('../files/views/assets/image/white-yellow-black.png');
 }
 .blue {
     background-image: none;
@@ -127,7 +128,8 @@ div.clCSSBgIconOnly {
     background-color: #FFFF00 !important;
 }
 .neonyellow{
-    background-image: none;
+    
+	background-image: none;
     background-color: #F3F315 !important;
 }
 
