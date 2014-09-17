@@ -454,9 +454,11 @@ clLib.UI.elements = {
     , "loginError": $.extend({}, clLib.UI.elementConfig.localVar, {
 	    "refreshHandler": function ($this) {
 			//alert("loginError with id >" + $this.attr("id") + "<");
+			
 			//alert("hiding " + "#" + $this.attr("id") + "Container");
 			$("#" + $this.attr("id") + "Container").hide();
 			var elementName = clLib.UI.elementNameFromId($this.attr("id"));
+			//alert("loginError with name >" + elementName + "<");
 			var localVarValue = localStorage.getItem(elementName);
 			if(localVarValue) {
 				//alert("yes, value; " + localVarValue);
