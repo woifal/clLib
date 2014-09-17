@@ -81,7 +81,9 @@ clLib.IAP.onReady = function () {
 			);
         }
     });
+	clLib.IAP.alertAndLog('IAPs restoring', "purchased_debug", true);
 	clLib.IAP.restore();
+	clLib.IAP.alertAndLog('IAPs restored', "purchased_debug", true);
 	clLib.IAP.renderIAPs($("#purchases_info")[0]);
 
 };
