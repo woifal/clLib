@@ -352,8 +352,8 @@ clLib.PAGES.handlers = {
 						.prop("checked", false)
 					;
 				} else {
-					1;
-					//alert($(this).prop("id") + " is UNchecked!");
+					// Don't allow explicit un-checking.
+					$(this).prop("checked", true);
 				}
 			});
 		}
