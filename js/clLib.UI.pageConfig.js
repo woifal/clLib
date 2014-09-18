@@ -964,7 +964,7 @@ clLib.UI.elements = {
 			var todaysTopScore = clLib.calculateScore(todaysTopRouteLogs);
 			//alert("Todays score is: " + todaysTopScore);
 
-			var currentScoreText = "Score: <strong>" + todaysTopScore + "</strong>"
+			var currentScoreText = "Today: <strong>" + todaysTopScore + "</strong> pts"
 
 			$this.empty();
 			$this.append(currentScoreText);
