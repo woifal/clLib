@@ -1321,12 +1321,17 @@ clLib.UI.userHandler = function (options, successFunc, errorFunc) {
 	var currentLayout = options["currentLayout"];
 	var additionalData = options["additionalData"];
 	
+	
     if (!currentJqmSlide) {
         currentJqmSlide = localStorage.getItem("currentJqmSlide");
     }
     if (!currentLayout) {
         currentLayout = localStorage.getItem("currentLayout") || "default";
     }
+	
+	//alert("currentJqmSlide: " + currentJqmSlide);
+	//alert("currentLayout: " + currentLayout);
+	
 
     $.each(clLib.UI.pageElements[currentJqmSlide][currentLayout], function (idx, elementName) {
         //alert("eaching " + idx + " and " + elementName);
@@ -1389,16 +1394,45 @@ clLib.UI.userHandler = function (options, successFunc, errorFunc) {
 	}
 	else if (userAction == "delete") {
 		return clLib.REST.deleteUser(userObj, 
-		function(returnObj) {
-			// Clear any "old" error messages 
-			localStorage.removeItem("loginError");
+			function(returnObj) {
+				// Clear any "old" error messages 
+				localStorage.removeItem("loginError");
 
-			localStorage.removeItem("currentPassword");
-			clLib.sessionToken = null;
-			returnObj["sessionToken"] = null;
-			return successFunc(returnObj);
-		}
-		, errorFunc);
+				localStorage.removeItem("currentPassword");
+				clLib.sessionToken = null;
+				returnObj["sessionToken"] = null;
+				return successFunc(returnObj);
+			}
+			, errorFunc
+		);
+	}
+	else if (userAction == "requestPwd") {
+		//alert("requesting pwd for " + JSON.stringify(userObj));
+		return clLib.REST.requestVerification(userObj
+			,function(returnObj) {
+				// Clear any "old" error messages 
+				localStorage.removeItem("loginError");
+				localStorage.removeItem("currentPassword");
+				clLib.sessionToken = null;
+				returnObj["sessionToken"] = null;
+				return successFunc(returnObj);
+			}
+			, errorFunc
+		);
+	}
+	else if (userAction == "setPwd") {
+		//alert("setting pwd for " + JSON.stringify(userObj));
+		return clLib.REST.changePassword(userObj
+			,function(returnObj) {
+				// Clear any "old" error messages 
+				localStorage.removeItem("loginError");
+				localStorage.removeItem("currentPassword");
+				clLib.sessionToken = null;
+				returnObj["sessionToken"] = null;
+				return successFunc(returnObj);
+			}
+			, errorFunc
+		);
 	}
 	else {
 		// could not login - alert error and return false
