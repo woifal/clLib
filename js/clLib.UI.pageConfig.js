@@ -87,6 +87,7 @@ clLib.UI.saveHandlers= {
     , "startScreen": clLib.UI.RESTSaveHandler
     , "users": clLib.UI.userHandler
     , "users_clLogin": clLib.UI.userHandler
+    , "users_verification": clLib.UI.userHandler
     , "feedback": clLib.UI.RESTSaveHandler
 };
 
@@ -160,8 +161,9 @@ clLib.UI.autoLoad = {
 	}
     ,"users_verification" : {
 		default: [
-			"currentUser",
-			"notification"
+			"currentUser"
+			,"notification"
+			,"loginError"
 		]
 	}
     ,"stats" : {
@@ -208,6 +210,9 @@ clLib.UI.elementsToReset = {
 		"currentUser"
 		, "currentPassword"
         , "loginError"
+    	]
+    , users_verification: [
+        "loginError"
     	]
 	, feedback: [
 		"feedbackText"
@@ -304,6 +309,9 @@ clLib.UI.pageElements = {
         default: [
 			"currentUser",
 			"notification"
+			,"verificationToken"
+			,"password"
+			,"loginError"
         ]
     }
     ,"stats": {
@@ -328,7 +336,10 @@ clLib.UI.pageElements = {
 
 
 clLib.UI.elements = {
-	"username": $.extend({}, {
+	"verificationToken": $.extend({}, {
+		"dbField": "verificationToken"
+    }, clLib.UI.elementConfig.plainElement)
+	,"username": $.extend({}, {
 		"dbField": "username"
     }, clLib.UI.elementConfig.plainElement)
 	,"password": $.extend({}, {
