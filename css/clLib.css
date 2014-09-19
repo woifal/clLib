@@ -622,22 +622,31 @@ border: 1px solid red;
 	width:45px; 
 	height: 45px;
 	border-radius: 50%;
+	background-size: 45px 45px;
 }
 .clTicktypes img.redpoint {
 	border: 1px solid red; 
 	background: url("../files/views/assets/image/img_45_45/ticktype_redpoint.png");
+	background-size: 40px 40px;
+	background-position: 2px 2px;
+	background-repeat: no-repeat;
+
 }
 .clTicktypes img.toprope {
 	border: 1px solid red; 
 	background: url("../files/views/assets/image/img_45_45/ticktypes_toprope.png");
+	background-size: 50px 50px;
+	background-position: -2px -2px;
 }
 .clTicktypes img.flash {
 	border: 1px solid white; 
 	background: url("../files/views/assets/image/img_45_45/ticktypes_flash.png");
+	background-size: 45px 45px;
 }
 .clTicktypes img.try {
 	border: 1px solid white; 
 	background: url("../files/views/assets/image/img_45_45/ticktypes_try.png");
+	background-size: 45px 45px;
 }
 
 .clRouteDropdown {
