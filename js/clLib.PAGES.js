@@ -464,34 +464,37 @@ clLib.PAGES.handlers = {
 	,"users_verification": {
 	    "pagecreate"	: function () {
 			localStorage.setItem("notification", "");
-			var userEntity = {
-				"username" : clLib.getUserInfo()["username"]
-            };
 			var successHandler = function() {
 				clLib.UI.fillUIelements("users_verification", "users_verification");
 			};
 			
-
-			$("#users_verification_requestTokenButton").on("click", function () {
+	        $("#users_verification_changePassword").on("click", function () {
 				clLib.UI.execWithMsg(function() {
-					clLib.REST.requestVerification({
-							entityInstance : userEntity
-						},
-						successHandler, 
-						clLib.requestAuthHandler
+					clLib.UI.save({ additionalData: { action: "setPwd" }}
+					,function(returnObj) {
+						//alert("password changed(" + JSON.stringify(returnObj) + ")");
+
+						// Override current user info with response from signup callback..
+						returnObj = JSON.parse(returnObj);
+						returnObj["name"] = returnObj["username"];
+						returnObj["displayName"] = returnObj["username"];
+						returnObj["id"] = returnObj["username"];
+						returnObj["image"] = {};
+						returnObj["image"]["url"] = "";
+
+						return clLib.PAGES.processAuthObj(JSON.stringify(returnObj));
+					}
+					, function(e) {
+						clLib.loginErrorHandler(e);
+						clLib.UI.fillUIelements("users_verification", "users_verification");
+					}
 					);
-				}, {text: "generating token"});
+				}
+				, {text: "trying to set new password.."});
 			});
-			$("#users_verification_changePassword").on("click", function () {
-	            clLib.UI.execWithMsg(function() {
-					clLib.REST.changePassword({
-							entityInstance : userEntity
-						},
-						successHandler, 
-						clLib.requestAuthHandler
-					);
-				}, {text: "changing password"});
-			});
+
+
+
 		}
         , "pagebeforeshow": function () {
 			clLib.UI.fillUIelements("users_verification", "users_verification");
@@ -720,17 +723,20 @@ clLib.PAGES.handlers = {
             $("#users_clLogin_loginButton").on("click", function () {
 				//alert("login button clicked!");
 	            clLib.UI.execWithMsg(function() {
-					clLib.UI.save({ additionalData: { action: "login", plainPwd : true }}
+					clLib.UI.save({ additionalData: { action: "login", plainPwd : true}}
 					,function(returnObj) {
-						// Override current user info with response from signup callback..
-						returnObj["displayName"] = returnObj["username"];
-				
-						clLib.setUserInfo(returnObj, true);
+						//alert("password changed(" + JSON.stringify(returnObj) + ")");
 
-						clLib.PAGES.changeTo("clLib_startScreen.html");
+						// Override current user info with response from signup callback..
+						returnObj["name"] = returnObj["username"];
+						returnObj["displayName"] = returnObj["username"];
+						returnObj["id"] = returnObj["username"];
+						returnObj["image"] = {};
+						returnObj["image"]["url"] = "";
+						return clLib.PAGES.processAuthObj(JSON.stringify(returnObj));
+
 					}
 					, function(e) {
-						alert("ERROR!!!");
 						clLib.loginErrorHandler(e);
 						clLib.UI.fillUIelements("users_clLogin", "users_clLogin");
 					}
@@ -768,7 +774,7 @@ clLib.PAGES.handlers = {
 
 					}
 					, function(e) {
-						alert("error " + JSON.stringify(e));
+						//alert("error " + JSON.stringify(e));
 						clLib.loginErrorHandler(e);
 						clLib.UI.fillUIelements("users_clLogin", "users_clLogin");
 					}
@@ -792,8 +798,20 @@ clLib.PAGES.handlers = {
 				, {text: "deleting user.."});
 	        });
 			
-	        $("#users_forgotPwdButton").on("click", function () {
-				clLib.PAGES.changeTo("clLib_users_verification.html");
+	        $("#users_clLogin_forgotPwdButton").on("click", function () {
+				clLib.UI.execWithMsg(function() {
+					clLib.UI.save({ additionalData: { action: "requestPwd" }}
+					,function() {
+						localStorage.setItem("loginError", "Use the token send to you by email to change your password.")
+						clLib.PAGES.changeTo("clLib_users_verification.html");
+					}
+					, function(e) {
+						clLib.loginErrorHandler(e);
+						clLib.UI.fillUIelements("users_clLogin", "users_clLogin");
+					}
+					);
+				}
+				, {text: "requesting password.."});
 			});
 	        
 			$("#users_preferencesButton").die("click").click(function () {
@@ -893,6 +911,7 @@ clLib.PAGES.processAuthObj = function(urlAuthObj) {
 //    alert("Getting VALID authObj from URL params >" + urlAuthObj + "<");
     var authObj = JSON.parse(urlAuthObj);
 //    alert("GOT VALID authObj from URL params");
+	console.log("authObj:" + JSON.stringify(authObj));
     
     if(authObj) {
 		try {
@@ -903,7 +922,8 @@ clLib.PAGES.processAuthObj = function(urlAuthObj) {
 	//                console.log("authObj2 >" + JSON.stringify(JSON.parse(decodeURI(authObj))) + "<");
 			
 			var userObj = {};
-			userObj["authType"] = authObj["authType"];;
+			userObj["password"] = authObj["password"];
+			userObj["authType"] = authObj["authType"];
 			userObj["accessToken"] = authObj["accessToken"];
 			//alert("checking for displayname..");
 			if(userObj["authType"] == 'google') {
