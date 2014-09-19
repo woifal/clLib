@@ -990,16 +990,15 @@ clLib.UI.elements = {
 		}
 		,"refreshHandler" : function($this) { 
 			clLib.populateSelectBox({
-				selectBoxElement : $this,
-				dataObj : [
+				selectBoxElement : $this
+				,dataObj : [
 					"Platte",
 					"Senkrecht",
 					"Ueberhaengend",
 					"Dach"
-				],
-				selectedValue : "Platte",
-				preserveCurrentValue : true,
-				additionalValue : {
+				]
+				,preserveCurrentValue : true
+				,additionalValue : {
 					text: "Character?",
 					value: "__UNKNOWN__"
 				}

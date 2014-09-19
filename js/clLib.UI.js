@@ -100,7 +100,7 @@ clLib.UI.tickTypeSymbolFunc = function(tickTypeName, dataRow) {
 
 clLib.UI.tickTypeSymbols = {
 	Colour : function(dataRow) {
-		return $('<div style="margin-left: 22px; margin-top: 2px; float:left; width: 25%; border-radius: 8px; border: 0px solid yellow; height: 18px;" class="clColorBg ' + dataRow["Colour"].replace(/\//g, '-') + '"></div>');
+		return $('<div style="margin-left: 22px; margin-top: 2px; float:left; width: 25%; border-radius: 8px; border: 0px solid yellow; height: 18px;" class="clCSSBg ' + dataRow["Colour"].replace(/\//g, '-') + '"></div>');
 	}
 	,tickType_redpoint : function(dataRow) {
 		return $('<span style="float: left; width: 25%; text-align: left; border: 0px solid red;"><img style="padding-top: 0px; padding-bottom: 0px; margin-left: 0px; width:20px; height: 20px" src="files/views/assets/image/redpoint.png"></span>');
@@ -1490,9 +1490,12 @@ clLib.addCSSBackground = function(targetId, options) {
             .addClass(className);
 		//entry.find("a").css("background-color", "red");
 		if(options && options["iconOnly"]) {
-			entry
-				.find("a")
-				.addClass("clCSSBgIconOnly");
+//			if($(this).val() != '__UNKNOWN__') {
+				//alert($(this).val());
+				entry
+					.find("a")
+					.addClass("clCSSBgIconOnly");
+//			}
 		}
 	});
 	
@@ -1522,7 +1525,7 @@ clLib.addCSSBackground = function(targetId, options) {
         // Set currently selected color
         $(this).closest('.ui-select').find('.ui-btn span')
 			.addClass(className)
-			.addClass("clColorBg")
+			.addClass("clCSSBg")
 		;
         // Remember currently selected color
         $(this).data("cllast_style", className);

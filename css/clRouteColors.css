@@ -1,18 +1,36 @@
 .clCSSBg {
     background-repeat: no-repeat;
     background-position: 0px 0px;
-    padding-left: 0px; /*8%;*/
+    padding-left: 0px; 
 	/*background-image: none;*/
-    background-image: URL('https://cdn2.iconfinder.com/data/icons/flat-ui-icons-24-px/24/lock-24-48.png');
+    /*aabackground-image: URL('https://cdn2.iconfinder.com/data/icons/flat-ui-icons-24-px/24/lock-24-48.png'); */
     background-size: 100%;
 
 }
 
+
 li.clCSSBgIconOnly {
 	text-indent: 0px !important;
 }
-div.clCSSBgIconOnly {
-	text-indent: -9999px;
+/* options in popup */
+a.clCSSBgIconOnly {
+	text-indent: 25px;
+}
+/* currently selected option */
+div.clCSSBgIconOnly a.ui-btn {
+	padding-left: 0px;
+	text-indent: 0px;
+}
+div.clCSSBgIconOnly a.ui-btn span{
+	background-position: 30px 4px;
+	background-size: 25px 25px;
+}    
+    
+
+.clRouteDropdown div.ui-select.clCSSBgIconOnly .ui-btn span {
+	padding-top: 6px !important;
+	padding-bottom: 10px !important;
+	border: 0px solid red;
 }
 .ui-icon-clRouteDropdownIcon span {
 	border-radius: 8px;
@@ -23,7 +41,7 @@ div.clCSSBgIconOnly {
     background-position: 10px 0px;
     background-size: 40px 40px;
     padding-left: 40px; /*8%;*/
-	background-image: URL('../files/views/assets/image/platte.jpg');
+	background-image: URL('../files/views/assets/image/platte.jpg') !important;
 }
 .Senkrecht {
     background-repeat: no-repeat;
@@ -45,16 +63,6 @@ div.clCSSBgIconOnly {
     background-size: 40px 40px;
     padding-left: 40px; /*8%;*/
     background-image: URL('../files/views/assets/image/dach.jpg');
-}
-
-.clColorBg {
-    background-repeat: no-repeat;
-    background-position: 0px 0px;
-    padding-left: 0px; /*8%;*/
-	background-image: none;
-    abackground-image: URL('https://cdn2.iconfinder.com/data/icons/flat-ui-icons-24-px/24/lock-24-48.png');
-    background-size: 100%;
-	background-color: none;
 }
 
 

@@ -31,7 +31,7 @@
 					</fieldset>
 					<div style="margin-top: 0px; padding-top: 0px">
 					<!-- Dropdowns.. -->
-						<div class="clRouteDropdown clFullWidth">
+						<div class="clRouteDropdown">
 							<!-- gradeSelect -->
 							<label class="clUIElement" for="newRouteLog_gradeSelect">Grade</label>
 							<select id="newRouteLog_gradeSelect" name="newRouteLog_gradeSelect"
@@ -39,9 +39,9 @@
 									data-native-menu="true" tabindex="2"
 							></select>
 						</div>
-						<div class="clRouteDropdown clFullWidth">
+						<div class="clRouteDropdown">
 							<!-- colourSelect -->
-							<label class="clUIElement" for="newRouteLog_colourSelect">some long Colour</label>
+							<label class="clUIElement" for="newRouteLog_colourSelect">Colour</label>
 							<select id="newRouteLog_colourSelect" name="newRouteLog_colourSelect" 
 									data-theme="a"
 									data-inline="false" data-mini="false" data-icon="clRouteDropdownIcon" data-iconpos="right" 
@@ -51,20 +51,7 @@
 								</option>
 							</select>
 						</div>
-						<!-- characterSelect -->
-						<div class="clRouteDropdown clFullWidth">
-							<label class="clUIElement" for="newRouteLog_characterSelect">Character</label>
-							<select id="newRouteLog_characterSelect" name="newRouteLog_characterSelect" 
-									data-theme="a"
-									data-inline="false" data-mini="false" data-icon="clRouteDropdownIcon" data-iconpos="right" 
-									data-native-menu="false" tabindex="6">
-								<option value="" rerender="characterSelect" selected="selected">
-									character
-								</option>
-							</select>
-						</div>
 					</div>
-				<br><br><br><br><br><br><br><br><br>
 				<!-- Tick types... -->
 				<div style="border: 0px solid green; text-align: center">
 					<fieldset 
@@ -87,18 +74,35 @@
 					</fieldset>												
 				</div>
 
-				<div data-role="collapsible" data-mini="true" data-iconpos="left">
+				<div data-role="collapsible" data-mini="true" data-iconpos="left" class="clExtra">
 					<h4>Extra</h4>
-					<ul data-role="listview">
+						<ul data-role="listview">
 						<li>
+						<!-- characterSelect -->
+						<div class="clRouteDropdown clFullWidth">
+							<label class="clUIElement" for="newRouteLog_characterSelect">Character</label>
+							<select id="newRouteLog_characterSelect" name="newRouteLog_characterSelect" 
+									data-theme="a"
+									data-inline="false" data-mini="false" data-icon="clRouteDropdownIcon" data-iconpos="right" 
+									data-native-menu="false" tabindex="6">
+								<option value="" rerender="characterSelect" selected="selected">
+									character
+								</option>
+							</select>
+						</div>
+						</li><li>
+						<div >
 							<label class="clUIElement" for="newRouteLog_commentText">Comment</label>
-							<textarea style="resize: none; height: 30px" id="newRouteLog_commentText" name="newRouteLog_commentText" tabindex="9" placeholder="comments?"></textarea>
-						</li>
-						<li>
+							<textarea style="padding-left:0px; margin-left: 0px; resize: none; height: 30px" id="newRouteLog_commentText" name="newRouteLog_commentText" tabindex="9" placeholder="comments?"></textarea>
+						</div>
+						</li><li>
+						<div>
 							<div data-role="none" id="newRouteLog_ratingSelectWrapper">
 							</div>
+						</div>
 						</li>
-					</ul>
+						</ul>
+						
 				</div>				
 
 				<div id="newRouteLog_save_tick" class="clButton clFullWidth clNewRouteLog">
