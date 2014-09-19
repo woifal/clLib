@@ -1035,7 +1035,7 @@ clLib.UI.elements = {
 			var todaysTopScore = clLib.calculateScore(todaysTopRouteLogs);
 			//alert("Todays score is: " + todaysTopScore);
 
-			var titleText = "Score: <strong>" + todaysTopScore + "</strong>"
+			var titleText = "Today: <strong>" + todaysTopScore + "</strong> pts"
 
 
 			clLib.loggi("getting today's route logs..");
