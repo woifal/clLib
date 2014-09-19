@@ -22,9 +22,9 @@ mongolab.prototype.setAdminDBSession = function(adminDBSession) {
 var clLib = {};
 clLib.mongolab = {};
 clLib.mongolab.mongoURI = "mongodb://clAdmin:blerl1la@ds053438.mongolab.com:53438/climbinglog";
-clLib.mongolab.conn = mongo.db(clLib.mongolab.mongoURI, {safe: false});
+clLib.mongolab.conn = mongo.db(clLib.mongolab.mongoURI, {safe: true});
 
-clLib.mongolab.conn.collection("Users").ensureIndex( { "username": 1 }, { unique: true } );
+//clLib.mongolab.conn.collection("Users").ensureIndex( { "username": 1 }, { unique: true } );
 
 mongolab.prototype.loginUser = function(options, callbackFunc, errorFunc) {
 	var userInstance = options["data"];
@@ -44,7 +44,8 @@ mongolab.prototype.getEntities = function(options, callbackFunc, errorFunc) {
 	
 	util.log("getting " + entityName + " with where >" + JSON.stringify(whereObj) + "<...");
 	db.collection(entityName).find(whereObj || null).toArray(function(err, items) {
-		util.log(JSON.stringify("items: " + JSON.stringify(items).substring(0,100)));
+		util.log(JSON.stringify("err: " + JSON.stringify(err)));
+		util.log(JSON.stringify("items: " + JSON.stringify(items)));
 		if (JSON.stringify(err) != "{}" && JSON.stringify(err) != "null") {
 			util.log("ERROR:" + JSON.stringify(err));	
 			resultObj["error"] = JSON.stringify(err);
@@ -59,35 +60,40 @@ mongolab.prototype.getEntities = function(options, callbackFunc, errorFunc) {
 		util.log("mongo results received.." + JSON.stringify(items.length));
 		
 		if(callbackFunc) {
-			util.log("Calling callback function, result OK!");
-			callbackFunc(items);
+			util.log("Calling callback function, result OK(" + JSON.stringify(items) + ")!");
+			return callbackFunc(items);
 		}
 	});
 };
 
 mongolab.prototype.insertEntity = function(options, callbackFunc, errorFunc) {
 	util.log("inserting entity >"+ JSON.stringify(options) + "<");
-	var resultObj = {};
+	var resultObj = {}, errorStr = "";
 	var entityName = options["entity"];
 	var entityValues = options["values"];
 
 	if(!errorFunc) errorFunc = this.defaults["errorFunc"];
 	
-	var db = clLib.mongolab.conn;
-	
+	var db = mongo.db(clLib.mongolab.mongoURI, {safe: true});
+
 	util.log("inserting into " + entityName + "");
 	var userColl = db.collection(entityName);
-	userColl.insert(entityValues, function(err) {
+	return userColl.insert(entityValues, function(err) {
 		if (JSON.stringify(err) != "{}" && JSON.stringify(err) != "null") {
 			util.log("ERROR:" + JSON.stringify(err));	
-			resultObj["error"] = JSON.stringify(err);
-			errorFunc(resultObj);
+			if(err["err"].indexOf("E11000") == 0) {
+				errorStr = entityName + " already exists!";
+			}
+			else {
+				errorStr = JSON.stringify(err);
+			}
+			return errorFunc(errorStr);
 		}
 		util.log("inserted >" + JSON.stringify(entityValues));
 
 		if(callbackFunc) {
 			util.log("Calling callback function, result OK!");
-			callbackFunc(entityValues);
+			return callbackFunc(entityValues);
 		}
 	});
 };
@@ -126,7 +132,7 @@ mongolab.prototype.updateEntity = function(options, callbackFunc, errorFunc) {
 			util.log("updated >" + rowCount + "< rows.");
 
 			if(callbackFunc) {
-				util.log("Calling callback function, result OK!");
+				util.log("Calling callback function with >" + JSON.stringify(entityData) + "<, result OK!");
 				return callbackFunc(entityData);
 			}
 		});

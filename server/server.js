@@ -28,15 +28,24 @@ clLib.server.usersCollectionName = "Users";
 
 clLib.server.defaults = {
 	"errorFunc" : function(errorObj, res) {
-		util.log("standard errorFunc: " + JSON.stringify(errorObj));
+		util.log("standard errorFunc(" + typeof(errorObj) + "): " + JSON.stringify(errorObj));
+
 		var errorStr = "?";
 		if(errorObj instanceof Error) {
-			errorStr = JSON.stringify(errorObj.message);
+			util.log("instance is ERROR obj(" + JSON.stringify(errorObj.toString()) + ")");
+			errorStr = errorObj.message;
 		} 
+		else if(typeof(errorObj) == "string") {
+			util.log("instance is string!!");
+			errorStr = errorObj;
+		}
 		else {
+			util.log("assume errorObj is object!");
 			errorStr = JSON.stringify(errorObj);
 		}
-		res.send(500, "error >" + errorStr + "<");
+		util.log("ASDFASFDASFD" + errorStr);
+//		res.send(500, "error >" + errorStr + "<");
+		res.send(500, errorStr);
 	}
 };
  
@@ -198,7 +207,7 @@ server.post("/signup", function (req, res) {
 		
 		var plainPwd = userObj.password;
 		
-		authHandler.hash(userObj.password, userObj.username, 
+		return authHandler.hash(userObj.password, userObj.username, 
 		function(hashpwd) {
 			util.log("HASHPWD IS >" + hashpwd + "<");
 			userObj.password = hashpwd;
@@ -519,49 +528,59 @@ server.get('/setPassword', function(req, res) {
 		},
 		function(resultObj) { 
 		// upon success...
+			util.log("Found resultObj >" + JSON.stringify(resultObj) + "<"); 
+			
 			var userDetails = resultObj[0];
-			util.log("Found user >" + fooFunc(userDetails) + "<"); 
+			util.log("Found user >" + JSON.stringify(userDetails) + "<"); 
 			
 			// store newly generated token
 			var dbVerificationToken = userDetails["verificationToken"];
 			util.log("verificationToken is >" + dbVerificationToken + "<");
 			if(req.params["verificationToken"] == dbVerificationToken) {
-				DBHandler.updateEntity({
-					entity : clLib.server.usersCollectionName,
-					id : userDetails["_id"],
-					data : {
-						"verificationToken": "",
-						"password": req.params["password"]
-					},
-				}
-				, function(resultObj) {
-					util.log("Token updated, password stored at >" + resultObj.data["_updatedAt"] + "<");
-					
-					// send token to user..
-					util.log("Sending email..");
-
-					
-					userDetails["newPassword"] = req.params["password"];
-					var options = {
-						"template": {
-							name: "passwordChanged",
-							vars: userDetails
-						},
-						"to": userDetails["email"]
+				return authHandler.hash(req.params["password"], userDetails.username, 
+					function(hashpwd) {
+						util.log("HASHPWD IS >" + hashpwd + "<");
+			
+						return DBHandler.updateEntity({
+							entity : clLib.server.usersCollectionName,
+							id : userDetails["_id"],
+							data : {
+								"verificationToken": "",
+								"password": hashpwd
+							},
+						}
+						, function(resultObj) {
+							util.log("Token updated, password stored.");
+							
+							// send token to user..
+							util.log("Sending email..");
+						
+							userDetails["newPassword"] = req.params["password"];
+							var options = {
+								"template": {
+									name: "passwordChanged",
+									vars: userDetails
+								},
+								"to": userDetails["email"]
+							}
+							mailHandler.send(
+								{"emailOptions" : options}, 
+							function(responseObj) {
+								util.log("email sent!!! " + JSON.stringify(responseObj));
+								userDetails["password"] = hashpwd;
+								util.log("RETURNING " + JSON.stringify(userDetails));
+								res.send(JSON.stringify(userDetails));
+							}
+							,errHandler
+							);
+						}
+						, errHandler
+						);
 					}
-					mailHandler.send(
-						{"emailOptions" : options}, 
-					function(responseObj) {
-						util.log("email sent!!! " + JSON.stringify(responseObj));
-						res.send("email sent >" + JSON.stringify(responseObj) + "<");
-					}
-					,errHandler
-					);
-				}
-				, errHandler
+					, errHandler
 				);
 			} else {
-				res.send("tokens: >" + req.params["verificationToken"] + "< and >" + dbVerificationToken+ 	 "< do not match!");
+				return errHandler("tokens: >" + req.params["verificationToken"] + "< and >" + dbVerificationToken+ 	 "< do not match!");
 			}
 		}
 		,errHandler

@@ -47,6 +47,7 @@ var fbOAuth2Client = {
     ,REDIRECT_URL : RESTServerURL + "/verifyOAuth2Code"
     ,scopes : [
         "public_profile"
+		,"user_friends"
         ,"email"
     ]
     ,generateAuthUrl : function() {
@@ -482,6 +483,7 @@ auth.prototype.authenticate = function(authObj, callbackFunc, errorFunc) {
 
             util.log("plainPwd >" + authObj["plainPwd"] + "<, >" + (authObj["plainPwd"] != true) + "<");
             if(authObj["plainPwd"] == "true") {
+				util.log("password is PLAIN! need to hash it..");
                 return meMyselfAndI.hash(password, userName, 
                 function (hash) {
                     util.log("hash for password >" + password + "< is >" + hash + "<");
@@ -493,6 +495,7 @@ auth.prototype.authenticate = function(authObj, callbackFunc, errorFunc) {
                 }
                 );
             } else {
+				util.log("password is HASHED! use it..");
                 return checkPassword(password, realPwd, callbackFunc, errorFunc);
             }
         }

@@ -12,45 +12,58 @@
 @@include('grunt_includes/html_jqm_content.html', {"pageName": "users_verification"})
 
 
-				<div id="users_verification_notificationContainer" 
+				<div id="users_verification_loginErrorContainer" 
 					style="white-space: normal" data-role="collapsible" data-collapsed="true" data-content-theme="b" data-theme="c" 
 					data-iconpos="right" adata-expanded-icon="alert" adata-collapsed-icon="alert"
 				>
-					<h4 style="white-space: normal" ><span style="white-space: normal" id="users_verification_notification">You're about to change your password.</span></h4>
+					<h4 style="white-space: normal" ><span style="white-space: normal" id="users_verification_loginError">You're about to change your password.</span></h4>
 				</div>
 
                 <div>
                     <!-- userName -->
                     <div>
-                        <label style="font-size: 8px;" for="users_verification_currentUser">User name</label>
-                        <input type="text" id="users_verification_currentUser" name="users_verification_currentUser"
+                        <label class="clUIElement" style="font-size: 8px;" for="users_verification_currentUser">User name</label>
+                        <input class="clTextInput" type="text" id="users_verification_currentUser" name="users_verification_currentUser"
                                value="" placeholder="Username..." data-theme="a" tabindex="7" />
                     </div>
-                    <!-- verificationToken-->
+                    <!-- verification token -->
                     <div>
-                        <label style="font-size: 8px;" for="users_verification_token">Verification Token</label>
-                        <input type="text" id="users_verification_token" name="users_verification_token"
-                               value="" placeholder="Verification token" data-theme="a" tabindex="7" />
+                        <label class="clUIElement" style="font-size: 8px;" for="users_verification_verificationToken">Verification Token</label>
+                        <input class="clTextInput" type="password" id="users_verification_verificationToken" name="users_verification_verificationToken"
+                               type="text" value="" placeholder="Verification Token..." data-theme="a" tabindex="7" />
                     </div>
-                    <!-- newPassword-->
+                    <!-- password -->
                     <div>
-                        <label style="font-size: 8px;" for="users_verification_newPassword">New password</label>
-                        <input type="text" id="users_verification_newPassword" name="users_verification_newPassword"
-                               value="" placeholder="New password" data-theme="a" tabindex="7" />
+                        <label class="clUIElement" style="font-size: 8px;" for="users_verification_password">Password</label>
+                        <input class="clTextInput" type="password" id="users_verification_password" name="users_verification_password"
+                               type="text" value="" placeholder="Password..." data-theme="a" tabindex="7" />
                     </div>
-                    
-                    <!-- request token -->
-                    <a data-role="button"
-                       id="users_verification_requestTokenButton" data-corners="true" data-icon="check" data-iconpos="right"
-                       data-mini="false" data-theme="a" tabindex="8">
-                        Request verification token
-                    </a>
-                    <!-- change password  -->
-                    <a data-role="button"
-                       id="users_verification_changePassword" data-corners="true" data-icon="check" data-iconpos="right"
-                       data-mini="false" data-theme="a" tabindex="8">
-                        Change Password
-                    </a>
+					
+
+					<!-- Request token button -->
+					<div id="users_verification_requestTokenButton" class="clButton clSmall">
+						<div>
+						<a>
+							<div>
+								<img src="files/views/assets/image/img_40_40/button_check.png"></img>
+							</div>
+						</a>
+						<span>New Token</span>
+						</div>
+					</div>
+					<!-- Change password button -->
+					<div id="users_verification_changePassword" class="clButton clSmall">
+						<div>
+						<a>
+							<div>
+								<img src="files/views/assets/image/img_40_40/button_check.png"></img>
+							</div>
+						</a>
+						<span>Change Pwd</span>
+						</div>
+					</div>
+					
+
                 </div>
 				
 			</div>

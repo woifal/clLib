@@ -6,7 +6,7 @@ var async = require("async");
 
 var mongoURI ="";
 mongoURI = "mongodb://clAdmin:blerl1la@ds053438.mongolab.com:53438/climbinglog";
-var conn = mongo.db(mongoURI, {safe: false});
+var conn = mongo.db(mongoURI, {safe: true});
 
 var args = process.argv.splice(2);
 var tableName = args[0];
@@ -20,11 +20,7 @@ var exitCallBack = function() {
 conn.bind('Users');
 
 
-function testQuery(i) {
-	util.log("i is " + i);
-	if(i >= 10) {
-		return;
-	}
+function testQuery(nextFunc) {
 	var coll = conn.collection(tableName);
 	if(!coll) {
 		util.log("NO coll " + tableName + "found..");
@@ -35,7 +31,7 @@ function testQuery(i) {
 		}
 		
 		util.log(JSON.stringify(items.length));
-		testQuery(++i);
+		util.log(JSON.stringify(items));
 	});
 
 };
@@ -46,7 +42,7 @@ function testUpdate(i) {
 	if(i >= 10) {
 		return;
 	}
-	var coll = conn.Users;
+	var coll = conn.collection(tableName);
 	if(!coll) {
 		util.log("NO coll " + tableName + "found..");
 	}
@@ -61,7 +57,31 @@ function testUpdate(i) {
 
 };
 
-testUpdate(1);
-//testQuery(1);
+function testInsert(nextFunc) {
+	var coll = conn.collection(tableName);
+	//coll.ensureIndex( { "username": 1 }, { unique: true } )
+	if(!coll) {
+		util.log("NO coll " + tableName + "found..");
+	}
+	coll.insert({"username": "gere@chello.at"}, function(err, items) {
+		util.log("ERROR:" + err);
+		if (err) {
+			util.log("ERROR:" + err.message);
+		}
+		else {
+			util.log(JSON.stringify(items));
+			return nextFunc(nextFunc);
+		}
+	});
+
+};
+
+
+testInsert(function() {
+	return testInsert(function() {
+		return testQuery()
+	})
+});
+//testUpdate(1);
 
 util.log("Done");
