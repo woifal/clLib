@@ -279,14 +279,22 @@ clLib.REST.deleteUser = function (userInstance, successFunc, errorFunc) {
 	clLib.REST.execAJAXRequest(reqOptions, successFunc, errorFunc);
 }
 
-clLib.REST.changePassword = function (options, callbackFunc, errorFunc) {
-	options.uri = clLib.REST.clLibServerURI + "/setPassword";
-	clLib.REST.execGET(options, callbackFunc, errorFunc);
+clLib.REST.changePassword = function (userInstance, successFunc, errorFunc) {
+    var reqOptions = {};
+	reqOptions["uri"] = clLib.REST.clLibServerURI + "/setPassword";
+	reqOptions["method"] = "GET";
+	reqOptions["params"] = userInstance;
+	reqOptions["allowNoSessionToken"] = true;
+	clLib.REST.execAJAXRequest(reqOptions, successFunc, errorFunc);
 }
 
-clLib.REST.requestVerification = function(options, callbackFunc, errorFunc) {
-	options.uri = clLib.REST.clLibServerURI + "/requestVerification";
-	clLib.REST.execGET(options, callbackFunc, errorFunc);
+clLib.REST.requestVerification = function(userInstance, successFunc, errorFunc) {
+    var reqOptions = {};
+	reqOptions["uri"] = clLib.REST.clLibServerURI + "/requestVerification";
+	reqOptions["method"] = "GET";
+	reqOptions["params"] = userInstance;
+	reqOptions["allowNoSessionToken"] = true;
+	clLib.REST.execAJAXRequest(reqOptions, successFunc, errorFunc);
 };
 
 clLib.REST.requestStats = function(options, callbackFunc, errorFunc) {
