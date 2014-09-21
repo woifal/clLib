@@ -208,17 +208,18 @@ clLib.PAGES.handlers = {
         "pagecreate": function() {
             //alert("444isave handler..");
             $("#preferences_cancelButton").die("click").live("click", function () {
-                clLib.UI.fillUIelements("preferences", "preferences");
+//                clLib.UI.fillUIelements("preferences", "preferences");
 //                alert("reset!");
-                history.back();
+				clLib.PAGES.changeTo("clLib_startScreen.html");
+//                history.back();
             });
 
             $("#preferences_saveButton").die("click").live("click", function () {
 //				clLib.UI.execWithMsg(function() {
                     localStorage.setItem("currentJqmSlide", "preferences");
                     clLib.UI.save({}, function() {
-						clLib.UI.resetUIelements("newRouteLog", "preferences");
-						clLib.UI.hideLoading(); 
+//						clLib.UI.resetUIelements("newRouteLog", "preferences");
+//						clLib.UI.hideLoading(); 
 							//alert("going back.."); 
 							//history.back(); 
 						clLib.PAGES.changeTo("clLib_startScreen.html");
@@ -251,11 +252,6 @@ clLib.PAGES.handlers = {
 			// pre-fetch newRouteLog page..
 	        // $.mobile.loadPage("clLib_preferences.html");
 
-	        // Link to preferences page..
-	        $("#startScreen_preferencesButton").die("click").click(function () {
-	            clLib.PAGES.changeTo("clLib_preferences.html");
-	        });
-			
 			$("#startScreen_statsButton").die("click").click(function () {
 	            clLib.PAGES.changeTo("clLib_stats.html");
 	        });
@@ -685,12 +681,7 @@ clLib.PAGES.handlers = {
             $("#users_facebookLoginButton").on("click", function () {
                 return authFunc("facebook");
             });
-            
-			
-			$("#users_preferencesButton").die("click").click(function () {
-				clLib.PAGES.changeTo("clLib_preferences.html");
-			});
-            
+	
 			$("#users_clLoginButton").die("click").click(function () {
 				clLib.PAGES.changeTo("clLib_users_clLogin.html");
 			});
@@ -813,14 +804,6 @@ clLib.PAGES.handlers = {
 				}
 				, {text: "requesting password.."});
 			});
-	        
-			$("#users_preferencesButton").die("click").click(function () {
-				clLib.PAGES.changeTo("clLib_preferences.html");
-			});
-            
-
-
-            
             
 	    }
         , "pagebeforeshow": function (event, ui, pageId) {
