@@ -8,6 +8,15 @@
 
 }
 
+.clCSSBg.clTicktypesSmall {
+	margin-left: 22px; 
+	margin-top: 2px; 
+	float:left; 
+	width: 25%; 
+	border-radius: 8px; 
+	border: 0px solid yellow; 
+	height: 18px;
+}
 
 li.clCSSBgIconOnly {
 	text-indent: 0px !important;

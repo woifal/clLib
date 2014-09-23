@@ -100,19 +100,19 @@ clLib.UI.tickTypeSymbolFunc = function(tickTypeName, dataRow) {
 
 clLib.UI.tickTypeSymbols = {
 	Colour : function(dataRow) {
-		return $('<div style="margin-left: 22px; margin-top: 2px; float:left; width: 25%; border-radius: 8px; border: 0px solid yellow; height: 18px;" class="clCSSBg ' + dataRow["Colour"].replace(/\//g, '-') + '"></div>');
+		return $('<div class="clTicktypesSmall clCSSBg ' + dataRow["Colour"].replace(/\//g, '-') + '"></div>');
 	}
 	,tickType_redpoint : function(dataRow) {
-		return $('<span style="float: left; width: 25%; text-align: left; border: 0px solid red;"><img style="padding-top: 0px; padding-bottom: 0px; margin-left: 0px; width:20px; height: 20px" src="files/views/assets/image/redpoint.png"></span>');
+		return $('<span class="clTicktypesSmall"><img class="redpoint"></span>');
 	}
 	, tickType_flash : function(dataRow) {
-		return $('<span style="float: left; width: 25%; text-align: left; border: 0px solid red;"><img style="padding-top: 0px; padding-bottom: 0px; margin-left: 0px; width:20px; height: 20px" src="files/views/assets/image/flash.png"></span>');
+		return $('<span class="clTicktypesSmall"><img class="flash"></span>');
 	}
 	, tickType_attempt :function(dataRow) {
-		return $('<span style="float: left; width: 25%; text-align: left; border: 0px solid red;"><img style="padding-top: 0px; padding-bottom: 0px; margin-left: 0px; width:20px; height: 20px" src="files/views/assets/image/try.png"></span>');
+		return $('<span class="clTicktypesSmall"><img class="try"></span>');
 	}
 	, tickType_toprope : function(dataRow) {
-		return $('<span style="float: left; width: 25%; text-align: left; border: 0px solid red;"><img style="padding-top: 0px; padding-bottom: 0px; margin-left: 0px; width:20px; height: 20px" src="files/views/assets/image/toprope.png"></span>');
+		return $('<span class="clTicktypesSmall"><img class="toprope"></span>');
 	}
 	, tickType_delete : function(dataRow) {
 		var aLink = $('<span style="text-align: right; border: 0px solid red;"><img style="margin-left: 13px; border: 0px solid red; width:20px; height: 20px" src="files/views/assets/image/delete-route.png"></span>');
