@@ -244,7 +244,7 @@ clLib.gradeConfig = {
 			"5.15c" : 1450
 		}
 	}
-	,"US Boulder" : {
+	,"US-Boulder" : {
 		defaultGrade: "V2",
 		tickTypeFactors : clLib.defaultTickTypeFactors,
 		grades : {
@@ -302,7 +302,7 @@ clLib.gradeConfig = {
 			"XIIIa" :	1400
 		}
 	}
-	,"South Africa" : {
+	,"SouthAfrica" : {
 		defaultGrade: "19",
 		tickTypeFactors : clLib.defaultTickTypeFactors,
 		grades : {
