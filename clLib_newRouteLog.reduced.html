@@ -30,9 +30,7 @@
 					>
 					</fieldset>
 					<div style="margin-top: 0px; padding-top: 0px">
-					<!-- Dropdowns.. -->
 						<div class="clRouteDropdown">
-							<!-- gradeSelect -->
 							<label class="clUIElement" for="newRouteLog_gradeSelect">Grade</label>
 							<select id="newRouteLog_gradeSelect" name="newRouteLog_gradeSelect"
 									data-theme="a" data-inline="false" data-mini="false" data-icon="clRouteDropdownIcon" data-iconpos="right"
@@ -40,7 +38,6 @@
 							></select>
 						</div>
 						<div class="clRouteDropdown">
-							<!-- colourSelect -->
 							<label class="clUIElement" for="newRouteLog_colourSelect">Colour</label>
 							<select id="newRouteLog_colourSelect" name="newRouteLog_colourSelect" 
 									data-theme="a"
@@ -52,7 +49,9 @@
 							</select>
 						</div>
 					</div>
-				<!-- Tick types... -->
+
+				<div style="clear: both"></div>
+					<!-- Tick types... -->
 				<div style="border: 0px solid green; text-align: center">
 					<fieldset 
 						style="text-align: center"
@@ -60,7 +59,7 @@
 						data-role="controlgroup" data-type="horizontal" data-inset="true"
 						class="clFieldset clTicktypes"	
 					>
-						<input id="newRouteLog_tickType_redpoint" type="checkbox"/>
+						<input id="newRouteLog_tickType_redpoint" type="checkbox" checked="true"/>
 						<label for="newRouteLog_tickType_redpoint"><img class="redpoint"/></label>
 						
 						<input id="newRouteLog_tickType_flash" type="checkbox"/>
@@ -71,7 +70,7 @@
 						
 						<input id="newRouteLog_tickType_toprope" type="checkbox"/>
 						<label for="newRouteLog_tickType_toprope"><img class="toprope"/></label>
-					</fieldset>												
+					</fieldset>
 				</div>
 
 				<div data-role="collapsible" data-mini="true" data-iconpos="left" class="clExtra">
@@ -121,6 +120,8 @@
 				<div id="newRouteLog_routeLogContainer" data-role="collapsibleset">
 				</div>
 						
+						
+				<div class="clLoading">Loading...</div>
 				
         </div>
 @@include('grunt_includes/html_jqm_footer.html', {"pageName": "newRouteLog"})
