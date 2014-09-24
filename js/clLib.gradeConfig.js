@@ -244,7 +244,7 @@ clLib.gradeConfig = {
 			"5.15c" : 1450
 		}
 	}
-	,"US-Boulder" : {
+	,"USBoulder" : {
 		defaultGrade: "V2",
 		tickTypeFactors : clLib.defaultTickTypeFactors,
 		grades : {
