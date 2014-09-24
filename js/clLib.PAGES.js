@@ -121,7 +121,7 @@ clLib.PAGES.handlers = {
                         clLib.PAGES.changeTo("clLib_startScreen.html", null, event, 2500);
 //                    }
 //                    ,2500);
-	            }, {text: "Loading app.."}, 10);
+	            }, {text: "Loading app.."});
                 
 /*
 2DO:
@@ -132,7 +132,7 @@ clLib.PAGES.handlers = {
             if(urlAuthObj) {
                 clLib.UI.execWithMsg(function() {
                     clLib.PAGES.processAuthObj(urlAuthObj);
-	            }, {text: "Processing authentication.."}, 10);
+	            }, {text: "Processing authentication.."});
             };
 
         }
@@ -215,16 +215,10 @@ clLib.PAGES.handlers = {
             });
 
             $("#preferences_saveButton").die("click").live("click", function () {
-//				clLib.UI.execWithMsg(function() {
                     localStorage.setItem("currentJqmSlide", "preferences");
                     clLib.UI.save({}, function() {
-//						clLib.UI.resetUIelements("newRouteLog", "preferences");
-//						clLib.UI.hideLoading(); 
-							//alert("going back.."); 
-							//history.back(); 
 						clLib.PAGES.changeTo("clLib_startScreen.html");
 					});
-	//			}, {text: "Saving preferences..."});
             });
 
             $("#preferences_currentUserReadOnly").on("click", function () {
@@ -326,7 +320,7 @@ clLib.PAGES.handlers = {
 	                clLib.UI.save({}, function() {
 						clLib.UI.resetUIelements("newRouteLog", "newRouteLog");
 					});
-	            }, {text: "Saving route logs.."}, 100);
+	            }, {text: "Saving route logs.."}, 200);
 	        });
 	        $("#newRouteLog_refreshButton").on("click", function () {
 	            clLib.UI.resetUIelements("newRouteLog", "newRouteLog");
@@ -747,22 +741,13 @@ clLib.PAGES.handlers = {
 				clLib.UI.execWithMsg(function() {
 					clLib.UI.save({ additionalData: { action: "create" }}
 					, function(returnObj) {
-						//alert("got login response " + JSON.stringify(returnObj));
 						// Override current user info with response from signup callback..
-						clLib.setUserInfo(returnObj, true);
-
-						// login..
-						clLib.login(function() {
-							// ..and return to startPAge..
-							//alert("Successfully signed up!");
-							clLib.PAGES.changeTo("clLib_startScreen.html");
-						}
-						, function(e) {
-							clLib.loginErrorHandler(e);
-                            clLib.PAGES.changeTo("clLib_users.html");
-                        }
-						);
-
+						returnObj["name"] = returnObj["username"];
+						returnObj["displayName"] = returnObj["username"];
+						returnObj["id"] = returnObj["username"];
+						returnObj["image"] = {};
+						returnObj["image"]["url"] = "";
+						return clLib.PAGES.processAuthObj(JSON.stringify(returnObj));
 					}
 					, function(e) {
 						//alert("error " + JSON.stringify(e));
@@ -839,7 +824,7 @@ $("div[data-role=page]").die(eventsToBind).live(eventsToBind, function (event, u
 clLib.PAGES.changeTo = function(newURL, urlData, event, timeoutMillis) {
 	console.log("changing to " + newURL);
 
-    clLib.UI.execWithMsg(function() {
+//    clLib.UI.execWithMsg(function() {
         
         // If event is passed in, stop propagating it..
         if(event) {
@@ -877,7 +862,7 @@ clLib.PAGES.changeTo = function(newURL, urlData, event, timeoutMillis) {
             //$.mobile.navigate(newURL);	
         }
 
-    }, {text: "changing pagiii.."}, timeoutMillis);
+//    }, {text: "changing pagiii.."}, timeoutMillis);
 
 	
 };
