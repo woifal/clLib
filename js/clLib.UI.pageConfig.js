@@ -552,12 +552,6 @@ clLib.UI.elements = {
 				strDataObj: function() { return clLib.UI.getVal("selectedGradeSystems"); }()
 				,localStorageVar : "selectedGradeSystems"
 			});
-/*
-		return clLib.UI.defaultRefreshHandler($this, {
-				selectedValue : localStorage.getItem("defaultGradeSystem") || "UIAA",
-				preserveCurrentValue : true,
-				additionalValue : null	
-			});*/
 		}
 		,"refreshOnUpdate" : {
 			default: {
@@ -570,11 +564,22 @@ clLib.UI.elements = {
 		,"dbField" : "GradeSystem"
 		,"refreshFromEntity" : "Grades"
 		,"refreshHandler" : function($this) { 
-			return clLib.UI.defaultRefreshHandler($this, {
+			clLib.UI.defaultRefreshHandler($this, {
 				selectedValue : localStorage.getItem("selectedGradeSystems") || clLib.UI.varDefaults["selectedGradeSystems"],
 				preserveCurrentValue : true,
 				additionalValue : null	
 			});
+			$("input[type='checkbox']", $this).off("click").on("click", function(e) {
+				var $optionEl = $(this);
+				//alert("this checked is" + ($optionEl.is(":checked")));
+				var selectedOptions = clLib.UI.getVal(clLib.UI.elementNameFromId($this.attr("id")));
+				var selectedOptionsArr = selectedOptions ? selectedOptions.split(",") : [];
+				if(selectedOptionsArr.length > 3) {
+					alert("Only 3 default grade systems can be selected!");
+					$(this).prop("checked", false);
+				}
+			});
+
 		}
 		,"refreshOnUpdate" : {
 			default: {
@@ -704,29 +709,6 @@ clLib.UI.elements = {
 			return $this.prop("checked");
 		}
     }, clLib.UI.elementConfig.plainElement)
-/*	"tickType" : {
-		"dbField" : "TickType"
-		,"refreshHandler" : function($this) { 
-			clLib.populateSelectBox({
-				selectBoxElement : $this
-				,dataObj : [
-					"Red Point",
-					"Flash",
-					"Onsight",
-					"Attempt",
-					"Top Rope"
-				]
-				,preserveCurrentValue : true
-				,additionalValue : {
-					text: "TickType?",
-					value: "__UNKNOWN__"
-				}
-				//clLib.UI.NOTSELECTED
-				,selectedValue : "Red Point"
-			});
-		}
-	},
-*/
 	, "sectorSelect" : {
 		"dbField" : "Sector"
 		,"dependingOn": {
