@@ -1790,14 +1790,17 @@ clLib.UI.addCollapsiblesNEW = function(options) {
 	$(".addMore *", $containerContent)
 		.off("click")
 		.on("click", function() {
-			//alert("addmore clicked for " + $container.attr("id") + "!");
+			// Remember add-more-button's position
+			var position = $(this).offset().top;
+			
 			clLib.UI.addCollapsiblesNEW({
 				container : $container
 				,items : items
 				,clearCurrentItems : false
 			});
-			//$container.trigger("create");
-	
+			
+			// Scroll down so that collapsible header in on top of viewport..
+			$.mobile.silentScroll(position);
 	});
 	// remember number of items  currently shown
 	var itemsShown = $containerContent.data("itemsShown");

@@ -1053,6 +1053,12 @@ clLib.UI.elements = {
 				,items : todaysRouteLogs
 				,clearCurrentItems : true
 			});
+
+			// Scroll down so that collapsible header in on top of viewport..
+			$container.on("collapsibleexpand", "[data-role=collapsible]", function () {
+				var position = $(this).offset().top;
+				$.mobile.silentScroll(position);
+			});
 			
 		
 		}
