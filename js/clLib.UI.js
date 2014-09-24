@@ -915,6 +915,7 @@ clLib.UI.showLoading = function(spinnerParams) {
 		append(
 			spinnerParams["text"]
 		)
+		.css("top", (window.pageYOffset + 150) + "px")
 		.show();
 	$(".clLoadingBg")
 		.show();
