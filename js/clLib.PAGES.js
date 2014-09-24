@@ -910,12 +910,7 @@ clLib.PAGES.processAuthObj = function(urlAuthObj) {
 	//       alert("userinfo was set..");
 			return clLib.login(
 			function() {
-	//                alert("12312312312logged in to " + userObj["authType"] + "..");
-	//                clLib.UI.byId$("displayName", pageId).trigger("refresh.clLib");
-
-	//                alert("changing to startscreen..");
-					clLib.PAGES.changeTo("clLib_startScreen.html");
-	//                alert("changed to startscreen..");
+				clLib.PAGES.changeTo("clLib_startScreen.html");
 			}
 			,errorFunc);
 		} catch(e) { alert("ERROR OF TYPE "  + e.name + " IS " + e.message + " !!!"); };

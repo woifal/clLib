@@ -16,9 +16,6 @@
 	<div
 	
 					style="
-					abackground: url(files/views/assets/image/home_background_320.png);
-					abackground-position: top bottom, left top;
-					abackground-repeat: no-repeat;
 					background-color: #f5f5f5; /*#073f7c;*/
 					padding-left: 0px;
 					padding-top: 20px;
@@ -26,18 +23,10 @@
 					border: 0px solid yellow;
 					width: 100%;	
 				"
-
-	
 	>
 
-					<div id="users_clLogin_loginErrorContainer" style="display: none; white-space: normal" data-role="collapsible" data-collapsed="true" data-content-theme="b" data-theme="c" data-iconpos="right" adata-expanded-icon="alert" adata-collapsed-icon="alert">
-						<h4 style="white-space: normal" ><span style="white-space: normal" id="users_clLogin_loginError">Not logged in.</span></h4>
-						<p>1) You can proceed with the app by simply providing a (currently unauthenticated) username below and setting online mode to "false" on the <a href="clLib_preferences.html">general preferences</a> - but your routes will be saved locally and will only by synced to the server after you successfully log in.</p>
-						<p>2) Provide a valid username and password and login</p>
-						<p>3) Create a new user</p>
-					</div>
+					<div id="users_clLogin_loginError"></div>
 
-		
                     <!-- userName -->
                     <div>
                         <label class="clUIElement" style="font-size: 8px;" for="users_clLogin_currentUser">User name</label>
@@ -113,7 +102,9 @@
 						</div>
 					</div>
                 </div>
-						<div class="clLoading">	asdf</div>
+
+				<div class="clLoading"></div>
+				<div class="clLoadingBg"></div>
 		
 			</div>
             <!-- mobilefooter1 -->

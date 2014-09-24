@@ -473,26 +473,28 @@ clLib.UI.elements = {
 			$("#" + $this.attr("id") + "Container").hide();
 			var elementName = clLib.UI.elementNameFromId($this.attr("id"));
 			//alert("loginError with name >" + elementName + "<");
-			var localVarValue = localStorage.getItem(elementName);
-			if(localVarValue) {
-				//alert("yes, value; " + localVarValue);
-				$("#" + $this.attr("id") + "Container").show();
-				//alert("AAAA setting element " + elementName + " to " + localStorage.getItem(elementName));
-				//$this.val(localVarValue).attr('selected', true).siblings('option').removeAttr('selected');
-				//$this.selectmenu("refresh", true);
-				var jqmDataRole = $this.attr("data-role");
-				if (jqmDataRole == "button") {
-					//alert("button - " + $this.attr("id") + " setting txt to " + localVarValue);
-					$this.text(localVarValue);
-		//            $this.find(".ui-btn-text").text(localVarValue);
-					$this.button("refresh");
-				} 
-				else if($this.prop("tagName") == "SPAN") {
-					$this.html(localVarValue);
-				}		
-				else {
-					$this.val(localVarValue);
-				}
+
+			var clInfoObj = clLib.getUIMessage();
+			$this.empty();
+
+			if(clInfoObj && clInfoObj["message"]) {
+				var $clInfoEl = $("<div>"+ clInfoObj["message"] + "</div>");
+				$clInfoEl
+/*					.css({
+						"background-color": "#00BB00"
+						,"color" : "white"
+						,"font-weight" : "normal"
+						,"margin-left" : "10px"
+						,"margin-right" : "10px"
+					})*/
+					.addClass("clInfo")
+					.addClass(clInfoObj["infoType"])
+					.buttonMarkup({
+						"icon": clInfoObj["infoType"] == "error" ? "alert" : "info"
+						,"iconpos": "right"
+						,"theme": "b"
+					});
+				$this.append($clInfoEl);
 				//alert("set value to " + localVarValue);
 			}
 		}

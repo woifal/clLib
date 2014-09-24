@@ -1359,7 +1359,7 @@ clLib.UI.userHandler = function (options, successFunc, errorFunc) {
 		return clLib.REST.createUser(userObj, 
 		function(returnObj) {
 			// Clear any "old" error messages 
-			localStorage.removeItem("loginError");
+			clLib.setUIMessage(new ClInfo("Logged in."), true);
 
 			var sessionToken = returnObj["sessionToken"];
 			//alert("retrieved sessionToken >" + sessionToken + "<");
@@ -1374,7 +1374,7 @@ clLib.UI.userHandler = function (options, successFunc, errorFunc) {
 		return clLib.REST.loginUser(userObj, 
 		function(returnObj) {
 			// Clear any "old" error messages 
-			localStorage.removeItem("loginError");
+			clLib.setUIMessage(new ClInfo("Logged in."), true);
 
 			//alert("got login response " + JSON.stringify(returnObj));
 			var sessionToken = returnObj["sessionToken"];
@@ -1396,7 +1396,7 @@ clLib.UI.userHandler = function (options, successFunc, errorFunc) {
 		return clLib.REST.deleteUser(userObj, 
 			function(returnObj) {
 				// Clear any "old" error messages 
-				localStorage.removeItem("loginError");
+				clLib.setUIMessage(new ClInfo("Logged in."), true);
 
 				localStorage.removeItem("currentPassword");
 				clLib.sessionToken = null;
@@ -1411,7 +1411,7 @@ clLib.UI.userHandler = function (options, successFunc, errorFunc) {
 		return clLib.REST.requestVerification(userObj
 			,function(returnObj) {
 				// Clear any "old" error messages 
-				localStorage.removeItem("loginError");
+				clLib.setUIMessage(new ClInfo("Logged in."), true);
 				localStorage.removeItem("currentPassword");
 				clLib.sessionToken = null;
 				returnObj["sessionToken"] = null;
@@ -1425,7 +1425,7 @@ clLib.UI.userHandler = function (options, successFunc, errorFunc) {
 		return clLib.REST.changePassword(userObj
 			,function(returnObj) {
 				// Clear any "old" error messages 
-				localStorage.removeItem("loginError");
+				clLib.setUIMessage(new ClInfo("Logged in."), true);
 				localStorage.removeItem("currentPassword");
 				clLib.sessionToken = null;
 				returnObj["sessionToken"] = null;
@@ -1437,7 +1437,7 @@ clLib.UI.userHandler = function (options, successFunc, errorFunc) {
 	else {
 		// could not login - alert error and return false
         clLib.sessionToken = null;
-		localStorage.setItem("loginError", "Could not login user: " + JSON.parse(JSON.parse(e.message)["responseText"])["description"]);
+		clLib.setUIMessage(new ClInfo("Could not login user: Unknown operation.", "error"), true);
 		return errorFunc(
 				new clLib.clException("CORE", 
 					"unknown operation >" + userAction + "< - don't know what to do for user.."));
@@ -1677,7 +1677,7 @@ clLib.prefsCompleteCheck = function (successFunc, errorFunc) {
         return successFunc();
     }
 	else {
-		localStorage.setItem("loginError", "No username specified.");
+		clLib.setUIMessage(new ClInfo("No username specified.", "error"), true);
 		return clLib.PAGES.changeTo("clLib_users.html", {noRedirectFlag: false});
 	}
 };

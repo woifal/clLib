@@ -18,13 +18,7 @@ body {
 }
 
 
-.clLoading {
-	background: red;
-	width: 400px;
-	height: 400px;
-	top: 200px;
-	left: 200px;
-}
+
 .clHidden {
 	visibility: hidden;
 }
@@ -144,21 +138,34 @@ input.ui-input-text, textarea.ui-input-text {
 
 
 .clLoading {
-	z-index: 100000;
+	z-index: 100000000;
 	position: absolute;
 	top: 150px;
 	left: 50%;
 	margin-left: -100px;
 	margin-top: -100px;
 	width: 200px;
-	height: 200px;
+	aheight: 200px;
 	border-radius: 15px;
 	box-shadow: inset 0px 2px 2px 1px #DDD;
 	border: 0px solid red;
 	display: none;
 	background-color: #000000;
 	color: #FFFFFF;
+	padding: 20px;
 }
+.clLoadingBg {
+	position: absolute;
+	z-index: 99999999;
+	width: 100%;
+	height: 100%;
+	top: 0px;
+	left: 0px;
+	background-color: #CCCCCC;
+	display: none;
+    opacity:  0.7;
+}
+
 
 
 /* outer button outline.. */
@@ -566,7 +573,7 @@ border: 1px solid red;
 	font-size: 1.0em !important;
 	line-height: 1.1em !important;
 	text-shadow: 0px 0px 1px black;
-	 letter-spacing: 2px;
+	letter-spacing: 2px;
 }
 .clFieldset.clGradeSystem .ui-controlgroup-controls .ui-radio{
 	width: 33.3333% !important;
@@ -576,6 +583,8 @@ border: 1px solid red;
 	border-radius: 6px 6px 0px 0px !important;
 	margin: 1px;
 	font-size: 15px;
+	hyphens: none !important;
+	text-overflow: ellipsis !important;
 }
 
 
@@ -637,31 +646,35 @@ border: 1px solid red;
 }
 .clTicktypes img.redpoint
 {
-	background: url("../files/views/assets/image/img_45_45/ticktype_redpoint.png");
+	abackground-image: url("../files/views/assets/image/img_45_45/ticktype_redpoint.png");
+	background-color: #964646;
 	background-size: 45px 45px;
 }
 .clTicktypes img.toprope {
-	background: url("../files/views/assets/image/img_45_45/ticktypes_toprope.png");
+	background-image: url("../files/views/assets/image/img_45_45/ticktypes_toprope.png");
 	background-size: 45px 45px;
+	background-color: #964646;
 }
 .clTicktypes img.flash {
 	border: 1px solid white; 
-	background: url("../files/views/assets/image/img_45_45/ticktypes_flash.png");
+	background-image: url("../files/views/assets/image/img_45_45/ticktypes_flash.png");
 	background-size: 45px 45px;
 }
 .clTicktypes img.try {
 	border: 1px solid white; 
-	background: url("../files/views/assets/image/img_45_45/ticktypes_try.png");
+	background-image: url("../files/views/assets/image/img_45_45/ticktypes_try.png");
 	background-size: 45px 45px;
 }
 .clTicktypesSmall img.redpoint
 {
 	background: url("../files/views/assets/image/img_45_45/ticktype_redpoint.png");
 	background-size: 20px 20px;
+	background-color: #964646;
 }
 .clTicktypesSmall img.toprope {
 	background: url("../files/views/assets/image/img_45_45/ticktypes_toprope.png");
 	background-size: 20px 20px;
+	background-color: #964646;
 }
 .clTicktypesSmall img.flash {
 	border: 1px solid white; 
@@ -835,3 +848,17 @@ border: 1px solid red;
 	border: 1px solid red;
 }
 
+.clInfo.ui-btn.ui-btn-b {
+	background-color: #00BB00;
+	color: white;
+	font-weight: normal;
+	margin-left: 10px;
+	margin-right: 10px;
+}
+.clInfo.ui-btn.ui-btn-b.error {
+	background-color: #FF0000;
+	color: white;
+	font-weight: normal;
+	margin-left: 10px;
+	margin-right: 10px;
+}

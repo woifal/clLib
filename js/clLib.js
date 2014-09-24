@@ -1,5 +1,10 @@
 "use strict";
 
+function ClInfo(message, infoType) {
+	this.message = message;
+	this.infoType = infoType || 'info';
+}
+
 
 var profiledFnCall = function(iterations, aFunc) {
 	var totalDuration = 0;
@@ -597,8 +602,11 @@ clLib.isOnline = function() {
 clLib.formatError = function(e) {
 	clLib.loggi("error type " + typeof(e));
 	clLib.loggi("JSON ERROR " + JSON.stringify(e));
-	// could not login - alert error and return false
-	clLib.sessionToken = null;
+	
+	// object is already a ClInfo instance? return it straightaway..
+	if(e instanceof ClInfo) {
+		return e;
+	}
 	
 	var errorMsg = e.message;
 	if(e.message && e.message["reponseText"] && JSON.parse(e.message)["responseText"]) {
@@ -616,29 +624,19 @@ clLib.formatError = function(e) {
 		//errorMsg = e;
 	}
 	
-	return errorMsg;
+	return new ClInfo(errorMsg, "error");
 };
 
 clLib.loginErrorHandler = function(e) {
-	var errorMsg = clLib.formatError(e);
+	var clInfoObj = clLib.formatError(e);
 
 	clLib.sessionToken = null;
-	localStorage.setItem("loginError", "Could not login user: " + errorMsg);
-	localStorage.setItem("notification", "Could not login user: " + errorMsg);
+	clLib.setUIMessage(clInfoObj, true);
+
 	clLib.UI.byId$("loginError", "users").trigger("refresh.clLib");
-	clLib.loggi("2loginError " + errorMsg);
 	return false;
 };
 
-clLib.requestAuthHandler = function(e) {
-	var errorMsg = clLib.formatError(e);
-
-	localStorage.setItem("notification", "error: " + errorMsg);
-	//alert("2loginError " + errorMsg);
-	clLib.UI.fillUIelements("users_verification", "users_verification");
-
-	return false;
-};
 
 clLib.loggedInCheck = function (callbackFunc, errorFunc) {
     //alert("clLib.loggedInCheck called..");
@@ -656,8 +654,8 @@ clLib.loggedInCheck = function (callbackFunc, errorFunc) {
 	//alert("no session token!");
 	
 	// no stored credentials. Ask user to provide some..
-	if(!clLib.getUserInfo("username")["username"]) {
-		return errorFunc(new Error("Please login."));
+	if(!clLib.getUserInfo()["username"]) {
+		return errorFunc(new ClInfo("Please login.", "error"));
 	}
 	
 	// no session token found - try to logon using stored credentials
@@ -793,6 +791,36 @@ clLib.setUserInfo = function(newUserInfo, replaceFlag) {
     localStorage.setItem("userInfo", JSON.stringify(curUserInfo));
     window.userInfo = curUserInfo;
 };
+
+clLib.getUIMessage = function() {
+    var UIMessage = {};
+    if(window.UIMessage) {
+        //console.log("window.userInfo : " + JSON.stringify(window.userInfo));
+        UIMessage = window.UIMessage;
+    } else {
+        if(localStorage.getItem("UIMessage")) {
+            console.log("localUIMessage is " + localStorage.getItem("UIMessage"));
+            UIMessage = JSON.parse(localStorage.getItem("UIMessage"));
+            window.UIMessage = UIMessage;
+        }
+    }
+    return UIMessage;
+};
+
+clLib.setUIMessage = function(newUIMessage, replaceFlag) {
+    var curUIMessage = clLib.getUIMessage();
+    if(replaceFlag) {
+        curUIMessage = newUIMessage;
+    }
+    else {
+        $.each(newUIMessage, function(key, value) {
+            curUIMessage[key] = value;
+        });
+    }
+    localStorage.setItem("UIMessage", JSON.stringify(curUIMessage));
+    window.UIMessage = curUIMessage;
+};
+
 
 
 //})(jQuery)
