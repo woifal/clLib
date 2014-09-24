@@ -358,7 +358,7 @@ clLib.UI.elements = {
             var $currentUser;
             
             var imageURL = clLib.getUserInfo()["imageURL"];
-            var displayName = clLib.getUserInfo()["displayName"];
+            var displayName = clLib.getUserInfo()["displayName"] || "????";
             var authType = clLib.getUserInfo()["authType"];
 
 /*
