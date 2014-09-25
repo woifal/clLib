@@ -1393,26 +1393,10 @@ clLib.UI.userHandler = function (options, successFunc, errorFunc) {
 		returnObj["sessionToken"] = null;
 		return successFunc(returnObj);
 	}
-	else if (userAction == "delete") {
-		return clLib.REST.deleteUser(userObj, 
-			function(returnObj) {
-				// Clear any "old" error messages 
-				clLib.setUIMessage(new ClInfo("Logged in."), true);
-
-				localStorage.removeItem("currentPassword");
-				clLib.sessionToken = null;
-				returnObj["sessionToken"] = null;
-				return successFunc(returnObj);
-			}
-			, errorFunc
-		);
-	}
 	else if (userAction == "requestPwd") {
 		//alert("requesting pwd for " + JSON.stringify(userObj));
 		return clLib.REST.requestVerification(userObj
 			,function(returnObj) {
-				// Clear any "old" error messages 
-				clLib.setUIMessage(new ClInfo("Logged in."), true);
 				localStorage.removeItem("currentPassword");
 				clLib.sessionToken = null;
 				returnObj["sessionToken"] = null;

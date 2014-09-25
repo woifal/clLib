@@ -759,26 +759,11 @@ clLib.PAGES.handlers = {
 				, {text: "creating user.."});
 			});
 			
-			$("#users_clLogin_deleteButton").on("click", function () {
-				clLib.UI.execWithMsg(function() {
-					clLib.UI.save({ additionalData: { action: "delete" }}
-					,function() {
-						clLib.UI.fillUIelements("users_clLogin", "users_clLogin");
-					}
-					, function(e) {
-						clLib.loginErrorHandler(e);
-						clLib.UI.fillUIelements("users_clLogin", "users_clLogin");
-					}
-					);
-				}
-				, {text: "deleting user.."});
-	        });
-			
 	        $("#users_clLogin_forgotPwdButton").on("click", function () {
 				clLib.UI.execWithMsg(function() {
 					clLib.UI.save({ additionalData: { action: "requestPwd" }}
 					,function() {
-						localStorage.setItem("loginError", "Use the token send to you by email to change your password.")
+						clLib.setUIMessage(new ClInfo("Use the token send to you by email to change your password.", "error"));
 						clLib.PAGES.changeTo("clLib_users_verification.html");
 					}
 					, function(e) {
