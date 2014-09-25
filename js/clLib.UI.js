@@ -115,12 +115,22 @@ clLib.UI.tickTypeSymbols = {
 		return $('<span class="clTicktypesSmall"><img class="toprope"></span>');
 	}
 	, tickType_delete : function(dataRow) {
-		var aLink = $('<span style="text-align: right; border: 0px solid red;"><img style="margin-left: 13px; border: 0px solid red; width:20px; height: 20px" src="files/views/assets/image/delete-route.png"></span>');
+		var aLink;
+		//aLink = $('<span style="text-align: right; border: 0px solid red;"><img style="margin-left: 13px; border: 0px solid red; width:20px; height: 20px" src="files/views/assets/image/delete-route.png"></span>');
 		//aLink = $('<a href="#" class="ui-btn ui-btn-inline ui-icon-delete ui-btn-icon-right">Delete</a>');
+		aLink = $("<div>Delete!</div>");
+		aLink
+			.buttonMarkup({
+				"icon": "none"
+				,"iconpos": "noicon"
+				,"theme": "a"
+			});
+
 		aLink.click(function() {
 			clLib.localStorage.removeInstance("RouteLog", dataRow["_id"], "defaultStorage");
 			clLib.UI.resetUIelements("newRouteLog", "newRouteLog");
 		});
+
 		return aLink;
 	}
 };
@@ -132,10 +142,10 @@ clLib.tickTypeSymbol = function(tickTypeName, tickTypeValue, dataRow) {
 };
 
 
+/*
 clLib.UI.list.formatRouteLogRow = function(dataRow) {
 	var dataFormat = {
 		header: {
-			/*"GradeSystem" : null*/
 			"Colour": clLib.tickTypeSymbol
 			,"Grade": null
 			, "tickType_redpoint" : clLib.tickTypeSymbol 
@@ -150,7 +160,13 @@ clLib.UI.list.formatRouteLogRow = function(dataRow) {
 		}
 		,body: {
 			header: "RouteName",
-			items: [/*"deleted", */"DateISO", "Sector", "Line", "Colour", "Comment"]
+			items: {
+				"DateISO" : clLib.ISOStrToDate
+				,"Sector" : false
+				,"Line" : false 
+				,"Colour" : false 
+				,"Comment" : false
+			}
 		}
 	};
 	
@@ -162,9 +178,6 @@ clLib.UI.list.formatRouteLogRow = function(dataRow) {
 	var $bubble, $headerItem, $bodyItem, $bodyHeader;
 	var listItems = [];
 
-	/* 
-		Clickable header item
-	*/
 	$.each(dataFormat["header"], function(headerName, headerFunc) {
 		if(headerFunc) {
 			headerText.append(
@@ -201,9 +214,6 @@ clLib.UI.list.formatRouteLogRow = function(dataRow) {
 	;
 	listItems.push($headerItem);
 
-	/* 
-		Body contents..
-	*/
 	$bodyHeader = $("<h1>")
 		.html(dataRow[dataFormat["body"]["header"]])
 	;
@@ -212,12 +222,19 @@ clLib.UI.list.formatRouteLogRow = function(dataRow) {
 		.append($bodyHeader);
 	;
 
-	$.each(dataFormat["body"]["items"], function(index, keyName) {
+	$.each(dataFormat["body"]["items"], function(keyName, keyFunc) {
 		var $someStrong = $("<strong>")
 			.html(keyName + ": ");
 		var $someP = $("<p>")
 			.append($someStrong)
-			.append(dataRow[keyName])
+		;
+		alert(1);
+		alert(typeof(dataRow[keyName]));
+		if(typeof(dataRow[keyName]) == "function") {
+			$someP.append(dataRow[keyName](dataFormat["body"]["items"][keyName]));
+		} else {
+			$someP.append(dataRow[keyName])
+		}
 		;
 		$bodyItem
 			.append($someP)
@@ -239,7 +256,7 @@ clLib.UI.list.formatRouteLogRow = function(dataRow) {
 	return listItems;
 
 };
-
+*/
 
 clLib.createRadioButtons = function(options) {
 	// disable current onChange handler
@@ -1099,7 +1116,7 @@ clLib.UI.localStorageRefreshHandler = function($element, additionalOptions) {
 		additionalValue : {
 			 //text: clLib.UI.elementNameFromId($element.attr("id"))
 			text: clLib.UI.getLabelForElement($element) + "?"
-			,value: "__UNKNOWN__"
+			,value: clLib.UI.NOTSELECTED.value
 		}
 	};
 	$.extend(elContentOptions, additionalOptions);
@@ -1150,7 +1167,7 @@ clLib.UI.defaultRefreshHandler = function($element, additionalOptions) {
 		additionalValue : {
 			 //text: clLib.UI.elementNameFromId($element.attr("id"))
 			text: clLib.UI.getLabelForElement($element) + "?"
-			,value: "__UNKNOWN__"
+			,value: clLib.UI.NOTSELECTED.value
 		}
 	};
 	//alert("elContentOptions are " + JSON.stringify(additionalOptions));
@@ -1475,7 +1492,7 @@ clLib.addCSSBackground = function(targetId, options) {
             .addClass(className);
 		//entry.find("a").css("background-color", "red");
 		if(options && options["iconOnly"]) {
-//			if($(this).val() != '__UNKNOWN__') {
+//			if($(this).val() != clLib.UI.NOTSELECTED.value) {
 				//alert($(this).val());
 				entry
 					.find("a")
@@ -1689,7 +1706,7 @@ clLib.tryLogin = function(successFunc, errorFunc, noRedirectFlag) {
 };
 
 
-
+/*
 clLib.UI.addCollapsible = function(options) {
 	var $container = options["collapsibleSet"];
 	var titleText = options["titleText"];
@@ -1733,6 +1750,7 @@ clLib.UI.addCollapsible = function(options) {
 	
 
 };
+*/
 
 clLib.UI.addCollapsiblesNEW = function(options) {
 	var $container = options["container"];
@@ -1878,9 +1896,23 @@ clLib.UI.collapsible.formatRouteLogRow = function(dataRow) {
 		}
 		,body: {
 			header: "RouteName",
-			items: [/*"deleted", */"DateISO", "Sector", "Line", /*"Colour", */"Comment"]
+			items: {
+				"DateISO" : {
+					formatFunc : clLib.ISOStrToDate
+					,title : "Date"
+				}
+				,"Sector" : false
+				,"Line" : false 
+				,"Colour" : false 
+				,"Comment" : false
+				,"character" : {
+					title: "Character"
+					,formatFunc : clLib.getIconImg
+				}
+			}
 		}
 	};
+	
 	
 	// compute score
 	dataRow.Score = clLib.computeScore(dataRow);
@@ -1922,19 +1954,7 @@ clLib.UI.collapsible.formatRouteLogRow = function(dataRow) {
 		}
 	});	
 
-/*
-<div data-role="collapsible">
-	<!-- header for routelog -->
-	<h3>Section 1</h3>
-	<!-- route log details -->
-	<div data-role="collapsible">
-		<h3>section 1 header</h3>
-		<p>I'm the collapsible content for section 1</p>
-	</div>
-	
-</div>
 
-*/	
 	
 	$headerItem = $("<h3>")
 		.append(headerText)
@@ -1947,28 +1967,52 @@ clLib.UI.collapsible.formatRouteLogRow = function(dataRow) {
 	$bodyHeader = $("<h3>")
 		.html(dataRow[dataFormat["body"]["header"]])
 	;
-	$bodyHeader.append(
-		clLib.tickTypeSymbol("tickType_delete", null, dataRow)
-	);
 
 	$bodyItem = $("<p>")
 		//.attr("data-role", "collapsible")
 		.append($bodyHeader);
 	;
 
-	$.each(dataFormat["body"]["items"], function(index, keyName) {
-		var $someStrong = $("<strong>")
-			.html(keyName + ": ");
+	$.each(dataFormat["body"]["items"], function(keyName, keyFunc) {
+		var title = "";
+		var $someStrong = $("<strong>");
+//		alert("1" + typeof(keyFunc));
+//		alert("2" + keyFunc["title"]);
+		if(
+			typeof(keyFunc) == "object" &&
+			keyFunc["title"] != ""
+		) {
+			title = keyFunc["title"];
+		}
+		else {
+			title = keyName;
+		}
+		
+		$someStrong.html(title + ": ");
+		
 		var $someP = $("<p>")
 			.append($someStrong)
-			.append(dataRow[keyName])
-		;
-		$bodyItem
-			.append($someP)
 		;
 
+
+		if(
+			dataRow[keyName] != clLib.UI["NOTSELECTED"].value &&
+			dataRow[keyName] != ""
+		) {
+			if(typeof(keyFunc) == "object") {
+				$someP.append(keyFunc["formatFunc"](dataRow[keyName]));
+			} else {
+				$someP.append(dataRow[keyName]);
+			}
+			$bodyItem
+				.append($someP)
+			;
+		}
 	});
 
+	$bodyItem.append(
+		clLib.tickTypeSymbol("tickType_delete", null, dataRow)
+	);
 
 	// Hide body initially
 	$bodyItem.hide();

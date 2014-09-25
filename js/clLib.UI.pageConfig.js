@@ -247,6 +247,7 @@ clLib.UI.pageElements = {
 			, "tickType_flash"
 			, "tickType_attempt"
 			, "tickType_toprope"
+			, "characterSelect"
 			, "selectedArea"
 			, "currentUserPref"
 			, "currentDate"

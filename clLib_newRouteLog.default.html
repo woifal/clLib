@@ -122,13 +122,28 @@
 					<h4>Extra</h4>
 					<ul data-role="listview">
 						<li>
+						<!-- characterSelect -->
+						<div class="clRouteDropdown clFullWidth">
+							<label class="clUIElement" for="newRouteLog_characterSelect">Character</label>
+							<select id="newRouteLog_characterSelect" name="newRouteLog_characterSelect" 
+									data-theme="a"
+									data-inline="false" data-mini="false" data-icon="clRouteDropdownIcon" data-iconpos="right" 
+									data-native-menu="false" tabindex="6">
+								<option value="" rerender="characterSelect" selected="selected">
+									character
+								</option>
+							</select>
+						</div>
+						</li>					
+						<li>
 							<label class="clUIElement" for="newRouteLog_commentText">Comment</label>
 							<textarea style="padding-left:0px; margin-left: 0px; resize: none; height: 30px" id="newRouteLog_commentText" name="newRouteLog_commentText" tabindex="9" placeholder="comments?"></textarea>
 						</li>
-						<li>
+<!--					<li>
 							<div data-role="none" id="newRouteLog_ratingSelectWrapper">
 							</div>
 						</li>
+-->
 					</ul>
 				</div>				
 

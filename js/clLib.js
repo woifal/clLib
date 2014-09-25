@@ -223,6 +223,20 @@ clLib.rpad = function(str1, padString, length) {
     return str;
 };
 
+clLib.getIconImg = function(imgName) {
+	return $('<span style="width: 50px; height: 50ox" class="' + imgName + '"></span>"');
+};
+clLib.ISOStrToDate = function(ISOStr) {
+	var x= new Date(ISOStr);
+	return "" + 
+		(x.getYear() + 1900) + "-" +
+		clLib.lpad((x.getMonth() +1), '0', 2) + "-" +
+		clLib.lpad(x.getDate(), '0', 2) + " " +
+		clLib.lpad((x.getHours() - 2), '0', 2) + ":" +
+		clLib.lpad(x.getMinutes(), '0', 2) + ":" +
+		clLib.lpad(x.getSeconds(), '0', 2);
+};
+
 clLib.dateToStr = function(dateObj) {
 	// ALL dates are ISO dates!!
 	var asISOstring = true;
