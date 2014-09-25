@@ -1901,6 +1901,7 @@ clLib.UI.collapsible.formatRouteLogRow = function(dataRow) {
 					formatFunc : clLib.ISOStrToDate
 					,title : "Date"
 				}
+				,"GradeSystem" : false
 				,"Sector" : false
 				,"Line" : false 
 				,"Colour" : false 
