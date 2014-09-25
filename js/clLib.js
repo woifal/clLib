@@ -578,8 +578,10 @@ clLib.login = function(successFunc, errorFunc) {
 		//alert("success login!");
 		console.log("retrieved sessionToken >" + sessionToken + "<");
 		clLib.sessionToken = sessionToken;
+
 		// Clear any "old" error messages 
-		localStorage.removeItem("loginError");
+		clLib.setUIMessage(new ClInfo("Logged in."), true);
+		
 		//alert("logged in, return success");
 		return successFunc(returnObj);
 	}
