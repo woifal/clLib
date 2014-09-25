@@ -14,22 +14,22 @@ clLib.prototype.mailTemplates = {
 clLib.prototype.options = {
 	"template" : {
 		"initialEmail": {
-			"to": "kurtclimbing+template+default@gmail.com, [email]"
+			"to": "kurtclimbing+template+default@gmail.com, [username]"
 //			,"cc" : "wolfgang.dietersdorfer+kurtclimbing+templatecc+tokenrequest@gmail.com"
 			,"subject" : "Welcome to Kurtl!"
-			,"body" : "Please verify your registration for user <b>[username]</b> at <b>[email]</b>.<br>Here is your verification token: <b>[initialToken]</b>."
+			,"body" : "Please verify your registration for user <b>[username]</b>.<br>Here is your verification token: <b>[initialToken]</b>."
 		},
 		"verificationEmail": {
-			"to": "kurtclimbing+template+default@gmail.com, [email]"
+			"to": "kurtclimbing+template+default@gmail.com, [username]"
 //			,"cc" : "wolfgang.dietersdorfer+kurtclimbing+templatecc+tokenrequest@gmail.com"
 			,"subject" : "Forgot your password on Kurtl? Here is the verification token.."
-			,"body" : "You asked to change your password for user <b>[username]</b> at <b>[email]</b>.<br>Here is your verification token: <b>[verificationToken]</b>."
+			,"body" : "You asked to change your password for user <b>[username]</b>.<br>Here is your verification token: <b>[verificationToken]</b>."
 		},
 		"passwordChanged": {
-			"to": "kurtclimbing+template+default@gmail.com, [email]"
+			"to": "kurtclimbing+template+default@gmail.com, [username]"
 //			,"cc" : "wolfgang.dietersdorfer+templatecc+pwdchanged@gmail.com"
 			,"subject" : "New password for Kurtl"
-			,"body": "Your new password for <b>[username]</b> at <b>[email]</b> is [newPassword]."
+			,"body": "Your new password for <b>[username]</b> is [newPassword]."
 		}
 	}
 };
