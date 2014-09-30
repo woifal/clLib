@@ -151,6 +151,9 @@ clLib.PAGES.handlers = {
 	        clLib.UI.byId$("preferencesButton", pageId).die("click").live("click", function () {
 	            clLib.PAGES.changeTo("clLib_preferences.html");
 	        });
+	        clLib.UI.byId$("gradeConversionButton", pageId).die("click").live("click", function () {
+	            clLib.PAGES.changeTo("clLib_gradeConversion.html");
+	        });
 	        clLib.UI.byId$("AGBButton", pageId).die("click").live("click", function () {
 	            clLib.PAGES.changeTo("clLib_AGB.html");
 	        });
@@ -183,6 +186,16 @@ clLib.PAGES.handlers = {
 	    "pagecreate": function () {
 	    }
 		, "pagebeforeshow": function (e, ui) {
+		}
+
+	}
+	,"gradeConversion" : {
+	    "pagecreate": function () {
+	    }
+		, "pagebeforeshow": function (e, ui) {
+			localStorage.setItem("currentJqmSlide", "gradeConversion");
+				clLib.UI.fillUIelements("gradeConversion", "gradeConversion", "default");
+
 		}
 
 	}

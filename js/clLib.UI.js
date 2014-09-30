@@ -1065,7 +1065,7 @@ clLib.UI.getId$ = function(elementName, pageId) {
 
 clLib.UI.byId$ = function(elementName, pageId) {
 	var newSelector = clLib.UI.getId$(elementName, pageId);
-	//alert("returning selector >" + newSelector + "<");
+	console.log("returning selector >" + newSelector + "<");
 	return $(newSelector);
 };
 

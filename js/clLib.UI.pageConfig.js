@@ -126,6 +126,13 @@ clLib.UI.autoLoad = {
 			, "routeLogContainer"
 		]
 	}
+	,gradeConversion : {
+		default: [
+			"gradeSystemSelect"
+			, "gradeSelect"
+			, "convertedGrades"
+		],
+	}
 	,startScreen: {
 		default: [
 			"areaSelect"
@@ -192,6 +199,11 @@ clLib.UI.elementsToReset = {
 	, startScreen : [
 		"currentScore"
 	]
+	, gradeConversion: [
+		"gradeSystemSelect"
+		, "gradeSelect"
+		, "convertedGrades"
+	]
     , preferences: [
 		, "displayName"
 		, "buddiesStr"
@@ -231,7 +243,14 @@ clLib.UI.pageElements = {
 			, "defaultLayoutMenuSwitch"
 		]
 	}, 
-	newRouteLog : {
+	gradeConversion : {
+		default: [
+			"gradeSystemSelect"
+			, "gradeSelect"
+			, "convertedGrades"
+		]
+	}
+	,newRouteLog : {
 		default: [
     		"currentLayout"
             , "gradeSystemSelect"
@@ -656,7 +675,12 @@ clLib.UI.elements = {
 			}
 		}
 		,"customVal" : function($this) {
-			return $this.find("input:radio:checked" ).val()
+			if($this.find("input:radio:checked" ).size() > 0) {
+				return $this.find("input:radio:checked" ).val();
+			} 
+			else {
+				return $this.val();
+			}
 		}
 	}
 	, "gradeSelect" : {
@@ -669,13 +693,16 @@ clLib.UI.elements = {
 		,"refreshFromEntity" : "Grades"
 		,"refreshHandler" : function($this) {
 			//alert("getting grades for " + localStorage.getItem("defaultGradeSystem") + " and " + localStorage.getItem("defaultGrade"));
+			//alert("X" + clLib.UI.elementNameFromId(localStorage.getItem("currentJqmSlide") + "_" + "gradeSystemSelect"));
+			//	alert("Y" + clLib.UI.getVal(clLib.UI.elementNameFromId(localStorage.getItem("currentJqmSlide") + "_" + "gradeSystemSelect")));
 			var selectedValue = clLib.findEquivalentGrade(
 				localStorage.getItem("defaultGradeSystem") || "UIAA"
 				, localStorage.getItem("defaultGrade") || "VI"			
-				, clLib.UI.getVal(clLib.UI.elementNameFromId("newRouteLog_gradeSystemSelect"))
+				, clLib.UI.getVal(clLib.UI.elementNameFromId(localStorage.getItem("currentJqmSlide") + "_" + "gradeSystemSelect"))
 			);
 
-			//alert("preselecting " + selectedValue);
+			
+			console.log("preselecting " + selectedValue);
 			return clLib.UI.defaultRefreshHandler($this, {
 				selectedValue : selectedValue,
 				preserveCurrentValue : false,
@@ -686,10 +713,46 @@ clLib.UI.elements = {
 			default: {
 				"sectorSelect" : {}
 				,"lineSelect": {}
+				, "convertedGrades" : {}
 			},
 			reduced: {
 				"colourSelect" : {}
 			}
+		}
+	}
+	, "convertedGrades" : {
+		"dependingOn": {
+			default: [
+				"gradeSystemSelect"
+			],
+		}
+		,"refreshFromEntity" : "Grades"
+		,"refreshHandler" : function($this) {
+			$this.empty();
+			//$this.html("<ul>");
+			//$this.attr("data-role", "listview");
+			var selectedGradeSystems = localStorage.getItem("selectedGradeSystems");
+			if(!selectedGradeSystems) {
+				selectedGradeSystems = clLib.UI.varDefaults["selectedGradeSystems"];
+			}
+			selectedGradeSystems = selectedGradeSystems.split(",");
+
+			$.each(selectedGradeSystems, function(idx, gradeSystemName) {
+				var aGrade = clLib.findEquivalentGrade(
+					clLib.UI.getVal(clLib.UI.elementNameFromId(localStorage.getItem("currentJqmSlide") + "_" + "gradeSystemSelect"))
+					, clLib.UI.getVal(clLib.UI.elementNameFromId(localStorage.getItem("currentJqmSlide") + "_" + "gradeSelect"))
+					, gradeSystemName
+				);
+
+				var $foo = $("<li style='height: 30px;'>");
+				$foo
+					.append("<span style='position: absolute; top: 50%; margin-top: -10px; left: 10px;  width: 80px; border: 0px solid red;'>"+ gradeSystemName + "</span>")
+					.append("<span style='position: absolute; top: 50%; margin-top: -10px; left: 50%; width: 80px; border: 0px solid blue;'>" + aGrade  + '</span>')
+					.append('<span class="ui-li-count">' + clLib.gradeConfig[gradeSystemName]["grades"][aGrade] + '</span>');
+				$this.append($foo);
+			});
+
+			$this.listview("refresh");
 		}
 	}
 	, "tickType_redpoint" : $.extend({}, {

@@ -1,0 +1,74 @@
+﻿<!DOCTYPE html> 
+<html>
+
+@@include('grunt_includes/html_head.html', {"pageName": "gradeConversion"})
+
+
+<body> 
+@@include('grunt_includes/html_jqm_page.html', {"pageName": "gradeConversion"})
+
+@@include('grunt_includes/html_jqm_menupanel.html', {"pageName": "gradeConversion"})
+@@include('grunt_includes/html_jqm_header.html', {
+	"pageName": "gradeConversion"
+	,"addCSS": "gradeConversion.css"
+})
+
+@@include('grunt_includes/html_jqm_content.html', {"pageName": "gradeConversion"})
+
+				<div data-role="content"
+					style="
+						text-align: center;
+						background-color: #ebf1g9; /*#073f7c;*/
+						padding: 10px 3px 0px 3px;
+						border: 0px solid red;
+					"
+				>
+
+					<div class="ui-corner-all custom-corners">
+					  <div class="ui-bar ui-bar-a">
+						<h3>Select grade</h3>
+					  </div>
+					  <div class="ui-body ui-body-a">
+						<div style="border: 0px solid red; margin-top: 0px; padding-top: 0px">
+							<div class="clRouteDropdown">
+								<label class="clUIElement" for="gradeConversion_gradeSystemSelect">Grade System</label>
+								<select id="gradeConversion_gradeSystemSelect" name="gradeConversion_gradeSystemSelect"
+										data-theme="a" data-inline="false" data-mini="false" data-icon="clRouteDropdownIcon" data-iconpos="right"
+										data-native-menu="true" tabindex="2"
+								></select>
+							</div>
+							<div class="clRouteDropdown">
+								<label class="clUIElement" for="gradeConversion_gradeSelect">Grade</label>
+								<select id="gradeConversion_gradeSelect" name="gradeConversion_gradeSelect"
+										data-theme="a" data-inline="false" data-mini="false" data-icon="clRouteDropdownIcon" data-iconpos="right"
+										data-native-menu="true" tabindex="2"
+								></select>
+							</div>
+						</div>	
+					   </div>
+
+					<div style="clear:both"></div>
+
+					<div class="ui-corner-all custom-corners">
+					  <div class="ui-bar ui-bar-a">
+						<h3>Equivalent grades</h3>
+					  </div>
+					  <div class="ui-body ui-body-a">
+						<ul data-inset="true" data-role="listview" style="padding: 0px 0px 0px 0px !important; margin: 0px 0px 0px 0px !important;" id="gradeConversion_convertedGrades">
+							<li>whatever man..</li>
+						</ul>
+					  </div>
+					</div>
+					
+				<div class="clLoading"></div>
+				<div class="clLoadingBg"></div>
+				
+        </div>
+@@include('grunt_includes/html_jqm_footer.html', {"pageName": "gradeConversion"})
+    </div>
+@@include('grunt_includes/html_bodyBottom.html', {"pageName": "gradeConversion"})
+	
+</body>
+
+  
+</html>
