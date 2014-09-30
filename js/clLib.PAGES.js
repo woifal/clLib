@@ -318,7 +318,12 @@ clLib.PAGES.handlers = {
 				clLib.UI.execWithMsg(function() {
 	                localStorage.setItem("currentJqmSlide", "newRouteLog");
 	                clLib.UI.save({}, function() {
+						// clear UI elements's content
 						clLib.UI.resetUIelements("newRouteLog", "newRouteLog");
+						// scroll to top
+						$.mobile.silentScroll(0);
+						// ensure "extra" panel is collapsed..
+						$(".clExtra").collapsible( "option", "collapsed", true );
 					});
 	            }, {text: "Saving route logs.."}, 200);
 	        });
