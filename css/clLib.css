@@ -627,9 +627,10 @@ border: 1px solid red;
 	margin-left: 13px;
 	text-align: center;
 	display: block;
-	width:45px; 
+	width: 45px; 
 	height: 45px;
 	border-radius: 50%;
+	padding-top: 0px !important;
 }
 .clTicktypesSmall {
 	float: left; 
@@ -646,14 +647,14 @@ border: 1px solid red;
 }
 .clTicktypes img.redpoint
 {
-	abackground-image: url("../files/views/assets/image/img_45_45/ticktype_redpoint.png");
-	background-color: #964646;
+	background-image: url("../files/views/assets/image/img_45_45/ticktypes_redpoint.png");
 	background-size: 45px 45px;
+	background-color: #FF0000;
 }
 .clTicktypes img.toprope {
 	background-image: url("../files/views/assets/image/img_45_45/ticktypes_toprope.png");
 	background-size: 45px 45px;
-	background-color: #964646;
+	background-color: #FF0000; /*#964646;*/
 }
 .clTicktypes img.flash {
 	border: 1px solid white; 
@@ -669,12 +670,12 @@ border: 1px solid red;
 {
 	background: url("../files/views/assets/image/img_45_45/ticktype_redpoint.png");
 	background-size: 20px 20px;
-	background-color: #964646;
+	background-color: #FF0000;
 }
 .clTicktypesSmall img.toprope {
 	background: url("../files/views/assets/image/img_45_45/ticktypes_toprope.png");
 	background-size: 20px 20px;
-	background-color: #964646;
+	background-color: #FF0000;
 }
 .clTicktypesSmall img.flash {
 	border: 1px solid white; 
