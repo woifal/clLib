@@ -1121,8 +1121,8 @@ clLib.UI.elements = {
 			});
 
 			// Scroll down so that collapsible header in on top of viewport..
-			$container.on("collapsibleexpand", "[data-role=collapsible]", function () {
-				var position = $(this).offset().top;
+			$container.on("collapsibleexpand", "[data-role=collapsible]", function (e) {
+				var position = $(e.target).offset().top;
 				$.mobile.silentScroll(position);
 			});
 			
