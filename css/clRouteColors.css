@@ -1,11 +1,44 @@
 .clCSSBg {
     background-repeat: no-repeat;
     background-position: 0px 0px;
-    padding-left: 0px; 
-	/*background-image: none;*/
-    /*aabackground-image: URL('https://cdn2.iconfinder.com/data/icons/flat-ui-icons-24-px/24/lock-24-48.png'); */
     background-size: 100%;
 
+	padding-left: 0px; 
+	/*
+	padding-left: 25px; 
+	margin-left: 10px !important; 
+	margin-right: 10px !important;
+	margin-bottom: 5px !important;
+	border-radius: 8px; 
+	border: 0px solid yellow !important; 
+	height: 20px;
+	
+	text-align: center;
+	*/
+}
+
+.clColourBg {
+	background-color: #AAA;
+}
+
+#newRouteLog_colourSelect-listbox-popup {
+	border: 1px solid blue;
+	background-color: #3388CC/*#092E56*/;
+}
+#newRouteLog_colourSelect-menu li {
+	border: 1px solid #CCC;
+	float:left;
+	width: 49%;
+	background-color: #3388CC/*#092E56*/;
+}
+#newRouteLog_colourSelect-menu li a{
+	left: 0px;
+	border: 0px solid red !important;
+	padding-top: 5px !important;
+	padding-bottom: 5px !important;
+	margin: 10px !important;
+	border-radius: 8px; 
+	text-align: center;
 }
 
 .clCSSBg.clTicktypesSmall {
@@ -50,7 +83,7 @@ div.clCSSBgIconOnly a.ui-btn span{
     background-position: 10px 0px;
     background-size: 40px 40px;
     padding-left: 40px; /*8%;*/
-	background-image: URL('../files/views/assets/image/platte.jpg') !important;
+	background-image: URL('../files/views/assets/image/platte.jpg');
 }
 .Senkrecht {
     background-repeat: no-repeat;

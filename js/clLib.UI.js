@@ -1462,6 +1462,8 @@ clLib.addCSSBackground = function(targetId, options) {
 	var $targetEl = $('#' + targetId);
 	clLib.UI.killEventHandlers($targetEl, "change.clLibCSSBackground");
 
+	var addClasses = options ? options["addClasses"] : "";
+	
 	var classForText = null;
 	var elName = clLib.UI.elementNameFromId(targetId);
 	if (clLib.UI.cssBackgrounds[elName]) {
@@ -1489,7 +1491,9 @@ clLib.addCSSBackground = function(targetId, options) {
         entry
 			.find("a")
             .addClass("clCSSBg")
-            .addClass(className);
+            .addClass(className)
+			.addClass(addClasses);
+			
 		//entry.find("a").css("background-color", "red");
 		if(options && options["iconOnly"]) {
 //			if($(this).val() != clLib.UI.NOTSELECTED.value) {

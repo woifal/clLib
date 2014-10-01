@@ -842,7 +842,7 @@ clLib.UI.elements = {
 		}
 		,"refreshHandler" : function($this) { 
 		    clLib.UI.defaultRefreshHandler($this, { preserveCurrentValue: false });
-		    clLib.addCSSBackground($this.attr("id"));
+		    clLib.addCSSBackground($this.attr("id"), {addClasses: "clColourBg"});
 		}
 		,"setSelectedValueHandler" : function($this, changeOptions) { 
 			//alert("Setting selected value..");

@@ -322,7 +322,7 @@ clLib.PAGES.handlers = {
 	, "newRouteLog": {
 	    "pagecreate": function () {
 			//alert("init!");
-	        clLib.UI.buildRatingRadio($("#newRouteLog_ratingSelectWrapper"));
+			clLib.UI.buildRatingRadio($("#newRouteLog_ratingSelectWrapper"));
 	        $("#newRouteLog_layoutSelect").val(localStorage.getItem("currentLayout"));
 	        $("#newRouteLog_layoutSelect").selectmenu("refresh");
 
