@@ -988,8 +988,9 @@ clLib.UI.buildRatingRadio = function($element) {
 "<style>                                                                                                                                                                        " +
 ".ratingSelect {                                                                                                                                                                " +
 "	border: 0px solid red;                                                                                                                                                      " +
-"	padding: 0px 0px 0px 0px;                                                                                                                                                   " +
-"	margin: 0px 0px 0px 0px;                                                                                                                                                    " +
+"	padding: 5px 0px 0px 0px;                                                                                                                                                   " +
+"	margin: 0px 0px 0px 0px;    																																				" +
+"	position:relative; left: 50%; margin-left:-40px;                                                                                                                           	" +
 "}                                                                                                                                                                              " +
 "                                                                                                                                                                               " +
 ".ratingSelect > label > input {                                                                                                                                                " +
