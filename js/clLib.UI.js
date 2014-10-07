@@ -596,6 +596,15 @@ clLib.populateSelectBox_plain = function($selectBox, dataObj, selectedValue, pre
 		}
 		$selectBox.append($option);
 	});
+
+	if($selectBox.attr("id") == "newRouteLog_colourSelect") {
+		var $option = $('<option></option>');
+		$option
+			.val("more")
+			.html("more");
+		$selectBox.append($option);
+		
+	}
 	
 	//alert("refreshing " + $selectBox.attr("id"));
 	$selectBox.selectmenu('refresh', true);
@@ -1151,6 +1160,9 @@ clLib.UI.defaultRefreshHandler = function($element, additionalOptions) {
 	if(elementConfig["dependingOn"]) {
 		dependingPageElements = elementConfig["dependingOn"][currentLayout] || elementConfig["dependingOn"]["default"];
 	}
+	if(additionalOptions && additionalOptions["dependingOnOverride"]) {
+		dependingPageElements = [];
+	}
 	
 	clLib.loggi($element.attr("id") + " depends on " + JSON.stringify(dependingPageElements)); 
 	var resultColName = elementConfig["dbField"];
@@ -1171,6 +1183,7 @@ clLib.UI.defaultRefreshHandler = function($element, additionalOptions) {
 			,value: clLib.UI.NOTSELECTED.value
 		}
 	};
+	//alert(JSON.stringify(results));
 	//alert("elContentOptions are " + JSON.stringify(additionalOptions));
 	$.extend(elContentOptions, additionalOptions);
 	
@@ -1711,7 +1724,6 @@ clLib.tryLogin = function(successFunc, errorFunc, noRedirectFlag) {
 };
 
 
-/*
 clLib.UI.addCollapsible = function(options) {
 	var $container = options["collapsibleSet"];
 	var titleText = options["titleText"];
@@ -1755,7 +1767,6 @@ clLib.UI.addCollapsible = function(options) {
 	
 
 };
-*/
 
 clLib.UI.addCollapsiblesNEW = function(options) {
 	var $container = options["container"];
@@ -1789,6 +1800,7 @@ clLib.UI.addCollapsiblesNEW = function(options) {
 		$containerContent.children("div[data-role=collapsible]").remove();
 	}
 	
+	//alert("adding collapsible children..>" + JSON.stringify(items));
 	clLib.UI.addCollapsiblesChildren($containerContent, items, clLib.UI.collapsible.formatRouteLogRow, 2, false); //true);
 	if(needToAppendContent) {
 		$container.append($containerContent);

@@ -42,17 +42,19 @@ clLib.UI.pageRequisites = {
         return clLib.tryLogin(successFunc, errorFunc, true);
     }] }
     , "users_verification": { }
+    , "buy": { }
     , "stats": {
 		"clBeforeChange" : [
 			function(successFunc, errorFunc) {
-				//alert("checking for full version...");
+//				alert("checking for full version...");
 				return clLib.IAP.hasFullVersion(function() {
-					//alert("yes, has full version...");
-					return successFunc();
+					alert("yes, has full version...");
 				}, 
 				function(e) {
-					//alert("no, no full version >" + e + "<")
-					return clLib.PAGES.changeTo("clLib_purchases.html");
+//					alert("no, no full version >" + e + "<")
+//					return clLib.PAGES.changeTo("clLib_purchases.html");
+//					alert("changing to buy.html");
+					return clLib.PAGES.changeTo("clLib_buy.html");
 				}
 				);
 			}
@@ -840,9 +842,23 @@ clLib.UI.elements = {
 		    ]
 			, reduced: []
 		}
-		,"refreshHandler" : function($this) { 
-		    clLib.UI.defaultRefreshHandler($this, { preserveCurrentValue: false });
+		,"refreshHandler" : function($this, additionalOptions) { 
+		    //alert("refreshing colours with >" + JSON.stringify(additionalOptions) + "<");
+			clLib.UI.defaultRefreshHandler(
+				$this
+				,$.extend(additionalOptions, { preserveCurrentValue: false })
+			);
 		    clLib.addCSSBackground($this.attr("id"), {addClasses: "clColourBg"});
+			$("#newRouteLog_colourSelect-listbox-popup")
+				.find(".ui-btn.clCSSBg.more.clColourBg").click(function(e) {
+					$("#newRouteLog_colourSelect")
+						.trigger("refresh.clLib", 
+						{
+							dependingOnOverride:1
+						})
+						;
+				});
+	
 		}
 		,"setSelectedValueHandler" : function($this, changeOptions) { 
 			//alert("Setting selected value..");
