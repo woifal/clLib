@@ -93,12 +93,11 @@ clLib.PAGES.executeChainedFunc = function(funcArray, idx, successFunc, errorFunc
 
 clLib.PAGES.handlers = {
 	1 : 1
-    ,"index": {
+    ,"appIndex": {
         "pagecreate": function (event, ui, pageId) {
             var errorFunc = function(error) {
                 alert("error >" + JSON.stringify(error));
             }
-
             console.log("showing index, setting timeout for move to startscreen..");
 
             console.log("trying to get authObj from URL params");
@@ -117,17 +116,17 @@ clLib.PAGES.handlers = {
             //alert("NO external authentication, proceeding standard way..");
                 clLib.UI.execWithMsg(function() {
 //                    setTimeout(function() {
-                        //console.log("changing to startscreen..");
+                        //alert("changing to startscreen..");
                         clLib.PAGES.changeTo("clLib_startScreen.html", null, event, 2500);
 //                    }
 //                    ,2500);
 	            }, {text: "Loading app.."});
                 
-/*
-2DO:
-    why 2500?
-    500 does not work on phonegap/iphone
-*/
+
+//2DO:
+//    why 2500?
+//    500 does not work on phonegap/iphone
+//
             }
             if(urlAuthObj) {
                 clLib.UI.execWithMsg(function() {
@@ -135,7 +134,7 @@ clLib.PAGES.handlers = {
 	            }, {text: "Processing authentication.."});
             };
 
-        }
+		}
     }
     ,"_COMMON_" : {
 	    "pagecreate": function (event, ui, pageId) {
@@ -321,7 +320,6 @@ clLib.PAGES.handlers = {
 	}
 	,"startScreen": {
 	    "pagecreate": function () {
-	        
 			// pre-fetch newRouteLog page..
 	        // $.mobile.loadPage("clLib_preferences.html");
 
@@ -909,15 +907,19 @@ clLib.PAGES.changeTo = function(newURL, urlData, event, timeoutMillis) {
                 newURL.indexOf(".") - newURL.indexOf("clLib_")
                );
 
-            var eventName = "clBeforeChange";
+			   var eventName = "clBeforeChange";
             var requisiteFunctions = (clLib.UI.pageRequisites[pageId] && clLib.UI.pageRequisites[pageId][eventName]) || {};
 
             clLib.loggi("requisiteFunctions is " + requisiteFunctions.length);
             clLib.PAGES.executeChainedFuncs(requisiteFunctions, 
                 function() { 
-                    clLib.loggi("success!!"); 
+                    //alert("success!!" + pageId ); 
                     window.urlData = urlData;
-                    $.mobile.navigate(newURL, urlData);	
+
+					newURL = "#" + pageId;
+					
+                    //alert("navigating to >" + newURL + "<");
+					$.mobile.navigate(newURL, urlData);	
                 }, 
                 function(e) { 
 					alert("clLib.changeTo => error: " + e + "!!"); 

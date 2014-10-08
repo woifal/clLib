@@ -924,7 +924,7 @@ clLib.UI.addObjArr = function(anObj, pathArray, objValue) {
 *
 */
 clLib.UI.execWithMsg = function(func, spinnerParams, delayShowMillis) {
-	delayShowMillis = delayShowMillis || 500;
+	delayShowMillis = 1000; //delayShowMillis || 500;
 	setTimeout(function() {
         clLib.UI.showLoading(spinnerParams);
     }, 10);
@@ -936,15 +936,24 @@ clLib.UI.execWithMsg = function(func, spinnerParams, delayShowMillis) {
 };
 
 clLib.UI.showLoading = function(spinnerParams) {
+	//alert("showing clLoading..");
 	$(".clLoading")
 		.empty().
 		append(
 			spinnerParams["text"]
 		)
 		.css("top", (window.pageYOffset + 150) + "px")
-		.show();
-	$(".clLoadingBg")
-		.show();
+		.show()
+		.removeClass("clHidden");
+	//alert("showing load bg");
+		$(".clLoadingBg")
+		.show()
+		.removeClass("clHidden")
+		.css("top", "0px")
+		.css("border", "0px solid red")
+	;
+		
+
 /*
     $.mobile.loading('show', {
         text: spinnerParams["text"],
@@ -956,9 +965,15 @@ clLib.UI.showLoading = function(spinnerParams) {
 };
 
 clLib.UI.hideLoading = function() {
-	$(".clLoading").hide();
+	//alert("hiding clloading..");
+	$(".clLoading")
+		.hide()
+		.addClass("clHidden");
+
 	$(".clLoadingBg")
-		.hide();
+		.hide()
+		.addClass("clHidden");
+
 //	$.mobile.loading( "hide");
 };
 
