@@ -1,17 +1,4 @@
-﻿<!DOCTYPE html> 
-<html>
-
-@@include('grunt_includes/html_head.html', {"pageName": "diagram"})
-	<script type="text/javascript" src="js/Chart.js"></script>
-
-
-<body> 
-@@include('grunt_includes/html_jqm_page.html', {"pageName": "diagram"})
-
-@@include('grunt_includes/html_jqm_menupanel.html', {"pageName": "diagram"})
-@@include('grunt_includes/html_jqm_header.html', {"pageName": "diagram"})
-
-@@include('grunt_includes/html_jqm_content.html', {"pageName": "diagram"})
+﻿@@include('grunt_includes/singlePage_Header.html', {"pageName": "diagram"})
 
 
                 <div>
@@ -26,8 +13,5 @@
             <div data-role="footer" data-position="fixed"
                  id="diagram_mobilefooter1" data-theme="a">
             </div>
-        </div>
-</body>
 
-  
-</html>
+@@include('grunt_includes/singlePage_Footer.html', {"pageName": "diagram"})

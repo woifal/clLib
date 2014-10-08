@@ -1,16 +1,4 @@
-﻿<!DOCTYPE html> 
-<html>
-
-@@include('grunt_includes/html_head.html', {"pageName": "users"})
-
-<body id="clBody"> 
-@@include('grunt_includes/html_jqm_page.html', {"pageName": "users"})
-
-@@include('grunt_includes/html_jqm_menupanel.html', {"pageName": "users"})
-@@include('grunt_includes/html_jqm_header.html', {"pageName": "users"})
-
-@@include('grunt_includes/html_jqm_content.html', {"pageName": "users"})
-
+﻿@@include('grunt_includes/singlePage_Header.html', {"pageName": "users"})
 
 
 	<div
@@ -90,19 +78,6 @@
 		</div>
 -->
 
-				<div class="clLoading"></div>
-				<div class="clLoadingBg"></div>
-
 			</div>
-            <!-- mobilefooter1 -->
-            <div data-role="footer" data-position="fixed"
-                 id="users_mobilefooter1" data-theme="a">
-            </div>
-        </div>
 
-@@include('grunt_includes/html_bodyBottom.html', {"pageName": "users"})
-
-</body>
-
-  
-</html>
+@@include('grunt_includes/singlePage_Footer.html', {"pageName": "users"})

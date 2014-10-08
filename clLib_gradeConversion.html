@@ -1,19 +1,5 @@
-﻿<!DOCTYPE html> 
-<html>
+﻿@@include('grunt_includes/singlePage_Header.html', {"pageName": "gradeConversion"})
 
-@@include('grunt_includes/html_head.html', {"pageName": "gradeConversion"})
-
-
-<body> 
-@@include('grunt_includes/html_jqm_page.html', {"pageName": "gradeConversion"})
-
-@@include('grunt_includes/html_jqm_menupanel.html', {"pageName": "gradeConversion"})
-@@include('grunt_includes/html_jqm_header.html', {
-	"pageName": "gradeConversion"
-	,"addCSS": "gradeConversion.css"
-})
-
-@@include('grunt_includes/html_jqm_content.html', {"pageName": "gradeConversion"})
 
 				<div data-role="content"
 					style="
@@ -60,15 +46,8 @@
 					  </div>
 					</div>
 					
-				<div class="clLoading"></div>
-				<div class="clLoadingBg"></div>
+				</div>
+				</div>
+								
+@@include('grunt_includes/singlePage_Footer.html', {"pageName": "gradeConversion"})
 				
-        </div>
-@@include('grunt_includes/html_jqm_footer.html', {"pageName": "gradeConversion"})
-    </div>
-@@include('grunt_includes/html_bodyBottom.html', {"pageName": "gradeConversion"})
-	
-</body>
-
-  
-</html>

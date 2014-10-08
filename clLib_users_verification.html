@@ -1,15 +1,5 @@
-﻿<!DOCTYPE html> 
-<html>
+﻿@@include('grunt_includes/singlePage_Header.html', {"pageName": "users_verification"})
 
-@@include('grunt_includes/html_head.html', {"pageName": "users_verification"})
-
-<body> 
-@@include('grunt_includes/html_jqm_page.html', {"pageName": "users_verification"})
-
-@@include('grunt_includes/html_jqm_menupanel.html', {"pageName": "users_verification"})
-@@include('grunt_includes/html_jqm_header.html', {"pageName": "users_verification"})
-
-@@include('grunt_includes/html_jqm_content.html', {"pageName": "users_verification"})
 
 
 				<div id="users_verification_loginError"></div>
@@ -60,17 +50,7 @@
 					
 
                 </div>
-
-				<div class="clLoading"></div>
-				<div class="clLoadingBg"></div>
 				
 			</div>
-            <!-- mobilefooter1 -->
-            <div data-role="footer" data-position="fixed"
-                 id="users_verification_mobilefooter1" data-theme="a">
-            </div>
-        </div>
-</body>
 
-  
-</html>
+@@include('grunt_includes/singlePage_Footer.html', {"pageName": "users_verification"})

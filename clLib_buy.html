@@ -1,21 +1,8 @@
-﻿<!DOCTYPE html> 
-<html>
+﻿@@include('grunt_includes/singlePage_Header.html', {"pageName": "buy"})
 
-@@include('grunt_includes/html_head.html', {"pageName": "buy"})
-
-<body> 
-
-@@include('grunt_includes/html_jqm_page.html', {"pageName": "buy"})
-
-@@include('grunt_includes/html_jqm_menupanel.html', {"pageName": "buy"})
-@@include('grunt_includes/html_jqm_header.html', {"pageName": "buy"})
-
-@@include('grunt_includes/html_jqm_content.html', {"pageName": "buy"})
 				
 				<div data-role="content">
 					<h1>IAP</h1>
-					<div class="clLoading"></div>
-					<div class="clLoadingBg"></div>
 
 					<div id="purchases_info_header" style="border: 1px solid red">
 						Rendered info<br>
@@ -50,14 +37,4 @@
 					</div>
                 </div>
 
-				
-				@@include('grunt_includes/html_jqm_footer.html', {"pageName": "buy"})
-
-        </div>
-
-				@@include('grunt_includes/html_bodyBottom.html', {"pageName": "users"})
-
-</body>
-
-  
-</html>
+@@include('grunt_includes/singlePage_Footer.html', {"pageName": "buy"})
