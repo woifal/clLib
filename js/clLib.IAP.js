@@ -3,114 +3,128 @@
 clLib.IAP = {
 	 purchases: {}
 	,fullVersionProductId: "KurtNonConsumable20140725_2"
-	,availability: false
 	,list: [ /*'com.kurtclimbing.consumable', */'KurtNonConsumable20140725_2' /*, '870172895', 'Kurt_FullVersion', 'kurt_FullVersion', 'kurt_fullVersion' */]
 	,products : {}
+	,status : -1
 };
 
-clLib.IAP.hasFullVersion = function(successFunc, errorFunc) {
-	//alert("checking localStorage >" + localStorage.getItem("fullVersion") + "<");
+clLib.IAP.LOADED = 1;
+clLib.IAP.RESTORED = 2;
+clLib.IAP.PURCHASED = 3;
+clLib.IAP.PURCHASED = 3;
 
-	if(localStorage.getItem("fullVersion") == 'y') return successFunc();
-	return errorFunc("No full version purchased.");
-}
 
-clLib.IAP.hasPurchased = function(productId, successFunc, errorFunc) {
-	if(clLib.IAP.products[productId] && clLib.IAP.products[productId]["purchased"]) {
-		return successFunc();
-	}
-	else {
-		return errorFunc("Product >" + productId + "< not purchased.");
-	}
-}
-
-clLib.IAP.initialize = function () {
+clLib.IAP.initialize = function (successFunc, errorFunc) {
     // Check availability of the storekit plugin
     if (!window.storekit) {
         clLib.IAP.alertAndLog('In-App Purchases not available');
-        return;
+		return errorFunc('In-App Purchases not available');
     } else {
 		try {
 			// Initialize
 			storekit.init({
-				ready:    clLib.IAP.onReady,
-				purchase: clLib.IAP.onPurchase,
-				restore:  clLib.IAP.onRestore,
-				error:    clLib.IAP.onError
+				ready: function() {
+					return clLib.IAP.onReady(successFunc, errorFunc);
+				}
+				,purchase: function(transactionId, productId, receipt) {
+					return clLib.IAP.onPurchase(transactionId, productId, receipt, successFunc, errorFunc);
+				}
+				,restore: function(transactionId, productId, receipt) {
+					return clLib.IAP.onRestore(transactionId, productId, receipt, successFunc, errorFunc);
+				}
+				,error: function(errorCode, errorMessage) {
+					return clLib.IAP.onError(errorCode, errorMessage, errorFunc);
+				}
 			});
 
-			clLib.IAP.availability = true;
-			clLib.IAP.alertAndLog("IAP available!!", null, true);
 		}
 		catch(e) {
 			clLib.IAP.alertAndLog("error during IAP initialization: " + e);
+			return errorFunc("error during IAP initialization: " + e);
 		}
+    }
+};
+
+clLib.IAP.onReady = function (successFunc, errorFunc) {
+	try {
+		clLib.IAP.alertAndLog("onReady called..", true);
+		// Once setup is done, load all product data.
+		storekit.load(clLib.IAP.list, function (products, invalidIds) {
+			clLib.IAP.alertAndLog('onReadyIAPs loading done:', false, "purchases_productIds");
+			for (var j = 0; j < products.length; ++j) {
+				var p = products[j];
+				clLib.IAP.alertAndLog('onReady Loaded IAP(' + j + '). title:' + p.title +
+							' description:' + p.description +
+							' price:' + p.price +
+							' id:' + p.id
+					, false, "purchases_productIds");
+				clLib.IAP.products[p.id] = p;
+			}
+
+			for (var i = 0; i < invalidIds.length; ++i) {
+				clLib.IAP.alertAndLog('onReady Error: could not load ' + invalidIds[i]
+				,true
+				, "purchases_productIds"
+				);
+			}
+			
+			clLib.IAP.alertAndLog('onReady calling restore', true);
+			clLib.IAP.restore();
+
+			return successFunc(clLib.IAP.LOADED, "onReady done");
+		});
+	} 
+	catch(e) {
+		return errorFunc("onReady >" + e + "<");
+	}
+
+};
+
+clLib.IAP.onPurchase = function (transactionId, productId, receipt, successFunc, errorFunc) {
+    try {
+		clLib.IAP.alertAndLog("onPurchase IAP purchasing!-" + 
+			typeof(transactionId) + '-' + 
+			typeof(productId) + '-' + 
+			typeof(receipt) + '-' + 
+			typeof(successFunc) + '-' + 
+			typeof(errorFunc) + '-'
+		);
 		
-    }
-
-};
-
-clLib.IAP.alertAndLog = function(text, elId, noAlert) {
-	if(!elId) {
-		elId = "purchases_debug";
+		clLib.IAP.products[productId]["purchased"] = transactionId;
+		
+		clLib.IAP.renderIAPs($("#purchases_info")[0]);
+		
+		return successFunc(clLib.IAP.PURCHASED, "onPurchase succes");
 	}
-	if(!noAlert) {
-		alert(text);
+	catch(e) {
+		return errorFunc("onPurchase error >" + e + "<");
 	}
-	$("#" + elId).append(text + "<br>");
 };
 
-clLib.IAP.onReady = function () {
-    clLib.IAP.alertAndLog("IAP ready..", null, true);
-	// Once setup is done, load all product data.
-    storekit.load(clLib.IAP.list, function (products, invalidIds) {
-        clLib.IAP.alertAndLog('IAPs loading done:', "purchases_productIds", true);
-        for (var j = 0; j < products.length; ++j) {
-            var p = products[j];
-            clLib.IAP.alertAndLog('Loaded IAP(' + j + '). title:' + p.title +
-                        ' description:' + p.description +
-                        ' price:' + p.price +
-                        ' id:' + p.id
-				, "purchases_productIds", true);
-            clLib.IAP.products[p.id] = p;
-        }
-        clLib.IAP.loaded = true;
-        for (var i = 0; i < invalidIds.length; ++i) {
-            clLib.IAP.alertAndLog('Error: could not load ' + invalidIds[i]
-			, "purchases_productIds"
-			);
-        }
-    });
-	clLib.IAP.alertAndLog('IAPs restoring', "purchased_debug", true);
-	clLib.IAP.restore();
-	clLib.IAP.alertAndLog('IAPs restored', "purchased_debug", true);
-	clLib.IAP.renderIAPs($("#purchases_info")[0]);
-
+clLib.IAP.onError = function (errorCode, errorMessage, errFunc) {
+    clLib.IAP.alertAndLog('onError IAP error: ' + errorMessage, true);
+	clLib.IAP.status = clLib.IAP.NOTHING;
+	return errFunc("onError " + errorMessage);
 };
 
-clLib.IAP.onPurchase = function (transactionId, productId/*, receipt*/) {
-    clLib.IAP.alertAndLog("IAP purchase..", null ,true);
-	
-	clLib.IAP.products[productId]["purchased"] = transactionId;
-    
-	clLib.IAP.renderIAPs($("#purchases_info")[0]);
-	
-	if (clLib.IAP.purchaseCallback) {
-        clLib.IAP.purchaseCallback(productId);
-    }
-};
+clLib.IAP.onRestore = function (transactionId, productId, receipt, successFunc, errorFunc) {
+	try {
+		clLib.IAP.alertAndLog("onRestore IAP restored product id >" + productId + "<with transid " + transactionId + ".."
+		, true , "purchases_restoredIds");
+		clLib.IAP.products[productId]["purchased"] = transactionId;
+		// TESTING: assume any restored purchase indicates the full version..
+		//alert("setting localStorage to Y");
 
-clLib.IAP.onError = function (errorCode, errorMessage) {
-    clLib.IAP.alertAndLog('IAP error: ' + errorMessage);
-};
+		localStorage.setItem("fullVersion", "y");
+		clLib.IAP.status = clLib.IAP.RESTORED;
 
-clLib.IAP.onRestore = function (transactionId, productId/*, transactionReceipt*/) {
-    clLib.IAP.alertAndLog("IAP restored product id >" + productId + "<with transid " + transactionId + ".."
-	, "purchases_restoredIds", true);
-	clLib.IAP.products[productId]["purchased"] = transactionId;
-	// TESTING: assume any restored purchase indicates the full version..
-	//alert("setting localStorage to Y");
-	localStorage.setItem("fullVersion", "y");
+		clLib.IAP.alertAndLog('onRestore IAPs restored', true);
+		clLib.IAP.renderIAPs($("#purchases_info")[0]);
+		return successFunc(clLib.IAP.RESTORED, "onRestore success");
+	}
+	catch(e) {
+		return errorFunc("onRestore error>" + e + "<");
+	}
 };
 
 clLib.IAP.buy = function (productId, callback) {
@@ -120,7 +134,7 @@ clLib.IAP.buy = function (productId, callback) {
 };
 
 clLib.IAP.restore = function () {
-    clLib.IAP.alertAndLog("restoring IAPs..", null, true);
+//    clLib.IAP.alertAndLog("restoring IAPs..", true);
 	try  {
 		storekit.restore();
 	}
@@ -133,7 +147,7 @@ clLib.IAP.restore = function () {
 
 clLib.IAP.renderIAPs = function (el) {
   //alert("rendering iaps..");
-  if (clLib.IAP.loaded) {
+  if (clLib.IAP.status = clLib.IAP.RESTORED) {
     var html = "<ul>";
     for (var id in clLib.IAP.products) {
       var prod = clLib.IAP.products[id];
@@ -152,3 +166,34 @@ clLib.IAP.renderIAPs = function (el) {
     el.innerHTML = "In-App Purchases not available.";
   }
 };
+
+clLib.IAP.alertAndLog = function(text, withAlert, elId) {
+	if(!elId) {
+		elId = "purchases_debug";
+	}
+	if(withAlert) {
+		1;
+		//alert(text);
+	}
+	$("#" + elId).append(text + "<br>");
+};
+
+
+
+clLib.IAP.hasFullVersion = function(successFunc, errorFunc) {
+
+	alert("checking localStorage >" + localStorage.getItem("fullVersion") + "<");
+
+	if(localStorage.getItem("fullVersion") == 'y') return successFunc();
+	return errorFunc("No full version purchased.");
+}
+
+clLib.IAP.hasPurchased = function(productId, successFunc, errorFunc) {
+	if(clLib.IAP.products[productId] && clLib.IAP.products[productId]["purchased"]) {
+		return successFunc("XXX");
+	}
+	else {
+		return errorFunc("Product >" + productId + "< not purchased.");
+	}
+}
+

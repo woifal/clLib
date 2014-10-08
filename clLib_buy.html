@@ -1,0 +1,63 @@
+﻿<!DOCTYPE html> 
+<html>
+
+@@include('grunt_includes/html_head.html', {"pageName": "buy"})
+
+<body> 
+
+@@include('grunt_includes/html_jqm_page.html', {"pageName": "buy"})
+
+@@include('grunt_includes/html_jqm_menupanel.html', {"pageName": "buy"})
+@@include('grunt_includes/html_jqm_header.html', {"pageName": "buy"})
+
+@@include('grunt_includes/html_jqm_content.html', {"pageName": "buy"})
+				
+				<div data-role="content">
+					<h1>IAP</h1>
+					<div class="clLoading"></div>
+					<div class="clLoadingBg"></div>
+
+					<div id="purchases_info_header" style="border: 1px solid red">
+						Rendered info<br>
+					</div>
+                    <div id="purchases_info" style="border: 1px solid red">
+						-<br>
+					</div>
+
+					<div id="purchases_productIds_header" style="border: 1px solid green">
+						The product ids...
+					</div>
+					<div id="purchases_productIds" style="border: 1px solid green">
+						-
+					</div>
+                    <div id="purchases_restoredIds_header" style="border: 1px solid blue">
+						The RESTORED product ids...
+					</div>
+                    <div id="purchases_restoredIds" style="border: 1px solid blue">
+						-
+					</div>
+                    <div id="purchases_debug_header" style="border: 1px solid red">
+						any debug output..<br>
+					</div>
+                    <div id="purchases_debug" style="border: 1px solid red">
+						-<br>
+					</div>
+					<div>
+						<a id="purchases_restoreButton" href="#">!!restore!!</a>
+					</div>
+					<div>
+						<a id="purchases_initButton" href="#">!!init!!</a>
+					</div>
+                </div>
+
+				
+				@@include('grunt_includes/html_jqm_footer.html', {"pageName": "buy"})
+
+        </div>
+
+				@@include('grunt_includes/html_bodyBottom.html', {"pageName": "users"})
+
+</body>
+
+  
+</html>

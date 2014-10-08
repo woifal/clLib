@@ -182,6 +182,72 @@ clLib.PAGES.handlers = {
 		}
 
 	}
+
+	, "buy": {
+	    "pagebeforeshow": function () {
+
+//			alert("showing buy.html..");
+			var successFunc = function(IAPstatus, msg) {
+//				alert("successfunc called with status >" + IAPstatus + "< and msg >" + msg + "<");
+				if(IAPstatus < clLib.IAP.RESTORED) {
+//					alert("well, at status >" + IAPstatus + "<");
+					clLib.UI.showLoading({"text" : "well, at status >" + IAPstatus + "<"});
+					return;
+				}
+				else {
+					clLib.UI.showLoading({"text" : "restored, need to redirect to requested FULLVERSION page.."});
+					setTimeout(function() {
+						clLib.UI.hideLoading();
+					}, 1000);
+					return;
+				}
+
+			};
+			var errorFunc = function(e) {
+				alert("ERROR FUNC called for >" + e + "<");
+				clLib.UI.showLoading({"text" : "ERROR while restoring >" + e + "<"});
+				return;
+			}
+
+			setTimeout(function() {
+				clLib.UI.showLoading({text: "IAPing..."});
+			}, 0);
+
+			clLib.IAP.initialize(
+				successFunc,
+				errorFunc
+			);
+
+			//alert("XXXXshowing purchases..");
+			$("#purchases_initButton").on("click", function (e) {
+				clLib.IAP.initialize(
+					successFunc,
+					errorFunc
+				);
+				clLib.IAP.renderIAPs($("#purchases_info")[0]);
+            });
+			$("#purchases_restoreButton").on("click", function (e) {
+				clLib.IAP.restore(
+					successFunc,
+					errorFunc
+				);
+				clLib.IAP.renderIAPs($("#purchases_info")[0]);
+            });
+
+			/*			$("#purchases_buyButton").on("click", function (e) {
+				alert("buying..");
+				clLib.IAP.buy('com.kurtclimbing.consumable', function(a,b,c) {
+					alert("a:" + JSON.stringify(a));
+					alert("b:" + JSON.stringify(b));
+					alert("c:" + JSON.stringify(c));
+				});
+
+            });*/
+			
+		}
+	}
+
+	
 	,"AGB" : {
 	    "pagecreate": function () {
 	    }
