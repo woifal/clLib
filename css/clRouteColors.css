@@ -21,17 +21,23 @@
 	background-color: #AAA;
 }
 
-#newRouteLog_colourSelect-listbox-popup {
+#newRouteLog_default_colourSelect-listbox-popup,
+#newRouteLog_reduced_colourSelect-listbox-popup 
+{
 	border: 0px solid blue;
 	background-color: #073d75; /*#3388CC*//*#092E56*/;
 }
-#newRouteLog_colourSelect-menu li {
+#newRouteLog_default_colourSelect-menu li ,
+#newRouteLog_reduced_colourSelect-menu li 
+{
 	border: 1px solid #CCC;
 	float:left;
 	width: 49%;
 	background-color: #073d75; /*#3388CC*//*#092E56*/;
 }
-#newRouteLog_colourSelect-menu li a{
+#newRouteLog_default_colourSelect-menu li a,
+#newRouteLog_reduced_colourSelect-menu li a
+{
 	left: 0px;
 	border: 0px solid red !important;
 	padding-top: 5px !important;

@@ -382,7 +382,7 @@ clLib.PAGES.handlers = {
 					
 
 					clLib.loggi("currentLayout set to " + currentLayout);
-					var newRouteLogURL = "clLib_newRouteLog." + currentLayout + ".html";
+					var newRouteLogURL = "clLib_newRouteLog_" + currentLayout + ".html";
 
 					clLib.PAGES.changeTo(newRouteLogURL);
 					//$.mobile.navigate(newRouteLogURL);
@@ -396,34 +396,29 @@ clLib.PAGES.handlers = {
 			clLib.UI.fillUIelements("startScreen", "startScreen");
 		}
 	}
-	, "newRouteLog": {
+	, "newRouteLog_default": {
 	    "pagecreate": function () {
 			//alert("init!");
-			clLib.UI.buildRatingRadio($("#newRouteLog_ratingSelectWrapper"));
-	        $("#newRouteLog_layoutSelect").val(localStorage.getItem("currentLayout"));
-	        $("#newRouteLog_layoutSelect").selectmenu("refresh");
+			clLib.UI.buildRatingRadio($("#newRouteLog_default_ratingSelectWrapper"));
+	        $("#newRouteLog_default_layoutSelect").val(localStorage.getItem("currentLayout"));
+	        $("#newRouteLog_default_layoutSelect").selectmenu("refresh");
 
 	        //alert("444isave handler..");
-	        $("#newRouteLog_save_tick").on("click", function () {
+	        $("#newRouteLog_default_save_tick").on("click", function () {
 				clLib.UI.execWithMsg(function() {
-	                localStorage.setItem("currentJqmSlide", "newRouteLog");
+	                localStorage.setItem("currentJqmSlide", "newRouteLog_default");
 	                clLib.UI.save({}, function() {
 						// clear UI elements's content
-						clLib.UI.resetUIelements("newRouteLog", "newRouteLog");
+						clLib.UI.resetUIelements("newRouteLog_default", "newRouteLog_default");
 						// scroll to top
 						$.mobile.silentScroll(0);
 						// ensure "extra" panel is collapsed..
-						$(".clExtra").collapsible( "option", "collapsed", true );
+						$("#newRouteLog_default .clExtra").collapsible( "option", "collapsed", true );
 					});
 	            }, {text: "Saving route logs.."}, 200);
 	        });
-	        $("#newRouteLog_refreshButton").on("click", function () {
-	            clLib.UI.resetUIelements("newRouteLog", "newRouteLog");
-	        });
 
-	        //clLib.UI.fillUIelements("newRouteLog", "newRouteLog", localStorage.getItem("defaultLayout"));
-
-			$("#newRouteLog_tickType input[type='checkbox']")
+			$("#newRouteLog_default_tickType input[type='checkbox']")
 				.off("click")
 				.on("click", function(e) {
 				if($(this).is(":checked")) {
@@ -449,11 +444,66 @@ clLib.PAGES.handlers = {
 			//alert("showing page!(prev:" + prevTag + " #" + prevId + ")");
 			
 			if (!prevId || !prevId.endsWith("-dialog")) {
-				localStorage.setItem("currentJqmSlide", "newRouteLog");
-				clLib.UI.fillUIelements("newRouteLog", "newRouteLog", localStorage.getItem("defaultLayout"));
+				localStorage.setItem("currentJqmSlide", "newRouteLog_default");
+				clLib.UI.fillUIelements("newRouteLog_default", "newRouteLog_default", localStorage.getItem("defaultLayout"));
 			}
 		}
 	}
+
+	, "newRouteLog_reduced": {
+	    "pagecreate": function () {
+			//alert("init!");
+			clLib.UI.buildRatingRadio($("#newRouteLog_reduced_ratingSelectWrapper"));
+	        $("#newRouteLog_reduced_layoutSelect").val(localStorage.getItem("currentLayout"));
+	        $("#newRouteLog_reduced_layoutSelect").selectmenu("refresh");
+
+	        //alert("444isave handler..");
+	        $("#newRouteLog_reduced_save_tick").on("click", function () {
+				clLib.UI.execWithMsg(function() {
+	                localStorage.setItem("currentJqmSlide", "newRouteLog_reduced");
+	                clLib.UI.save({}, function() {
+						// clear UI elements's content
+						clLib.UI.resetUIelements("newRouteLog_reduced", "newRouteLog_reduced");
+						// scroll to top
+						$.mobile.silentScroll(0);
+						// ensure "extra" panel is collapsed..
+						$("#newRouteLog_reduced .clExtra").collapsible( "option", "collapsed", true );
+					});
+	            }, {text: "Saving route logs.."}, 200);
+	        });
+
+			$("#newRouteLog_reduced_tickType input[type='checkbox']")
+				.off("click")
+				.on("click", function(e) {
+				if($(this).is(":checked")) {
+					//alert($(this).prop("id") + " is checked!");
+					//alert($(this).parents(".ui-checkbox").siblings().size());
+					$(this).parents(".ui-checkbox").siblings().find("label")
+						.removeClass("ui-checkbox-on")
+						.addClass("ui-checkbox-off")
+					;
+					$(this).parents(".ui-checkbox").siblings().find("input[type='checkbox']")
+						.prop("checked", false)
+					;
+				} else {
+					// Don't allow explicit un-checking.
+					$(this).prop("checked", true);
+				}
+			});
+		}
+        , "pagebeforeshow": function (e, ui) {
+            var $prevElement = $(ui.prevPage);//.prev();
+			var prevTag = $prevElement.prop("tagName");
+			var prevId = $prevElement.attr("id");
+			//alert("showing page!(prev:" + prevTag + " #" + prevId + ")");
+			
+			if (!prevId || !prevId.endsWith("-dialog")) {
+				localStorage.setItem("currentJqmSlide", "newRouteLog_reduced");
+				clLib.UI.fillUIelements("newRouteLog_reduced", "newRouteLog_reduced", localStorage.getItem("defaultLayout"));
+			}
+		}
+	}
+	
 	, "stats": {
 	    "pagecreate": function () {
 	        //clLib.UI.fillUIelements("newRouteLog", "newRouteLog", localStorage.getItem("defaultLayout"));

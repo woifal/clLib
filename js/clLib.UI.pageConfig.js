@@ -23,7 +23,17 @@ clLib.UI.pageRequisites = {
         ]
     }
     , "preferences": {}
-    , "newRouteLog": { 
+    , "newRouteLog_default": { 
+		"clBeforeChange" : [clLib.prefsCompleteCheck, clLib.tryLogin, clLib.wasOnlineCheck
+/*            ,function (callbackFunc, errorFunc) {
+				var options = {};
+				options.uri = clLib.REST.clLibServerURI + "/sleep/5";
+				return clLib.REST.execGET(options, callbackFunc, errorFunc);
+			}
+*/
+        ] 
+	}
+    , "newRouteLog_reduced": { 
 		"clBeforeChange" : [clLib.prefsCompleteCheck, clLib.tryLogin, clLib.wasOnlineCheck
 /*            ,function (callbackFunc, errorFunc) {
 				var options = {};
@@ -85,7 +95,8 @@ clLib.UI.pageRequisites = {
 
 clLib.UI.saveHandlers= {
       "preferences": clLib.UI.localStorageSaveHandler
-    , "newRouteLog": clLib.UI.RESTSaveHandler
+    , "newRouteLog_default": clLib.UI.RESTSaveHandler
+    , "newRouteLog_reduced": clLib.UI.RESTSaveHandler
     , "startScreen": clLib.UI.RESTSaveHandler
     , "users": clLib.UI.userHandler
     , "users_clLogin": clLib.UI.userHandler
@@ -103,8 +114,8 @@ clLib.UI.autoLoad = {
 			"displayName"
 			, "defaultLayoutMenuSwitch"
 		]
-	}, 
-	newRouteLog : {
+	} 
+	,newRouteLog_default : {
 		default: [
 			"gradeSystemSelect"
 			, "searchRoute"
@@ -115,8 +126,10 @@ clLib.UI.autoLoad = {
 			, "tickType_toprope"
 			, "characterSelect"
 			, "routeLogContainer"
-		],
-		reduced: [
+		]
+	}
+	,newRouteLog_reduced : {
+		default: [
 			"gradeSystemSelect"
 			, "ratingSelect"
 			, "tickType_redpoint"
@@ -188,15 +201,25 @@ clLib.UI.autoLoad = {
 };
 
 clLib.UI.elementsToReset = {
-	newRouteLog : [
+	newRouteLog_default : [
 		"lineSelect",
 		"sectorSelect",
 		"colourSelect",
 		"ratingSelect",
 		"searchRouteResults",
 		"searchRoute",
-		"routeLogContainer",
-		"characterSelect"
+		"routeLogContainer"/*,
+		"characterSelect"*/
+	]
+	,newRouteLog_reduced : [
+		"lineSelect",
+		"sectorSelect",
+		"colourSelect",
+		"ratingSelect",
+		"searchRouteResults",
+		"searchRoute",
+		"routeLogContainer"/*,
+		"characterSelect"*/
 	]
 	, startScreen : [
 		"currentScore"
@@ -252,7 +275,7 @@ clLib.UI.pageElements = {
 			, "convertedGrades"
 		]
 	}
-	,newRouteLog : {
+	,newRouteLog_default : {
 		default: [
     		"currentLayout"
             , "gradeSystemSelect"
@@ -273,8 +296,10 @@ clLib.UI.pageElements = {
 			, "currentUserPref"
 			, "currentDate"
 			, "routeLogContainer"
-		],
-		reduced: [
+		]
+	}
+	,newRouteLog_reduced : {
+		default: [
             "currentLayout"
             , "gradeSystemSelect"
 			, "gradeSelect"
@@ -849,9 +874,9 @@ clLib.UI.elements = {
 				,$.extend(additionalOptions, { preserveCurrentValue: false })
 			);
 		    clLib.addCSSBackground($this.attr("id"), {addClasses: "clColourBg"});
-			$("#newRouteLog_colourSelect-listbox-popup")
+			$("#" + localStorage.getItem("currentJqmSlide") + "_colourSelect-listbox-popup")
 				.find(".ui-btn.clCSSBg.more.clColourBg").click(function(e) {
-					$("#newRouteLog_colourSelect")
+					$("#" + localStorage.getItem("currentJqmSlide") + "_colourSelect")
 						.trigger("refresh.clLib", 
 						{
 							dependingOnOverride:1

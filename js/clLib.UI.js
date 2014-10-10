@@ -597,7 +597,10 @@ clLib.populateSelectBox_plain = function($selectBox, dataObj, selectedValue, pre
 		$selectBox.append($option);
 	});
 
-	if($selectBox.attr("id") == "newRouteLog_colourSelect") {
+	if(
+		$selectBox.attr("id") == "newRouteLog_default_colourSelect" ||
+		$selectBox.attr("id") == "newRouteLog_reduced_colourSelect"
+	) {
 		var $option = $('<option></option>');
 		$option
 			.val("more")
