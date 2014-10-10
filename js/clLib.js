@@ -649,7 +649,7 @@ clLib.loginErrorHandler = function(e) {
 	clLib.sessionToken = null;
 	clLib.setUIMessage(clInfoObj, true);
 
-	clLib.UI.byId$("loginError", "users").trigger("refresh.clLib");
+	clLib.UI.byId$("loginError").trigger("refresh.clLib");
 	return false;
 };
 
@@ -698,9 +698,20 @@ clLib.wasOnlineCheck = function (successFunc, errorFunc) {
         return successFunc();
     }
 
-    if (!clLib.localStorage.refreshAllData(
+	return clLib.localStorage.refreshAllData(
 		function() {
 			//alert("refreshed!");
+			return successFunc();
+		}
+		,function() {
+			//alert("not refreshed!");
+			return errorFunc();
+		}
+	);
+/*	
+    if (!clLib.localStorage.refreshAllData(
+		function() {
+			alert("refreshed!");
 			return successFunc();
 		}
 		,function() {
@@ -709,8 +720,9 @@ clLib.wasOnlineCheck = function (successFunc, errorFunc) {
 		}
 	)) {
 		//alert("You need to go online once to get initial Route(Log) data!");
-		$.mobile.navigate("clLib_startScreen.html");
+		clLib.PAGES.changeTo("clLib_startScreen.html");
 	}
+*/
 };
 
 //

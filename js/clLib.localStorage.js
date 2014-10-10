@@ -900,7 +900,6 @@ clLib.localStorage.refreshAllData = function (callbackFunc, errorFunc) {
 	clLib.loggedInCheck(
 	function() {
 		clLib.UI.execWithMsg(function() {
-			clLib.UI.showLoading("refreshing from server..");
 			var warnings = "";
 			//alert("previous refresh:" +clLib.localStorage.getLastRefreshDate("defaultStorage"));
 
@@ -961,15 +960,15 @@ clLib.localStorage.refreshAllData = function (callbackFunc, errorFunc) {
 			var compiledGradeConfig = clLib.compileGradeConfig();
 			console.log("compiledGradeConfig: " + JSON.stringify(compiledGradeConfig));
 			$.extend(storageObjects, compiledGradeConfig);
-			clLib.loggi("initializing storage with >" + JSON.stringify(storageObjects)+ "<");
+			console.log("initializing storage with >" + JSON.stringify(storageObjects)+ "<");
 			
 			// Initialize local storage..
 			clLib.localStorage.initStorage(storageObjects);
 
-			clLib.UI.fillUIelements("startScreen", "startScreen");
+//			clLib.UI.fillUIelements("startScreen", "startScreen");
 
 			//alert("new refresh:" + clLib.localStorage.getLastRefreshDate("defaultStorage"));
-			clLib.UI.hideLoading();
+//			clLib.UI.hideLoading();
 			
 			clLib.loggi("calling refreshAllData callback with " + warnings);
 			return callbackFunc({"warnings" : warnings});

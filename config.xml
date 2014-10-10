@@ -32,7 +32,17 @@
 	</platform name="ios">
 	
     <gap:platform name="ios" />
+    <gap:platform name="android" />
     
+	<preference name="splashscreen" value="files/views/assets/image/splashBackground.png" />
+
+	<preference name="AutoHideSplashScreen" value="false" />
+		<!-- Do not auto hide splash on Android -->
+		<preference name="SplashScreenDelay" value="1000"/>
+	
+
+	<gap:plugin name="org.apache.cordova.splashscreen" />
+	
 	<gap:plugin name="org.apache.cordova.InAppBrowser" />
 	
 	<gap:plugin name="com.phonegap.plugin.statusbar" version="1.1.0" />
@@ -48,7 +58,7 @@
 	</gap:config-file>
 	
 	<gap:plugin name="cc.fovea.plugins.inapppurchase"/>    
- 
+
 	<access origin="*" />
     
 </widget>

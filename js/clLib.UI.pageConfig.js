@@ -47,15 +47,15 @@ clLib.UI.pageRequisites = {
 		"clBeforeChange" : [
 			function(successFunc, errorFunc) {
 //				alert("checking for full version...");
-				return clLib.IAP.hasFullVersion(function() {
-					alert("yes, has full version...");
-				}, 
-				function(e) {
-//					alert("no, no full version >" + e + "<")
-//					return clLib.PAGES.changeTo("clLib_purchases.html");
-//					alert("changing to buy.html");
-					return clLib.PAGES.changeTo("clLib_buy.html");
-				}
+				return clLib.IAP.hasFullVersion(
+					function() {
+						alert("yes, has full version...");
+						return successFunc();
+					}, 
+					function(e) {
+						alert("don't know about full version, check IAP..");
+						return clLib.PAGES.changeTo("clLib_buy.html", {"targetPage": "stats"});
+					}
 				);
 			}
 		]

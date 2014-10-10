@@ -4,10 +4,29 @@
 @@include('grunt_includes/html_head.html', {"pageName": "ALL"})
 
 <body> 
+<!-- start of splashScreen -->
+<!--<div>
+                <div style="background-color: #073E78">
+                    <img 
+                        src="files/views/assets/image/header_logo.png" 
+                        style="border: 1px solid red; margin-left: 100px; margin-top: 200px; padding-left: 0px; padding-top: 0px; background: none; width: 200px; aheight: 200px;"
+                    />
+                </div>
+</div>
+-->
+<!-- end of splashScreen -->
 
 @@include('appIndex.html', {"pageName": "appIndex"})
 @@include('clLib_startScreen.html', {"pageName": "startScreen"})
+
+<!--
+@-@include('clLib_newRouteLog_default.html', {"pageName": "newRouteLog"})
+@-@include('clLib_newRouteLog_reduced.html', {"pageName": "newRouteLog_reduced"})
+-->
 @@include('clLib_newRouteLog.default.html', {"pageName": "newRouteLog"})
+<!--
+@-@include('clLib_newRouteLog.reduced.html', {"pageName": "newRouteLog_reduced"})
+-->
 @@include('clLib_AGB.html', {"pageName": "AGB"})
 @@include('clLib_buy.html', {"pageName": "buy"})
 @@include('clLib_diagram.html', {"pageName": "diagram"})
