@@ -59,12 +59,12 @@ clLib.UI.pageRequisites = {
 //				alert("checking for full version...");
 				return clLib.IAP.hasFullVersion(
 					function() {
-						alert("yes, has full version...");
+						//alert("yes, has full version...");
 						return successFunc();
 					}, 
 					function(e) {
-						alert("don't know about full version, check IAP..");
-						return clLib.PAGES.changeTo("clLib_buy.html", {"targetPage": "stats"});
+						//alert("don't know about full version, check IAP..");
+						return clLib.PAGES.changeTo("clLib_buy.html", {"targetPage": "clLib_stats.html"});
 					}
 				);
 			}
@@ -720,12 +720,10 @@ clLib.UI.elements = {
 		,"refreshFromEntity" : "Grades"
 		,"refreshHandler" : function($this) {
 			//alert("getting grades for " + localStorage.getItem("defaultGradeSystem") + " and " + localStorage.getItem("defaultGrade"));
-			//alert("X" + clLib.UI.elementNameFromId(localStorage.getItem("currentJqmSlide") + "_" + "gradeSystemSelect"));
-			//	alert("Y" + clLib.UI.getVal(clLib.UI.elementNameFromId(localStorage.getItem("currentJqmSlide") + "_" + "gradeSystemSelect")));
 			var selectedValue = clLib.findEquivalentGrade(
 				localStorage.getItem("defaultGradeSystem") || "UIAA"
 				, localStorage.getItem("defaultGrade") || "VI"			
-				, clLib.UI.getVal(clLib.UI.elementNameFromId(localStorage.getItem("currentJqmSlide") + "_" + "gradeSystemSelect"))
+				, clLib.UI.getVal(clLib.UI.elementNameFromId(clLib.UI.currentPage() + "_" + "gradeSystemSelect"))
 			);
 
 			
@@ -766,8 +764,8 @@ clLib.UI.elements = {
 
 			$.each(selectedGradeSystems, function(idx, gradeSystemName) {
 				var aGrade = clLib.findEquivalentGrade(
-					clLib.UI.getVal(clLib.UI.elementNameFromId(localStorage.getItem("currentJqmSlide") + "_" + "gradeSystemSelect"))
-					, clLib.UI.getVal(clLib.UI.elementNameFromId(localStorage.getItem("currentJqmSlide") + "_" + "gradeSelect"))
+					clLib.UI.getVal(clLib.UI.elementNameFromId(clLib.UI.currentPage() + "_" + "gradeSystemSelect"))
+					, clLib.UI.getVal(clLib.UI.elementNameFromId(clLib.UI.currentPage() + "_" + "gradeSelect"))
 					, gradeSystemName
 				);
 
@@ -874,9 +872,9 @@ clLib.UI.elements = {
 				,$.extend(additionalOptions, { preserveCurrentValue: false })
 			);
 		    clLib.addCSSBackground($this.attr("id"), {addClasses: "clColourBg"});
-			$("#" + localStorage.getItem("currentJqmSlide") + "_colourSelect-listbox-popup")
+			$("#" + clLib.UI.currentPage() + "_colourSelect-listbox-popup")
 				.find(".ui-btn.clCSSBg.more.clColourBg").click(function(e) {
-					$("#" + localStorage.getItem("currentJqmSlide") + "_colourSelect")
+					$("#" + clLib.UI.currentPage() + "_colourSelect")
 						.trigger("refresh.clLib", 
 						{
 							dependingOnOverride:1
@@ -993,8 +991,6 @@ clLib.UI.elements = {
 			});
 		}
 		,"setSelectedValueHandler" : function($this, changeOptions) { 
-			//clLib.UI.buildRatingRadio(clLib.UI.byId$("ratingSelectWrapper"));
-
 			if(changeOptions && changeOptions["value"] == clLib.UI.NOTSELECTED.value) {
 				$this.children().addClass("unrated");
 				$this.children().removeClass("rated");

@@ -232,7 +232,7 @@ clLib.ISOStrToDate = function(ISOStr) {
 		(x.getYear() + 1900) + "-" +
 		clLib.lpad((x.getMonth() +1), '0', 2) + "-" +
 		clLib.lpad(x.getDate(), '0', 2) + " " +
-		clLib.lpad((x.getHours() - 2), '0', 2) + ":" +
+		clLib.lpad((x.getHours()), '0', 2) + ":" +
 		clLib.lpad(x.getMinutes(), '0', 2) + ":" +
 		clLib.lpad(x.getSeconds(), '0', 2);
 };

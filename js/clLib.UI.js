@@ -116,8 +116,6 @@ clLib.UI.tickTypeSymbols = {
 	}
 	, tickType_delete : function(dataRow) {
 		var aLink;
-		//aLink = $('<span style="text-align: right; border: 0px solid red;"><img style="margin-left: 13px; border: 0px solid red; width:20px; height: 20px" src="files/views/assets/image/delete-route.png"></span>');
-		//aLink = $('<a href="#" class="ui-btn ui-btn-inline ui-icon-delete ui-btn-icon-right">Delete</a>');
 		aLink = $("<div>Delete!</div>");
 		aLink
 			.buttonMarkup({
@@ -128,7 +126,7 @@ clLib.UI.tickTypeSymbols = {
 
 		aLink.click(function() {
 			clLib.localStorage.removeInstance("RouteLog", dataRow["_id"], "defaultStorage");
-			clLib.UI.resetUIelements("newRouteLog", "newRouteLog");
+			clLib.UI.resetUIelements();
 		});
 
 		return aLink;
@@ -679,7 +677,7 @@ clLib.UI.defaultChangeHandler = function($element, changeOptions) {
 	
 	if(!elementConfig) {
 		alert("1no element config for element with id " + $element.attr("id") + " and name " + clLib.UI.elementNameFromId($element.attr("id")) + " found..");
-		alert("currentJqmSlide = " + localStorage.getItem("currentJqmSlide"));
+		alert("currentPage = " + clLib.UI.currentPage());
 		
 	}
 	//alert("elementConfig for " + $element.attr("id") + "(" + clLib.UI.elementNameFromId($element.attr("id")) + ") is " + JSON.stringify(elementConfig));
@@ -752,8 +750,8 @@ clLib.UI.setSelectedValueOnlyHandler = function($element, changeOptions) {
 }
 	
 
-clLib.UI.resetUIelements = function(pageName, currentJqmSlide) {
-	localStorage.setItem("currentJqmSlide", currentJqmSlide);
+clLib.UI.resetUIelements = function() {
+	var pageName = clLib.UI.currentPage();
 	// populate autoload elements
 	$.each(clLib.UI.elementsToReset[pageName], function(idx, elementName) {
 		var $element = clLib.UI.byId$(elementName);
@@ -771,7 +769,7 @@ clLib.UI.resetUIelements = function(pageName, currentJqmSlide) {
 	});
 	
 //	hardcoded reset for <textarea> element...
-	$("#newRouteLog_commentText").val('');
+	$("#" + pageName + "_commentText").val('');
 };
 	
 clLib.UI.hideUIElement = function($element) {
@@ -801,11 +799,11 @@ clLib.UI.showUIElement = function($element) {
 * The "refresh.clLib" event can (and should) be used to re-populate such elements using the defined "refreshHandler" function.
 *
 */
-clLib.UI.fillUIelements = function(pageName, currentJqmSlide, layout) {
-    localStorage.setItem("currentJqmSlide", currentJqmSlide);
+clLib.UI.fillUIelements = function() {
+	var pageName = clLib.UI.currentPage();
 		
 	// no special layout to apply? use default layout..
-	var layout = layout || localStorage.getItem("currentLayout") || "default";
+	var layout = localStorage.getItem("currentLayout") || "default";
 
 	clLib.loggi("populating UI elements for page >" + pageName + "< and layout >" + layout + "<", 2);
 
@@ -817,11 +815,11 @@ clLib.UI.fillUIelements = function(pageName, currentJqmSlide, layout) {
 	// Create page elements..
 	var curPageElements;
 	curPageElements = clLib.UI.pageElements[pageName][layout];
-	clLib.UI.createElements(curPageElements, currentJqmSlide);
+	clLib.UI.createElements(curPageElements);
 
 	curPageElements = clLib.UI.pageElements["_COMMON_"][layout];
 	//alert("!!!!!!!!!!!!!!!!!!creating common " + JSON.stringify(curPageElements));
-	clLib.UI.createElements(curPageElements, currentJqmSlide);
+	clLib.UI.createElements(curPageElements);
 
 //	curPageElements.push.apply(curPageElements, clLib.UI.pageElements["_COMMON_"][layout]);
 	
@@ -832,41 +830,39 @@ clLib.UI.fillUIelements = function(pageName, currentJqmSlide, layout) {
 	if(curPageAutoload) {
 		curPageAutoload = clLib.UI.autoLoad[pageName][layout];
 	}
-	clLib.UI.autoloadElements(curPageAutoload, currentJqmSlide);
+	clLib.UI.autoloadElements(curPageAutoload);
 
 	curPageAutoload = clLib.UI.autoLoad["_COMMON_"];
 	if(curPageAutoload) {
 		curPageAutoload = clLib.UI.autoLoad["_COMMON_"][layout];
 	}
 	//alert("autoloading common " + JSON.stringify(curPageAutoload));
-	clLib.UI.autoloadElements(curPageAutoload, currentJqmSlide);
-	
-	localStorage.setItem("currentJqmSlide", currentJqmSlide);
+	clLib.UI.autoloadElements(curPageAutoload);
 	
 //	curPageAutoload.push.apply(curPageAutoload, clLib.UI.autoLoad["_COMMON_"][layout]);
 
 };
 
 
-clLib.UI.autoloadElements = function(curPageAutoload, currentJqmSlide) {
-	localStorage.setItem("currentJqmSlide", currentJqmSlide);
-	console.log("autoloading...." + JSON.stringify(curPageAutoload) + "," + currentJqmSlide);
+clLib.UI.autoloadElements = function(curPageAutoload) {
+	var pageId = clLib.UI.currentPage();
+	console.log("autoloading...." + JSON.stringify(curPageAutoload) + "," + pageId);
 	if(curPageAutoload) {
 		$.each(curPageAutoload, function(idx, elementName) {
 			//alert("triggering autoload for " + elementName, 2);
-			clLib.loggi("html(" + elementName + "):" + clLib.UI.byId$(elementName, currentJqmSlide).html(), 2);
+			clLib.loggi("html(" + elementName + "):" + clLib.UI.byId$(elementName, pageId).html(), 2);
 			var optionObj = {};
 			//alert("byId is " + clLib.UI.byId$(elementName).attr("id"));
-			clLib.UI.byId$(elementName, currentJqmSlide).trigger("refresh.clLib", 
+			clLib.UI.byId$(elementName, pageId).trigger("refresh.clLib", 
 				clLib.UI.addObjArr(optionObj,["eventSourcePath"], "AUTOLOAD")
 			);
 		});
 	}
 };
 
-clLib.UI.createElements = function(curPageElements, currentJqmSlide) {
-	localStorage.setItem("currentJqmSlide", currentJqmSlide);
-	//alert("populating UI elements for page >" + currentJqmSlide + "<");
+clLib.UI.createElements = function(curPageElements) {
+	var pageId = clLib.UI.currentPage();
+	//alert("populating UI elements for page >" + pageId + "<");
 	$.each(curPageElements, function(idx, elementName) {
 		var elementConfig = clLib.UI.elements[elementName];
 		
@@ -877,7 +873,7 @@ clLib.UI.createElements = function(curPageElements, currentJqmSlide) {
 
 		//alert("!!adding events for  element >" + elementName + "<", 2);
 		//alert("elementConfig >" + JSON.stringify(elementConfig) + "<", 2);
-		var $element = clLib.UI.byId$(elementName, currentJqmSlide);
+		var $element = clLib.UI.byId$(elementName, pageId);
 		clLib.loggi("element is " + $element.attr("id") + "<", 2);
 		
 		// Re-attach event handlers
@@ -1008,58 +1004,20 @@ clLib.UI.showAllTodayScores = function(buddyNames, targetElement) {
 
 
 
-clLib.UI.buildRatingRadio = function($element) {
+clLib.UI.buildRatingRadio = function($element, pageId) {
 	$element.children().remove();
-	$element.html("" + 
-"                                                                                                                                                                               " +
-"<style>                                                                                                                                                                        " +
-".ratingSelect {                                                                                                                                                                " +
-"	border: 0px solid red;                                                                                                                                                      " +
-"	padding: 5px 0px 0px 0px;                                                                                                                                                   " +
-"	margin: 0px 0px 0px 0px;    																																				" +
-"	position:relative; left: 50%; margin-left:-40px;                                                                                                                           	" +
-"}                                                                                                                                                                              " +
-"                                                                                                                                                                               " +
-".ratingSelect > label > input {                                                                                                                                                " +
-"    display: none;                                                                                                                                                             " +
-"}                                                                                                                                                                              " +
-".ratingSelect > label  {                                                                                                                                                " +
-"    float: left;                                                                                                                                                             " +
-"}                                                                                                                                                                              " +
-"                                                                                                                                                                               " +
-".ratingSelect > label > .img {                                                                                                                                                 " +
-"	float: left;                                                                                                                                                                " +
-"	width: 20px;                                                                                                                                                                " +
-"	height: 20px;                                                                                                                                                               " +
-"	border: none;                                                                                                                                                               " +
-"}                                                                                                                                                                              " +
-"                                                                                                                                                                               " +
-".ratingSelect > label.rated > .img {                                                                                                                                           " +
-"	background-image: url(\"files/views/assets/image/star_rated.png\"); /* no-repeat;*/                                                                                                             " +
-"	background-size: 100% 100%;                                                                                                                                                 " +
-"}                                                                                                                                                                              " +
-".ratingSelect > label.unrated > .img { 	                                                                                                                                    " +
-"	background-image: url(\"files/views/assets/image/star_unrated.png\"); /* no-repeat; */                                                                                                          " +
-"	background-size: 100% 100%;                                                                                                                                                 " +
-"}                                                                                                                                                                              " +
-"                                                                                                                                                                               " +
-"                                                                                                                                                                               " +
-"                                                                                                                                                                               " +
-"</style>                                                                                                                                                                       " +
-"                                                                                                                                                                               " +
-"                                                                                                                                                                               " +
-"                                                                                                                                                                               " +
-"                                                                                                                                                                               " +
-"			<div data-role=\"none\" class=\"ratingSelect\" id=\"newRouteLog_ratingSelect\">                                                                                           " +
-"					<label data-role=\"none\" class=\"unrated\"><input data-role=\"none\" name=\"foo\" type=\"radio\" id=\"newRouteLog_ratingSelectRadio\" value=\"1\"/><div class=\"img\"></div></label>  " +
-"					<label data-role=\"none\" class=\"unrated\"><input data-role=\"none\" name=\"foo\" type=\"radio\" id=\"newRouteLog_ratingSelectRadio\" value=\"2\"/><div class=\"img\"></div></label>  " +
-"					<label data-role=\"none\" class=\"unrated\"><input data-role=\"none\" name=\"foo\" type=\"radio\" id=\"newRouteLog_ratingSelectRadio\" value=\"3\"/><div class=\"img\"></div></label>  " +
-"					<label data-role=\"none\" class=\"unrated\"><input data-role=\"none\" name=\"foo\" type=\"radio\" id=\"newRouteLog_ratingSelectRadio\" value=\"4\"/><div class=\"img\"></div></label>  " +
-"					<label data-role=\"none\" class=\"unrated\"><input data-role=\"none\" name=\"foo\" type=\"radio\" id=\"newRouteLog_ratingSelectRadio\" value=\"5\"/><div class=\"img\"></div></label>  " +
-"				</div>                                                                                                                                                          " +
+	var html = "" + 
+"			<span data-role=\"none\" class=\"ratingSelect\" id=\"" + pageId + "_ratingSelect\">                                                                                           " +
+"					<label data-role=\"none\" class=\"unrated\"><input data-role=\"none\" name=\"foo\" type=\"radio\" id=\"" + pageId + "_ratingSelectRadio\" value=\"1\"/><div class=\"img\"></div></label>  " +
+"					<label data-role=\"none\" class=\"unrated\"><input data-role=\"none\" name=\"foo\" type=\"radio\" id=\"" + pageId + "_ratingSelectRadio\" value=\"2\"/><div class=\"img\"></div></label>  " +
+"					<label data-role=\"none\" class=\"unrated\"><input data-role=\"none\" name=\"foo\" type=\"radio\" id=\"" + pageId + "_ratingSelectRadio\" value=\"3\"/><div class=\"img\"></div></label>  " +
+"					<label data-role=\"none\" class=\"unrated\"><input data-role=\"none\" name=\"foo\" type=\"radio\" id=\"" + pageId + "_ratingSelectRadio\" value=\"4\"/><div class=\"img\"></div></label>  " +
+"					<label data-role=\"none\" class=\"unrated\"><input data-role=\"none\" name=\"foo\" type=\"radio\" id=\"" + pageId + "_ratingSelectRadio\" value=\"5\"/><div class=\"img\"></div></label>  " +
+"				</span>                                                                                                                                                          " +
 "	                                                                                                                                                                            " +
-""
-	);
+"";
+	console.log(html);
+	$element.html(html);
 
 };
 
@@ -1086,8 +1044,9 @@ clLib.UI.buildWhereIfVisible = function(whereKeys2Elements) {
 
 
 clLib.UI.getId$ = function(elementName, pageId) {
-	var currentJqmSlide = pageId || localStorage.getItem("currentJqmSlide");
-	var newSelector = "#" + currentJqmSlide + "_" + elementName;
+	console.log(">>" + pageId + "<<");
+	pageId = pageId || clLib.UI.currentPage();
+	var newSelector = "#" + pageId + "_" + elementName;
 	return newSelector;
 };
 
@@ -1099,8 +1058,8 @@ clLib.UI.byId$ = function(elementName, pageId) {
 
 
 clLib.UI.elementNameFromId = function(id) {
-	var currentJqmSlide = localStorage.getItem("currentJqmSlide");
-	var newId = id.replace(currentJqmSlide + "_", "");
+	var pageId = clLib.UI.currentPage();
+	var newId = id.replace(pageId + "_", "");
 	newId = newId.replace("_COMMON_" + "_", "");
 	return newId;
 };
@@ -1274,18 +1233,18 @@ clLib.UI.getVal = function(elementName) {
 }
 
 clLib.UI.save = function (options, successFunc, errorFunc) {
-	var currentJqmSlide = options["currentJqmSlide"];
+	var currentPage = options["currentPage"];
 	var currentLayout = options["currentLayout"];
 	var additionalData = options["additionalData"];
 	
     var saveHandler;
 
-    if (!options["currentJqmSlide"]) {
-        options["currentJqmSlide"] = localStorage.getItem("currentJqmSlide");
+    if (!options["currentPage"]) {
+        options["currentPage"] = clLib.UI.currentPage();
     }
 
-    if (!(saveHandler = clLib.UI.saveHandlers[options["currentJqmSlide"]])) {
-        alert("no save handler defined for page >" + options["currentJqmSlide"] + "<");
+    if (!(saveHandler = clLib.UI.saveHandlers[options["currentPage"]])) {
+        alert("no save handler defined for page >" + options["currentPage"] + "<");
         return;	
     }
 
@@ -1297,17 +1256,17 @@ clLib.UI.save = function (options, successFunc, errorFunc) {
 clLib.UI.localStorageSaveHandler = function (options, successFunc, errorFunc) {
     var saveObj = {};
 
-	var currentJqmSlide = options["currentJqmSlide"];
+	var pageId = options["currentPage"];
 	var currentLayout = options["currentLayout"];
 	
-    if (!currentJqmSlide) {
-        currentJqmSlide = localStorage.getItem("currentJqmSlide");
+    if (!pageId) {
+        pageId = clLib.UI.currentPage();
     }
     if (!currentLayout) {
         currentLayout = localStorage.getItem("currentLayout") || "default";
     }
 
-    $.each(clLib.UI.pageElements[currentJqmSlide][currentLayout], function (idx, elementName) {
+    $.each(clLib.UI.pageElements[pageId][currentLayout], function (idx, elementName) {
         //alert("eaching " + idx + " and " + elementName);
         var elementConfig = clLib.UI.elements[elementName];
         if (!elementConfig) {
@@ -1328,17 +1287,17 @@ clLib.UI.localStorageSaveHandler = function (options, successFunc, errorFunc) {
 
 clLib.UI.RESTSaveHandler = function (options, successFunc, errorFunc) {
     var saveObj = {};
-	var currentJqmSlide = options["currentJqmSlide"];
+	var pageId = options["currentPage"];
 	var currentLayout = options["currentLayout"];
 	
-    if (!currentJqmSlide) {
-        currentJqmSlide = localStorage.getItem("currentJqmSlide");
+    if (!pageId) {
+        pageId = clLib.UI.currentPage();
     }
     if (!currentLayout) {
         currentLayout = localStorage.getItem("currentLayout") || "default";
     }
 
-    $.each(clLib.UI.pageElements[currentJqmSlide][currentLayout], function (idx, elementName) {
+    $.each(clLib.UI.pageElements[pageId][currentLayout], function (idx, elementName) {
 		console.log("eaching " + idx + " and " + elementName);
         var elementConfig = clLib.UI.elements[elementName];
 		var dbField = elementConfig["dbField"] || elementName;
@@ -1367,23 +1326,23 @@ clLib.validateEmail = function(email) {
 
 clLib.UI.userHandler = function (options, successFunc, errorFunc) {
     var userObj = {};
-	var currentJqmSlide = options["currentJqmSlide"];
+	var pageId = options["currentPage"];
 	var currentLayout = options["currentLayout"];
 	var additionalData = options["additionalData"];
 	
 	
-    if (!currentJqmSlide) {
-        currentJqmSlide = localStorage.getItem("currentJqmSlide");
+    if (!pageId) {
+        pageId = clLib.UI.currentPage();
     }
     if (!currentLayout) {
         currentLayout = localStorage.getItem("currentLayout") || "default";
     }
 	
-	//alert("currentJqmSlide: " + currentJqmSlide);
+	//alert("pageId: " + pageId);
 	//alert("currentLayout: " + currentLayout);
 	
 
-    $.each(clLib.UI.pageElements[currentJqmSlide][currentLayout], function (idx, elementName) {
+    $.each(clLib.UI.pageElements[pageId][currentLayout], function (idx, elementName) {
         //alert("eaching " + idx + " and " + elementName);
         var elementConfig = clLib.UI.elements[elementName];
         if (!elementConfig) {
@@ -1600,7 +1559,7 @@ clLib.UI.elementConfig.localVarSaveImmediately = {
 		
 		if(!elementConfig) {
 			alert("2no element config for element with id " + $element.attr("id") + " and name " + clLib.UI.elementNameFromId($element.attr("id")) + " found..");
-			alert("currentJqmSlide = " + localStorage.getItem("currentJqmSlide"));
+			alert("currentPage = " + clLib.UI.currentPage());
 			return;
 		}
 
@@ -1652,7 +1611,7 @@ clLib.UI.elementConfig.localVarSaveImmediately = {
 			var elementConfig = clLib.UI.elements[clLib.UI.elementNameFromId($element.attr("id"))];
 			if(!elementConfig) {
 				alert("no element config for element with id " + $element.attr("id") + " and name " + clLib.UI.elementNameFromId($element.attr("id")) + " found..");
-				alert("currentJqmSlide = " + localStorage.getItem("currentJqmSlide"));
+				alert("currentPage = " + clLib.UI.currentPage());
 				return;
 			}
 			var localVarName = elementConfig["localVar"] || elementName;
@@ -1911,6 +1870,22 @@ clLib.UI.addCollapsiblesChildren = function($containerEl, dataObj, createItemFun
 };
 
 
+clLib.UI.ratingToStars = function(ratingScore) {
+	var html ="" + 
+		"<div data-role=\"none\" class=\"ratingSelect floated\"\">"
+	;
+
+	var i = 0;
+	for(i = 0; i < ratingScore; i++) {
+		html += "" + 
+			"<label data-role=\"none\" class=\"rated\"><div class=\"img\"></div></label>  ";
+	}
+	html +="" + 
+		"<div/\">"
+	;
+	return html;
+};
+
 
 clLib.UI.collapsible = {};
 clLib.UI.collapsible.formatRouteLogRow = function(dataRow) {
@@ -1945,6 +1920,11 @@ clLib.UI.collapsible.formatRouteLogRow = function(dataRow) {
 					title: "Character"
 					,formatFunc : clLib.getIconImg
 				}
+				,"Rating" : {
+					formatFunc : clLib.UI.ratingToStars
+					,title : "_NONE_"
+				}
+
 			}
 		}
 	};
@@ -2005,6 +1985,7 @@ clLib.UI.collapsible.formatRouteLogRow = function(dataRow) {
 	;
 
 	$bodyItem = $("<p>")
+		.css("text-align", "left")
 		//.attr("data-role", "collapsible")
 		.append($bodyHeader);
 	;
@@ -2015,16 +1996,22 @@ clLib.UI.collapsible.formatRouteLogRow = function(dataRow) {
 //		alert("1" + typeof(keyFunc));
 //		alert("2" + keyFunc["title"]);
 		if(
-			typeof(keyFunc) == "object" &&
-			keyFunc["title"] != ""
+			typeof(keyFunc) == "object"
 		) {
-			title = keyFunc["title"];
+			if(keyFunc["title"] != '_NONE_') {
+				if(keyFunc["title"] != "") {
+					title = keyFunc["title"] + ": ";
+				}
+			}
+			else {
+				title = "&nbsp;";
+			}
 		}
 		else {
-			title = keyName;
+			title = keyName + ": ";
 		}
 		
-		$someStrong.html(title + ": ");
+		$someStrong.html(title);
 		
 		var $someP = $("<p>")
 			.append($someStrong)
@@ -2075,3 +2062,6 @@ clLib.UI.collapsible.formatRouteLogRow = function(dataRow) {
 
 };
 
+clLib.UI.currentPage = function() {
+	return $.mobile.activePage.attr("id");
+}

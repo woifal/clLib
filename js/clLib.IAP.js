@@ -92,7 +92,7 @@ clLib.IAP.onPurchase = function (transactionId, productId, receipt, successFunc,
 		
 		clLib.IAP.products[productId]["purchased"] = transactionId;
 		
-		clLib.IAP.renderIAPs($("#purchases_info")[0]);
+		//clLib.IAP.renderIAPs($("#purchases_info")[0]);
 		
 		return successFunc(clLib.IAP.PURCHASED, "onPurchase succes");
 	}
@@ -119,7 +119,7 @@ clLib.IAP.onRestore = function (transactionId, productId, receipt, successFunc, 
 		clLib.IAP.status = clLib.IAP.RESTORED;
 
 		clLib.IAP.alertAndLog('onRestore IAPs restored', true);
-		clLib.IAP.renderIAPs($("#purchases_info")[0]);
+		//clLib.IAP.renderIAPs($("#purchases_info")[0]);
 		return successFunc(clLib.IAP.RESTORED, "onRestore success");
 	}
 	catch(e) {
@@ -182,9 +182,9 @@ clLib.IAP.alertAndLog = function(text, withAlert, elId) {
 
 clLib.IAP.hasFullVersion = function(successFunc, errorFunc) {
 
-	alert("checking localStorage >" + localStorage.getItem("fullVersion") + "<");
+	//alert("checking localStorage >" + localStorage.getItem("fullVersion") + "<");
 
-//	if(localStorage.getItem("fullVersion") == 'y') return successFunc();
+	if(localStorage.getItem("fullVersion") == 'y') return successFunc();
 	return errorFunc("No full version purchased.");
 }
 

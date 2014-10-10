@@ -185,7 +185,7 @@ clLib.PAGES.handlers = {
 	, "buy": {
 	    "pagebeforeshow": function (event, ui) {
 			
-			alert("showing buy.html(with >" + JSON.stringify(window._urlData) + "<)");
+			//alert("showing buy.html(with >" + JSON.stringify(window._urlData) + "<)");
 
 			var successFunc = function(IAPstatus, msg) {
 //				alert("successfunc called with status >" + IAPstatus + "< and msg >" + msg + "<");
@@ -195,6 +195,7 @@ clLib.PAGES.handlers = {
 					return;
 				}
 				else {
+					//alert("Restored!!!");
 					return clLib.IAP.hasFullVersion(
 						// yes, full version
 						function() {
@@ -207,7 +208,7 @@ clLib.PAGES.handlers = {
 						}, 
 						// no, free version
 						function() {
-							alert("showing buy button..");
+							//alert("showing buy button..");
 							clLib.UI.hideLoading();
 							for (var id in clLib.IAP.products) {
 								var prod = clLib.IAP.products[id];
@@ -288,8 +289,7 @@ clLib.PAGES.handlers = {
 	    "pagecreate": function () {
 	    }
 		, "pagebeforeshow": function (e, ui) {
-			localStorage.setItem("currentJqmSlide", "gradeConversion");
-				clLib.UI.fillUIelements("gradeConversion", "gradeConversion", "default");
+			clLib.UI.fillUIelements();
 
 		}
 
@@ -298,10 +298,9 @@ clLib.PAGES.handlers = {
 	    "pagecreate": function () {
 	        $("#feedback_save").on("click", function () {
 				clLib.UI.execWithMsg(function() {
-	                localStorage.setItem("currentJqmSlide", "feedback");
 	                clLib.UI.save({additionalData: { dbEntity: "feedback" }}, function() {
 						alert("feedback sent!");
-						clLib.UI.resetUIelements("feedback", "feedback");
+						clLib.UI.resetUIelements();
 					});
 	            }, {text: "Sending feedback.."});
 	        });
@@ -316,14 +315,12 @@ clLib.PAGES.handlers = {
         "pagecreate": function() {
             //alert("444isave handler..");
             $("#preferences_cancelButton").die("click").live("click", function () {
-//                clLib.UI.fillUIelements("preferences", "preferences");
 //                alert("reset!");
 				clLib.PAGES.changeTo("clLib_startScreen.html");
 //                history.back();
             });
 
             $("#preferences_saveButton").die("click").live("click", function () {
-                    localStorage.setItem("currentJqmSlide", "preferences");
                     clLib.UI.save({}, function() {
 						clLib.PAGES.changeTo("clLib_startScreen.html");
 					});
@@ -334,7 +331,6 @@ clLib.PAGES.handlers = {
                 clLib.PAGES.changeTo("clLib_users.html");
             });
 
-			//clLib.UI.fillUIelements("preferences", "preferences");
 
 		}
         , "pagebeforeshow": function (e, ui) {
@@ -344,7 +340,7 @@ clLib.PAGES.handlers = {
 			clLib.loggi("showing page!(prev:" + prevTag + " #" + prevId + ")");
 			
 			if (!prevId || !prevId.endsWith("-dialog")) {
-				clLib.UI.fillUIelements("preferences", "preferences");
+				clLib.UI.fillUIelements();
 			}
 		}
 	}
@@ -393,23 +389,22 @@ clLib.PAGES.handlers = {
         , "pagebeforeshow" : function() {
             // Fill UI elements..
 //	        alert("filling ui elements..");
-			clLib.UI.fillUIelements("startScreen", "startScreen");
+			clLib.UI.fillUIelements();
 		}
 	}
 	, "newRouteLog_default": {
 	    "pagecreate": function () {
 			//alert("init!");
-			clLib.UI.buildRatingRadio($("#newRouteLog_default_ratingSelectWrapper"));
+			clLib.UI.buildRatingRadio($("#newRouteLog_default_ratingSelectWrapper"), "newRouteLog_default");
 	        $("#newRouteLog_default_layoutSelect").val(localStorage.getItem("currentLayout"));
 	        $("#newRouteLog_default_layoutSelect").selectmenu("refresh");
 
 	        //alert("444isave handler..");
 	        $("#newRouteLog_default_save_tick").on("click", function () {
 				clLib.UI.execWithMsg(function() {
-	                localStorage.setItem("currentJqmSlide", "newRouteLog_default");
 	                clLib.UI.save({}, function() {
 						// clear UI elements's content
-						clLib.UI.resetUIelements("newRouteLog_default", "newRouteLog_default");
+						clLib.UI.resetUIelements();
 						// scroll to top
 						$.mobile.silentScroll(0);
 						// ensure "extra" panel is collapsed..
@@ -444,8 +439,7 @@ clLib.PAGES.handlers = {
 			//alert("showing page!(prev:" + prevTag + " #" + prevId + ")");
 			
 			if (!prevId || !prevId.endsWith("-dialog")) {
-				localStorage.setItem("currentJqmSlide", "newRouteLog_default");
-				clLib.UI.fillUIelements("newRouteLog_default", "newRouteLog_default", localStorage.getItem("defaultLayout"));
+				clLib.UI.fillUIelements();
 			}
 		}
 	}
@@ -453,17 +447,16 @@ clLib.PAGES.handlers = {
 	, "newRouteLog_reduced": {
 	    "pagecreate": function () {
 			//alert("init!");
-			clLib.UI.buildRatingRadio($("#newRouteLog_reduced_ratingSelectWrapper"));
+			clLib.UI.buildRatingRadio($("#newRouteLog_reduced_ratingSelectWrapper"), "newRouteLog_reduced");
 	        $("#newRouteLog_reduced_layoutSelect").val(localStorage.getItem("currentLayout"));
 	        $("#newRouteLog_reduced_layoutSelect").selectmenu("refresh");
 
 	        //alert("444isave handler..");
 	        $("#newRouteLog_reduced_save_tick").on("click", function () {
 				clLib.UI.execWithMsg(function() {
-	                localStorage.setItem("currentJqmSlide", "newRouteLog_reduced");
 	                clLib.UI.save({}, function() {
 						// clear UI elements's content
-						clLib.UI.resetUIelements("newRouteLog_reduced", "newRouteLog_reduced");
+						clLib.UI.resetUIelements();
 						// scroll to top
 						$.mobile.silentScroll(0);
 						// ensure "extra" panel is collapsed..
@@ -498,15 +491,13 @@ clLib.PAGES.handlers = {
 			//alert("showing page!(prev:" + prevTag + " #" + prevId + ")");
 			
 			if (!prevId || !prevId.endsWith("-dialog")) {
-				localStorage.setItem("currentJqmSlide", "newRouteLog_reduced");
-				clLib.UI.fillUIelements("newRouteLog_reduced", "newRouteLog_reduced", localStorage.getItem("defaultLayout"));
+				clLib.UI.fillUIelements();
 			}
 		}
 	}
 	
 	, "stats": {
 	    "pagecreate": function () {
-	        //clLib.UI.fillUIelements("newRouteLog", "newRouteLog", localStorage.getItem("defaultLayout"));
 			$("#stats_todaysDiagram h3").on("click", function (e) {
 				clLib.PAGES.changeTo("clLib_diagram.html");
             });
@@ -516,8 +507,7 @@ clLib.PAGES.handlers = {
 		}
         , "pagebeforeshow": function () {
 			//alert("show!");
-	        localStorage.setItem("currentJqmSlide", "stats");
-	        clLib.UI.fillUIelements("stats", "stats", localStorage.getItem("defaultLayout"));
+	        clLib.UI.fillUIelements();
         }
 	}
 	, "purchases": {
@@ -600,7 +590,7 @@ clLib.PAGES.handlers = {
 	    "pagecreate"	: function () {
 			localStorage.setItem("notification", "");
 			var successHandler = function() {
-				clLib.UI.fillUIelements("users_verification", "users_verification");
+				clLib.UI.fillUIelements();
 			};
 			
 	        $("#users_verification_changePassword").on("click", function () {
@@ -621,7 +611,7 @@ clLib.PAGES.handlers = {
 					}
 					, function(e) {
 						clLib.loginErrorHandler(e);
-						clLib.UI.fillUIelements("users_verification", "users_verification");
+						clLib.UI.fillUIelements();
 					}
 					);
 				}
@@ -632,7 +622,7 @@ clLib.PAGES.handlers = {
 
 		}
         , "pagebeforeshow": function () {
-			clLib.UI.fillUIelements("users_verification", "users_verification");
+			clLib.UI.fillUIelements();
         }
 	}
     ,"trickGoogle": {
@@ -836,7 +826,7 @@ clLib.PAGES.handlers = {
             
 	    }
         , "pagebeforeshow": function (event, ui, pageId) {
-            clLib.UI.fillUIelements("users", "users");
+            clLib.UI.fillUIelements();
             //alert("showing users page..");
 			//alert("refreshing displayName..");
             clLib.UI.byId$("displayName", pageId).trigger("refresh.clLib");
@@ -869,7 +859,7 @@ clLib.PAGES.handlers = {
 					, function(e) {
 						//alert("error during login..");
 						clLib.loginErrorHandler(e);
-						clLib.UI.fillUIelements("users_clLogin", "users_clLogin");
+						clLib.UI.fillUIelements();
 					}
 					); 
 				}
@@ -898,7 +888,7 @@ clLib.PAGES.handlers = {
 					, function(e) {
 						//alert("error " + JSON.stringify(e));
 						clLib.loginErrorHandler(e);
-						clLib.UI.fillUIelements("users_clLogin", "users_clLogin");
+						clLib.UI.fillUIelements();
 					}
 					);
 				}
@@ -914,7 +904,7 @@ clLib.PAGES.handlers = {
 					}
 					, function(e) {
 						clLib.loginErrorHandler(e);
-						clLib.UI.fillUIelements("users_clLogin", "users_clLogin");
+						clLib.UI.fillUIelements();
 					}
 					);
 				}
@@ -925,7 +915,7 @@ clLib.PAGES.handlers = {
         , "pagebeforeshow": function (event, ui, pageId) {
             //alert("filling elements");
 			
-			clLib.UI.fillUIelements("users_clLogin", "users_clLogin");
+			clLib.UI.fillUIelements();
             //alert("elements filled");
 			//alert("refreshing displayName..");
             clLib.UI.byId$("displayName", pageId).trigger("refresh.clLib");
