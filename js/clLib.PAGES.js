@@ -183,9 +183,10 @@ clLib.PAGES.handlers = {
 	}
 
 	, "buy": {
-	    "pagebeforeshow": function () {
+	    "pagebeforeshow": function (event, ui) {
+			
+			alert("showing buy.html(with >" + JSON.stringify(window._urlData) + "<)");
 
-//			alert("showing buy.html..");
 			var successFunc = function(IAPstatus, msg) {
 //				alert("successfunc called with status >" + IAPstatus + "< and msg >" + msg + "<");
 				if(IAPstatus < clLib.IAP.RESTORED) {
@@ -194,17 +195,46 @@ clLib.PAGES.handlers = {
 					return;
 				}
 				else {
-					clLib.UI.showLoading({"text" : "restored, need to redirect to requested FULLVERSION page.."});
-					setTimeout(function() {
-						clLib.UI.hideLoading();
-					}, 1000);
-					return;
+					return clLib.IAP.hasFullVersion(
+						// yes, full version
+						function() {
+							clLib.UI.showLoading({"text" : "restored, need to redirect to requested FULLVERSION page >" +  JSON.stringify(window._urlData) + "<.."});
+							setTimeout(function() {
+								clLib.UI.hideLoading();
+								clLib.PAGES.changeTo(window._urlData.targetPage);
+							}, 1000);
+							return;
+						}, 
+						// no, free version
+						function() {
+							alert("showing buy button..");
+							clLib.UI.hideLoading();
+							for (var id in clLib.IAP.products) {
+								var prod = clLib.IAP.products[id];
+								var html = "<li>" + 
+								"<h3>" + prod.title + "</h3>" +
+								"<p>" + prod.description + "</p>" +
+								"<button type='button' " +
+								"onclick='clLib.IAP.buy(\"" + prod.id + "\")'>" +
+								prod.price + "</button>" +
+								"</li>";
+								$("#buy_buyButtons").append(html);
+							}
+
+
+						}
+					);
 				}
 
 			};
 			var errorFunc = function(e) {
 				alert("ERROR FUNC called for >" + e + "<");
-				clLib.UI.showLoading({"text" : "ERROR while restoring >" + e + "<"});
+				clLib.UI.showLoading({"text" : "ERROR while restoring due to >" + e + "<"});
+
+				setTimeout(function() {
+					clLib.UI.hideLoading();
+					clLib.PAGES.changeTo("clLib_startScreen.html");
+				}, 1000);
 				return;
 			}
 
@@ -359,28 +389,11 @@ clLib.PAGES.handlers = {
 				}, {text: "Loading page.."});
 	        });
 
-	        // refresh button(=> in page header)..
-	        $("#startScreen_refreshRouteStorageButton").on("click", function () {
-	            //alert("refreshing all data..");
-				clLib.localStorage.refreshAllData(
-				function(warnings) {
-					if(typeof(warnings) == "object"  && warnings["warnings"] != "") {
-						alert("warnings: " + JSON.stringify(warnings));
-					}
-				},
-				function(e) {
-					alert("could not refresh due to " + e.getMessage() + " >" + JSON.stringify(e));
-				}
-				);
-	        });
-
-            $("#startScreen_usersButton").on("click", function () {
-                clLib.PAGES.changeTo("clLib_users.html");
-            });
 	    }
         , "pagebeforeshow" : function() {
             // Fill UI elements..
-	        clLib.UI.fillUIelements("startScreen", "startScreen");
+//	        alert("filling ui elements..");
+			clLib.UI.fillUIelements("startScreen", "startScreen");
 		}
 	}
 	, "newRouteLog": {
@@ -773,6 +786,7 @@ clLib.PAGES.handlers = {
             
 	    }
         , "pagebeforeshow": function (event, ui, pageId) {
+            clLib.UI.fillUIelements("users", "users");
             //alert("showing users page..");
 			//alert("refreshing displayName..");
             clLib.UI.byId$("displayName", pageId).trigger("refresh.clLib");
@@ -782,7 +796,6 @@ clLib.PAGES.handlers = {
                 alert("error >" + JSON.stringify(error));
             }
             
-            clLib.UI.fillUIelements("users", "users");
         }
 	}
 	,"users_clLogin": {
@@ -804,6 +817,7 @@ clLib.PAGES.handlers = {
 
 					}
 					, function(e) {
+						//alert("error during login..");
 						clLib.loginErrorHandler(e);
 						clLib.UI.fillUIelements("users_clLogin", "users_clLogin");
 					}
@@ -859,15 +873,17 @@ clLib.PAGES.handlers = {
             
 	    }
         , "pagebeforeshow": function (event, ui, pageId) {
-            //alert("refreshing displayName..");
+            //alert("filling elements");
+			
+			clLib.UI.fillUIelements("users_clLogin", "users_clLogin");
+            //alert("elements filled");
+			//alert("refreshing displayName..");
             clLib.UI.byId$("displayName", pageId).trigger("refresh.clLib");
             //alert("refreshed displayName..");
             
 			var errorFunc = function(error) {
                 alert("error >" + JSON.stringify(error));
             }
-            
-            clLib.UI.fillUIelements("users_clLogin", "users_clLogin");
             
 
 
@@ -907,7 +923,7 @@ clLib.PAGES.changeTo = function(newURL, urlData, event, timeoutMillis) {
                 newURL.indexOf(".") - newURL.indexOf("clLib_")
                );
 
-			   var eventName = "clBeforeChange";
+			var eventName = "clBeforeChange";
             var requisiteFunctions = (clLib.UI.pageRequisites[pageId] && clLib.UI.pageRequisites[pageId][eventName]) || {};
 
             clLib.loggi("requisiteFunctions is " + requisiteFunctions.length);
@@ -919,7 +935,8 @@ clLib.PAGES.changeTo = function(newURL, urlData, event, timeoutMillis) {
 					newURL = "#" + pageId;
 					
                     //alert("navigating to >" + newURL + "<");
-					$.mobile.navigate(newURL, urlData);	
+					window._urlData = urlData;
+					$.mobile.navigate(newURL, $.extend(urlData, {"fuck": "me"}));	
                 }, 
                 function(e) { 
 					alert("clLib.changeTo => error: " + e + "!!"); 

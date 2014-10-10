@@ -184,7 +184,7 @@ clLib.IAP.hasFullVersion = function(successFunc, errorFunc) {
 
 	alert("checking localStorage >" + localStorage.getItem("fullVersion") + "<");
 
-	if(localStorage.getItem("fullVersion") == 'y') return successFunc();
+//	if(localStorage.getItem("fullVersion") == 'y') return successFunc();
 	return errorFunc("No full version purchased.");
 }
 
