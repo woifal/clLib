@@ -57,6 +57,8 @@ clLib.UI.pageRequisites = {
 		"clBeforeChange" : [
 			function(successFunc, errorFunc) {
 //				alert("checking for full version...");
+				return successFunc();
+				
 				return clLib.IAP.hasFullVersion(
 					function() {
 						//alert("yes, has full version...");
@@ -191,7 +193,8 @@ clLib.UI.autoLoad = {
     ,"stats" : {
 		default: [
 			"todaysRouteLogs"
-			,"monthRouteLogs"
+			//,"monthRouteLogs"
+			,"allRouteLogs"
 		]
 	}
     ,"diagram" : {
@@ -364,7 +367,8 @@ clLib.UI.pageElements = {
     ,"stats": {
         default: [
 			, "todaysRouteLogs"
-			, "monthRouteLogs"
+			//, "monthRouteLogs"
+			, "allRouteLogs"
 			, "yearRouteLogs"
         ]
     }
@@ -1218,7 +1222,15 @@ clLib.UI.elements = {
 			var todaysTopScore = clLib.calculateScore(todaysTopRouteLogs);
 			//alert("Todays score is: " + todaysTopScore);
 
-			var titleText = "Score: <strong>" + todaysTopScore + "</strong>"
+			
+			var titleText;
+			if(clLib.UI.currentPage() == "stats") {
+				titleText = "Details"
+			}
+			else {
+				titleText = "Score: <strong>" + todaysTopScore + "</strong>"
+			}
+			
 			$("#stats_todaysTopScoreBubble").html(todaysTopScore);
 
 			clLib.loggi("getting today's route logs..");
@@ -1251,19 +1263,10 @@ clLib.UI.elements = {
 				,items : todaysRouteLogs
 				,clearCurrentItems : true
 			});
-
-
-/*			
-			clLib.UI.addCollapsible({
-				collapsibleSet : $container,
-				titleText : titleText,
-				listItems : todaysRouteLogs
-				,clearCurrentItems : true
-			});
-	*/	
-		
+	
 		}
 	}	
+	
 	,"monthRouteLogs": {
 		"setSelectedValueHandler" : function($this, changeOptions) { return $this.trigger("refresh.clLib"); }
 		,"refreshHandler" : function($this) { 
@@ -1310,6 +1313,143 @@ clLib.UI.elements = {
 			);
 		
 		
+		}
+	}		
+	,"allRouteLogs": {
+		"setSelectedValueHandler" : function($this, changeOptions) { return $this.trigger("refresh.clLib"); }
+		,"refreshHandler" : function($this) { 
+			//alert("refreshing allRouteLogs...");
+				
+			var $allContainer = $this;
+			// build where clause for today's routelogs
+			var where = clLib.getRouteLogWhereToday(clLib.getCurrentUserWhere());
+			
+			var daysToShow = 4;
+			
+			var buildDaysRouteLogs = function(resultObj, itemCount, startFrom) {
+				var i;
+				startFrom = startFrom || 0;
+				var aggResultKeys = Object.keys(resultObj);
+				
+				for (var i = startFrom ; i < aggResultKeys.length && i < startFrom + itemCount; i++) {
+					buildSingleDayRouteLogs(resultObj, aggResultKeys[i]);
+				}
+				
+				var $addMoreElement = $allContainer.find(".addMore2").remove();
+				$addMoreElement = $("<div>")
+					.addClass("addMore2")
+					.attr("data-role", "collapsible")
+					.attr("data-theme", "c")
+					.attr("data-iconpos", "none")
+					.append("<h1>...</h1>")
+					.css("text-align", "center")
+					.attr("data-collapsed-icon", "cl_plus_blue")
+					.attr("data-expanded-icon", "cl_minus_blue")
+				;
+				
+				var itemsShown = Math.min(startFrom + itemCount, aggResultKeys.length);
+				
+				if(itemsShown < aggResultKeys.length) {
+					$allContainer.append($addMoreElement);
+				}
+				
+				
+				//alert("installing click handler for #" + $(".addMore2 *", $allContainer).size() + " elements");
+				$(".addMore2 *", $allContainer)
+					.off("click")
+					.on("click", function() {
+						//alert("adding routelog days..");
+						// Remember add-more-button's position
+						var position = $(this).offset().top;
+						buildDaysRouteLogs(resultObj, daysToShow, itemsShown);
+		
+						$allContainer.trigger("create");
+						
+						// Scroll down so that collapsible header in on top of viewport..
+						$.mobile.silentScroll(position);
+				});
+
+	
+			}
+			
+			var buildSingleDayRouteLogs = function(resultObj, key) {
+				var titleText = key;
+				
+				if(titleText == "") {
+					return;
+				}
+				var $bubble = $("<span>")
+					.addClass("ui-li-count")
+			//		.append(dataRow[dataFormat["bubble"]])
+				;
+				$bubble.html(resultObj[key].score);
+
+
+				var $container = $('' + 
+				'<div                                   ' +
+				'			id="' + titleText + '"      ' +
+				'			data-role="collapsibleset"  ' +
+				'			data-inset="false"          ' +
+				'			data-content-theme="a"      ' +
+				'			data-theme="a"              ' +
+				'	>                                   ' +
+				'	</div>                              ' +
+				'');
+
+				console.log("adding child coll for >" + titleText + "<");
+				var $containerContent = $("<div>")
+					.attr("id", titleText + "-content")
+					.addClass("collContainer")
+					.attr("cl-role", "content")
+					.attr("data-role", "collapsible")
+					.attr("data-content-theme", "a")
+					.attr("data-theme", "a")
+					.attr("data-collapsed-icon", "cl_plus_blue")
+					.attr("data-expanded-icon", "cl_minus_blue")
+					.attr("data-inset", "false")
+					.addClass("clRouteLogs clIconCollapsible clIconBlue")
+				;
+				
+				var $h3 = $("<h3>" + titleText + "</h3>");
+				$h3.append($bubble);
+				$containerContent.append(
+					$h3
+				);
+				
+				$container.append($containerContent);
+				clLib.UI.addCollapsiblesNEW({
+					container : $container
+					,items : resultObj[key].items
+					,clearCurrentItems : true
+				});
+				console.log(">>>>" + JSON.stringify(resultObj[key]));
+
+				$allContainer.append($container);
+				
+			}
+			
+			var successHandler = function(resultObj) {
+				resultObj = JSON.parse(resultObj);
+				//alert("success!!" + typeof(resultObj) + "-" + JSON.stringify(resultObj));
+				buildDaysRouteLogs(resultObj, daysToShow);
+
+							
+			};
+
+
+			
+			clLib.REST.requestStats({
+				where : where
+			},
+			successHandler, 
+			function(e) {
+				alert("error!");
+				alert(clLib.formatError(e));
+			}
+			);
+		
+			$allContainer.trigger("create");
+	
 		}
 	}		
 };

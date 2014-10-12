@@ -1779,6 +1779,7 @@ clLib.UI.addCollapsiblesNEW = function(options) {
 	
 	//alert("adding collapsible children..>" + JSON.stringify(items));
 	clLib.UI.addCollapsiblesChildren($containerContent, items, clLib.UI.collapsible.formatRouteLogRow, 2, false); //true);
+	//alert("added coll children");
 	if(needToAppendContent) {
 		$container.append($containerContent);
 	}
@@ -1801,6 +1802,7 @@ clLib.UI.addCollapsiblesNEW = function(options) {
 	});
 	// remember number of items  currently shown
 	var itemsShown = $containerContent.data("itemsShown");
+	//alert("itemsShown >" + itemsShown + "<");
 	$container.trigger("create");
 	$containerContent = $(".ui-collapsible-content", $container).first();
 	$containerContent.data("itemsShown", itemsShown);
@@ -1817,8 +1819,15 @@ clLib.UI.addCollapsiblesChildren = function($containerEl, dataObj, createItemFun
 	}
 	createItemFunc = createItemFunc || clLib.UI.collapsible.formatStandardRow;
 	count = count || 2;
-	var itemsShown = $containerEl.data("itemsShown") || 0;
+	// containerEl could have been rebuilt by jqm - check for parents itemShown attr as well..
+	var itemsShown = 
+		$containerEl.data("itemsShown") 
+		|| $containerEl.parents(".collContainer").first().data("itemsShown")
+		|| 0;
+	
 	//alert("old count(" +  $containerEl.attr("id") + "): " + itemsShown);
+	//alert("this >" + $containerEl.attr("id") + "<, parents >" + $containerEl.parents("#2014-10-11-content").attr("id") + "<, itemsshow >" + itemsShown + "<");
+	//alert("old count(" +  $containerEl.parents("#2014-10-11-content").attr("id") + "): " + itemsShown);
 	//alert("adding >" + count + "< items (now: >" + itemsShown + "< from >" + JSON.stringify(dataObj.length) + "<");
 	
 	if(!dataObj || Object.keys(dataObj).length == 0) {

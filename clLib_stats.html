@@ -1,11 +1,12 @@
-﻿@@include('grunt_includes/singlePage_Header.html', {"pageName": "stats"})
+﻿@@include('grunt_includes/singlePage_Header_stats.html', {"pageName": "stats"})
 
 
-
-					<ul data-role="listview"  data-theme="a" class="clStats">
-						<li><span id="stats_todaysTopScoreBubble" class="ui-li-count"></span>Today</li>
-					</ul>
-				<div 
+					<h2>
+						<ul data-role="listview"  data-theme="c">
+							<li><span id="stats_todaysTopScoreBubble" class="ui-li-count"></span>Today</li>
+						</ul>
+					</h2>
+					<div 
 						astyle="margin: 0px 0px 0px 0px; padding: 0px 0px 0px 0px ;" 
 						data-role="collapsible-set" 
 						data-inset="false"
@@ -20,66 +21,48 @@
 							data-theme="a"
 					>
 					</div>
-
+<!--
 					<div 
-							id="stats_todaysRouteLogsasdf" 
-							data-role="collapsible" 
-							data-inset="false"
-							data-content-theme="a"
-							data-theme="a"
-							style="display: none"
+						id="stats_todaysDiagram" 
+						cl-role="content"
+						data-role="collapsible"
+						data-content-theme="a"
+						data-theme="a"
+						data-collapsed-icon="cl_plus_blue"
+						data-expanded-icon="cl_minus_blue"
+						data-inset="false"
+						class="clRouteLogs clIconCollapsible clIconBlue ui-collapsible ui-collapsible-themed-content ui-collapsible-collapsed"
 					>
-
-						<div id="testRouteLogsToday">
-						</div>
-						<!-- header for routelogs -->
-						<h3>A Route List..</h3>
-						<!-- container for routeLogs -->
-						<div 
-							data-role="collapsibleset" data-theme="a" data-content-theme="a"
-							data-collapsed-icon="cl_plus_blue" data-expanded-icon="cl_minus_blue"
-							class="clIconCollapsible clIconBlue"
+						<h3 
+							class="ui-collapsible-heading ui-collapsible-heading-collapsed"
 						>
-							<!-- list items for routeLogs.. -->
-							<div data-role="collapsible">
-								<!-- header for routelog -->
-								<h3>Section 1</h3>
-								<!-- route log details -->
-								<div data-role="collapsible">
-									<h3>section 1a header</h3>
-									<p>I'm the collapsible content for section 1a</p>
-								</div>
-								<div data-role="collapsible">
-									<h3>section 1b header</h3>
-									<p>I'm the collapsible content for section 1b</p>
-								</div>
-								
-							</div>
-							<div data-role="collapsible">
-								<h3>Section 2</h3>
-							<p>I'm the collapsible content for section 2</p>
-							</div>
-							<div data-role="collapsible">
-								<h3>Section 3</h3>
-							<p>I'm the collapsible content for section 3</p>
-							</div>
-						</div>
+							Show diagram
+						</h3>
 					</div>
-
-
-					<div id="stats_todaysDiagram" data-role="collapsible" data-inset="false">
-						<h3>Show diagram</h3>
-						<p>some stats...</p>
-					</div>
+-->
 				</div>
 
 				<div style="height: 50px"></div>
-				
 				<h2>
 					<ul data-role="listview"  data-theme="c">
 						<li><span id="stats_monthScoreBubble" class="ui-li-count">2500</span>Last Month</li>
 					</ul>
 				</h2>
+				<div 
+						id="stats_allRouteLogs" 
+						data-role="collapsibleset" 
+						data-inset="false"
+						data-content-theme="a"
+						data-theme="a"
+				>
+<!--
+					<div data-role="collapsible">
+						<h3>sdf</h3>
+						<span>sdfasdfa</span>
+					</div>
+				</div>
+-->
+<!--
 				<div 
 						style="margin: 0px 0px 0px 0px; padding: 0px 0px 0px 0px ;" 
 						data-role="collapsible-set" 
@@ -88,9 +71,6 @@
 						data-inset="false"
 						data-collapsed-icon="cl_home"
 				>
-					<div id="stats_todaysDiagram" data-role="collapsible" data-inset="false">
-						<h3>Show Diagram</h3>
-					</div>
 					<div data-role="collapsible" data-inset="false" data-theme="a">
 						<h3>Daily Details</h3>
 						<div 
@@ -104,8 +84,11 @@
 						</div>
 						
 					</div>
+					<div id="stats_todaysDiagram" data-role="collapsible" data-inset="false">
+						<h3>Show Diagram</h3>
+					</div>
 
 
 				</div>
-					
+-->				
 @@include('grunt_includes/singlePage_Footer.html', {"pageName": "stats"})
