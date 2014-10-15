@@ -61,12 +61,12 @@ clLib.isFunction = function(functionToCheck) {
 clLib.computeScore = function(routeLogObj) {
 	//alert("computing score for " + JSON.stringify(routeLogObj));
 	if(!(routeLogObj.GradeSystem in clLib.gradeConfig)) {
-		util.log("unknown grade system " + routeLogObj.GradeSystem);
+		//util.log("unknown grade system " + routeLogObj.GradeSystem);
 		return 0;
 	}
 	var gradeSystemScore = clLib.gradeConfig[routeLogObj.GradeSystem];
 	if(!(routeLogObj.Grade in gradeSystemScore.grades)) {
-		util.log("unknown grade " + routeLogObj.Grade);
+		//util.log("unknown grade " + routeLogObj.Grade);
 		return 0;
 	}
 
@@ -83,7 +83,7 @@ clLib.computeScore = function(routeLogObj) {
 		}
 	});
 	
-	util.log("computed score >" + score + "< for route " + JSON.stringify(routeLogObj));
+	//util.log("computed score >" + score + "< for route " + JSON.stringify(routeLogObj));
 	return score;
 };
 
@@ -140,11 +140,11 @@ clStats.prototype.getEntityStats = function(options, callbackFunc, errorFunc) {
 	}, 
 	function(resultObj) { 
 		// upon success...
-		util.log("Found " + options.entity + "s >" + JSON.stringify(resultObj) + "<"); 
+		util.log("Found " + options.entity + "s >" + JSON.stringify(resultObj.length) + "<"); 
 		if(options.sortBy) {
 			util.log("sorting by "  + options.sortBy);
 			resultObj.sortBy(options.sortBy, options.sortDescFlag);
-			util.log("sorted result " + JSON.stringify(resultObj));
+			//util.log("sorted result " + JSON.stringify(resultObj));
 			util.log("sorted result #" + JSON.stringify(resultObj.length));
 			
 			//resultObj = clStats.formatObj(resultObj, ["DateISO", "Grade", clLib.computeScore]);
@@ -154,7 +154,7 @@ clStats.prototype.getEntityStats = function(options, callbackFunc, errorFunc) {
 		// aggregate it!
 		var aggResultArr = [];
 		aggResultArr = options["aggFunc"](resultObj, options["aggOptions"]);
-		util.log("aggregatedResult >" + JSON.stringify(aggResultArr) + "<");
+		//util.log("aggregatedResult >" + JSON.stringify(aggResultArr) + "<");
 		util.log("aggregatedResult2 >" + JSON.stringify(aggResultArr.length) + "<");
 
 		return callbackFunc(aggResultArr);

@@ -45,7 +45,7 @@ mongolab.prototype.getEntities = function(options, callbackFunc, errorFunc) {
 	util.log("getting " + entityName + " with where >" + JSON.stringify(whereObj) + "<...");
 	db.collection(entityName).find(whereObj || null).toArray(function(err, items) {
 		util.log(JSON.stringify("err: " + JSON.stringify(err)));
-		util.log(JSON.stringify("items: " + JSON.stringify(items)));
+		//util.log(JSON.stringify("items: " + JSON.stringify(items)));
 		if (JSON.stringify(err) != "{}" && JSON.stringify(err) != "null") {
 			util.log("ERROR:" + JSON.stringify(err));	
 			resultObj["error"] = JSON.stringify(err);

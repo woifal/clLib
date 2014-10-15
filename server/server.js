@@ -602,19 +602,21 @@ server.get('/stats',
 	try {
 		
 		util.log("2getting.." + JSON.stringify(req.params));
-
+		
+		var whereObj = JSON.parse(req.params["where"] || "{}");
 
 		statsHandler.getRouteLogScoreStats({
 			datePortionFunc : statsHandler.ISODayPortion
 			//datePortionFunc : statsHandler.ISOMonthPortion
 			//datePortionFunc : statsHandler.ISODayHourPortion
 			//datePortionFunc : statsHandler.ISOHourPortion
+			,where: whereObj
 		}
 		, function(resultObj) {
-			util.log("2retrieved result:");
-			util.log(">" + JSON.stringify(resultObj) + "<");
+			util.log("2retrieved result:" + Object.keys(resultObj).length);
+			//util.log(">" + JSON.stringify(resultObj) + "<");
 			for (var i = 0; i < resultObj.length; i++) {
-				util.log(JSON.stringify(resultObj[i]));
+				//util.log(JSON.stringify(resultObj[i]));
 			}
 			util.log("sending response..");
 			res.send(JSON.stringify(resultObj));
