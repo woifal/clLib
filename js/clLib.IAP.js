@@ -117,7 +117,7 @@ clLib.IAP.onRestore = function (transactionId, productId, receipt, successFunc, 
 		localStorage.setItem("fullVersion", "y");
 		clLib.IAP.status = clLib.IAP.RESTORED;
 
-		clLib.IAP.alertAndLog('onRestore IAPs restored', true);
+		clLib.IAP.alertAndLog('onRestore IAPs restored'); //, true);
 		//clLib.IAP.renderIAPs($("#purchases_info")[0]);
 		return successFunc(clLib.IAP.RESTORED, "onRestore success");
 	}
