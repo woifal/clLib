@@ -19,7 +19,7 @@ grunt.initConfig({
 				options: {
 					flatten: true
                     ,globals: {
-                        NOWW: new Date()
+                        NOWW: new Date().toISOString()
                     }
 				// Task-specific options go here.
 				},
