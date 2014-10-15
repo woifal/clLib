@@ -57,6 +57,7 @@ clLib.UI.pageRequisites = {
 		"clBeforeChange" : [
 			function(successFunc, errorFunc) {
 //				alert("checking for full version...");
+// TESTING: ALWAYS ALLOW FULL VERSION!!!
 				return successFunc();
 				
 				return clLib.IAP.hasFullVersion(
@@ -81,8 +82,8 @@ clLib.UI.pageRequisites = {
 					return successFunc();
 				}, 
 				function(e) {
-					//alert("no, no full version >" + e + "<")
-					return clLib.PAGES.changeTo("clLib_purchases.html");
+					//alert("don't know about full version, check IAP..");
+					return clLib.PAGES.changeTo("clLib_buy.html", {"targetPage": "clLib_diagram.html"});
 				}
 				);
 			}
@@ -451,7 +452,7 @@ clLib.UI.elements = {
                 }
                 else if(authType == "facebook") {
                     authTypeImgURL = "files/views/assets/image/facebookAuth.png";
-                }
+                } 
                 $currentUser.append(
                     $("<img>")
                     .attr({
@@ -1203,6 +1204,7 @@ clLib.UI.elements = {
 
 				
 			var $container = $this;
+			$container.empty();
 			
 			var where;
 			where = clLib.getRouteLogWhereToday(clLib.getCurrentUserWhere());
@@ -1321,8 +1323,10 @@ clLib.UI.elements = {
 			//alert("refreshing allRouteLogs...");
 				
 			var $allContainer = $this;
-			// build where clause for today's routelogs
-			var where = clLib.getRouteLogWhereToday(clLib.getCurrentUserWhere());
+			$allContainer.empty()
+
+			// build where clause for ALL  routelogs
+			var where = clLib.getCurrentUserWhere();
 			
 			var daysToShow = 4;
 			

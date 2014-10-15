@@ -810,12 +810,19 @@ border: 1px solid red;
 }
 
 .addMore .ui-collapsible-heading-toggle {
-	background: #CCCCCC !important;
+	abackground: #CCCCCC !important;
 	margin-top: 0px;
 	padding-top: 0px;
 	height: 10px !important; 
-	border-radius: 10px 10px 10px 10px ;
-	border: 1px solid red;
+}
+
+.addMore2 .ui-collapsible-heading-toggle {
+	background-color: green !important;
+	margin-top: 0px;
+	padding-top: 0px;
+	height: 20px !important; 
+	text-align: center !important;
+	vertical-align:middle !important;
 }
 
 .clInfo.ui-btn.ui-btn-b {
@@ -876,4 +883,14 @@ border: 1px solid red;
 .ratingSelect > label.unrated > .img {
 	background-image: url("../files/views/assets/image/star_unrated.png"); /* no-repeat; */
 	background-size: 100% 100%;
+}
+
+#stats .ui-collapsible-set {
+	margin: 0px 0px 0px 0px;
+	border: 0px solid green;
+	font-size: 0.85em;
+}
+
+#stats_allRouteLogs .ui-collapsible-heading>.ui-btn{
+	background-color: #c3b4b4 !important; /*#e1d9d9 !important;*/
 }
