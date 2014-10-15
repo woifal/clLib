@@ -39,7 +39,7 @@ clLib.IAP.initialize = function (successFunc, errorFunc) {
 
 		}
 		catch(e) {
-			clLib.IAP.alertAndLog("error during IAP initialization: " + e);
+			clLib.IAP.alertAndLog("error during IAP initialization: " + e, true);
 			return errorFunc("error during IAP initialization: " + e);
 		}
     }
@@ -94,10 +94,10 @@ clLib.IAP.onPurchase = function (transactionId, productId, receipt, successFunc,
 		
 		//clLib.IAP.renderIAPs($("#purchases_info")[0]);
 		
-		return successFunc(clLib.IAP.PURCHASED, "onPurchase succes");
+		return clLib.IAP.purchaseSuccessFunc();
 	}
 	catch(e) {
-		return errorFunc("onPurchase error >" + e + "<");
+		return clLib.IAP.purchaseErrorFunc("onPurchase error >" + e + "<");
 	}
 };
 
@@ -127,8 +127,9 @@ clLib.IAP.onRestore = function (transactionId, productId, receipt, successFunc, 
 	}
 };
 
-clLib.IAP.buy = function (productId, callback) {
-    clLib.IAP.purchaseCallback = callback;
+clLib.IAP.buy = function (productId, successFunc, errorFunc) {
+    clLib.IAP.purchaseSuccessFunc = successFunc;
+    clLib.IAP.purchaseErrorFunc = errorFunc;
     storekit.purchase(productId);
 	
 };

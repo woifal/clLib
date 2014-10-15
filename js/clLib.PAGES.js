@@ -187,6 +187,17 @@ clLib.PAGES.handlers = {
 			
 			//alert("showing buy.html(with >" + JSON.stringify(window._urlData) + "<)");
 
+			var errorFunc = function(e) {
+				alert("ERROR FUNC called for >" + e + "<");
+				clLib.UI.showLoading({"text" : "ERROR while loading IAP >" + e + "<"});
+
+				setTimeout(function() {
+					clLib.UI.hideLoading();
+					clLib.PAGES.changeTo("clLib_startScreen.html");
+				}, 5000);
+				return;
+			}
+			
 			var successFunc = function(IAPstatus, msg) {
 //				alert("successfunc called with status >" + IAPstatus + "< and msg >" + msg + "<");
 				if(IAPstatus < clLib.IAP.RESTORED) {
@@ -212,32 +223,30 @@ clLib.PAGES.handlers = {
 							clLib.UI.hideLoading();
 							for (var id in clLib.IAP.products) {
 								var prod = clLib.IAP.products[id];
-								var html = "<li>" + 
-								"<h3>" + prod.title + "</h3>" +
-								"<p>" + prod.description + "</p>" +
-								"<button type='button' " +
-								"onclick='clLib.IAP.buy(\"" + prod.id + "\")'>" +
-								prod.price + "</button>" +
-								"</li>";
+								var $buyButtonFrame = $("<li>");
+								$buyButtonFrame.append(
+									"<h3>" + prod.title + "</h3>" +
+									"<p>" + prod.description + "</p>"
+								);
+								var $buyButton = $("<button type='button'>" + prod.price + "</button>");
+								$buyButton.click(function() {
+									return clLib.IAP.buy(
+										prod.id
+										,function() {
+											alert("Successful purchase! Cheers!!");
+											clLib.PAGES.changeTo(window._urlData.targetPage);
+										}
+										,errorFunc
+									);
+								});
 								$("#buy_buyButtons").append(html);
 							}
-
-
 						}
 					);
 				}
 
 			};
-			var errorFunc = function(e) {
-				alert("ERROR FUNC called for >" + e + "<");
-				clLib.UI.showLoading({"text" : "ERROR while restoring due to >" + e + "<"});
 
-				setTimeout(function() {
-					clLib.UI.hideLoading();
-					clLib.PAGES.changeTo("clLib_startScreen.html");
-				}, 1000);
-				return;
-			}
 
 			setTimeout(function() {
 				clLib.UI.showLoading({text: "IAPing..."});
@@ -350,7 +359,9 @@ clLib.PAGES.handlers = {
 	        // $.mobile.loadPage("clLib_preferences.html");
 
 			$("#startScreen_statsButton").die("click").click(function () {
-	            clLib.PAGES.changeTo("clLib_stats.html");
+				clLib.UI.execWithMsg(function() {
+					clLib.PAGES.changeTo("clLib_stats.html");
+				}, {text: "Loading statistics.."});
 	        });
 
 	        // Link to New Route page..
@@ -498,10 +509,7 @@ clLib.PAGES.handlers = {
 	
 	, "stats": {
 	    "pagecreate": function () {
-			$("#stats_todaysDiagram h3").on("click", function (e) {
-				clLib.PAGES.changeTo("clLib_diagram.html");
-            });
-			$("#stats_monthsDiagram").on("click", function () {
+			$("#stats_allDiagram").on("click", function () {
                 clLib.PAGES.changeTo("clLib_diagram.html");
             });
 		}
@@ -964,7 +972,8 @@ clLib.PAGES.changeTo = function(newURL, urlData, event, timeoutMillis) {
                );
 
 			var eventName = "clBeforeChange";
-            var requisiteFunctions = (clLib.UI.pageRequisites[pageId] && clLib.UI.pageRequisites[pageId][eventName]) || {};
+            console.log("evaluating page requisites for >" + pageId + "< and event >" + eventName + "<");
+			var requisiteFunctions = (clLib.UI.pageRequisites[pageId] && clLib.UI.pageRequisites[pageId][eventName]) || [];
 
             clLib.loggi("requisiteFunctions is " + requisiteFunctions.length);
             clLib.PAGES.executeChainedFuncs(requisiteFunctions, 
