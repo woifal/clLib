@@ -57,8 +57,6 @@ clLib.UI.pageRequisites = {
 		"clBeforeChange" : [
 			function(successFunc, errorFunc) {
 //				alert("checking for full version...");
-// TESTING: ALWAYS ALLOW FULL VERSION!!!
-				return successFunc();
 				
 				return clLib.IAP.hasFullVersion(
 					function() {

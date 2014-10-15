@@ -201,8 +201,8 @@ clLib.PAGES.handlers = {
 			var successFunc = function(IAPstatus, msg) {
 //				alert("successfunc called with status >" + IAPstatus + "< and msg >" + msg + "<");
 				if(IAPstatus < clLib.IAP.RESTORED) {
-//					alert("well, at status >" + IAPstatus + "<");
-					clLib.UI.showLoading({"text" : "well, at status >" + IAPstatus + "<"});
+					//alert("...waiting for restore(" + IAPstatus + ")");
+					clLib.UI.showLoading({"text" : "...waiting for restore(" + IAPstatus + ")"});
 					return;
 				}
 				else {
@@ -210,15 +210,29 @@ clLib.PAGES.handlers = {
 					return clLib.IAP.hasFullVersion(
 						// yes, full version
 						function() {
-							clLib.UI.showLoading({"text" : "restored, need to redirect to requested FULLVERSION page >" +  JSON.stringify(window._urlData) + "<.."});
+							clLib.UI.showLoading({"text" : "Redirecting to FULLVERSION page >" +  JSON.stringify(window._urlData) + "<.."});
 							setTimeout(function() {
 								clLib.UI.hideLoading();
 								clLib.PAGES.changeTo(window._urlData.targetPage);
-							}, 1000);
+							}, 3000);
 							return;
 						}, 
 						// no, free version
 						function() {
+							$("#buy_buyButton").off("click").on("click", function() {
+								return clLib.IAP.buy(
+									clLib.IAP.fullVersionProductId
+									,function() {
+										alert("1Successful purchase! Cheers!!");
+										alert("1going to " + window._urlData.targetPage);
+										return clLib.PAGES.changeTo(window._urlData.targetPage);
+									}
+									,errorFunc
+								);
+							});
+/*
+							$("#buy_buyButtons")
+								.empty();
 							//alert("showing buy button..");
 							clLib.UI.hideLoading();
 							for (var id in clLib.IAP.products) {
@@ -234,13 +248,17 @@ clLib.PAGES.handlers = {
 										prod.id
 										,function() {
 											alert("Successful purchase! Cheers!!");
-											clLib.PAGES.changeTo(window._urlData.targetPage);
+											alert("going to " + window._urlData.targetPage);
+											return clLib.PAGES.changeTo(window._urlData.targetPage);
 										}
 										,errorFunc
 									);
 								});
-								$("#buy_buyButtons").append(html);
+								$buyButtonFrame.append($buyButton);
+								$("#buy_buyButtons")
+									.append($buyButtonFrame);
 							}
+*/
 						}
 					);
 				}

@@ -11,7 +11,6 @@ clLib.IAP = {
 clLib.IAP.LOADED = 1;
 clLib.IAP.RESTORED = 2;
 clLib.IAP.PURCHASED = 3;
-clLib.IAP.PURCHASED = 3;
 
 
 clLib.IAP.initialize = function (successFunc, errorFunc) {
@@ -47,28 +46,28 @@ clLib.IAP.initialize = function (successFunc, errorFunc) {
 
 clLib.IAP.onReady = function (successFunc, errorFunc) {
 	try {
-		clLib.IAP.alertAndLog("onReady called..", true);
+		clLib.IAP.alertAndLog("onReady called.."); //, true);
 		// Once setup is done, load all product data.
 		storekit.load(clLib.IAP.list, function (products, invalidIds) {
-			clLib.IAP.alertAndLog('onReadyIAPs loading done:', false, "purchases_productIds");
+			clLib.IAP.alertAndLog('onReadyIAPs loading done:', false, clLib.UI.currentPage() + "_productIds");
 			for (var j = 0; j < products.length; ++j) {
 				var p = products[j];
 				clLib.IAP.alertAndLog('onReady Loaded IAP(' + j + '). title:' + p.title +
 							' description:' + p.description +
 							' price:' + p.price +
 							' id:' + p.id
-					, false, "purchases_productIds");
+					, false, clLib.UI.currentPage() + "_productIds");
 				clLib.IAP.products[p.id] = p;
 			}
 
 			for (var i = 0; i < invalidIds.length; ++i) {
 				clLib.IAP.alertAndLog('onReady Error: could not load ' + invalidIds[i]
 				,true
-				, "purchases_productIds"
+				, clLib.UI.currentPage() + "_productIds"
 				);
 			}
 			
-			clLib.IAP.alertAndLog('onReady calling restore', true);
+			clLib.IAP.alertAndLog('onReady calling restore'); //, true);
 			clLib.IAP.restore();
 
 			return successFunc(clLib.IAP.LOADED, "onReady done");
@@ -110,7 +109,7 @@ clLib.IAP.onError = function (errorCode, errorMessage, errFunc) {
 clLib.IAP.onRestore = function (transactionId, productId, receipt, successFunc, errorFunc) {
 	try {
 		clLib.IAP.alertAndLog("onRestore IAP restored product id >" + productId + "<with transid " + transactionId + ".."
-		, true , "purchases_restoredIds");
+		, false , clLib.UI.currentPage() + "_restoredIds");
 		clLib.IAP.products[productId]["purchased"] = transactionId;
 		// TESTING: assume any restored purchase indicates the full version..
 		//alert("setting localStorage to Y");
@@ -170,13 +169,14 @@ clLib.IAP.renderIAPs = function (el) {
 
 clLib.IAP.alertAndLog = function(text, withAlert, elId) {
 	if(!elId) {
-		elId = "purchases_debug";
+		elId = clLib.UI.currentPage() + "_debug";
 	}
 	if(withAlert) {
-		1;
-		//alert(text);
+		alert(text);
 	}
+	console.log(">>" + text);
 	$("#" + elId).append(text + "<br>");
+	
 };
 
 
@@ -187,14 +187,5 @@ clLib.IAP.hasFullVersion = function(successFunc, errorFunc) {
 
 	if(localStorage.getItem("fullVersion") == 'y') return successFunc();
 	return errorFunc("No full version purchased.");
-}
-
-clLib.IAP.hasPurchased = function(productId, successFunc, errorFunc) {
-	if(clLib.IAP.products[productId] && clLib.IAP.products[productId]["purchased"]) {
-		return successFunc("XXX");
-	}
-	else {
-		return errorFunc("Product >" + productId + "< not purchased.");
-	}
 }
 
