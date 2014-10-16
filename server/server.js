@@ -43,8 +43,7 @@ clLib.server.defaults = {
 			util.log("assume errorObj is object!");
 			errorStr = JSON.stringify(errorObj);
 		}
-		util.log("ASDFASFDASFD" + errorStr);
-//		res.send(500, "error >" + errorStr + "<");
+		util.log("error is" + errorStr);
 		res.send(500, errorStr);
 	}
 };
