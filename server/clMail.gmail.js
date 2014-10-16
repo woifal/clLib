@@ -15,20 +15,34 @@ var fooFunc = function() {
 	return "";
 };
 
+// google mail server..
+/*
+mail.prototype.transport = nodemailer.createTransport("SMTP", {
+	service: 'Gmail', // use well known service.
+						// If you are using @gmail.com address, then you don't
+						// even have to define the service name
+	auth: {
+		user: "kurtclimbing@gmail.com",
+		pass: "blerl1la"
+	}
+});
+*/
+		
+// kurt-climbing.com mail server
+mail.prototype.transport = nodemailer.createTransport("SMTP", {
+    host: 'mail.kurt-climbing.com',
+    port: 25,
+    auth: {
+        user: 'web306',
+        pass: '0bANS43+'
+    }
+});
 
 //mail.prototype.send = function(options, successFunc, errorFunc) {
 mail.prototype.send = function(options, callbackFunc, errorFunc) {
 
 	// Create a SMTP transport object
-	var transport = nodemailer.createTransport("SMTP", {
-			service: 'Gmail', // use well known service.
-								// If you are using @gmail.com address, then you don't
-								// even have to define the service name
-			auth: {
-				user: "kurtclimbing@gmail.com",
-				pass: "blerl1la"
-			}
-		});
+	var transport = this.transport;
 
 	console.log('SMTP Configured');
 	var emailOptions = options["emailOptions"];

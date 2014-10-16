@@ -9,24 +9,32 @@ clLib.mailTemplates.verificationURI = "http://somehost/" + "?_id=[userId]&verifi
 
 clLib.prototype.mailTemplates = {
 	options : {
+		from: "support@kurt-climbing.com"
 	}
 };
 clLib.prototype.options = {
 	"template" : {
-		"initialEmail": {
-			"to": "kurtclimbing+template+default@gmail.com, [username]"
+		"testMail" : {
+			"from": "support@kurt-climbing.com"
+			,body: "some test booooty.."
+		}
+		,"initialEmail": {
+			"from": "support@kurt-climbing.com"
+			,"to": "kurtclimbing+template+default@gmail.com, [username]"
 //			,"cc" : "wolfgang.dietersdorfer+kurtclimbing+templatecc+tokenrequest@gmail.com"
 			,"subject" : "Welcome to Kurtl!"
 			,"body" : "Please verify your registration for user <b>[username]</b>.<br>Here is your verification token: <b>[initialToken]</b>."
 		},
 		"verificationEmail": {
-			"to": "kurtclimbing+template+default@gmail.com, [username]"
+			"from": "support@kurt-climbing.com"
+			,"to": "kurtclimbing+template+default@gmail.com, [username]"
 //			,"cc" : "wolfgang.dietersdorfer+kurtclimbing+templatecc+tokenrequest@gmail.com"
 			,"subject" : "Forgot your password on Kurtl? Here is the verification token.."
 			,"body" : "You asked to change your password for user <b>[username]</b>.<br>Here is your verification token: <b>[verificationToken]</b>."
 		},
 		"passwordChanged": {
-			"to": "kurtclimbing+template+default@gmail.com, [username]"
+			"from": "support@kurt-climbing.com"
+			,"to": "kurtclimbing+template+default@gmail.com, [username]"
 //			,"cc" : "wolfgang.dietersdorfer+templatecc+pwdchanged@gmail.com"
 			,"subject" : "New password for Kurtl"
 			,"body": "Your new password for <b>[username]</b> is [newPassword]."
