@@ -20,15 +20,15 @@ clLib.prototype.options = {
 		}
 		,"initialEmail": {
 			"from": "support@kurt-climbing.com"
-			,"to": "kurtclimbing+template+default@gmail.com, wolfgang.dietersdorfer@drei.com, [username]"
-//			,"bcc" : "wolfgang.dietersdorfer+kurtclimbing+templatecc+tokenrequest@gmail.com"
+			,"to": "[username]"
+			,"cc" : "kurtclimbing+template+default@gmail.com, wolfgang.dietersdorfer@drei.com, wolfgang.dietersdorfer+kurtclimbing+templatecc@gmail.com"
 			,"subject" : "Welcome to Kurtl!"
 			,"body" : "Please verify your registration for user <b>[username]</b>.<br>Here is your verification token: <b>[initialToken]</b>."
 		},
 		"verificationEmail": {
 			"from": "support@kurt-climbing.com"
-			,"to": "kurtclimbing+template+default@gmail.com, wolfgang.dietersdorfer@drei.com, [username]"
-//			,"cc" : "wolfgang.dietersdorfer+kurtclimbing+templatecc+tokenrequest@gmail.com"
+			,"to": "[username]"
+			,"cc" : "kurtclimbing+template+default@gmail.com, wolfgang.dietersdorfer@drei.com, wolfgang.dietersdorfer+kurtclimbing+templatecc@gmail.com"
 			,"subject" : "Forgot your password on Kurtl? Here is the verification token.."
 			,"body" : "" + 
 				"You asked to change your password for user <b>[username]</b>.<br>" + 
@@ -36,8 +36,8 @@ clLib.prototype.options = {
 		},
 		"passwordChanged": {
 			"from": "support@kurt-climbing.com"
-			,"to": "kurtclimbing+template+default@gmail.com, wolfgang.dietersdorfer@drei.com, [username]"
-//			,"cc" : "wolfgang.dietersdorfer+templatecc+pwdchanged@gmail.com"
+			,"to": "[username]"
+			,"cc" : "kurtclimbing+template+default@gmail.com, wolfgang.dietersdorfer@drei.com, wolfgang.dietersdorfer+kurtclimbing+templatecc@gmail.com"
 			,"subject" : "New password for Kurtl"
 			,"body": "Your new password for <b>[username]</b> is [newPassword]."
 		}

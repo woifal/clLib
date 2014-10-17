@@ -1407,7 +1407,6 @@ clLib.UI.userHandler = function (options, successFunc, errorFunc) {
 			,function(returnObj) {
 				localStorage.removeItem("currentPassword");
 				clLib.sessionToken = null;
-				returnObj["sessionToken"] = null;
 				return successFunc(returnObj);
 			}
 			, errorFunc

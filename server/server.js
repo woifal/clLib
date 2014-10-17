@@ -312,6 +312,7 @@ server.get('/requestVerification', function(req, res) {
 			if(!userDetails) {
 				res.send(500, JSON.stringify({
 				result: "User not found: >" + req.params["username"] + "<"}));
+				return;
 			}
 
 			
@@ -348,7 +349,9 @@ server.get('/requestVerification', function(req, res) {
 			}
 			,errHandler
 			);
-		});
+		},
+		errHandler
+		);
 	} catch(e) {
 		errHandler(new Error("UNHANDLED SERVER ERROR "  + e.name + " IS " + e.message + " !!!"));
 	}

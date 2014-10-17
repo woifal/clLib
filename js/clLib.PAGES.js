@@ -51,7 +51,7 @@ clLib.PAGES.defaultHandler = function (event, ui, aPageId) {
             }
 
         }, 
-		function() { alert("error!!"); }
+		function(e) { alert("error!! >" + JSON.stringify(e) + "<"); }
 	);
 
 
@@ -925,7 +925,7 @@ clLib.PAGES.handlers = {
 				clLib.UI.execWithMsg(function() {
 					clLib.UI.save({ additionalData: { action: "requestPwd" }}
 					,function() {
-						clLib.setUIMessage(new ClInfo("Check your email account for instructions on how to set a new password.", "error"));
+						clLib.setUIMessage(new ClInfo("Check your email account for instructions on how to set a new password."), true);
 						clLib.UI.fillUIelements();
 					}
 					, function(e) {
