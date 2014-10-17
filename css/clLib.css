@@ -831,6 +831,7 @@ border: 1px solid red;
 	font-weight: normal;
 	margin-left: 10px;
 	margin-right: 10px;
+	white-space: normal;
 }
 .clInfo.ui-btn.ui-btn-b.error {
 	background-color: #FF0000;
@@ -838,6 +839,7 @@ border: 1px solid red;
 	font-weight: normal;
 	margin-left: 10px;
 	margin-right: 10px;
+	white-space: normal;
 }
 
 

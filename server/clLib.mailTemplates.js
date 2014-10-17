@@ -20,21 +20,23 @@ clLib.prototype.options = {
 		}
 		,"initialEmail": {
 			"from": "support@kurt-climbing.com"
-			,"to": "kurtclimbing+template+default@gmail.com, [username]"
-//			,"cc" : "wolfgang.dietersdorfer+kurtclimbing+templatecc+tokenrequest@gmail.com"
+			,"to": "kurtclimbing+template+default@gmail.com, wolfgang.dietersdorfer@drei.com, [username]"
+//			,"bcc" : "wolfgang.dietersdorfer+kurtclimbing+templatecc+tokenrequest@gmail.com"
 			,"subject" : "Welcome to Kurtl!"
 			,"body" : "Please verify your registration for user <b>[username]</b>.<br>Here is your verification token: <b>[initialToken]</b>."
 		},
 		"verificationEmail": {
 			"from": "support@kurt-climbing.com"
-			,"to": "kurtclimbing+template+default@gmail.com, [username]"
+			,"to": "kurtclimbing+template+default@gmail.com, wolfgang.dietersdorfer@drei.com, [username]"
 //			,"cc" : "wolfgang.dietersdorfer+kurtclimbing+templatecc+tokenrequest@gmail.com"
 			,"subject" : "Forgot your password on Kurtl? Here is the verification token.."
-			,"body" : "You asked to change your password for user <b>[username]</b>.<br>Here is your verification token: <b>[verificationToken]</b>."
+			,"body" : "" + 
+				"You asked to change your password for user <b>[username]</b>.<br>" + 
+				"Click <a href=\"http://cllibserver.herokuapp.com/verifyToken?username=[username]&verificationToken=[verificationToken]\">this link</a> to change your password.</b>."
 		},
 		"passwordChanged": {
 			"from": "support@kurt-climbing.com"
-			,"to": "kurtclimbing+template+default@gmail.com, [username]"
+			,"to": "kurtclimbing+template+default@gmail.com, wolfgang.dietersdorfer@drei.com, [username]"
 //			,"cc" : "wolfgang.dietersdorfer+templatecc+pwdchanged@gmail.com"
 			,"subject" : "New password for Kurtl"
 			,"body": "Your new password for <b>[username]</b> is [newPassword]."
@@ -106,7 +108,13 @@ clLib.prototype.replaceTemplateVars = function(targetObj, templateOptions) {
 			var key = varNames[i];
 			var val = templateOptions["vars"][key];
 			util.log("replacing >" + key + "< with >" + val + "<");
-			targetObj = targetObj.replace("[" + key + "]", val);
+			var tmpObj = targetObj;
+			do {
+				tmpObj = targetObj;
+				targetObj = targetObj.replace("[" + key + "]", val);
+				
+			} while(targetObj != tmpObj);
+			
 			util.log("targetObj is now >" + JSON.stringify(targetObj) + "<");
 		};
 	}

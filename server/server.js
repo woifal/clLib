@@ -512,10 +512,69 @@ server.post('/db/:entityName',
 	}
 
 });
+
+server.get('/verifyToken', function(req, res) {
+	var errHandler = function(errorObj) {
+		var tmpURL = 
+			"http://www.kurt-climbing.com/dist/clLib_users_verification_error_WEB.html?errorMsg=" + JSON.stringify(errorObj); 
+		res.header('Location', tmpURL);
+		res.send(302); 
+	}
+	
+	try {
+		// verify user.
+		DBHandler.getEntities({
+			entity : clLib.server.usersCollectionName, 
+			where : {"username": req.params["username"]},
+			requireResult : true
+		},
+		function(resultObj) { 
+		// upon success...
+			util.log("Found resultObj >" + JSON.stringify(resultObj) + "<"); 
+			
+			var userDetails = resultObj[0];
+			util.log("Found user >" + JSON.stringify(userDetails) + "<"); 
+			
+			// store newly generated token
+			var dbVerificationToken = userDetails["verificationToken"];
+			util.log("verificationToken is >" + dbVerificationToken + "<");
+			
+			if(req.params["verificationToken"] == dbVerificationToken) {
+				var tmpURL = 
+					"http://www.kurt-climbing.com/dist/clLib_users_verification_WEB.html?username=" + req.params["username"] + 
+					"&verificationToken=" + req.params["verificationToken"]; 
+				res.header('Location', tmpURL);
+				res.send(302); 
+			}
+			else {
+				util.log("invalid token >" + req.params["verificationToken"] + "< != >" + dbVerificationToken + "<");
+				return errHandler("invalid token");
+			}
+		}
+		,errHandler
+		);
+	} catch(e) {
+		errHandler(new Error("UNHANDLED SERVER ERROR "  + e.name + " IS " + e.message + " !!!"));
+	}
+
+});
 	
 server.get('/setPassword', function(req, res) {
-	var errHandler = function(errorObj) {
-		return clLib.server.defaults.errorFunc(errorObj, res);
+	var errHandler;
+	var IE8Redirect = req.params["IE8Redirect"];
+	
+	if(IE8Redirect == "1") {
+		errHandler = function(errorObj) {
+			var tmpURL = 
+				"http://www.kurt-climbing.com/dist/clLib_users_verification_error_WEB.html?errorMsg=" + JSON.stringify(errorObj); 
+			res.header('Location', tmpURL);
+			res.send(302); 
+		}
+	}
+	else {
+		errHandler = function(errorObj) {
+			return clLib.server.defaults.errorFunc(errorObj, res);
+		}
 	}
 	
 	try {
@@ -568,7 +627,15 @@ server.get('/setPassword', function(req, res) {
 								util.log("email sent!!! " + JSON.stringify(responseObj));
 								userDetails["password"] = hashpwd;
 								util.log("RETURNING " + JSON.stringify(userDetails));
-								res.send(JSON.stringify(userDetails));
+								
+								if(IE8Redirect == "1") {
+									var tmpURL = 
+										"http://www.kurt-climbing.com/dist/clLib_users_verification_thanks_WEB.html"; 
+									res.header('Location', tmpURL);
+									res.send(302); 								} 
+								else {
+									res.send(JSON.stringify(userDetails));
+								}
 							}
 							,errHandler
 							);

@@ -925,8 +925,8 @@ clLib.PAGES.handlers = {
 				clLib.UI.execWithMsg(function() {
 					clLib.UI.save({ additionalData: { action: "requestPwd" }}
 					,function() {
-						clLib.setUIMessage(new ClInfo("Use the token send to you by email to change your password.", "error"));
-						clLib.PAGES.changeTo("clLib_users_verification.html");
+						clLib.setUIMessage(new ClInfo("Check your email account for instructions on how to set a new password.", "error"));
+						clLib.UI.fillUIelements();
 					}
 					, function(e) {
 						clLib.loginErrorHandler(e);
