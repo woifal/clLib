@@ -58,6 +58,8 @@ clLib.UI.pageRequisites = {
 			function(successFunc, errorFunc) {
 //				alert("checking for full version...");
 				
+				return successFunc();
+				
 				return clLib.IAP.hasFullVersion(
 					function() {
 						//alert("yes, has full version...");
@@ -74,6 +76,8 @@ clLib.UI.pageRequisites = {
     , "diagram": {
 		"clBeforeChange" : [
 			function(successFunc, errorFunc) {
+				return successFunc();
+
 				//alert("checking for full version...");
 				return clLib.IAP.hasFullVersion(function() {
 					//alert("yes, has full version...");
@@ -91,6 +95,7 @@ clLib.UI.pageRequisites = {
     , "feedback": { }
     , "trickGoogle": { }
     , "purchases": { }
+	, "areaSearch": {}
 };
 
 
@@ -154,6 +159,7 @@ clLib.UI.autoLoad = {
 			"areaSelect"
 			, "onlineIcon"
 			, "currentScore"
+			, "areaSearchButton"
 			]
 	}
 	,preferences : {
@@ -200,6 +206,14 @@ clLib.UI.autoLoad = {
 		default: [
 		]
 	}
+	,"areaSearch": {
+		default: [
+			"searchAreaTypeSelect"
+			, "searchArea"
+			, "searchAreaResults"
+			, "selectedArea"
+		]
+	}
 };
 
 clLib.UI.elementsToReset = {
@@ -213,6 +227,12 @@ clLib.UI.elementsToReset = {
 		"routeLogContainer"/*,
 		"characterSelect"*/
 	]
+	,areaSearch: [
+		"searchArea"
+		,"searchAreaResults"
+		,"searchAreaTypeSelect"
+		,"selectedArea"
+	]
 	,newRouteLog_reduced : [
 		"lineSelect",
 		"sectorSelect",
@@ -225,6 +245,7 @@ clLib.UI.elementsToReset = {
 	]
 	, startScreen : [
 		"currentScore"
+		,"areaSearchButton"
 	]
 	, gradeConversion: [
 		"gradeSystemSelect"
@@ -300,6 +321,14 @@ clLib.UI.pageElements = {
 			, "routeLogContainer"
 		]
 	}
+	,areaSearch: {
+		default: [
+			"searchArea"
+			,"searchAreaResults"
+			,"searchAreaTypeSelect"
+			,"selectedArea"
+		]
+	}
 	,newRouteLog_reduced : {
 		default: [
             "currentLayout"
@@ -325,6 +354,7 @@ clLib.UI.pageElements = {
 			, "selectedArea"
 			, "onlineIcon"
 			, "currentScore"
+			,"areaSearchButton"
 	    ]
 	}
     , preferences: {
@@ -713,6 +743,138 @@ clLib.UI.elements = {
 			}
 		}
 	}
+	, "searchAreaTypeSelect" : {
+		"dbField" : "YYY"
+		,"refreshFromEntity" : "XXX"
+		,"refreshHandler" : function($this) { 
+			return clLib.UI.localStorageRefreshHandler($this, {
+				selectedValue : "Near",
+				preserveCurrentValue : true,
+				additionalValue : null,
+				strDataObj : "Near,Search" /*"Near,Fav.,Search"*/
+			});
+		}
+		,"refreshOnUpdate" : {
+			default: {
+				"searchAreaResults" : {}
+			}
+		}
+		,"customVal" : function($this) {
+			if($this.find("input:radio:checked" ).size() > 0) {
+				return $this.find("input:radio:checked" ).val();
+			} 
+			else {
+				return $this.val();
+			}
+		}
+	}
+	,"searchAreaResults" : {
+		"refreshHandler" : function($this, options) { 
+		    options = options || {};
+			var $inElement = $this;
+			;
+			var results;
+			var $forElement = clLib.UI.byId$("selectedArea");
+
+			if(clLib.UI.getVal("searchAreaTypeSelect") == "Search") {
+				clLib.UI.byId$("searchArea").parent(".ui-input-search").show();
+
+				console.log("Searching areas...");
+				results= clLib.UI.defaultEntitySearch(
+					"Area",
+					"AreaName", 
+					[], 
+					true, 
+					{"AreaName": { "$like" : clLib.UI.byId$("searchArea").val() }}
+					,true
+				);
+				console.log("Found areas >" + JSON.stringify(results) + "<");
+
+				clLib.populateSearchProposals($forElement, $inElement, results, options["hideOnSingleResult"]);
+
+			}
+			else if(clLib.UI.getVal("searchAreaTypeSelect") == "Near") {
+				clLib.UI.byId$("searchArea").parent(".ui-input-search").hide();
+				if (navigator.geolocation) {
+					alert("getting current position..");
+					navigator.geolocation.getCurrentPosition(function(position) {
+						alert("GOT current position..");
+
+						var additionalParams = {
+							geoPos : {
+								lat: position.coords.latitude
+								,lng: position.coords.longitude
+							}
+						};
+						console.log("Getting areas for geopos >" + JSON.stringify(additionalParams) + "<");
+						clLib.REST.getEntities("AreaRaw3", {}
+						,function(resultObj) {
+							console.log("Found areas >" + JSON.stringify(resultObj) + "<");
+							
+							clLib.populateSearchProposals($forElement, $inElement, resultObj["AreaRaw3"], options["hideOnSingleResult"]
+							,function(dataRow) {
+								var $listItem = $('<li></li>')
+									.append($("<h2>")
+										.append(dataRow.Name)
+									)
+									.append($("<span>")
+										.addClass("ui-li-count")
+										.append(parseFloat(dataRow.dis).toFixed(0) + "m")
+									)
+									.append($("<p>")
+										.append(dataRow.Address)
+									)
+									.attr("clValue", dataRow.Name);
+								return $listItem;
+							});
+
+						}
+						,function(e) {
+							alert(e);
+						}
+						,additionalParams);
+					
+					}
+					,function(e) {
+						alert("Geolocation not available: >" + e.code + "<");
+					},
+					{timeout: 5000
+					,maximumAge: 300000}
+					);
+				} else {
+					alert("Geolocation is not supported by this browser.");
+				}
+
+			}
+		}
+	}
+	,"searchArea" : {
+		"dbField" : "AreaName"
+		,"refreshHandler" : function($this, options) { 
+			$this.bind("keyup.clLib", function() {
+				clLib.UI.byId$("searchAreaResults").trigger(
+					"refresh.clLib", 
+					clLib.UI.addObjArr(options || {}, ["eventSourcePath"], $this.attr("id"))
+				);
+			});
+			$this.bind("click.clLib", function() {
+				clLib.UI.byId$("searchAreaResults").trigger(
+					"refresh.clLib", 
+					clLib.UI.addObjArr(options || {}, ["eventSourcePath"], $this.attr("id"))
+				);
+			});
+		
+		}
+		,"setSelectedValueHandler" : function($this, changeOptions) {
+			if(changeOptions["value"] == clLib.UI.NOTSELECTED.value) {
+				$this.val("");
+				return;
+			}
+			alert("setting search result to >" + changeOptions["value"] + "<");
+			$this.val(changeOptions["value"]);
+		}
+	}
+
 	, "gradeSelect" : {
 		"dbField" : "Grade"
 		,"dependingOn": {
@@ -1169,12 +1331,25 @@ clLib.UI.elements = {
 		
 		}
 	}
+	,"areaSearchButton" : {
+		"refreshHandler" : function($this) { 
+			$this.html(localStorage.getItem("currentlySelectedArea"));
+		}
+	}
 	,"selectedArea" : {
 		"dbField" : "Area"
 		,"customVal": function() {
 			return localStorage.getItem("currentlySelectedArea"); //"KletterHalle Wien"; //
 		}
+		,"setSelectedValueHandler" : function($this, changeOptions) { 
+			localStorage.setItem("currentlySelectedArea", changeOptions["value"]); 
+			return clLib.PAGES.changeTo("clLib_startScreen.html");
+		}
+		,"refreshHandler" : function($this) { 
+			$this.val(localStorage.getItem("currentlySelectedArea"));
+		}
 	}
+
 	,"currentUserPref" : {
 		"dbField" : "username"
 		,"customVal": function() {

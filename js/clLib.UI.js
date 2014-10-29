@@ -626,7 +626,7 @@ clLib.populateSelectBox_plain = function($selectBox, dataObj, selectedValue, pre
 
 // $inElement = $("#startScreen_nameSearchResult").
 // $forElement = Appery("nameSearchField");
-clLib.populateSearchProposals = function($forElement, $inElement, dataObj, hideOnSingleResult) {
+clLib.populateSearchProposals = function($forElement, $inElement, dataObj, hideOnSingleResult, liFormatFunc) {
 	
 	//clLib.loggi(JSON.stringify(dataObj));
 	if(hideOnSingleResult && dataObj.length == 1) {
@@ -645,14 +645,22 @@ clLib.populateSearchProposals = function($forElement, $inElement, dataObj, hideO
 	$inElement.show();
 
 
+	var formatFunc = liFormatFunc || clLib.UI.list.formatStandardRow;
 	clLib.UI.addListItems($inElement, dataObj, function(dataRow) {
-		var $listItem = clLib.UI.list.formatStandardRow(dataRow);
+		var $listItem = formatFunc(dataRow);
 		$listItem.click(function() {
-			clLib.loggi("this child;" + $(this).html());
-			var result = $.trim($(this).html());
+			var result;
+			if($listItem.attr("clValue")) {
+				result = $listItem.attr("clValue");
+			} else {
+				result = $.trim($(this).html());
+			};
+								
+		
+			clLib.loggi("the result:" + result);
 			//alert("setting selectedresult to " + result);
 
-			//alert("forElement is " + $forElement.attr("id"));
+			console.log("forElement is " + $forElement.attr("id") + ",triggering setSelectedValue");
 			$forElement.trigger("setSelectedValue.clLib", {"value": result});
 			//$forElement.val(result);
 
@@ -1187,9 +1195,8 @@ clLib.UI.getLabelForElement = function($element) {
 	//return $element.parents("td").find("label[for=" + $element.attr("id") + "]").html();
 };
 
-clLib.UI.defaultEntitySearch = function(entityName, resultColName, dependentPageElements, distinctFlag, additionalWhereObj, storageName) {
+clLib.UI.defaultEntitySearch = function(entityName, resultColName, dependentPageElements, distinctFlag, additionalWhereObj) {
 	var baseWhere = {}, where, results;
-	clLib.loggi("searching for entity " + entityName + " in storage " + storageName);
 	$.each(dependentPageElements, function(idx, elementName) {
 		var elementConfig = clLib.UI.elements[elementName];
 		//alert("eaching " + idx + "," + elementName + "=>" + elementConfig["dbField"] + " to " + clLib.UI.getVal(elementName));

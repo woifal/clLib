@@ -37,33 +37,90 @@ mongolab.prototype.getEntities = function(options, callbackFunc, errorFunc) {
 	var resultObj = {};
 	var entityName = options["entity"];
 	var whereObj = options["where"];
+	var geoPos = options["geoPos"];
+	var limit = options["limit"];
 
 	if(!errorFunc) errorFunc = this.defaults["errorFunc"];
 	
 	var db = clLib.mongolab.conn;
 	
 	util.log("getting " + entityName + " with where >" + JSON.stringify(whereObj) + "<...");
-	db.collection(entityName).find(whereObj || null).toArray(function(err, items) {
-		util.log(JSON.stringify("err: " + JSON.stringify(err)));
-		//util.log(JSON.stringify("items: " + JSON.stringify(items)));
-		if (JSON.stringify(err) != "{}" && JSON.stringify(err) != "null") {
-			util.log("ERROR:" + JSON.stringify(err));	
-			resultObj["error"] = JSON.stringify(err);
-			errorFunc(resultObj);
+
+	// geospatial query?
+	if(geoPos) {
+		db.executeDbCommand({ 
+			geoNear : entityName
+			,near : {
+				type: "Point" ,
+				coordinates: [
+					geoPos["lat"], 
+					geoPos["lng"]
+				]
+			}
+			,num: parseInt(limit) || 30
+			,spherical: true
+			,minDistance: geoPos["minDistance"]
+			//,maxDistance : 10 
+			//,distanceMultiplier: 6371
+			,query: whereObj
 		}
-		if(options["requireResult"] && (!items || items.length == 0)) {
-			err = "no items found";
-			resultObj["error"] = JSON.stringify(err);
-			return errorFunc(resultObj);
-		}
+		,function(err, items) {  
+			util.log(JSON.stringify("err: " + JSON.stringify(err)));
+			//util.log(JSON.stringify("items: " + JSON.stringify(items)));
+			if (JSON.stringify(err) != "{}" && JSON.stringify(err) != "null" ) {
+				util.log("ERROR:" + JSON.stringify(err));	
+				resultObj["error"] = JSON.stringify(err);
+				return errorFunc(resultObj);
+			}
+			if (items.documents[0].errmsg) {
+				util.log("ERROR:" + JSON.stringify(items.documents[0].errmsg) + "\n" + err);
+				resultObj["error"] = JSON.stringify(items.documents[0].errmsg);
+				return errorFunc(resultObj);
+			}
+
+			if(options["requireResult"] && (!items.documents || items.documents[0].results.length == 0)) {
+				err = "no items found";
+				resultObj["error"] = JSON.stringify(err);
+				return errorFunc(resultObj);
+			}
+			
+			util.log("mongo results received.." + JSON.stringify(items.documents[0].results.length));
+			
+			var resultArr = [];
+			for(var i = 0; i < items.documents[0].results.length; i++) {
+				util.log(">" + i + "<: >" + items.documents[0].results[i].obj.Name + "< @ >" + items.documents[0].results[i].dis + "<");
+				items.documents[0].results[i].obj["dis"] = items.documents[0].results[i].dis
+				resultArr[i] = items.documents[0].results[i].obj;
+			}
+			
+			return callbackFunc(resultArr);
+		});
 		
-		util.log("mongo results received.." + JSON.stringify(items.length));
-		
-		if(callbackFunc) {
-			util.log("Calling callback function, result OK(" + JSON.stringify(items) + ")!");
-			return callbackFunc(items);
-		}
-	});
+	} 
+	// "normal" query..
+	else {
+		db.collection(entityName).find(whereObj || null).toArray(function(err, items) {
+			util.log(JSON.stringify("err: " + JSON.stringify(err)));
+			//util.log(JSON.stringify("items: " + JSON.stringify(items)));
+			if (JSON.stringify(err) != "{}" && JSON.stringify(err) != "null") {
+				util.log("ERROR:" + JSON.stringify(err));	
+				resultObj["error"] = JSON.stringify(err);
+				return errorFunc(resultObj);
+			}
+			if(options["requireResult"] && (!items || items.length == 0)) {
+				err = "no items found";
+				resultObj["error"] = JSON.stringify(err);
+				return errorFunc(resultObj);
+			}
+			
+			util.log("mongo results received.." + JSON.stringify(items.length));
+			
+			if(callbackFunc) {
+				util.log("Calling callback function, result OK(" + JSON.stringify(items) + ")!");
+				return callbackFunc(items);
+			}
+		});
+	}
 };
 
 mongolab.prototype.insertEntity = function(options, callbackFunc, errorFunc) {

@@ -1,0 +1,39 @@
+﻿@@include('grunt_includes/singlePage_Header.html', {"pageName": "areaSearch"})
+
+
+				<div data-role="content"
+					style="
+						text-align: center;
+						background-color: #ebf1g9; /*#073f7c;*/
+						padding: 10px 3px 0px 3px;
+					"
+				>
+
+				<fieldset 
+					id="areaSearch_searchAreaTypeSelect"
+					data-role="controlgroup" data-type="horizontal" data-inset="true"
+					class="clFieldset clGradeSystem"
+				>
+				</fieldset>
+				<input id="areaSearch_selectedArea" type="hidden"/>
+				<div>
+                    <div>
+                        <label class="clUIElement" for="areaSearch_searchArea">Area Name</label>
+                        <input data-role="search" class="clTextInput" type="search" data-iconpos="left" data-iconpos="arrow-d" 
+								id="areaSearch_searchArea" name="areaSearch_searchArea"
+                               value="" placeholder="Area Name?" data-theme="a" tabindex="7" />
+                    </div>
+				</div>
+
+				<div>
+                    <ul data-role="listview" id="areaSearch_searchAreaResults"
+                        data-inset="true" data-theme="a"
+                        data-divider-theme="a" data-count-theme="a"
+						style="margin-top: 0px;">
+					</ul>
+				</div>
+						
+		</div>
+				
+@@include('grunt_includes/singlePage_Footer.html', {"pageName": "areaSearch"})
+				

@@ -375,7 +375,12 @@ clLib.PAGES.handlers = {
 	    "pagecreate": function () {
 			// pre-fetch newRouteLog page..
 	        // $.mobile.loadPage("clLib_preferences.html");
-
+			$("#startScreen_areaSearchButton").die("click").click(function() {
+				clLib.UI.execWithMsg(function() {
+					clLib.PAGES.changeTo("clLib_areaSearch.html");
+				}, {text: "Loading areas.."});
+			});
+			
 			$("#startScreen_statsButton").die("click").click(function () {
 				clLib.UI.execWithMsg(function() {
 					clLib.PAGES.changeTo("clLib_stats.html");
@@ -421,6 +426,23 @@ clLib.PAGES.handlers = {
 			clLib.UI.fillUIelements();
 		}
 	}
+	, "areaSearch": {
+	    "pagecreate": function () {
+			//alert("init!");
+		}
+        , "pagebeforeshow": function (e, ui) {
+            var $prevElement = $(ui.prevPage);//.prev();
+			var prevTag = $prevElement.prop("tagName");
+			var prevId = $prevElement.attr("id");
+			//alert("showing page!(prev:" + prevTag + " #" + prevId + ")");
+			
+			if (!prevId || !prevId.endsWith("-dialog")) {
+				clLib.UI.fillUIelements();
+			}
+		}
+	}
+
+
 	, "newRouteLog_default": {
 	    "pagecreate": function () {
 			//alert("init!");

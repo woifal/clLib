@@ -115,7 +115,7 @@ clLib.REST.postAJAXprocessing = {
 *	retrieve => need to encode where string
 *	insert => do NOT encode obj props
 */
-clLib.REST.executeRetrieve = function (uri, method, whereObj, successFunc, errorFunc) {
+clLib.REST.executeRetrieve = function (uri, method, whereObj, successFunc, errorFunc, additionalParams) {
 	var whereObj;
 	if(whereObj) {
 		whereObj = "where=" + encodeURIComponent(JSON.stringify(whereObj));
@@ -123,7 +123,14 @@ clLib.REST.executeRetrieve = function (uri, method, whereObj, successFunc, error
 	var reqOptions = {};
 	reqOptions["uri"] = uri;
 	reqOptions["method"] = method;
-	reqOptions["params"] = whereObj
+	reqOptions["params"] = whereObj;
+	
+	if(additionalParams) {
+		reqOptions["params"] = "1=1&" + reqOptions["params"] + "&";
+		$.each(additionalParams, function(key, value) {
+			reqOptions["params"] += key + "=" + encodeURIComponent(JSON.stringify(value)) + "&";
+		});
+	}
 	
 	clLib.REST.execAJAXRequest(reqOptions, successFunc, errorFunc);
 }
@@ -207,9 +214,11 @@ clLib.REST.buildAJAXRequest = function(options, successFunc, errorFunc) {
 	return request;
 }
 
-clLib.REST.getEntities = function(entityName, whereObj, successFunc, errorFunc) {
+clLib.REST.getEntities = function(entityName, whereObj, successFunc, errorFunc, additionalParams) {
 	var uri = clLib.REST.baseCollectionsURI + entityName;
 
+	
+	
 	clLib.REST.executeRetrieve(uri, 'GET', whereObj, 
 	function(AJAXResult) {
 		var returnObj = {};
@@ -222,7 +231,9 @@ clLib.REST.getEntities = function(entityName, whereObj, successFunc, errorFunc) 
 		//clLib.loggi("returning(getEntities) " + JSON.stringify(returnObj));
 		successFunc(returnObj);
 	}
-	, errorFunc);
+	, errorFunc
+	,additionalParams
+	);
 }
 
 clLib.REST.updateEntity = function (entityName, entityInstance, successFunc, errorFunc) {

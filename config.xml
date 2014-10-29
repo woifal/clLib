@@ -48,7 +48,9 @@
 	<gap:plugin name="com.phonegap.plugin.statusbar" version="1.1.0" />
 	<preference name="StatusBarOverlaysWebView" value="true" />
 	<preference name="StatusBarBackgroundColor" value="#FF0000" />
-	
+
+	<gap:plugin name="org.apache.cordova.geolocation"/>
+
 	<gap:config-file platform="ios" parent="UIStatusBarHidden">
 		<true/>
 	</gap:config-file>

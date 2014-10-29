@@ -419,8 +419,10 @@ server.get('/db/:entityName',
 		var entityName = req.params.entityName;
 		// verify user.
 		DBHandler.getEntities({
-			entity : entityName, 
-			where : JSON.parse(req.params["where"])
+			entity : entityName
+			,where : JSON.parse(req.params["where"])
+			,geoPos : req.params["geoPos"] ? JSON.parse(req.params["geoPos"]) : null
+			,limit: req.params["limit"]
 		},
 		function(resultObj) { 
 			// upon success...
