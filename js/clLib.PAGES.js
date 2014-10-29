@@ -862,6 +862,9 @@ clLib.PAGES.handlers = {
 			$("#users_clLoginButton").die("click").click(function () {
 				clLib.PAGES.changeTo("clLib_users_clLogin.html");
 			});
+			$("#users_clRegisterButton").die("click").click(function () {
+				clLib.PAGES.changeTo("clLib_users_clLogin.html");
+			});
             
 			$("#users_clLogoutButton").die("click").click(function () {
 				clLib.setUserInfo({}, true);
