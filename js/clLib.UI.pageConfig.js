@@ -5,8 +5,12 @@ clLib.UI.cssBackgrounds = {
         , "white/yellow/black" : "white-yellow-black"
     }
     , "characterSelect": {
-        "Ueberhaengend": "Ueberhaengend"
-    }
+        //"Ueberhaengend": "Ueberhaengend"
+		"slab": "Platte",
+		"vertical" : "Senkrecht",
+		"overhang" : "Ueberhaengend",
+		"roof" : "Dach"
+	}
 };
 
 
@@ -1242,10 +1246,10 @@ clLib.UI.elements = {
 			clLib.populateSelectBox({
 				selectBoxElement : $this
 				,dataObj : [
-					"Platte",
-					"Senkrecht",
-					"Ueberhaengend",
-					"Dach"
+					"slab",     /*"Platte",        */
+					"vertical", /*"Senkrecht",     */
+					"overhang", /*"Ueberhaengend", */
+					"roof"     /*"Dach"           */
 				]
 				,preserveCurrentValue : true
 				,additionalValue : {
