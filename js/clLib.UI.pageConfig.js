@@ -58,7 +58,7 @@ clLib.UI.pageRequisites = {
 			function(successFunc, errorFunc) {
 //				alert("checking for full version...");
 				
-				return successFunc();
+				//return successFunc();
 				
 				return clLib.IAP.hasFullVersion(
 					function() {
@@ -76,7 +76,7 @@ clLib.UI.pageRequisites = {
     , "diagram": {
 		"clBeforeChange" : [
 			function(successFunc, errorFunc) {
-				return successFunc();
+				//return successFunc();
 
 				//alert("checking for full version...");
 				return clLib.IAP.hasFullVersion(function() {
