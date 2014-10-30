@@ -753,7 +753,7 @@ clLib.UI.elements = {
 		,"refreshFromEntity" : "Grades"
 		,"refreshHandler" : function($this) { 
 			clLib.UI.defaultRefreshHandler($this, {
-				selectedValue : localStorage.getItem("selectedGradeSystems") || clLib.UI.varDefaults["selectedGradeSystems"],
+				selectedValue : null,
 				preserveCurrentValue : true,
 				additionalValue : null	
 			});
@@ -974,10 +974,7 @@ clLib.UI.elements = {
 			$this.empty();
 			//$this.html("<ul>");
 			//$this.attr("data-role", "listview");
-			var selectedGradeSystems = localStorage.getItem("selectedGradeSystems");
-			if(!selectedGradeSystems) {
-				selectedGradeSystems = clLib.UI.varDefaults["selectedGradeSystems"];
-			}
+			var selectedGradeSystems = clLib.UI.varDefaults["allGradeSystems"];
 			selectedGradeSystems = selectedGradeSystems.split(",");
 
 			$.each(selectedGradeSystems, function(idx, gradeSystemName) {

@@ -11,7 +11,8 @@ clLib.UI.elementConfig= {};
 
 
 clLib.UI.varDefaults = {};
-clLib.UI.varDefaults["selectedGradeSystems"] = Object.keys(clLib.gradeConfig).join(',');
+clLib.UI.varDefaults["selectedGradeSystems"] = "UIAA,French,Bleau";
+clLib.UI.varDefaults["allGradeSystems"] = Object.keys(clLib.gradeConfig).join(',');
 
 
 
