@@ -130,6 +130,7 @@ clLib.UI.autoLoad = {
 			"gradeSystemSelect"
 			, "searchRoute"
 			, "ratingSelect"
+			, "tickType"
 			, "tickType_redpoint"
 			, "tickType_flash"
 			, "tickType_attempt"
@@ -142,6 +143,7 @@ clLib.UI.autoLoad = {
 		default: [
 			"gradeSystemSelect"
 			, "ratingSelect"
+			, "tickType"
 			, "tickType_redpoint"
 			, "tickType_flash"
 			, "tickType_attempt"
@@ -314,6 +316,7 @@ clLib.UI.pageElements = {
 			, "searchRoute"
 			, "commentText"
 			, "ratingSelect"
+			, "tickType"
 			, "tickType_redpoint"
 			, "tickType_flash"
 			, "tickType_attempt"
@@ -340,6 +343,7 @@ clLib.UI.pageElements = {
 			, "gradeSelect"
 			, "colourSelect"
 			, "ratingSelect"
+			, "tickType"
 			, "tickType_redpoint"
 			, "tickType_flash"
 			, "tickType_attempt"
@@ -736,6 +740,7 @@ clLib.UI.elements = {
 		,"refreshOnUpdate" : {
 			default: {
 				"gradeSelect" : {}
+				,"tickType": {}
 			}
 		}
 		,"customVal" : function($this) {
@@ -944,6 +949,17 @@ clLib.UI.elements = {
 			$this.listview("refresh");
 		}
 	}
+	, "tickType" : {
+		"refreshHandler" : function($this) {
+			if(clLib.UI.getVal("gradeSystemSelect") == "Bleau") {
+				clLib.UI.byId$("tickType_toprope").parent(".ui-checkbox").hide();
+				$this.addClass("items3");
+			} else {
+				clLib.UI.byId$("tickType_toprope").parent(".ui-checkbox").show();
+				$this.removeClass("items3");
+			}
+		}
+    }
 	, "tickType_redpoint" : $.extend({}, {
 		"customVal" : function($this) {
 			return $this.prop("checked");
