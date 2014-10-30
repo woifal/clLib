@@ -127,11 +127,12 @@ input.ui-input-text, textarea.ui-input-text {
 .clLoadingBg {
 	position: absolute;
 	z-index: 99999999;
-	width: 100%;
-	height: 100%;
+	width: 20000px;
+	height: 20000px;
+	overflow: hidden;
 	top: 0px;
 	left: 0px;
-	background-color: #CCCCCC;
+	background-color: #EEEEEE;
     opacity:  0.7;
 }
 
@@ -616,22 +617,24 @@ border: 1px solid red;
 }
 .clTicktypes img.redpoint
 {
+	border: 2px solid white; 
 	background-image: url("../files/views/assets/image/img_45_45/ticktypes_redpoint.png");
 	background-size: 45px 45px;
 	background-color: #FF0000;
 }
 .clTicktypes img.toprope {
+	border: 2px solid white; 
 	background-image: url("../files/views/assets/image/img_45_45/ticktypes_toprope.png");
 	background-size: 45px 45px;
-	background-color: #FF0000; /*#964646;*/
+	background-color: #17579d;
 }
 .clTicktypes img.flash {
-	border: 1px solid white; 
+	border: 2px solid white; 
 	background-image: url("../files/views/assets/image/img_45_45/ticktypes_flash.png");
 	background-size: 45px 45px;
 }
 .clTicktypes img.try {
-	border: 1px solid white; 
+	border: 2px solid white; 
 	background-image: url("../files/views/assets/image/img_45_45/ticktypes_try.png");
 	background-size: 45px 45px;
 }
