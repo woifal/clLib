@@ -11,7 +11,7 @@ clLib.UI.elementConfig= {};
 
 
 clLib.UI.varDefaults = {};
-clLib.UI.varDefaults["selectedGradeSystems"] = "UIAA,French,Bleau";
+clLib.UI.varDefaults["selectedGradeSystems"] = Object.keys(clLib.gradeConfig).join(',');
 
 
 
@@ -1155,7 +1155,7 @@ clLib.UI.defaultRefreshHandler = function($element, additionalOptions) {
 	var entityName = elementConfig["refreshFromEntity"] || "Routes";
 	
 	var results = clLib.UI.defaultEntitySearch(entityName, resultColName, dependingPageElements, true, null);
-	clLib.loggi("got results: " + JSON.stringify(results));
+	console.log("got results: " + JSON.stringify(results));
 
 	var elContentOptions = {
 		selectBoxElement : $element,

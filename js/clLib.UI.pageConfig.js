@@ -677,7 +677,7 @@ clLib.UI.elements = {
 		,"refreshFromEntity" : "Grades"
 		,"refreshHandler" : function($this) { 
 			clLib.UI.defaultRefreshHandler($this, {
-				selectedValue : localStorage.getItem("selectedGradeSystems") || clLib.UI.varDefaults["selectedGradeSystems"],
+				selectedValue : clLib.UI.varDefaults["selectedGradeSystems"],
 				preserveCurrentValue : true,
 				additionalValue : null	
 			});
@@ -749,7 +749,7 @@ clLib.UI.elements = {
         }
     }   
 	, "gradeSystemSelectAll" : {
-		,"dbField" : "GradeSystem"
+		"dbField" : "GradeSystem"
 		,"refreshFromEntity" : "Grades"
 		,"refreshHandler" : function($this) { 
 			clLib.UI.defaultRefreshHandler($this, {
@@ -939,7 +939,9 @@ clLib.UI.elements = {
 			var selectedValue = clLib.findEquivalentGrade(
 				localStorage.getItem("defaultGradeSystem") || "UIAA"
 				, localStorage.getItem("defaultGrade") || "VI"			
-				, clLib.UI.getVal(clLib.UI.elementNameFromId(clLib.UI.currentPage() + "_" + "gradeSystemSelect"))
+				, 
+				clLib.UI.getVal(clLib.UI.elementNameFromId(clLib.UI.currentPage() + "_" + "gradeSystemSelect")) ||
+					clLib.UI.getVal(clLib.UI.elementNameFromId(clLib.UI.currentPage() + "_" + "gradeSystemSelectAll"))
 			);
 
 			
@@ -980,7 +982,7 @@ clLib.UI.elements = {
 
 			$.each(selectedGradeSystems, function(idx, gradeSystemName) {
 				var aGrade = clLib.findEquivalentGrade(
-					clLib.UI.getVal(clLib.UI.elementNameFromId(clLib.UI.currentPage() + "_" + "gradeSystemSelect"))
+					clLib.UI.getVal(clLib.UI.elementNameFromId(clLib.UI.currentPage() + "_" + "gradeSystemSelectAll"))
 					, clLib.UI.getVal(clLib.UI.elementNameFromId(clLib.UI.currentPage() + "_" + "gradeSelect"))
 					, gradeSystemName
 				);
