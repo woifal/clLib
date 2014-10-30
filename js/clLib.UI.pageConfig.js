@@ -185,6 +185,7 @@ clLib.UI.autoLoad = {
 			"currentUser",
 			"currentPassword",
 			"loginError"
+			,"clLogoutButton"
 		]
 	}
     ,"users_clLogin": {
@@ -271,7 +272,8 @@ clLib.UI.elementsToReset = {
 		"currentUser"
 		, "currentPassword"
         , "loginError"
-    	]
+		,"clLogoutButton"
+	]
     , users_clLogin: [
 		"currentUser"
 		, "currentPassword"
@@ -383,6 +385,7 @@ clLib.UI.pageElements = {
 			"currentUser"
 			,"currentPassword"
 			,"loginError"
+			,"clLogoutButton"
         ]
     }
     ,users_clLogin: {
@@ -424,7 +427,22 @@ clLib.UI.pageElements = {
 
 
 clLib.UI.elements = {
-	"verificationToken": $.extend({}, {
+	"clLogoutButton": {
+		"refreshHandler": function ($this) {
+			//alert("refreshing clLogoutButton..");
+			clLib.loggedInCheck(
+				function() {
+					console.log("logged in. show logout button");
+					$this.show();
+				}
+				,function() {
+					console.log("not logged in. no need to logout");
+					$this.hide();
+				}
+			);
+		}
+	}
+	,"verificationToken": $.extend({}, {
 		"dbField": "verificationToken"
     }, clLib.UI.elementConfig.plainElement)
 	,"username": $.extend({}, {
@@ -586,6 +604,11 @@ clLib.UI.elements = {
 				//alert("set value to " + localVarValue);
 			}
 		}
+		,"refreshOnUpdate" : {
+			default: {
+				"clLogoutButton" : {}
+			}
+		}
         ,
 		"dbField": "loginError"
     })
@@ -617,8 +640,7 @@ clLib.UI.elements = {
 				//alert("set value to " + localVarValue);
 			}
 		}
-        ,
-		"dbField": "loginError"
+		,"dbField": "loginError"
     })
     , "buddiesStr": clLib.UI.elementConfig.localVar
     , "showTopX":       clLib.UI.elementConfig.localVar
