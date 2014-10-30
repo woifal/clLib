@@ -602,9 +602,15 @@ border: 1px solid red;
 	border-radius: 50%;
 	apadding-top: 0px !important;
 }
-.clTicktypesSmall {
+.clTicktypesSmall.4items {
 	float: left; 
 	width: 25%; 
+	text-align: left; 
+	border: 0px solid red;
+}
+.clTicktypesSmall.3items {
+	float: left; 
+	width: 33%; 
 	text-align: left; 
 	border: 0px solid red;
 }
@@ -615,6 +621,7 @@ border: 1px solid red;
 	border-radius: 50%;
 	background-size: 20px 20px;
 }
+
 .clTicktypes img.redpoint
 {
 	border: 2px solid white; 
