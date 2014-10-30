@@ -799,55 +799,50 @@ clLib.UI.elements = {
 			}
 			else if(clLib.UI.getVal("searchAreaTypeSelect") == "Near") {
 				clLib.UI.byId$("searchArea").parent(".ui-input-search").hide();
-				if (navigator.geolocation) {
-					alert("getting current position..");
-					navigator.geolocation.getCurrentPosition(function(position) {
-						alert("GOT current position..");
+				clLib.getGeoLocation(function(position) {
+					//alert("GOT current position..");
 
-						var additionalParams = {
-							geoPos : {
-								lat: position.coords.latitude
-								,lng: position.coords.longitude
-							}
-						};
-						console.log("Getting areas for geopos >" + JSON.stringify(additionalParams) + "<");
-						clLib.REST.getEntities("AreaRaw3", {}
-						,function(resultObj) {
-							console.log("Found areas >" + JSON.stringify(resultObj) + "<");
-							
-							clLib.populateSearchProposals($forElement, $inElement, resultObj["AreaRaw3"], options["hideOnSingleResult"]
-							,function(dataRow) {
-								var $listItem = $('<li></li>')
-									.append($("<h2>")
-										.append(dataRow.Name)
-									)
-									.append($("<span>")
-										.addClass("ui-li-count")
-										.append(parseFloat(dataRow.dis).toFixed(0) + "m")
-									)
-									.append($("<p>")
-										.append(dataRow.Address)
-									)
-									.attr("clValue", dataRow.Name);
-								return $listItem;
-							});
+					var additionalParams = {
+						geoPos : {
+							lat: position.coords.latitude
+							,lng: position.coords.longitude
+						}
+					};
+					console.log("Getting areas for geopos >" + JSON.stringify(additionalParams) + "<");
+					clLib.REST.getEntities("AreaRaw3", {}
+					,function(resultObj) {
+						console.log("Found areas >" + JSON.stringify(resultObj) + "<");
+						
+						clLib.populateSearchProposals($forElement, $inElement, resultObj["AreaRaw3"], options["hideOnSingleResult"]
+						,function(dataRow) {
+							var $listItem = $('<li></li>')
+								.append($("<h2>")
+									.append(dataRow.Name)
+								)
+								.append($("<span>")
+									.addClass("ui-li-count")
+									.append(parseFloat(dataRow.dis).toFixed(0) + "m")
+								)
+								.append($("<p>")
+									.append(dataRow.Address)
+								)
+								.attr("clValue", dataRow.Name);
+							return $listItem;
+						});
+						clLib.UI.hideLoading();
 
-						}
-						,function(e) {
-							alert(e);
-						}
-						,additionalParams);
-					
 					}
 					,function(e) {
-						alert("Geolocation not available: >" + e.code + "<");
-					},
-					{timeout: 5000
-					,maximumAge: 300000}
-					);
-				} else {
-					alert("Geolocation is not supported by this browser.");
+						alert(e);
+					}
+					,additionalParams);
 				}
+				,function(e) {
+					clLib.UI.hideLoading();
+
+					alert("Geolocation not available: >" + e.code + "<");
+				}
+				);
 
 			}
 		}
@@ -1337,7 +1332,7 @@ clLib.UI.elements = {
 	}
 	,"areaSearchButton" : {
 		"refreshHandler" : function($this) { 
-			$this.html(localStorage.getItem("currentlySelectedArea"));
+			$this.html(localStorage.getItem("currentlySelectedArea") || "???????");
 		}
 	}
 	,"selectedArea" : {

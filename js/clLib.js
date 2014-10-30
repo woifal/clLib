@@ -21,6 +21,9 @@ var profiledFnCall = function(iterations, aFunc) {
 var clLib = {};
 clLib.UI = {};
 
+clLib.lastGeoDate = null;
+clLib.geoLocationValidity = 10;
+
 //window.priority = 1;
 //
 // TESTING: Set to 0 to disable login need...
@@ -635,9 +638,9 @@ clLib.formatError = function(e) {
 		errorMsg = e.message;
 	}
 	else {
-		errorMsg = "Server down.";
 		// Don't know what type of error this is, assume server is down..
-		//errorMsg = e;
+		errorMsg = "Server error, please try again.";
+		errorMsg = "<br>Details:<br>" + JSON.stringify(e);
 	}
 	
 	return new ClInfo(errorMsg, "error");
@@ -848,6 +851,51 @@ clLib.setUIMessage = function(newUIMessage, replaceFlag) {
     localStorage.setItem("UIMessage", JSON.stringify(curUIMessage));
     window.UIMessage = curUIMessage;
 };
+
+
+clLib.secondsPassed = function(sinceDate, secondsPassed) {
+	sinceDate = sinceDate || Date.now();
+	var now = Date.now();
+
+	console.log("checking " + sinceDate + " against " + now + " = " + secondsPassed + "(" + ((now - sinceDate) / 1000) + ")");
+	console.log("since " + ((now - sinceDate) / 1000) + " > " + secondsPassed);
+	if(((now - sinceDate) / 1000) > secondsPassed) {
+		return true;
+	} else {
+		return false;
+	}
+	
+}
+clLib.getGeoLocation = function(successFunc, errorFunc, options) {
+
+	//clLib.secondsPassed(clLib.lastGeoDate, clLib.geoLocationValidity);
+	if(clLib.lastGeoPosition && !clLib.secondsPassed(clLib.lastGeoDate, clLib.geoLocationValidity)) {
+		return successFunc(clLib.lastGeoPosition);
+	}
+	
+	if (navigator.geolocation) {
+		//alert("getting current position..");
+		clLib.UI.showLoading({"text" : "getting location"});
+		options = $.extend(options, {
+			timeout: 30000
+			,maximumAge: 300000
+			,enableHighAccuracy:true
+		});
+
+		return navigator.geolocation.getCurrentPosition(function(position) {
+			clLib.lastGeoPosition = position;
+			clLib.lastGeoDate = Date.now();
+			console.log("setting lastGeoDate to " + clLib.lastGeoDate);
+			return successFunc(position);
+		}
+		,errorFunc
+		,options);
+	}
+	else {
+		return errorFunc("Geolocation is not supported by this browser.");
+	}
+		
+}
 
 
 
