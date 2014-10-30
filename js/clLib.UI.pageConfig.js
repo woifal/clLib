@@ -155,7 +155,7 @@ clLib.UI.autoLoad = {
 	}
 	,gradeConversion : {
 		default: [
-			"gradeSystemSelect"
+			"gradeSystemSelectAll"
 			, "gradeSelect"
 			, "convertedGrades"
 		],
@@ -255,7 +255,7 @@ clLib.UI.elementsToReset = {
 		,"areaSearchButton"
 	]
 	, gradeConversion: [
-		"gradeSystemSelect"
+		"gradeSystemSelectAll"
 		, "gradeSelect"
 		, "convertedGrades"
 	]
@@ -301,7 +301,7 @@ clLib.UI.pageElements = {
 	}, 
 	gradeConversion : {
 		default: [
-			"gradeSystemSelect"
+			"gradeSystemSelectAll"
 			, "gradeSelect"
 			, "convertedGrades"
 		]
@@ -748,6 +748,31 @@ clLib.UI.elements = {
             location.reload();
         }
     }   
+	, "gradeSystemSelectAll" : {
+		,"dbField" : "GradeSystem"
+		,"refreshFromEntity" : "Grades"
+		,"refreshHandler" : function($this) { 
+			clLib.UI.defaultRefreshHandler($this, {
+				selectedValue : localStorage.getItem("selectedGradeSystems") || clLib.UI.varDefaults["selectedGradeSystems"],
+				preserveCurrentValue : true,
+				additionalValue : null	
+			});
+		}
+		,"refreshOnUpdate" : {
+			default: {
+				"gradeSelect" : {}
+				,"tickType": {}
+			}
+		}
+		,"customVal" : function($this) {
+			if($this.find("input:radio:checked" ).size() > 0) {
+				return $this.find("input:radio:checked" ).val();
+			} 
+			else {
+				return $this.val();
+			}
+		}
+    }
 	, "gradeSystemSelect" : {
 		"dbField" : "GradeSystem"
 		,"refreshFromEntity" : "Grades"
