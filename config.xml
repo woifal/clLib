@@ -18,7 +18,7 @@
         owifal
     </author>
 
-	<preference name="Orientation" value="portrait" />
+	<preference name="orientation" value="portrait" />
 
 	<gap:splash src="files/views/assets/image/splashBackground.png" gap:platform="ios" width="640" height="1136" />
 
