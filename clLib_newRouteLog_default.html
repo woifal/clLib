@@ -58,8 +58,11 @@
 								</option>
 							</select>
 						</div>
+
+
+
 					</div>
-				<br><br><br><br><br><br><br><br><br>
+				
 				<!-- Tick types... -->
 				<div style="border: 0px solid green; text-align: center">
 					<fieldset 
@@ -85,7 +88,7 @@
 				<!-- searchRoute -->
 				<div>
                     <div>
-                        <label class="clUIElement" for="newRouteLog_default_searchRoute">Route Name</label>
+                        <label class="clUIElement select" for="newRouteLog_default_searchRoute">Route Name</label>
                         <input data-role="search" class="clTextInput" type="search" data-iconpos="left" data-iconpos="arrow-d" 
 								id="newRouteLog_default_searchRoute" name="newRouteLog_default_searchRoute"
                                value="" placeholder="Route Name?" data-theme="a" tabindex="7" />
@@ -107,34 +110,53 @@
 					</ul>
 				</div>
 
-				<div data-role="none" id="newRouteLog_default_ratingSelectWrapper">
-				</div>
 				<div style="clear:both"></div>
+				<div style="float: left; width: 48%;margin-top: 18px;" data-role="none" id="newRouteLog_default_ratingSelectWrapper">
+				</div>
 
-				<div data-role="collapsible" data-mini="true" data-iconpos="left" class="clExtra">
-					<h4>Extra</h4>
-					<ul data-role="listview">
-						<li>
-						<!-- characterSelect -->
-						<div class="clRouteDropdown clFullWidth">
-							<label class="clUIElement" for="newRouteLog_default_characterSelect">Character</label>
-							<select id="newRouteLog_default_characterSelect" name="newRouteLog_default_characterSelect" 
-									data-theme="a"
-									data-inline="false" data-mini="false" data-icon="clRouteDropdownIcon" data-iconpos="right" 
-									data-native-menu="false" tabindex="6">
-								<option value="" rerender="characterSelect" selected="selected">
-									character
-								</option>
-							</select>
+				<div id="newRouteLog_default_extraButton" class="clButton clSmall clInline">
+					<div>
+					<a>
+						<div>
+							<img src="files/views/assets/image/img_22_22/button_plus_white.png"></img>
 						</div>
-						</li>					
-						<li>
-							<label class="clUIElement" for="newRouteLog_default_commentText">Comment</label>
-							<textarea style="padding-left:0px; margin-left: 0px; resize: none; height: 30px" id="newRouteLog_default_commentText" name="newRouteLog_default_commentText" tabindex="9" placeholder="comments?"></textarea>
-						</li>
-					</ul>
-				</div>				
+					</a>
+						<span style="width: auto;" >More details</span>
+					</div>
+				</div>
+		
 
+				<a id="newRouteLog_default_extraButton_a" style="display: none" data-rel="popup" href="#newRouteLog_default_extraPopup">b</a>
+				<div id="newRouteLog_default_extraPopup" data-overlay-theme="a" data-role="popup" data-dismissible="false" class="clExtra" >
+					<div data-role="header">
+						<h1>Additional Details</h1>
+					</div>
+					<div data-role="content">
+						<ul data-role="listview">
+							<li>
+							<!-- characterSelect -->
+							<div class="clRouteDropdown clFullWidth">
+								<label class="clUIElement" for="newRouteLog_default_characterSelect">Character</label>
+								<select id="newRouteLog_default_characterSelect" name="newRouteLog_default_characterSelect" 
+										data-theme="a"
+										data-inline="false" data-mini="false" data-icon="clRouteDropdownIcon" data-iconpos="right" 
+										data-native-menu="false" tabindex="6">
+									<option value="" rerender="characterSelect" selected="selected">
+										character
+									</option>
+								</select>
+							</div>
+							</li>					
+							<li>
+								<label class="clUIElement" for="newRouteLog_default_commentText">Comment</label>
+								<textarea style="padding-left:0px; margin-left: 0px; resize: none; height: 30px" id="newRouteLog_default_commentText" name="newRouteLog_default_commentText" tabindex="9" placeholder="comments?"></textarea>
+							</li>
+						</ul>
+						
+						<a href="#" style="margin-top: 20px;" data-rel="back" class="ui-btn ui-btn-center ui-corner-all">Done!</a>
+					</div>
+				</div>				
+				
 				<div id="newRouteLog_default_save_tick" class="clButton clFullWidth clNewRouteLog">
 					<div>
 					<a>

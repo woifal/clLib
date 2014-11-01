@@ -188,7 +188,7 @@ clLib.PAGES.handlers = {
 			//alert("showing buy.html(with >" + JSON.stringify(window._urlData) + "<)");
 
 			var errorFunc = function(e) {
-				alert("ERROR FUNC called for >" + e + "<");
+				console.log("ERROR FUNC called for >" + e + "<");
 				clLib.UI.showLoading({"text" : "ERROR while loading IAP >" + e + "<"});
 
 				setTimeout(function() {
@@ -450,7 +450,11 @@ clLib.PAGES.handlers = {
 	        $("#newRouteLog_default_layoutSelect").val(localStorage.getItem("currentLayout"));
 	        $("#newRouteLog_default_layoutSelect").selectmenu("refresh");
 
-	        //alert("444isave handler..");
+			$("#newRouteLog_default_extraButton").on("click", function () {
+				$("#newRouteLog_default_extraButton_a").click();
+			});
+			
+		   //alert("444isave handler..");
 	        $("#newRouteLog_default_save_tick").on("click", function () {
 				clLib.UI.execWithMsg(function() {
 	                clLib.UI.save({}, function() {
@@ -458,8 +462,6 @@ clLib.PAGES.handlers = {
 						clLib.UI.resetUIelements();
 						// scroll to top
 						$.mobile.silentScroll(0);
-						// ensure "extra" panel is collapsed..
-						$("#newRouteLog_default .clExtra").collapsible( "option", "collapsed", true );
 					});
 	            }, {text: "Saving route logs.."}, 200);
 	        });
@@ -502,7 +504,12 @@ clLib.PAGES.handlers = {
 	        $("#newRouteLog_reduced_layoutSelect").val(localStorage.getItem("currentLayout"));
 	        $("#newRouteLog_reduced_layoutSelect").selectmenu("refresh");
 
-	        //alert("444isave handler..");
+	        $("#newRouteLog_reduced_extraButton").on("click", function () {
+				$("#newRouteLog_reduced_extraButton_a").click();
+			});
+			
+
+			//alert("444isave handler..");
 	        $("#newRouteLog_reduced_save_tick").on("click", function () {
 				clLib.UI.execWithMsg(function() {
 	                clLib.UI.save({}, function() {
@@ -510,8 +517,6 @@ clLib.PAGES.handlers = {
 						clLib.UI.resetUIelements();
 						// scroll to top
 						$.mobile.silentScroll(0);
-						// ensure "extra" panel is collapsed..
-						$("#newRouteLog_reduced .clExtra").collapsible( "option", "collapsed", true );
 					});
 	            }, {text: "Saving route logs.."}, 200);
 	        });
