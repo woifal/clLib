@@ -285,6 +285,10 @@ clLib.UI.elementsToReset = {
 	, feedback: [
 		"feedbackText"
 	]
+	, stats: [
+		"todaysRouteLogs"
+		,"allRouteLogs"
+	]
 
 };
 
@@ -851,6 +855,12 @@ clLib.UI.elements = {
 			}
 			else if(clLib.UI.getVal("searchAreaTypeSelect") == "Near") {
 				clLib.UI.byId$("searchArea").parent(".ui-input-search").hide();
+				$inElement.empty()
+				.append(
+					$("<li>")
+						.append("<h1>Geodata not available yet.</h1>")
+				);
+				
 				clLib.getGeoLocation(function(position) {
 					//alert("GOT current position..");
 
@@ -892,7 +902,11 @@ clLib.UI.elements = {
 				,function(e) {
 					clLib.UI.hideLoading();
 
-					alert("Geolocation not available: >" + e.code + "<");
+					$inElement.empty()
+						.append(
+						$("<li>")
+							.append("<h1>Geodata not available.</h1>")
+					);
 				}
 				);
 

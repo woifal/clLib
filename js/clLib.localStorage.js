@@ -191,7 +191,7 @@ clLib.localStorage.initCache = function(storageName) {
 	var storageItemsKey = storageName + "_items";
 	//alert("init cache for " + storageName + " and key " + storageItemsKey);
 	var jsonItems = clLib.localStorage.getItem(storageItemsKey);
-	var storage	= JSON.parse(jsonItems);
+	var storage	= JSON.parse(jsonItems || "{}");
 	storageCache[storageItemsKey] = storage;
 };
 
@@ -516,10 +516,22 @@ clLib.localStorage.removeInstance = function(entity, entityId, storageName) {
     
 
 	var entityInstance = {};
-	var entityInstance = clLib.localStorage.getStorageItems(storageName)[entity][entityId];
+	entityInstance = clLib.localStorage.getStorageItems(storageName)[entity][entityId];
+	if(!entityInstance) {
+		alert("Could not delete route log. contact woifal.");
+		return;
+	}
+	
 	entityInstance["deleted"]  = 1;
 
-	var unsyncedInst = clLib.localStorage.getStorageItems("UNSYNCED_" + storageName)[entity][entityId];
+	var unsyncedInst = clLib.localStorage.getStorageItems("UNSYNCED_" + storageName);
+	if(unsyncedInst) {
+		unsyncedInst = unsyncedInst[entity];
+		if(unsyncedInst) {
+			unsyncedInst = unsyncedInst[entityId];
+		}
+	}
+	//var unsyncedInst = clLib.localStorage.getStorageItems("UNSYNCED_" + storageName)[entity][entityId];
 	if(unsyncedInst) {
 		clLib.localStorage.updateStorageItem("UNSYNCED_" + storageName, entity, entityId, entityInstance);
 	} else {
@@ -923,7 +935,7 @@ clLib.localStorage.refreshAllData = function (callbackFunc, errorFunc) {
 			$.extend(storageObjects, userRoutes);
 
 			var userRouteLogs;
-			// TESTING: returl ALL routelogs..
+			// TESTING: return ALL routelogs..
 			clLib.REST.getEntities("RouteLog", $.extend({}, //clLib.getRouteLogWhereToday(), 
 				{
 					"deleted" : {
