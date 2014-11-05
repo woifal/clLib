@@ -577,8 +577,15 @@ clLib.PAGES.handlers = {
 
 	,"diagram": {
 	    "pagecreate"	: function () {
-//	4 Mar 22:22:21 - >{"13":{"count":2,"score":1275},"14":{"count":1,"score":400},"20":{"count":10,"score":3750},"21":{"count":2,"score":700},"22":{"count
-//":1,"score":350},"23":{"count":8,"score":2800}}<
+
+		
+		}
+		, "pagebeforeshow": function () {
+			//alert("showing diagram..");
+			
+			//	4 Mar 22:22:21 - >{"13":{"count":2,"score":1275},"14":{"count":1,"score":400},"20":{"count":10,"score":3750},"21":{"count":2,"score":700},"22":{"count
+			//":1,"score":350},"23":{"count":8,"score":2800}}<
+			
 			var successHandler = function(resultObj) {
 				resultObj = JSON.parse(resultObj);
 				//alert("success!!" + typeof(resultObj) + "-" + JSON.stringify(resultObj));
@@ -607,6 +614,7 @@ clLib.PAGES.handlers = {
 
 			};
 
+
 			clLib.REST.requestStats({
 			},
 			successHandler, 
@@ -614,11 +622,6 @@ clLib.PAGES.handlers = {
 				alert(clLib.formatError(e));
 			}
 			);
-
-		
-		}
-		, "pagebeforeshow": function () {
-			
 		}
 	}	
 	,"users_verification": {
