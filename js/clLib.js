@@ -22,7 +22,7 @@ var clLib = {};
 clLib.UI = {};
 
 clLib.lastGeoDate = null;
-clLib.geoLocationValidity = 10;
+clLib.geoLocationValidity = 100; // in seconds!!
 
 //window.priority = 1;
 //
@@ -227,7 +227,7 @@ clLib.rpad = function(str1, padString, length) {
 };
 
 clLib.getIconImg = function(imgName) {
-	return $('<span style="width: 50px; height: 50ox" class="' + imgName + '"></span>"');
+	return $('<span style="width: 50px; height: 50px" class="' + imgName + '"></span>"');
 };
 clLib.ISOStrToDate = function(ISOStr) {
 	var x= new Date(ISOStr);
@@ -868,7 +868,6 @@ clLib.secondsPassed = function(sinceDate, secondsPassed) {
 }
 clLib.getGeoLocation = function(successFunc, errorFunc, options) {
 
-	//clLib.secondsPassed(clLib.lastGeoDate, clLib.geoLocationValidity);
 	if(clLib.lastGeoPosition && !clLib.secondsPassed(clLib.lastGeoDate, clLib.geoLocationValidity)) {
 		return successFunc(clLib.lastGeoPosition);
 	}
@@ -877,7 +876,7 @@ clLib.getGeoLocation = function(successFunc, errorFunc, options) {
 		//alert("getting current position..");
 		clLib.UI.showLoading({"text" : "getting location"});
 		options = $.extend(options, {
-			timeout: 30000
+			timeout: 5000
 			,maximumAge: 300000
 			,enableHighAccuracy:true
 		});

@@ -126,6 +126,7 @@ clLib.UI.tickTypeSymbols = {
 			});
 
 		aLink.click(function() {
+			console.log("deleting instance >" + dataRow["_id"] + "<");
 			clLib.localStorage.removeInstance("RouteLog", dataRow["_id"], "defaultStorage");
 			clLib.UI.resetUIelements();
 		});
@@ -1914,6 +1915,7 @@ clLib.UI.collapsible.formatRouteLogRow = function(dataRow) {
 			, "tickType_flash" : clLib.tickTypeSymbol 
 			, "tickType_attempt" : clLib.tickTypeSymbol 
 			, "tickType_toprope" : clLib.tickTypeSymbol 
+			//, "username": null
 		}
 		,bubble: {
 			"Score" : null

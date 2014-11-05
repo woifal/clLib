@@ -110,7 +110,7 @@ input.ui-input-text, textarea.ui-input-text {
 	border-radius: 10px;
 	abox-shadow: inset 0px 2px 2px 1px #DDD;
 	border: 2px solid black; /*#073E78;*/
-	background-color: #073E78; /*#2A2A2A;*/
+	background-color: #000000; /*#073E78; *//*#2A2A2A;*/
 	color: #FFFFFF;
 	padding: 20px;
 	padding-top: 100px;
