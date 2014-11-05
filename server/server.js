@@ -361,7 +361,7 @@ server.get('/requestVerification', function(req, res) {
 	
 
 server.get('/db/:entityName/:entityId', 
-		authHandler.requiredAuthentication, 
+		//authHandler.requiredAuthentication, 
 		function(req, res) 
 {
 	var errHandler = function(errorObj) {
@@ -676,6 +676,8 @@ server.get('/stats',
 		
 		var whereObj = JSON.parse(req.params["where"] || "{}");
 
+		whereObj["deleted"] = {"$ne" : 1};
+		
 		statsHandler.getRouteLogScoreStats({
 			datePortionFunc : statsHandler.ISODayPortion
 			//datePortionFunc : statsHandler.ISOMonthPortion
