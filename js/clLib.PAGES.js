@@ -202,11 +202,11 @@ clLib.PAGES.handlers = {
 //				alert("successfunc called with status >" + IAPstatus + "< and msg >" + msg + "<");
 				if(IAPstatus < clLib.IAP.RESTORED) {
 					//alert("...waiting for restore(" + IAPstatus + ")");
-					clLib.UI.showLoading({"text" : "...waiting for restore(" + IAPstatus + ")"});
+					clLib.UI.showLoading({"text" : "...waiting for restore(" + IAPstatus + ") >" + msg + "<"});
 					return;
 				}
 				else {
-					//alert("Restored!!!");
+					console.log("Restored!!!" + msg);
 					return clLib.IAP.hasFullVersion(
 						// yes, full version
 						function() {
@@ -220,6 +220,7 @@ clLib.PAGES.handlers = {
 						// no, free version
 						function() {
 							$("#buy_buyButton").off("click").on("click", function() {
+								console.log("buy!");
 								return clLib.IAP.buy(
 									clLib.IAP.fullVersionProductId
 									,function() {
@@ -230,35 +231,8 @@ clLib.PAGES.handlers = {
 									,errorFunc
 								);
 							});
-/*
-							$("#buy_buyButtons")
-								.empty();
-							//alert("showing buy button..");
 							clLib.UI.hideLoading();
-							for (var id in clLib.IAP.products) {
-								var prod = clLib.IAP.products[id];
-								var $buyButtonFrame = $("<li>");
-								$buyButtonFrame.append(
-									"<h3>" + prod.title + "</h3>" +
-									"<p>" + prod.description + "</p>"
-								);
-								var $buyButton = $("<button type='button'>" + prod.price + "</button>");
-								$buyButton.click(function() {
-									return clLib.IAP.buy(
-										prod.id
-										,function() {
-											alert("Successful purchase! Cheers!!");
-											alert("going to " + window._urlData.targetPage);
-											return clLib.PAGES.changeTo(window._urlData.targetPage);
-										}
-										,errorFunc
-									);
-								});
-								$buyButtonFrame.append($buyButton);
-								$("#buy_buyButtons")
-									.append($buyButtonFrame);
-							}
-*/
+
 						}
 					);
 				}
