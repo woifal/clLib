@@ -1,5 +1,4 @@
 ﻿@@include('grunt_includes/singlePage_Header.html', {"pageName": "startScreen"})
-
 			<div 
 				id="start_top"
 				style="
@@ -33,15 +32,26 @@
 						padding: 0px 30px 40px 30px;
 					"
 				>
-
-				<a href="#" data-role="button" id="startScreen_areaSearchButton">Area?</a>
-<!--					
-					<select id="startScreen_areaSelect" name="startScreen_areaSelect" data-theme="a">
-					</select>
--->
+					<a href="#" data-role="button" id="startScreen_areaButton">Area?</a>
 				</div>
-			</div>
-			<div 
+					
+					
+				<a id="startScreen_areaButton_a" style="display: none" data-rel="popup" href="#startScreen_areaButtonPopup"></a>
+				<div id="startScreen_areaButtonPopup" data-overlay-theme="a" data-role="popup" data-dismissible="false" class="clExtra" >
+					<div data-role="header">
+						<h1>Areas</h1>
+					</div>
+					
+					
+					<div data-role="content">
+						<a id="startScreen_noAreaButton" href="#" style="margin-top: 20px;" data-rel="back" class="ui-btn ui-btn-center ui-corner-all">Continue w/o area selection</a>
+						<br/>
+						<a id="startScreen_areaSearchButton" href="#" style="margin-top: 20px;" data-rel="back" class="ui-btn ui-btn-center ui-corner-all">Select area</a>
+					</div>
+				</div>				
+
+
+				<div 
 				id="start_bottom"
 				class="clSmallMargin"
 				style="
@@ -54,7 +64,7 @@
 				<!-- Statistics -->
 				<div 
 					id="startScreen_statsButton"
-					class="clButton"
+					class="clButton foo"
 					data-role="none"
 					style="border: 0px solid red"
 				>
@@ -77,5 +87,55 @@
 					? Score ?
 				</div>
 			</div>
+<script>
+/*
+setTimeout(function() {
+	var tour;
+
+	tour = new Shepherd.Tour({
+	  defaults: {
+		classes: 'shepherd-theme-arrows',
+		scrollTo: true
+	  }
+	});
+	tour.addStep('example-step', {
+	  text: 'start climbing!',
+	  attachTo: '#addRouteButton',
+	  //classes: 'shepherd-overlay',
+	  buttons: [
+		{
+		  text: 'Next',
+		  action: tour.next
+		}
+	  ]
+	});
+	tour.addStep('example-step', {
+	  text: 'show the fabulous statistics,,',
+	  attachTo: '#startScreen_statsButton',
+	  //classes: 'shepherd-overlay',
+	  buttons: [
+		{
+		  text: 'Next',
+		  action: tour.next
+		}
+	  ]
+	});
+	tour.start();
+}, 5000);
+*/
+</script>
+<style>
+/*
+body.shepherd-active>* *:not(.shepherd-enabled) {
+	background-color: rgba(100,100,100) ;
+	opacity: 0.5 !important;
+}
+body.shepherd-active * *.shepherd-enabled {
+	border: 1px solid green !important;
+	opacity: 1  !important;
+}
+*/
+
+</style>
 			
 @@include('grunt_includes/singlePage_Footer.html', {"pageName": "startScreen"})

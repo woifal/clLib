@@ -349,11 +349,19 @@ clLib.PAGES.handlers = {
 	    "pagecreate": function () {
 			// pre-fetch newRouteLog page..
 	        // $.mobile.loadPage("clLib_preferences.html");
+			$("#startScreen_areaButton").die("click").click(function() {
+				$("#startScreen_areaButton_a").click();
+			});
+			
+			$("#startScreen_noAreaButton").die("click").click(function() {
+				localStorage.setItem("currentlySelectedArea", null);
+			});
 			$("#startScreen_areaSearchButton").die("click").click(function() {
 				clLib.UI.execWithMsg(function() {
 					clLib.PAGES.changeTo("clLib_areaSearch.html");
 				}, {text: "Loading areas.."});
 			});
+			
 			
 			$("#startScreen_statsButton").die("click").click(function () {
 				clLib.UI.execWithMsg(function() {

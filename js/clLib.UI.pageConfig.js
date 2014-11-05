@@ -165,7 +165,7 @@ clLib.UI.autoLoad = {
 			"areaSelect"
 			, "onlineIcon"
 			, "currentScore"
-			, "areaSearchButton"
+			, "areaButton"
 			]
 	}
 	,preferences : {
@@ -252,7 +252,7 @@ clLib.UI.elementsToReset = {
 	]
 	, startScreen : [
 		"currentScore"
-		,"areaSearchButton"
+		,"areaButton"
 	]
 	, gradeConversion: [
 		"gradeSystemSelectAll"
@@ -368,7 +368,7 @@ clLib.UI.pageElements = {
 			, "selectedArea"
 			, "onlineIcon"
 			, "currentScore"
-			,"areaSearchButton"
+			,"areaButton"
 	    ]
 	}
     , preferences: {
@@ -1406,9 +1406,9 @@ clLib.UI.elements = {
 		
 		}
 	}
-	,"areaSearchButton" : {
+	,"areaButton" : {
 		"refreshHandler" : function($this) { 
-			$this.html(localStorage.getItem("currentlySelectedArea") || "???????");
+			$this.html(localStorage.getItem("currentlySelectedArea") || "Select Area..");
 		}
 	}
 	,"selectedArea" : {
