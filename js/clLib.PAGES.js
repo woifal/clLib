@@ -354,7 +354,8 @@ clLib.PAGES.handlers = {
 			});
 			
 			$("#startScreen_noAreaButton").die("click").click(function() {
-				localStorage.setItem("currentlySelectedArea", null);
+				localStorage.setItem("currentlySelectedArea", "");
+				clLib.UI.fillUIelements();
 			});
 			$("#startScreen_areaSearchButton").die("click").click(function() {
 				clLib.UI.execWithMsg(function() {
