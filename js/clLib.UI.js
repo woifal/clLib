@@ -126,9 +126,13 @@ clLib.UI.tickTypeSymbols = {
 			});
 
 		aLink.click(function() {
-			console.log("deleting instance >" + dataRow["_id"] + "<");
-			clLib.localStorage.removeInstance("RouteLog", dataRow["_id"], "defaultStorage");
-			clLib.UI.resetUIelements();
+			return clLib.UI.execWithMsg(function() {
+//				alert("remvoing instance..");
+				clLib.localStorage.removeInstance("RouteLog", dataRow["_id"], "defaultStorage");
+//				alert("resetting ui elements..");
+				clLib.UI.resetUIelements();
+			}, {text: "Deleting route log.."});
+			
 		});
 
 		return aLink;
@@ -945,13 +949,13 @@ clLib.UI.execWithMsg = function(func, spinnerParams, delayShowMillis) {
 };
 
 clLib.UI.showLoading = function(spinnerParams) {
-	//alert("showing clLoading..");
+//	alert("showing clLoading.." + JSON.stringify(spinnerParams));
 	$(".clLoading")
 		.empty().
 		append(
 			spinnerParams["text"]
 		)
-		.css("top", (window.pageYOffset + 150) + "px")
+//		.css("top", (window.pageYOffset + 150) + "px")
 		.show()
 		.removeClass("clHidden");
 	//alert("showing load bg");
