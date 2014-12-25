@@ -1893,7 +1893,7 @@ clLib.UI.addCollapsiblesChildren = function($containerEl, dataObj, createItemFun
 
 clLib.UI.ratingToStars = function(ratingScore) {
 	var html ="" + 
-		"<div data-role=\"none\" class=\"ratingSelect floated\"\">"
+		"<div data-role=\"none\" class=\"ratingSelect floated\">"
 	;
 
 	var i = 0;
@@ -1902,7 +1902,7 @@ clLib.UI.ratingToStars = function(ratingScore) {
 			"<label data-role=\"none\" class=\"rated\"><div class=\"img\"></div></label>  ";
 	}
 	html +="" + 
-		"<div/\">"
+		"<div/>"
 	;
 	return html;
 };

@@ -231,6 +231,10 @@ clLib.getIconImg = function(imgName) {
 };
 clLib.ISOStrToDate = function(ISOStr) {
 	var x= new Date(ISOStr);
+	if(x.getHours() + "" == "NaN") {
+	//	alert("nope");
+		return "";
+	}
 	return "" + 
 		(x.getYear() + 1900) + "-" +
 		clLib.lpad((x.getMonth() +1), '0', 2) + "-" +
@@ -239,6 +243,30 @@ clLib.ISOStrToDate = function(ISOStr) {
 		clLib.lpad(x.getMinutes(), '0', 2) + ":" +
 		clLib.lpad(x.getSeconds(), '0', 2);
 };
+
+clLib.dateStrToISOStr = function(dateStr) {
+	//var dateStr =  "2014-05-19 23:36:13";
+	var dateStrRE = new RegExp("(....)-(..)-(..) (..):(..):(..)", "i");
+	var matches = dateStr.match(dateStrRE);
+	var ISOStr = 
+		matches[1] 
+		+ "-" 
+		+ matches[2] 
+		+ "-" 
+		+ matches[3] 
+		+ "T" 
+		+ (matches[4] -2) 
+		+ ":" 
+		+ matches[5] 
+		+ ":" 
+		+ matches[6] 
+		+ ".000" 
+		+ "Z";
+	console.log(JSON.stringify(matches));
+	console.log(JSON.stringify(ISOStr));
+	return ISOStr;
+};
+
 
 clLib.dateToStr = function(dateObj) {
 	// ALL dates are ISO dates!!

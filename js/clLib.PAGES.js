@@ -7,10 +7,9 @@ clLib.PAGES = {
 
 /*
 *	Remove local storage items no longer used:
-+	- currentLayout
+*	- currentLayout
 */
 localStorage.removeItem("currentLayout");
-
 
 clLib.UI.preloadImages([
     "files/views/assets/image/star_rated.png"
@@ -977,14 +976,12 @@ clLib.PAGES.handlers = {
 	};
 
 
-
 var eventsToBind = "pagecreate pagebeforeshow";
 
 // bind "pagecreate"/"pagebeforeshow" events for all pages..
 $("div[data-role=page]").die(eventsToBind).live(eventsToBind, function (event, ui) {
     clLib.PAGES.defaultHandler(event, ui);
 });
-
 
 clLib.PAGES.changeTo = function(newURL, urlData, event, timeoutMillis) {
 	console.log("changing to " + newURL);
@@ -1042,7 +1039,7 @@ clLib.PAGES.changeTo = function(newURL, urlData, event, timeoutMillis) {
 
 
 
-clLib.PAGES.processAuthObj = function(urlAuthObj) {
+clLib.PAGES.processAuthObj = function(urlAuthObj, successFunc) {
     var errorFunc = function(error) {
         alert("error >" + JSON.stringify(error));
     }
@@ -1079,11 +1076,16 @@ clLib.PAGES.processAuthObj = function(urlAuthObj) {
 			
 			clLib.setUserInfo(userObj);
 	//       alert("userinfo was set..");
-			return clLib.login(
-			function() {
-				clLib.PAGES.changeTo("clLib_startScreen.html");
+			if(!successFunc) {
+				successFunc = function() {
+					clLib.PAGES.changeTo("clLib_startScreen.html");
+				};
 			}
-			,errorFunc);
+			
+			return clLib.login(
+				successFunc
+				,errorFunc
+			);
 		} catch(e) { alert("ERROR OF TYPE "  + e.name + " IS " + e.message + " !!!"); };
     }
     else {
