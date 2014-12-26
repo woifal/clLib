@@ -1,0 +1,125 @@
+<html>
+	<script type="text/javascript" src="http://www.kurt-climbing.com/Joomla/STATIC/js/jquery-1.8.2.js"></script>
+
+<script>
+var clLib = {
+	UI : {
+		web: {
+			FieldConfigError: function MyError(message) {
+			  this.name = 'FieldConfigError';
+			  this.message = message || 'Unknown reason';
+			}
+			,FieldConfigCollection : function(collectionName) {
+				var thiss = this;
+				this.fieldConfigs = {};
+				this.add = function(fieldConfigObj) {
+					if(!(fieldConfigObj instanceof clLib.UI.web.FieldConfig)) {
+						throw new clLib.UI.web.FieldConfigError("trying to add invalid FieldConfig object.");
+					}
+					this.fieldConfigs[fieldConfigObj.fieldName] = fieldConfigObj;
+				}
+				this.get = function(fieldName) {
+					if(!this.fieldConfigs[fieldName]) {
+						throw new clLib.UI.web.FieldConfigError("field >" + fieldName + "< not found in collection.");
+					}
+					return this.fieldConfigs[fieldName];
+				}
+			}
+			,FieldConfig : function(fieldConfig) {
+				var thiss = this;
+				this.fieldName = fieldConfig["fieldName"];
+				this.defaults = {
+					fieldName : this.fieldName
+					,displayName : this.fieldName
+					,orderable : true
+					,renderFunc : function(value) { return "!!!" + value; }
+					,editElement : {
+						serialize: function($editEl) {
+							alert("(" + this.fieldName + ") the editEl is >" + $editEl + "<");
+						}
+						,create: function(colName, currentValue) {
+							alert("(" + this.fieldName + ") creating >" + colName + "< with value >" + currentValue + "<");
+						}
+					}
+					,filterElement: function(column, api, i) {
+						console.log("adding filter select..");
+						var foo = $('<br>').appendTo( $(column.header()) );
+						var select = $('<select><option style="text-align: center;" value="">-- All --</option></select>')
+							.appendTo( $(column.header()) )
+							.on( 'change', function () {
+								console.log("filtering on >" + this.value + "<");
+								console.log("Changed >" + i + "< >" + $(this).parent().index() + "< >" + column.header() + "<>" + $(column.header()).attr("class") + "<!!!");
+
+								api
+									.column( $(this).parent().index()+':visible' )
+									.search( this.value )
+									.draw();
+							} )
+							.on('click', function(evt) {
+								console.log("clicked!!" + evt.target);
+								evt.stopImmediatePropagation();
+							})
+						;
+		 
+						column.data().unique().sort().each( function ( d, j ) {
+							if(d != "") {
+								var renderedValue = d;
+								if(clLib.UI.web.routeLogFields[dtColumns[i]]["renderFunc"]) {
+									renderedValue = clLib.UI.web.routeLogFields[dtColumns[i]]["renderFunc"](d);
+								}
+								var asdf = '<option '
+									+ ' value="' + d +'">'
+									+ d
+									+ '</option>'
+								;
+								//console.log(asdf);
+								select.append( asdf )
+							}
+						} );
+
+					}
+
+				}
+				this.config = this.defaults;
+				this.config = $.extend(true, this.config, fieldConfig);
+				this.config.editElement.serialize = this.config.editElement.serialize.bind(this);
+				this.config.editElement.create = this.config.editElement.create.bind(this);
+				//this.config = fieldConfig;
+			}
+		}
+	}
+};
+
+var someFields = new clLib.UI.web.FieldConfigCollection("testColl");
+someFields.add(new clLib.UI.web.FieldConfig({fieldName : "fieldA"}));
+someFields.add(new clLib.UI.web.FieldConfig({
+		fieldName : "fieldB"
+		,editElement : {
+			serialize : function($editEl) {
+				alert("(" + this.fieldName + ") Customer serialize for >" + $editEl + "<");
+				alert(this.config.renderFunc("asdf"));
+			}
+		}
+	})
+);
+someFields.get("fieldA").config.editElement.serialize("somefieldA..");
+someFields.get("fieldA").config.editElement.create("someColA..", "xyz");
+someFields.get("fieldB").config.editElement.create("someColB..", "xyz");
+someFields.get("fieldB").config.editElement.serialize("somefieldB..", someFields.get("fieldB"));
+alert("1" + someFields.get("fieldB").config.displayName);
+alert("2" + someFields.get("fieldB").config.orderable);
+alert("3" + someFields.get("fieldB").config.renderFunc("ASDF"));
+try {
+	alert("4" + someFields.get("fieldBASDF").config.renderFunc("ASDF"));
+} catch(e) {
+	alert("!!!!!" + JSON.stringify(e));
+}
+try {
+	alert("4" + someFields.add("asdfasdf"));
+} catch(e) {
+	alert("!!!!!" + JSON.stringify(e));
+}
+
+
+</script>
+</html>

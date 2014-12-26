@@ -1,0 +1,79 @@
+<!DOCTYPE html> 
+<html>
+
+<head>
+	<meta charset="utf-8"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <meta http-equiv="no-cache"/>
+    <meta http-equiv="Expires" content="-1"/>
+    <meta http-equiv="Cache-Control" content="no-cache"/>
+
+	<title>Your stream</title> 
+	<link rel="stylesheet" href="css/clLib.css" />
+	<link rel="stylesheet" href="css/clRouteColors.css" />
+	<link rel="stylesheet" href="css/webClLib.css" />
+	<link rel="stylesheet" href="http://code.jquery.com/ui/1.11.2/themes/smoothness/jquery-ui.css">
+
+	
+	<script type="text/javascript" src="js/jquery-1.8.2.js"></script>
+	<script type="text/javascript" src="http://code.jquery.com/ui/1.11.2/jquery-ui.js"></script>
+		
+	<script src="js/jquery.dataTables.js"></script>
+	<link rel="stylesheet" href="http://cdn.datatables.net/1.10.4/css/jquery.dataTables.css" />
+
+	<link href="css/dataTables.colReorder.css" rel="stylesheet" type="text/css" />
+	<script src="js/dataTables.colReorder.nightly.js"></script>
+
+	<script src="http://datatables.net/download/build/dataTables.colVis.nightly.js?_=4c7fa7e11152715969bcdc821ce0fec1"></script>
+	<link href="http://datatables.net/download/build/dataTables.colVis.nightly.css?_=4c7fa7e11152715969bcdc821ce0fec1.css" rel="stylesheet" type="text/css" />
+
+	<script type="text/javascript" src="js/clLib.js"></script>
+	<script type="text/javascript" src="js/clLib.auth.js"></script>
+	<script type="text/javascript" src="js/clLib.gradeConfig.js"></script>
+	<script type="text/javascript" src="js/clLib.localStorage.js"></script>
+	<script type="text/javascript" src="js/clLib.localStorage.indexes.js"></script>
+	<script type="text/javascript" src="js/clLib.UI.js"></script>
+	<script type="text/javascript" src="js/clLib.REST.js"></script>
+	<script type="text/javascript" src="js/clLib.IAP.js"></script>
+	<script type="text/javascript" src="js/clLib.UI.pageConfig.js"></script>
+	<script type="text/javascript" src="js/webClLib.js"></script>
+	<script type="text/javascript" src="js/clLib.UI.web.FieldConfig.js"></script>
+	<script type="text/javascript" src="js/clLib.UI.web.js"></script>
+
+
+</head> 
+
+		
+
+<body> 
+
+<div id="tableContainerBorder">
+	<div id="tableContainer">
+	</div>
+</div>
+<script>
+
+	var $tableContainer = $("#tableContainer");
+	var $filterContainer = $("#filterContainer");
+
+
+	clLib.UI.web.createTable(
+		$tableContainer
+		,{
+			entity: "RouteLog"
+			,where : null /*{"username": "foo6@gmail.com"}*/
+		}
+		,function() {
+			console.log("table built!");
+		}
+		,function(e) {
+			alert("table build error >" + JSON.stringify(e) + "<");
+		}
+	);
+	
+
+</script>
+
+
+</body>
+</html>

@@ -1,0 +1,268 @@
+
+@media (min-width: 1200px) {
+.row-fluid {
+    max-width: 1200px;
+}
+}
+
+body {
+	background-color: white !important;
+	
+}
+@font-face {
+  font-family: 'Open Sans';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Open Sans'), local('OpenSans'), url(http://fonts.gstatic.com/s/opensans/v10/cJZKeOuBrn4kERxqtaUH3T8E0i7KZn-EPnyo3HZu7kw.woff) format('woff');
+}
+@font-face {
+  font-family: 'Open Sans';
+  font-style: normal;
+  font-weight: 700;
+  src: local('Open Sans Bold'), local('OpenSans-Bold'), url(http://fonts.gstatic.com/s/opensans/v10/k3k702ZOKiLJc3WVjuplzHhCUOGz7vYGh680lGh-uXM.woff) format('woff');
+}
+
+
+* {
+  font-family: Open Sans, Helvetica, Arial, sans-serif;
+  font-size: 14px;
+}
+
+.dataTable th select,
+.dataTable th input {
+	float: left;
+	font-size: 10px;
+	width: auto;
+	abackground-color: red;
+	height: auto;
+	line-height: auto;
+	border-radius: 3px;
+	border: 1px solid #CCCCCC;
+	padding: 0;
+	color: black;
+}
+
+.dataTable th select option
+{
+	font-size: 10px;
+}
+.dataTable th 
+{
+	border: 1px solid #CCCCCC;
+}
+#tableContainerBorder {
+	padding: 0px;
+	border: 0px solid red;
+}
+
+#tableContainer {
+	aborder: 1px solid #CCCCCC;
+	margin: 0px;
+	apadding: 20px 20px;
+	abackground-color: whitesmoke;
+	aoverflow-x: scroll;
+}
+
+#tableContainer select {
+		margin-bottom: 0;
+		width: auto;
+		apadding: 100;
+	}
+
+.dataTables_wrapper {
+	overflow-x: scroll;
+}
+
+#tableContainer .dataTables_scrollHead {
+	background-color: red; /*#053160; */
+	color: white;
+}
+#tableContainer .dataTables_length,
+#tableContainer .dataTables_filter {
+	font-weight: bold;
+}
+
+table.dataTable.display {
+	width: auto !important;
+}
+
+
+table.dataTable.display thead tr {
+	background-color: #063a72; /* dark-header-blue */
+	color: white;
+}
+
+table.dataTable.display tbody tr td {
+	text-align: center; 
+	padding-top: 4px;
+	padding-bottom: 4px;
+}
+
+table.dataTable.display tbody tr.even {
+	abackground-color: #0954a8; /* dropdown-blue */
+}
+
+table.dataTable.display tbody tr.odd {
+	background-color: #ebf1f9;
+}
+
+table.dataTable.hover tbody tr:hover,
+table.dataTable.hover tbody tr.odd:hover,
+table.dataTable.hover tbody tr.even:hover, table.dataTable.display tbody tr:hover,
+table.dataTable.display tbody tr.odd:hover,
+table.dataTable.display tbody tr.even:hover {
+  background-color: whitesmoke;
+}
+
+
+table.dataTable tbody th, 
+table.dataTable tbody td {
+    padding: 4px 10px;
+}
+#tableContainer table.dataTable thead th { 
+    padding-top:4px;
+	padding-bottom: 4px;
+	padding-left: 10px;
+	padding-right: 30px;
+}
+
+table.dataTable thead th.sorting,
+table.dataTable thead th.sorting_desc,
+table.dataTable thead th.sorting_asc {
+    background-size: 30px 30px;
+}
+.clear {
+	clear: both;
+}
+
+table.dataTable { width: auto; }
+
+
+td.clControls img {
+	width: 20px;
+	height: 20px;
+    cursor: pointer;
+	display:block;
+	aborder: 1px solid red;
+}
+
+td.clControls img.clEdit {
+    background: url('../files/views/assets/image/img_22_22/button_plus_blue.png') no-repeat center center;
+	background-size: 20px 20px;
+}
+td.clControls img.clDelete {
+    background: url('../files/views/assets/image/img_22_22/button_minus_blue.png') no-repeat center center;
+	background-size: 20px 20px;
+}
+td.clControls .clSave {
+    abackground: url('../files/views/assets/image/img_22_22/button_minus_blue.png') no-repeat center center;
+	abackground-size: 20px 20px;
+}
+td.clControls .clCancel {
+    abackground: url('../files/views/assets/image/img_22_22/button_minus_blue.png') no-repeat center center;
+	abackground-size: 20px 20px;
+}
+
+table.dataTable.display tbody tr.odd.clEdited,
+table.dataTable.display tbody tr.odd.clEdited:hover,
+table.dataTable.display tbody.hover tr.odd.clEdited:hover,
+table.dataTable.display tbody tr.even.clEdited,
+table.dataTable.display tbody tr.even.clEdited:hover,
+table.dataTable.display tbody.hover tr.even.clEdited:hover
+{
+    background-color: #0954a8;
+	color: white;
+	font-size: 14px;
+}
+table.dataTable.display tbody tr.odd.clEdited td select,
+table.dataTable.display tbody tr.odd.clEdited:hover td select,
+table.dataTable.display tbody.hover tr.odd.clEdited:hover td select,
+table.dataTable.display tbody tr.even.clEdited td select,
+table.dataTable.display tbody tr.even.clEdited:hover td select,
+table.dataTable.display tbody.hover tr.even.clEdited:hover td select
+{
+    font-size: 14px;
+}
+
+table.dataTable.display tbody tr.odd.clBlurred,
+table.dataTable.display tbody tr.odd.clBlurred:hover,
+table.dataTable.display tbody.hover tr.odd.clBlurred:hover,
+table.dataTable.display tbody tr.even.clBlurred,
+table.dataTable.display tbody tr.even.clBlurred:hover,
+table.dataTable.display tbody.hover tr.even.clBlurred:hover,
+table.dataTable.display thead th.clBlurred,
+table.dataTable.display thead.hover th.clBlurred:hover,
+table.dataTable.display thead th.clBlurred:hover,
+table.dataTable.display thead.hover th.clBlurred:hover
+{
+	opacity: 0.2;
+}
+table.dataTable.display tbody tr.odd.clBlurred td select,
+table.dataTable.display tbody tr.odd.clBlurred:hover td select,
+table.dataTable.display tbody.hover tr.odd.clBlurred:hover td select,
+table.dataTable.display tbody tr.even.clBlurred td select,
+table.dataTable.display tbody tr.even.clBlurred:hover td select,
+table.dataTable.display tbody.hover tr.even.clBlurred:hover td select
+table.dataTable.display thead th.clBlurred td select,
+table.dataTable.display thead th.clBlurred:hover td select,
+table.dataTable.display thead.hover th.clBlurred:hover td select,
+table.dataTable.display thead th.clBlurred td select,
+table.dataTable.display thead th.clBlurred:hover td select,
+table.dataTable.display thead.hover th.clBlurred:hover td select
+{
+	opacity: 0.2;
+}
+
+
+
+#fav-nav .moduletable ul.nav.menu.clMenuContainer {
+		padding: 0;
+		margin: 0;
+		border: none;
+		float: right; 
+		width: auto;
+/*
+		border-color: #063a72; 
+		background-color: #063a72; 
+*/
+		color:white;
+		margin: 0px 0 0 -90px;
+	}
+	.hidden{
+		adisplay:none;
+	}
+	.clNoDisplay{
+		display:none !important;
+	}
+
+	#fav-nav .navigation ul.clMenuContainer.nav.menu li {
+/*		border: 1px solid white;
+*/
+		height: 30px;
+	}
+	#fav-nav .navigation ul.clMenuContainer.nav.menu li a {
+		color: sienna; /*white; */
+		margin-top: 0; 
+		margin-bottom: 0; 
+		padding-top: 5px; 
+		padding-bottom: 5px;	
+		float: right; 
+		background-color: white; /*#A63a72;*/
+		border-left: 1px solid white;
+		border-right: 1px solid white;
+		border-radius: 0px !important;
+		height: 30px;
+	}
+
+	#fav-nav .navigation ul.nav.menu.clLoginButton li a  {
+		background-color: #A63a72;
+		border-radius: 0px !important;
+		margin: 0;
+		padding: 0;
+		color: white;
+		height: 30px;
+	}
+	
+	#fav-nav .navigation ul.nav.menu.clUserInfo  {
+		afloat:left;
+	}
