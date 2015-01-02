@@ -316,3 +316,8 @@ label.untrated {
 	height: 30px;
 	margin-bottom: 0px;
 }
+
+#ui-datepicker-div 
+{
+ z-index: 1000 !important; /* must be > than popup editor (950) */
+}
