@@ -1099,7 +1099,6 @@
 
 		
 		if(window.dtDebug) {
-			//console.error("aoColumns >" + JSON.stringify(settings.aoColumns) + "<");
 			console.error(colIdx + ": gotcellData >" + JSON.stringify(cellData) + "<, rowdata >" + JSON.stringify(rowData) + "< for >" + rowIdx + "<");
 		}
 
@@ -2936,7 +2935,15 @@
 			* This way we filter on un-rendered values.
 			*/
 			//data = settings.aoData[ display[i] ]._aFilterData[ colIdx ];
-			data = settings.aoData[ display[i] ]._aData[ colIdx ];
+			// [2015-01-02] Changed to object-data-source for table. need to remamp (numeric) colIdx to colname in order to search in unrendered values..
+			console.log("filtering aoColumns >" + JSON.stringify(settings.aoColumns) + "<");
+			console.log("filtering col >" + colIdx + "< in values >" + JSON.stringify(settings.aoData[ display[i] ]) + "<");
+			//data = settings.aoData[ display[i] ]._aData[ colIdx ];
+			data = settings.aoData[ display[i] ]._aData[ settings.aoColumns[colIdx].sName ];
+			
+			
+			
+			
 			if(data != "" && data != "?") {
 				console.log("field data >" + JSON.stringify(data) + "<");
 				console.log("search regpex to test against >" + JSON.stringify(rpSearch) + "<");
