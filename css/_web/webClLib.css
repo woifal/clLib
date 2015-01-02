@@ -49,6 +49,7 @@ body {
 .dataTable th 
 {
 	border: 1px solid #CCCCCC;
+	white-space: nowrap;
 }
 #tableContainerBorder {
 	padding: 0px;
@@ -115,14 +116,13 @@ table.dataTable.display tbody tr.even:hover {
 }
 
 
-table.dataTable tbody th, 
 table.dataTable tbody td {
-    padding: 4px 10px;
+    padding: 4px 8px !important;
 }
 #tableContainer table.dataTable thead th { 
     padding-top:4px;
 	padding-bottom: 4px;
-	padding-left: 10px;
+	padding-left: 5px;
 	padding-right: 30px;
 }
 
@@ -138,29 +138,43 @@ table.dataTable thead th.sorting_asc {
 table.dataTable { width: auto; }
 
 
-td.clControls img {
-	width: 20px;
+#tableContainer table.dataTable thead th.clControls {
+	padding-left: 0px;
+	padding-right: 0px;
+	text-align: center;
+}
+
+.clControls img {
+	width: 30px;
 	height: 20px;
     cursor: pointer;
-	display:block;
+	display:inline-block;
 	aborder: 1px solid red;
 }
 
-td.clControls img.clEdit {
+.clControls img.clAdd {
     background: url('../files/views/assets/image/img_22_22/button_plus_blue.png') no-repeat center center;
 	background-size: 20px 20px;
 }
-td.clControls img.clDelete {
-    background: url('../files/views/assets/image/img_22_22/button_minus_blue.png') no-repeat center center;
+th.clControls img.clAdd {
+	background-color: green;
+    background: url('../files/views/assets/image/img_22_22/button_plus_white.png') no-repeat center center;
+}
+.clControls img.clEdit {
+    background: url('../files/views/assets/image/img_22_22/button_edit_blue.png') no-repeat center center;
 	background-size: 20px 20px;
 }
-td.clControls .clSave {
-    abackground: url('../files/views/assets/image/img_22_22/button_minus_blue.png') no-repeat center center;
-	abackground-size: 20px 20px;
+.clControls img.clDelete {
+    background: url('../files/views/assets/image/img_22_22/button_delete_blue.png') no-repeat center center;
+	background-size: 20px 20px;
 }
-td.clControls .clCancel {
-    abackground: url('../files/views/assets/image/img_22_22/button_minus_blue.png') no-repeat center center;
-	abackground-size: 20px 20px;
+.clControls img.clSave {
+    background: url('../files/views/assets/image/img_22_22/button_disc_blue.png') no-repeat center center;
+	background-size: 20px 20px;
+}
+.clControls img.clCancel {
+    background: url('../files/views/assets/image/img_22_22/button_cross_blue.png') no-repeat center center;
+	background-size: 20px 20px;
 }
 
 table.dataTable.display tbody tr.odd.clEdited,
@@ -170,7 +184,7 @@ table.dataTable.display tbody tr.even.clEdited,
 table.dataTable.display tbody tr.even.clEdited:hover,
 table.dataTable.display tbody.hover tr.even.clEdited:hover
 {
-    background-color: #0954a8;
+    background-color: gold; /*#0954a8;*/
 	color: white;
 	font-size: 14px;
 }
@@ -189,13 +203,17 @@ table.dataTable.display tbody tr.odd.clBlurred:hover,
 table.dataTable.display tbody.hover tr.odd.clBlurred:hover,
 table.dataTable.display tbody tr.even.clBlurred,
 table.dataTable.display tbody tr.even.clBlurred:hover,
-table.dataTable.display tbody.hover tr.even.clBlurred:hover,
+table.dataTable.display tbody.hover tr.even.clBlurred:hover
+{
+	opacity: 0.6;
+}
+
 table.dataTable.display thead th.clBlurred,
 table.dataTable.display thead.hover th.clBlurred:hover,
 table.dataTable.display thead th.clBlurred:hover,
 table.dataTable.display thead.hover th.clBlurred:hover
 {
-	opacity: 0.2;
+	opacity: 0.6;
 }
 table.dataTable.display tbody tr.odd.clBlurred td select,
 table.dataTable.display tbody tr.odd.clBlurred:hover td select,
@@ -203,6 +221,9 @@ table.dataTable.display tbody.hover tr.odd.clBlurred:hover td select,
 table.dataTable.display tbody tr.even.clBlurred td select,
 table.dataTable.display tbody tr.even.clBlurred:hover td select,
 table.dataTable.display tbody.hover tr.even.clBlurred:hover td select
+{
+	opacity: 0.6;
+}
 table.dataTable.display thead th.clBlurred td select,
 table.dataTable.display thead th.clBlurred:hover td select,
 table.dataTable.display thead.hover th.clBlurred:hover td select,
@@ -210,7 +231,7 @@ table.dataTable.display thead th.clBlurred td select,
 table.dataTable.display thead th.clBlurred:hover td select,
 table.dataTable.display thead.hover th.clBlurred:hover td select
 {
-	opacity: 0.2;
+	opacity: 0.6;
 }
 
 
@@ -219,7 +240,7 @@ table.dataTable.display thead.hover th.clBlurred:hover td select
 		padding: 0;
 		margin: 0;
 		border: none;
-		float: right; 
+		float: left; 
 		width: auto;
 /*
 		border-color: #063a72; 
@@ -266,3 +287,32 @@ table.dataTable.display thead.hover th.clBlurred:hover td select
 	#fav-nav .navigation ul.nav.menu.clUserInfo  {
 		afloat:left;
 	}
+
+
+	
+.ratingSelect > label {
+	float: none;
+	display: inline-block;
+}
+.ratingSelect,
+.ratingSelect.floated {
+	float: none;
+	padding: 0;
+	margin: 0;
+}
+
+label.rated, 
+label.untrated {
+	height: 14px;
+}	
+
+
+.fromToFilter input {
+	display: inline-block;
+}
+
+
+.clEdited textarea {
+	height: 30px;
+	margin-bottom: 0px;
+}

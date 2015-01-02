@@ -8,8 +8,17 @@ clLib.webFieldConfig = {
 	  this.prototype = new Error();
 	  this.prototype.constructor = clLib.UI.fc.FieldConfigError;
 	}
-	,FieldConfigCollection : function(collectionName) {
+	,FieldConfigCollection : function(fieldConfigCollectionConfig) {
 		this.fieldConfigs = {};
+		this.defaults = {
+			collectionName : "_NO_FIELD_COLLECTION_DEFINED"
+			,saveHandler : function(fieldData, newRowFlag, successFunc) {
+				alert("saving row(" + newRowFlag + ") with data >" + JSON.stringify(fieldData) + "<");
+				var newRowId = -123;
+				
+				return successFunc(newRowId);
+			}
+		};
 		this.add = function(fieldConfigObj) {
 			if(!(fieldConfigObj instanceof clLib.webFieldConfig.FieldConfig)) {
 				throw new clLib.UI.fc.FieldConfigError("trying to add invalid FieldConfig object.");
@@ -27,6 +36,9 @@ clLib.webFieldConfig = {
 		this.fields = function() {
 			return Object.keys(this.fieldConfigs);
 		}
+		this.config = this.defaults;
+		this.config = $.extend(true, this.config, fieldConfigCollectionConfig);
+
 	}
 	,FieldConfig : function(fieldConfig) {
 		//alert("building field with config " + JSON.stringify(fieldConfig));

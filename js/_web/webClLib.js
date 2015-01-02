@@ -154,7 +154,8 @@ document.addEventListener("DOMContentLoaded", function() {
 				$('<div style="clear: both"></div>' + 
 					'<ul class="nav menu clMenuContainer hidden">' + 
 						'<li class="current"><a class="clUserInfo" href="#"></a></li>' + 
-						'<li class="current"><a href="http://www.kurt-climbing.com/Joomla/index.php/cllib-stats">Route Logs</a></li>' + 
+						'<li class="current"><a href="http://www.kurt-climbing.com/Joomla/index.php/cllib-stats">My Routes</a></li>' + 
+						'<li class="current"><a href="http://www.kurt-climbing.com/Joomla/index.php/cllib-stats">My Statistics</a></li>' + 
 	//					'<li class="current"><a href="#">Grade Conversion</a></li>' + 
 	//					'<li class="current"><a href="#">Buddies</a></li>' + 
 	//					'<li class="current"><a id="logoutButton" href="#">Logout</a></li>' + 

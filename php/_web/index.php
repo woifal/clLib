@@ -33,7 +33,7 @@ $pageclass = $params->get( 'pageclass_sfx' );
 
 <head>
 	<script type="text/javascript" src="<?php echo $this->baseurl ?>/KURT/js/jquery-1.8.2.js"></script>
-	<script type="text/javascript" src="http://code.jquery.com/ui/1.11.2/jquery-ui.js"></script>
+	<script type="text/javascript" src="<?php echo $this->baseurl ?>/KURT/js/jquery-ui.js"></script>
     
   
   
@@ -74,10 +74,9 @@ $pageclass = $params->get( 'pageclass_sfx' );
 		else { echo ""; } ?>
 
 	<!-- Google Font -->
-	<link href='http://fonts.googleapis.com/css?family=<?php echo ($this->params->get('googleFont')) ? $this->params->get('googleFont') : "Open+Sans"; ?>' rel='stylesheet' type='text/css' />
-	<link href='http://fonts.googleapis.com/css?family=<?php echo ($this->params->get('textLogoGoogleFont')) ? $this->params->get('textLogoGoogleFont') : "Open+Sans"; ?>' rel='stylesheet' type='text/css' />
-	<link href='http://fonts.googleapis.com/css?family=Open+Sans:300' rel='stylesheet' type='text/css'>
-
+	<link href='css/googleFont_OpenSans.css' rel='stylesheet' type='text/css' />
+	<link href='css/googleFont_OpenSans300.css' rel='stylesheet' type='text/css' />
+	
 	<?php // Parameters
 	require($_SERVER['DOCUMENT_ROOT']."/Joomla/templates/favourite/admin/params.php"); ?>
 

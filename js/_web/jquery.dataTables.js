@@ -1002,6 +1002,9 @@
 			// all other cases, the data source object is already populated, so we
 			// don't overwrite it, which might break bindings etc
 			if ( nTr ) {
+				if(window.dtDebug) {
+					alert("nTr is TRUE!!!!");
+				}
 				_fnSetCellData( oSettings, iRow, i, _fnGetCellData( oSettings, iRow, i ) );
 			}
 			columns[i].sType = null;
@@ -1093,10 +1096,18 @@
 			row:      rowIdx,
 			col:      colIdx
 		} );
+
+		
+		if(window.dtDebug) {
+			//console.error("aoColumns >" + JSON.stringify(settings.aoColumns) + "<");
+			console.error(colIdx + ": gotcellData >" + JSON.stringify(cellData) + "<, rowdata >" + JSON.stringify(rowData) + "< for >" + rowIdx + "<");
+		}
+
 		if ( cellData === undefined ) {
 			if ( settings.iDrawError != draw && defaultContent === null ) {
-				_fnLog( settings, 0, "Requested unknown parameter "+
-					(typeof col.mData=='function' ? '{function}' : "'"+col.mData+"'")+
+			console.error("2gotcellData >" + cellData + "< for >" + rowIdx + "<");
+			_fnLog( settings, 0, "Requested unknown parameter "+
+					(typeof col.mData=='function' ? '{function}' : "'"+col.mData+ "(" + colIdx + ")" + "'")+
 					" for row "+rowIdx, 4 );
 				settings.iDrawError = draw;
 			}

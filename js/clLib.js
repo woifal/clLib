@@ -233,7 +233,7 @@ clLib.ISOStrToDate = function(ISOStr) {
 	var x= new Date(ISOStr);
 	if(x.getHours() + "" == "NaN") {
 	//	alert("nope");
-		return "";
+		return "XXXXXXXXXX";
 	}
 	return "" + 
 		(x.getYear() + 1900) + "-" +
@@ -248,6 +248,23 @@ clLib.dateStrToISOStr = function(dateStr) {
 	//var dateStr =  "2014-05-19 23:36:13";
 	var dateStrRE = new RegExp("(....)-(..)-(..) (..):(..):(..)", "i");
 	var matches = dateStr.match(dateStrRE);
+	
+	// Nothing to convert? ok, return nothing..
+	if(!dateStr || dateStr == " ") {
+		return "";
+	}
+	alert("dateStr >" + dateStr + "<");
+	if(!matches) {
+		dateStrRE = new RegExp("(....)-(..)-(..)", "i");
+		matches = dateStr.match(dateStrRE);
+		if(!matches) {
+			alert("could not parse datestr >" + dateStr + "<");
+			return "";
+		}
+		matches[4] = "03";
+		matches[5] = "00";
+		matches[6] = "00";
+	}
 	var ISOStr = 
 		matches[1] 
 		+ "-" 
@@ -255,7 +272,7 @@ clLib.dateStrToISOStr = function(dateStr) {
 		+ "-" 
 		+ matches[3] 
 		+ "T" 
-		+ (matches[4] -2) 
+		+ clLib.lpad(matches[4] -2, '0', 2) 
 		+ ":" 
 		+ matches[5] 
 		+ ":" 

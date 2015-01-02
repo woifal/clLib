@@ -16,7 +16,7 @@ clLib.UI.web = {
 				dateFormat: "yy-mm-dd"
 				,showButtonPanel: true
 				//,showOn: "button",
-				//buttonImage: "./files/views/assets/image/calendar.gif",
+				//buttonImage: "../files/views/assets/image/calendar.gif",
 				//buttonImageOnly: true,
 				//buttonText: "From Date"
 			})
@@ -85,19 +85,140 @@ clLib.UI.web = {
 		var FieldConfig = clLib.webFieldConfig.FieldConfig;
 		var FieldConfigError = clLib.webFieldConfig.FieldConfigError;
 		
-		var routeLogConfig = new FieldConfigCollection("routeLogConfig");
+		var routeLogConfig = new FieldConfigCollection({
+			collectionName: "routeLogConfig"
+		});
 		routeLogConfig.add(new FieldConfig({
 			fieldName : "clControls"
-			,displayName: " "
+			,displayName: function() {
+				var $ctlEl = $("<span>");
+				$ctlEl.append($("<img class='clAdd'>")
+				);
+				return $ctlEl[0].outerHTML;
+			}()
 			,orderable: false
 			,renderFunc : function(x) {
 				var $ctlEl = $("<span>");
-				//$ctlEl.append($("<span style='display: none;'>" + routeLog["_id"] + "</span>"));
 				$ctlEl.append($("<img class='clEdit'>"));
+				$ctlEl.append($("<img class='clDelete'>"));
 				return $ctlEl[0].outerHTML;
 			}
-			
-			
+			,editElement : {
+				create: function(colName, currentValue) {
+					var $ctlEl = $("<span>");
+
+					$ctlEl.append($("<img class='clSave'>")
+						.on("click", function(evt) {
+							var serRow  = {};
+							var newRow = false;
+							var $tr = $(this).closest('tr');
+							var rowData = $dataTable.fnGetData($tr);
+							if (!rowData) {
+								rowData = {};
+								newRow = true;
+							}
+							$tr.find("td").each(function() {
+								var $td = $(this);
+								var colIdx = $td.index();
+								var colName = $table.find('thead').find("th:eq(" + colIdx + ")").data("clcolname");
+								console.log("working on col >" + colName + "<");
+								if(!colName) {
+									alert("no colname at idx " + colIdx);
+									return;
+								}
+								//$td.css("background", "#FF0000");
+								console.log("getting field config for " + colName);
+								var currentFieldConfig = routeLogConfig.get(colName);
+								var $editEl = $td;
+								console.log("found el " + $editEl.html());
+								var editElConfig = currentFieldConfig["editElement"] || {};
+								var serializeFunc = (editElConfig && editElConfig["serialize"]) || function($editEl) {
+									alert("no ser func, returning >" + $editEl.find("select").val()+ "<");
+									return $editEl.find("select").val();
+								};
+								var serializedVal = serializeFunc($editEl) || "";
+								serRow[colName] = serializedVal;
+								console.log("serRow is now >" + JSON.stringify(serRow) + "<");
+								
+							});
+							console.log("Serialized row >" + JSON.stringify(serRow) + "<");
+							
+							routeLogConfig.config.saveHandler(
+								serRow
+								,newRow
+								,function(newId) {
+									if(newRow) {
+										serRow["_id"] = newId;
+										alert("adding >" + JSON.stringify(serRow) + "<");
+										console.error("adding >" + JSON.stringify(serRow) + "<");
+										window.dtDebug = true;
+										var dtRowNumber = $table.fnAddData(serRow);
+										window.dtDebug = false;
+										var $newTr = $($dataTable.api().rows(dtRowNumber).nodes());
+										alert("got " + JSON.stringify(Object.keys($newTr)));
+										console.error("got " + JSON.stringify(Object.keys($newTr)));
+										alert("!!!!added (" + dtRowNumber + " with # " + $newTr.find("td").length + ")>" + JSON.stringify(foo) + "<");
+										//$newTr.find("td").css("border", "1px solid red");
+										
+										// add class for correct styling of clControls buttons...
+										$newTr.find("td:eq(0)").addClass("clControls");
+										
+										//$tr.remove();
+										$table.api().draw();
+
+									}
+									else {
+										$tr.find("td").each(function() {
+											var $td = $(this);
+											var colIdx = $td.index();
+											var colName = $table.find('thead').find("th:eq(" + colIdx + ")").data("clcolname");
+											if(!colName) {
+												alert("no colname at idx " + colIdx);
+												return;
+											}
+
+											var currentFieldConfig = routeLogConfig.get(colName);
+											// set underlying table cell data to new value..
+											rowData[dtColumnAt.indexOf(colName)] = serRow[colName];
+											// set table cell to NEW value(=> rendered :)
+											$td.html(currentFieldConfig["renderFunc"](serRow[colName]));
+										});
+
+									}
+								
+								}
+								,function(e) {
+								}
+							);
+							
+							
+							$table.find("tr").removeClass("clBlurred");
+							$table.find("th").removeClass("clBlurred");
+							$tr.removeClass("clEdited");
+							
+						})
+					)
+					;
+
+					$ctlEl.append($("<img class='clCancel'>")
+						.on("click", function() {
+							var $tr = $(this).closest('tr');
+							$tr.removeClass("clEdited");
+							$tr.find("td").each(function(idx) {
+								console.log($(this).attr("class") + " <-> " + $origTr.find("td." + $(this).attr("class")).attr("class"));
+								$(this).replaceWith($origTr.find("td." + $(this).attr("class")));
+							
+							});
+							$table.find("tr").removeClass("clBlurred");
+							$table.find("th").removeClass("clBlurred");
+							$origTr.empty();
+							console.log("origtr restored.");
+						})
+					);
+				
+					return $ctlEl;
+				}
+			}
 		}));
 
 		routeLogConfig.add(new FieldConfig({
@@ -109,7 +230,7 @@ clLib.UI.web = {
 			,displayName: "Date"
 			,renderFunc : clLib.ISOStrToDate
 			,filterElement: function(column, api, i) {
-				var cont = $('<div style="left: auto; float: left; width: 140px">').appendTo( $(column.header()) );
+				var cont = $('<div class="fromToFilter" style="">').appendTo( $(column.header()) );
 				
 				var $dateFrom = $("<input class='dateFrom' placeholder='from' style='width: 55px;'>")
 					.appendTo(cont);
@@ -131,7 +252,7 @@ clLib.UI.web = {
 					$el.append($input);
 					$input.datepicker({
 						showOn: "button",
-						buttonImage: "./files/views/assets/image/calendar.gif",
+						buttonImage: "/Joomla/KURT/files/views/assets/image/calendar.gif",
 						buttonImageOnly: true,
 						dateFormat: "yy-mm-dd"
 						//buttonText: "Select date"
@@ -179,7 +300,7 @@ clLib.UI.web = {
 			fieldName : "Colour"
 			,renderFunc : function(x) { 
 				var $colour = clLib.tickTypeSymbol("Colour", x, {"Colour": x});
-				if($colour) {
+				if($colour && x ) {
 					$colour.css("width", "100%");
 					$colour.css("margin-left", "0px");
 					$colour.css("text-align", "center");
@@ -189,7 +310,7 @@ clLib.UI.web = {
 					return $colour[0].outerHTML; 
 				}
 				else {
-					return x;
+					return "";
 				}
 			}
 			,editElement : {
@@ -226,10 +347,7 @@ clLib.UI.web = {
 				,serialize : function($editElement) {
 					var val = 
 						$editElement.find(".clCSSBg").data("clValue"); 
-/*					var val = 
-						$editElement.find("textarea").val();
-*/
-					return val;
+					return val || "";
 				}
 			}			
 		}));
@@ -281,7 +399,9 @@ clLib.UI.web = {
 				var routeLogs = resultObj.RouteLog;
 				console.log(routeLogs.length);
 				
-				var $table = $("<table>");
+				//routeLogs = [];
+				
+				window.$table = $("<table>");
 				$table.addClass("display");
 				$table.addClass("cell-border");
 				
@@ -299,8 +419,10 @@ clLib.UI.web = {
 					.append("")
 				);
 */
-				window.dtColumns = [];
+				window.dtColumnAt = [];
+				var dtColumnAtCt = 0;
 				var dtColumnDefs = [];
+				var dtColumns = [];
 				$.each(fields, function(idx, fieldName) {
 					var curFieldConfig = routeLogConfig.get(fieldName) || {};
 					var displayName = fieldName;
@@ -310,28 +432,50 @@ clLib.UI.web = {
 					$thTr.append($("<th data-clColName='"+fieldName+"' class='"+fieldName+"'>")
 						.append(displayName)
 					);
-					dtColumns.push(fieldName);
+					dtColumnAt.push(fieldName);
+					dtColumns[dtColumnAtCt] = {
+						name : fieldName
+						,className : "XXX_" + fieldName
+					};
+					dtColumnAtCt++;
+					
 					dtColumnDefs.push({
 						"targets": fieldName,
 						"orderable": curFieldConfig["orderable"]
 						,"bUseRendered": false
 						,"render": function ( data, type, full, meta ) {
-							//console.log("render me!");
+							if(window.dtDebug) {
+								//alert("rendering >" + fieldName + "< and value >" + data + "<(" + (data !== undefined) + ")");
+							}
+
+							
+							
+						//console.log("render me!");
 							var renderedVal = "";
 							if(
 								(
 									data  != clLib.UI["NOTSELECTED"].value &&
-									data +"" != ""
+									data !== undefined && 
+									(data + "") != ""
 								) 
 								|| curFieldConfig["fieldName"] == 'clControls'
 							) {
+								//alert("value is >" + data + "<");
 								renderedVal = data;
 								if(typeof(curFieldConfig) == "object" && curFieldConfig["renderFunc"]) {
 									renderedVal = curFieldConfig["renderFunc"](data);
 								}
+								else {
+									alert("could not find renderer for >" + fieldName + "< and value >" + data + "<");
+								}
 							} else {
 								renderedVal = "?";
 							}
+							
+							if(window.dtDebug) {
+								//alert("returning rendered >" + fieldName + "< as >" + renderedVal + "<");
+							}
+
 							return renderedVal;
 						}
 
@@ -348,18 +492,10 @@ clLib.UI.web = {
 					var $tr = $("<tr>");
 
 					$.each(routeLogConfig.fields(), function(idx, keyName) {
-						if(keyName == "XXXXXXXX" + "clControls") {
-							var $td = $("<td class='clControls'>");
-							$td.append($("<span style='display: none;'>" + routeLog["_id"] + "</span>"));
-							$td.append($("<img class='clEdit'>"));
-							//$td.append($("<img class='clDelete'>"));
-							$tr.append($td);
-						}
-						else {
-							var $td = $("<td class='"+keyName+"' data-clcolname='"+keyName+"' >");
-							$td.append(routeLog[keyName]);
-							$tr.append($td);
-						}
+						//var $td = $("<td class='"+keyName+"' data-clcolname='"+keyName+"' >");
+						var $td = $("<td class='"+keyName+"'>");
+						$td.append(routeLog[keyName]);
+						$tr.append($td);
 					});
 					$tbody.append($tr);
 				});
@@ -370,10 +506,14 @@ clLib.UI.web = {
 				$tableContainer.append($table);
 
 
+				alert("adding columns >" + JSON.stringify(dtColumns) + "<");
+				console.error("adding columns >" + JSON.stringify(dtColumns) + "<");
 				
 				window.$dataTable = $table.dataTable({
 					"a": "b"
+					,data : routeLogs
 					,order: []
+					,"columns": dtColumns
 					,"columnDefs": dtColumnDefs
 					,"fnRowCallback": function( nRow, aData, iDisplayIndex ) {
 						$('td', nRow).attr('nowrap','nowrap');
@@ -396,8 +536,8 @@ clLib.UI.web = {
 
 							var column = api.column( i );
 
-							if(routeLogConfig.get(dtColumns[i]).filterElement) {
-								return routeLogConfig.get(dtColumns[i]).filterElement(column, api, i);
+							if(routeLogConfig.get(dtColumnAt[i]).filterElement) {
+								return routeLogConfig.get(dtColumnAt[i]).filterElement(column, api, i);
 							}
 
 							
@@ -423,8 +563,8 @@ clLib.UI.web = {
 							column.data().unique().sort().each( function ( d, j ) {
 								if(d != "") {
 									var renderedValue = d;
-									if(routeLogConfig.get(dtColumns[i])["renderFunc"]) {
-										renderedValue = routeLogConfig.get(dtColumns[i])["renderFunc"](d);
+									if(routeLogConfig.get(dtColumnAt[i])["renderFunc"]) {
+										renderedValue = routeLogConfig.get(dtColumnAt[i])["renderFunc"](d);
 									}
 									var asdf = '<option '
 										+ ' value="' + d +'">'
@@ -441,6 +581,49 @@ clLib.UI.web = {
 				})
 				;
 
+				$thTr.on('click', 'th.clControls img.clAdd', function () {
+					console.error("new row for table >" + Object.keys($dataTable)  + "<");
+					//alert("new row for table >" + Object.keys($dataTable)  + "<");
+					var $thead = $thTr.closest('thead');
+
+					var $newTr = $("<tr>");
+					$newTr.addClass("clEdited odd");
+					$thTr.find("th").each(function() {
+						var $th = $(this);
+						var $newTd = $("<td>");
+						var colIdx = $th.index();
+						var colName = $th.data("clcolname");
+						$newTd = $("<td class='"+colName+"' data-clcolname='"+colName+"' >");
+
+						//alert("adding blank td for " + colName);
+
+						if(colName) {	
+							var currentFieldConfig = routeLogConfig.get(colName);
+							//alert("building edit control for >" + colName + "<");
+						
+							var currentValue;
+							currentValue = ""; //rowData[dtColumnAt.indexOf(colName)];
+							
+							var $editElement;
+							if(currentFieldConfig && currentFieldConfig["editElement"]) {
+								console.log("got custom edit element for " + colName);
+								$editElement = currentFieldConfig["editElement"]["create"](colName, currentValue, $thead, currentFieldConfig);
+							}
+							else {
+								alert("no editElement for >" + colName + "<, using renderFunc (=> readonly display)");
+								$editElement = $(currentFieldConfig["renderFunc"](currentValue));
+							}
+							$newTd
+									.append($editElement)
+								;
+							//}
+							$newTr.append($newTd);
+
+						}
+					});
+					
+					$tbody.prepend($newTr);
+				});
 
 
 				//
@@ -450,63 +633,16 @@ clLib.UI.web = {
 					var $tbody = $(this).closest("tbody");
 					var $thead = $tbody.siblings("thead");
 					var $tr = $(this).closest('tr');
-					var $origTr = $tr.clone();
+					window.$origTr = $tr.clone();
 					$tr.addClass("clEdited");
 					$table.find("tr:not(.clEdited)").addClass("clBlurred");
 					$table.find("th:not(.clEdited)").addClass("clBlurred");
-					var $td = $(this).closest('td');
-					$td.find("img.clEdit").css("display", "none");
-					$td.append(
-						$("<button class='clSave'>Save</button>")
-							.on("click", function(evt) {
-								var serRow  = {};
-								$tr.find("td").each(function() {
-									var $td = $(this);
-									var colIdx = $td.index();
-									var colName = $td.data("clcolname");
-									if(!colName) {
-										alert("no colname at idx " + colIdx);
-										return;
-									}
-									//$td.css("background", "#FF0000");
-									console.log("getting field config for " + colName);
-									var currentFieldConfig = routeLogConfig.get(colName);
-									var $editEl = $td;
-									console.log("found el " + $editEl.html());
-									var editElConfig = currentFieldConfig["editElement"] || {};
-									var serializeFunc = (editElConfig && editElConfig["serialize"]) || function($editEl) {
-										alert("no ser func, returning >" + $editEl.find("select").val()+ "<");
-										return $editEl.find("select").val();
-									};
-									serRow[colName] = serializeFunc($editEl);
-									// set table cell to NEW value(=> rendered :)
-									$td.html(currentFieldConfig["renderFunc"](serializeFunc($editEl)));
-									
-								});
-								console.log("Serialized row >" + JSON.stringify(serRow) + "<");
-								$table.find("tr").removeClass("clBlurred");
-								$table.find("th").removeClass("clBlurred");
-								$tr.removeClass("clEdited");
-								
-							})
-						)
-					;
-					$td.append(
-						$("<button class='clCancel'>Cancel</button>")
-							.on("click", function() {
-								$tr = $(this).closest('tr');
-								$tr.removeClass("clEdited");
-								$tr.find("td").each(function(idx) {
-									console.log($(this).attr("class") + " <-> " + $origTr.find("td." + $(this).attr("class")).attr("class"));
-									$(this).replaceWith($origTr.find("td." + $(this).attr("class")));
-								
-								});
-								$table.find("tr").removeClass("clBlurred");
-								$table.find("th").removeClass("clBlurred");
-								$origTr.empty();
-								console.log("origtr restored.");
-							})
-					);
+					
+					//var $td = $(this).closest('td');
+					//$td.find("img.clEdit").css("display", "none");
+					//$td.find("img.clDelete").css("display", "none");
+					
+
 
 			
 					var rowData = $dataTable.fnGetData($tr);
@@ -516,7 +652,7 @@ clLib.UI.web = {
 					$tr.find("td").each(function() {
 						var $td = $(this);
 						var colIdx = $td.index();
-						var colName = $td.data("clcolname");
+						var colName = $table.find('thead').find("th:eq(" + colIdx + ")").data("clcolname");
 						if(colName) {	
 							var currentFieldConfig = routeLogConfig.get(colName);
 							//alert("building edit control for >" + colName + "<");
@@ -524,12 +660,12 @@ clLib.UI.web = {
 							var currentValue;
 //							currentValue = $td.html();
 //							alert("rendred value >" + currentValue + "<");
-							currentValue = rowData[dtColumns.indexOf(colName)];
+							currentValue = rowData[dtColumnAt.indexOf(colName)];
 //							alert("original value >" + currentValue + "<");
 							//alert("getting editElement for " + colName + "," + JSON.stringify(currentFieldConfig));
 							
 							var $editElement;
-							if(currentFieldConfig && currentFieldConfig["editElement"] && colName != 'clControls') {
+							if(currentFieldConfig && currentFieldConfig["editElement"]/* && colName != 'clControls'*/) {
 								console.log("got custom edit element for " + colName);
 								$editElement = currentFieldConfig["editElement"]["create"](colName, currentValue, $thead, currentFieldConfig);
 								$td
