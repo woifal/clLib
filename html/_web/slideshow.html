@@ -1,0 +1,293 @@
+<html>
+<head>
+</head>
+<body>
+	<style>
+
+#fooContainer div, #fooContainer h1 {
+	border-width: 0px;
+	border-style: solid;
+	font-family: 'Open Sans';
+	color: #073E78;
+}
+#fooContainer p {
+	font-size: 22px;
+}
+
+.fadeIn {
+	opacity: 1;
+	transition: opacity 1s ease-in-out;
+
+}
+.fadeOut {
+	opacity: 0.1;
+	transition: opacity 1s ease-in-out;
+}
+
+.clSlideContainer {
+	width: 100%;
+	border-color: yellow;
+	margin-top: 20px;
+}
+.clSlide {
+	background-size: 200%; /* !!!!!!!!!!!!!! */
+	background-repeat: no-repeat;
+	background-color: #CCCCCC;
+}
+.clSlideIphoneContent {
+	padding-left: 65px;
+	padding-top: 86px;
+	border-color: green;
+}
+.clSlideIphoneContentImg {
+	width: 176.475px;
+}
+
+.clSlideIphoneFrame {
+	background-image: url(http://www.kurt-climbing.com/Joomla/SLIDES/iphone_frame.png);
+	background-repeat: no-repeat;
+	background-size: 253.825px 487.5px;
+	background-position: top left 25px;
+	border: 0px solid red !important;
+	float:right;
+	height: 480px;
+	width: 30%;
+	min-width: 260px;
+}
+
+.clSlideText {
+	width: 55%;
+	font-weight: 300;
+	font-size: 40px;
+	padding: 20px;
+	padding-bottom: 0px;
+	padding-top: 0px;
+	
+	float:left;
+	
+	border-radius: 10px;
+	border: 0px solid green !important;
+	background-color:rgba(255,255,255,1) !important;
+	margin: 0px;
+	amargin-right: 5%;
+	margin-left: 5%;
+	
+	text-align: center;
+}
+
+.clSlideTextHeader {
+	margin-top: 40px;
+	border-radius: 10px 10px 0px 0px; /* tl tr bl br */
+	line-height: 70px;
+	
+}
+.clSlideTextBody {
+	border-radius: 0px 0px 10px 10px; /* tl tr bl br */
+	line-height: 21px;
+	font-size: 19px !important;
+	
+}
+	
+/*
+iphone, ipad etc..
+*/	
+@media (max-width: 800px), only screen 
+and (min-device-width : 320px) 
+and (max-device-width : 568px) {
+	.clSlideText {
+		border: 0px solid red !important;
+		float: none;
+		width: 100% !important;
+		margin-top:0;
+		margin-left:0;
+		margin-right: 0;
+		padding-left:0;
+		padding-right: 0;
+		border-radius: 0px;
+		text-align: center;
+		min-width: 1px !important;
+
+	}
+	.clSlideIphoneFrame {
+		float: none;
+		border: 0px solid blue !important;
+		width: 100%;
+		text-align:center;
+		background-position: center;
+	}
+	.clSlideIphoneContent {
+		padding-left: 0px;
+		padding-top: 86px;
+		border-color: green;
+	}
+	.clActive {
+		display: none;
+	}
+
+	.clHidden {
+		display: block !important;
+	}
+	
+}
+
+.clActive {
+	border: 1px solid red;
+}
+
+.clHidden {
+	display: none;
+}
+	</style>
+<div id="fooContainer" style="border: 0px solid blue; ">
+	<div class="clSlideContainer">
+		<div class="clSlide clActive slideBg" style="border: 0px solid yellow">	
+			<!-- Header -->
+			<div class="clSlideText clSlideTextHeader"></div>
+			<!-- screenshot -->
+			<div class="clSlideIphoneFrame">
+				<div class="clSlideIphoneContent">
+					<img class="clSlideIphoneContentImg">
+				</div>
+			</div>
+			<!-- Body -->
+			<div class="clSlideText clSlideTextBody"></div>
+			<!-- clearfix... -->
+			<div style="clear: both"></div>
+		</div>
+	</div>
+</div>
+<script>
+	var slideTimeout = 5000;
+	var slideImgIdx = 0;
+	var slides = {
+		startScreen: {
+			bgImg: "http://www.kurt-climbing.com/Joomla/SLIDES/dogpatch.png"
+			,screenShotURL: "http://www.kurt-climbing.com/Joomla/SLIDES/ScreenshotEntryPage.png"
+			,header: "TRACK YOUR CLIMB"
+			,body: "" + 
+				"<p>                                                                                                             " + 
+				"	Track your climbs while you are in the fucking climbing hall.                                                " + 
+				"</p>                                                                                                            " + 
+				"<p>				                                                                                             " + 
+				"You can keep track of your ticks, grades, colours, ticktypes, etc..                                             " + 
+				"</p>                                                                                                            " + 
+				"<p>				                                                                                             " + 
+				"You can keep track of your ticks, grades, colours, ticktypes, etc..                                             " + 
+				"</p>                                                                                                            " + 
+				"<p>                                                                                                             " + 
+				"	In selected climbing halls you have the choice to select from a pre-configured list of climbing routes.      " + 
+				"</p>                                                                                                            " + 
+				"<p>                                                                                                             " + 
+				"	&nbsp;                                                                                                       " + 
+				"</p>                                                                                                            " + 
+				"<p>                                                                                                             " + 
+				"	<b>Learn more...</b>                                                                                         " + 
+				"</p>                                                                                                            " + 
+				"	                                                                                                             " + 
+				"	                                                                                                             " + 
+				""
+		}
+		,routeLog: {
+			bgImg: "http://www.kurt-climbing.com/Joomla/SLIDES/climb-silh.jpg"
+			,screenShotURL: "http://www.kurt-climbing.com/Joomla/SLIDES/ScreenshotStartpage.png"
+			,header: "SOMETHING ELSE"
+			,body: "" + 
+				"<p>                                                                                                             " + 
+				"	asdfasdf asd fasd fasdf asdf asdf asd fasdf asd f.                                                " + 
+				"</p>                                                                                                            " + 
+				"<p>				                                                                                             " + 
+				"You can keep track of your ticks, grades, colours, ticktypes, etc..                                             " + 
+				"</p>                                                                                                            " + 
+				"<p>                                                                                                             " + 
+				"	opip poi poi poikpok öljk ölk ölkölkölk ölk püoiüpoüpoüpoi üpk üpkl   " + 
+				"</p>                                                                                                            " + 
+				"<p>                                                                                                             " + 
+				"	&nbsp;                                                                                                       " + 
+				"</p>                                                                                                            " + 
+				"<p>                                                                                                             " + 
+				"	<b>Learn more...</b>                                                                                         " + 
+				"</p>                                                                                                            " + 
+				"	                                                                                                             " + 
+				"	                                                                                                             " + 
+				""
+		}
+	};
+	
+	
+	var createSlides = function(slideContainerEl) {
+		for (var slideImgIdx = 0; slideImgIdx < Object.keys(slides).length; slideImgIdx++) {
+			var newSlideName = Object.keys(slides)[slideImgIdx];
+			console.log("about to show slide >" + newSlideName + "<");
+			var newSlide = slides[newSlideName];
+			
+			
+			var currentSlideEl = slideContainerEl.getElementsByClassName("clSlide clActive")[0];
+			
+			var newSlideEl = slideContainerEl.getElementsByClassName("clSlide " + newSlideName)[0];
+			if(!newSlideEl) {
+				console.log("slide >" + newSlideName + "< does not exists...creating it.");
+				newSlideEl = currentSlideEl.cloneNode(true);
+				
+				newSlideEl.className.replace("clActive", "");
+				newSlideEl.className += " clHidden";
+				
+				newSlideEl
+					.style.backgroundImage = "url('" + newSlide.bgImg + "')";
+				newSlideEl.getElementsByClassName("clSlideTextHeader")[0]
+					.innerHTML = newSlide.header;
+				newSlideEl.getElementsByClassName("clSlideTextBody")[0]
+					.innerHTML = newSlide.body;
+				newSlideEl.getElementsByClassName("clSlideIphoneContentImg")[0]
+					.src = newSlide.screenShotURL;
+
+				slideContainerEl.appendChild(newSlideEl);
+				console.log("built new slide >" + newSlideName + "<");	
+			}
+		}
+	};
+	
+	var changeSlideBg = function(slideContainerEl) {
+		if(slideImgIdx >= Object.keys(slides).length) {
+			slideImgIdx = 0;
+		}
+		var newSlideName = Object.keys(slides)[slideImgIdx];
+		console.log("about to show slide >" + newSlideName + "<");
+		var newSlide = slides[newSlideName];
+		
+		var currentSlideEl = slideContainerEl.getElementsByClassName("clSlide clActive")[0];
+		
+		currentSlideEl
+			.className += " fadeOut";
+		currentSlideEl.className.replace("clActive", "");
+		
+		;
+
+		setTimeout(function() {
+			currentSlideEl.className.replace("fadeOut", "");
+			currentSlideEl
+				.className = newSlideName;
+					
+			currentSlideEl
+				.className += " fadeIn clSlide clActive"; 
+			currentSlideEl
+				.style.backgroundImage = "url('" + newSlide.bgImg + "')";
+			document.getElementsByClassName("clSlideTextHeader")[0]
+				.innerHTML = newSlide.header;
+			document.getElementsByClassName("clSlideTextBody")[0]
+				.innerHTML = newSlide.body;
+			document.getElementsByClassName("clSlideIphoneContentImg")[0]
+				.src = newSlide.screenShotURL;
+			slideImgIdx++;
+
+			setTimeout(function() {changeSlideBg(slideContainerEl)}, slideTimeout);
+		}
+		,1000
+		);
+	};
+	var slideContainerEl = document.getElementsByClassName("clSlideContainer")[0];
+	createSlides(slideContainerEl);
+	changeSlideBg(slideContainerEl);
+			
+</script>
+</body>
+</html>
