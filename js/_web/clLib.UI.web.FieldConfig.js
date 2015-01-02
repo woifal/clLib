@@ -67,9 +67,9 @@ clLib.webFieldConfig = {
 				var select = $('<select><option style="text-align: center;" value="">-- All --</option></select>')
 					.appendTo( $(column.header()) )
 					.on( 'change', function () {
-						console.log("filtering on >" + this.value + "<");
-						console.log("Changed >" + i + "< >" + $(this).parent().index() + "< >" + column.header() + "<>" + $(column.header()).attr("class") + "<!!!");
-
+						console.error("filtering on >" + this.value + "<");
+						console.error("Changed >" + i + "< >" + $(this).parent().index() + "< >" + column.header() + "<>" + $(column.header()).attr("class") + "<!!!");
+						console.error("column is >" + $(this).parent().index()+':visible' + "<");
 						api
 							.column( $(this).parent().index()+':visible' )
 							.search( this.value )

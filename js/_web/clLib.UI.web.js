@@ -88,6 +88,7 @@ clLib.UI.web = {
 		var routeLogConfig = new FieldConfigCollection({
 			collectionName: "routeLogConfig"
 		});
+
 		routeLogConfig.add(new FieldConfig({
 			fieldName : "clControls"
 			,displayName: function() {
@@ -98,7 +99,7 @@ clLib.UI.web = {
 			}()
 			,orderable: false
 			,renderFunc : function(x) {
-				var $ctlEl = $("<span>");
+				var $ctlEl = $("<div>");
 				$ctlEl.append($("<img class='clEdit'>"));
 				$ctlEl.append($("<img class='clDelete'>"));
 				return $ctlEl[0].outerHTML;
@@ -149,14 +150,12 @@ clLib.UI.web = {
 								,function(newId) {
 									if(newRow) {
 										serRow["_id"] = newId;
-										alert("adding >" + JSON.stringify(serRow) + "<");
-										console.error("adding >" + JSON.stringify(serRow) + "<");
-										window.dtDebug = true;
+										console.log("adding >" + JSON.stringify(serRow) + "<");
+										//window.dtDebug = true;
 										var dtRowNumber = $table.fnAddData(serRow);
-										window.dtDebug = false;
+										//window.dtDebug = false;
 										var $newTr = $($dataTable.api().rows(dtRowNumber).nodes());
-										alert("got " + JSON.stringify(Object.keys($newTr)));
-										console.error("got " + JSON.stringify(Object.keys($newTr)));
+										console.log("got " + JSON.stringify(Object.keys($newTr)));
 										alert("!!!!added (" + dtRowNumber + " with # " + $newTr.find("td").length + ")>" + JSON.stringify(foo) + "<");
 										//$newTr.find("td").css("border", "1px solid red");
 										
@@ -179,7 +178,7 @@ clLib.UI.web = {
 
 											var currentFieldConfig = routeLogConfig.get(colName);
 											// set underlying table cell data to new value..
-											rowData[dtColumnAt.indexOf(colName)] = serRow[colName];
+											rowData[colName] = serRow[colName];
 											// set table cell to NEW value(=> rendered :)
 											$td.html(currentFieldConfig["renderFunc"](serRow[colName]));
 										});
@@ -225,6 +224,7 @@ clLib.UI.web = {
 			fieldName : "username"
 			,displayName: "User"
 		}));
+
 		routeLogConfig.add(new FieldConfig({
 			fieldName : "DateISO"
 			,displayName: "Date"
@@ -283,12 +283,12 @@ clLib.UI.web = {
 		}));
 		routeLogConfig.add(new FieldConfig({
 			fieldName : "GradeSystem"
-/*			,editElement: {
-				create: function(colName, currentValue) {
-					return "<h1>" + colName + "--" + currentValue + "</h1";
-				}
-			}
-*/
+//			,editElement: {
+//			create: function(colName, currentValue) {
+//				return "<h1>" + colName + "--" + currentValue + "</h1";
+//			}
+//		}
+//
 		}));
 		routeLogConfig.add(new FieldConfig({
 			fieldName : "Sector"
@@ -434,8 +434,9 @@ clLib.UI.web = {
 					);
 					dtColumnAt.push(fieldName);
 					dtColumns[dtColumnAtCt] = {
-						name : fieldName
-						,className : "XXX_" + fieldName
+						data : fieldName
+						,name : fieldName
+						,className : "" + fieldName
 					};
 					dtColumnAtCt++;
 					
@@ -483,30 +484,26 @@ clLib.UI.web = {
 		
 				});
 				$th.append($thTr);
+				
 				$table.append($th);
 				
 				// 
 				// Table body
 				//
 				$.each(routeLogs, function(idx, routeLog) {
-					var $tr = $("<tr>");
-
 					$.each(routeLogConfig.fields(), function(idx, keyName) {
-						//var $td = $("<td class='"+keyName+"' data-clcolname='"+keyName+"' >");
-						var $td = $("<td class='"+keyName+"'>");
-						$td.append(routeLog[keyName]);
-						$tr.append($td);
+						if(!(keyName in routeLog)) {
+							routeLog[keyName] = '';
+						}
 					});
-					$tbody.append($tr);
 				});
-				
 
 				$table.append($tbody);
 
 				$tableContainer.append($table);
 
 
-				alert("adding columns >" + JSON.stringify(dtColumns) + "<");
+				//alert("adding columns >" + JSON.stringify(dtColumns) + "<");
 				console.error("adding columns >" + JSON.stringify(dtColumns) + "<");
 				
 				window.$dataTable = $table.dataTable({
@@ -537,17 +534,18 @@ clLib.UI.web = {
 							var column = api.column( i );
 
 							if(routeLogConfig.get(dtColumnAt[i]).filterElement) {
+								console.log("found filter element for " +  dtColumnAt[i]);
 								return routeLogConfig.get(dtColumnAt[i]).filterElement(column, api, i);
 							}
 
-							
+/*							
 							console.log("adding filter select..");
 							var foo = $('<br>').appendTo( $(column.header()) );
 							var select = $('<select><option style="text-align: center;" value="">-- All --</option></select>')
 								.appendTo( $(column.header()) )
 								.on( 'change', function () {
-									console.log("filtering on >" + this.value + "<");
-									console.log("Changed >" + i + "< >" + $(this).parent().index() + "< >" + column.header() + "<>" + $(column.header()).attr("class") + "<!!!");
+									console.error("filtering on >" + this.value + "<");
+									console.error("Changed >" + i + "< >" + $(this).parent().index() + "< >" + column.header() + "<>" + $(column.header()).attr("class") + "<!!!");
 
 									api
 										.column( $(this).parent().index()+':visible' )
@@ -575,14 +573,14 @@ clLib.UI.web = {
 									select.append( asdf )
 								}
 							} );
-
+*/
 						} );
 					}		
 				})
 				;
 
 				$thTr.on('click', 'th.clControls img.clAdd', function () {
-					console.error("new row for table >" + Object.keys($dataTable)  + "<");
+					console.log("new row for table >" + Object.keys($dataTable)  + "<");
 					//alert("new row for table >" + Object.keys($dataTable)  + "<");
 					var $thead = $thTr.closest('thead');
 
@@ -638,16 +636,9 @@ clLib.UI.web = {
 					$table.find("tr:not(.clEdited)").addClass("clBlurred");
 					$table.find("th:not(.clEdited)").addClass("clBlurred");
 					
-					//var $td = $(this).closest('td');
-					//$td.find("img.clEdit").css("display", "none");
-					//$td.find("img.clDelete").css("display", "none");
-					
-
-
-			
 					var rowData = $dataTable.fnGetData($tr);
 
-					console.log("ROWDATA" + JSON.stringify(rowData));
+					//console.error("ROWDATA" + JSON.stringify(rowData));
 
 					$tr.find("td").each(function() {
 						var $td = $(this);
@@ -655,14 +646,12 @@ clLib.UI.web = {
 						var colName = $table.find('thead').find("th:eq(" + colIdx + ")").data("clcolname");
 						if(colName) {	
 							var currentFieldConfig = routeLogConfig.get(colName);
-							//alert("building edit control for >" + colName + "<");
+							console.log("building edit control for >" + colName + "<");
 						
 							var currentValue;
-//							currentValue = $td.html();
-//							alert("rendred value >" + currentValue + "<");
-							currentValue = rowData[dtColumnAt.indexOf(colName)];
-//							alert("original value >" + currentValue + "<");
-							//alert("getting editElement for " + colName + "," + JSON.stringify(currentFieldConfig));
+							currentValue = rowData[colName];
+							console.log("original value >" + currentValue + "<");
+							console.log("getting editElement for " + colName + "," + JSON.stringify(currentFieldConfig));
 							
 							var $editElement;
 							if(currentFieldConfig && currentFieldConfig["editElement"]/* && colName != 'clControls'*/) {
