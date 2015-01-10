@@ -11,13 +11,14 @@ var conn = mongo.db(mongoURI, {safe: true});
 var args = process.argv.splice(2);
 var tableName = args[0];
 var whereObj = JSON.parse(args[1]);
+var distinctColName = args[2];
 
 var exitCallBack = function() {
 	process.exit();
 }
 
 // bind method: db.user ===> db.collection('user')
-conn.bind('Users');
+//conn.bind('Users');
 
 
 function testQuery(nextFunc) {
@@ -30,12 +31,11 @@ function testQuery(nextFunc) {
 			util.log("ERROR:" + JSON.stringify(err));
 		}
 		
-		util.log(JSON.stringify(items.length));
-		util.log(JSON.stringify(items));
+		util.log("lenfth" + JSON.stringify(items.length));
+		util.log("items" + JSON.stringify(items));
 	});
 
 };
-
 
 function testUpdate(i) {
 	util.log("i is " + i);
@@ -64,7 +64,6 @@ function testInsert(nextFunc) {
 		util.log("NO coll " + tableName + "found..");
 	}
 	coll.insert({"username": "gere@chello.at"}, function(err, items) {
-		util.log("ERROR:" + err);
 		if (err) {
 			util.log("ERROR:" + err.message);
 		}
@@ -76,12 +75,31 @@ function testInsert(nextFunc) {
 
 };
 
+function testDistinct(nextFunc) {
+	var coll = conn.collection(tableName);
+	util.log("where :" + JSON.stringify(whereObj));
+	if(!coll) {
+		util.log("NO coll " + tableName + "found..");
+	}
+	coll.distinct(distinctColName, whereObj, function(err, items) {
+		if (err) {
+			util.log("ERROR:" + JSON.stringify(err));
+		}
+		
+		util.log("length " + JSON.stringify(items.length));
+		util.log("items " + JSON.stringify(items));
+	});
 
-testInsert(function() {
-	return testInsert(function() {
-		return testQuery()
-	})
-});
+};
+
+
+
+//testInsert(function() {
+//	return testQuery(function() {
+		return testDistinct()
+//	})
+//})
+;
 //testUpdate(1);
 
 util.log("Done");

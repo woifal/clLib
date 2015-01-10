@@ -20,26 +20,43 @@ grunt.initConfig({
 						flatten: true
 						,globals: {
 							NOWW: new Date().toISOString()
+							,"clLib.REST.baseURI" : "http://localhost:1983/db"
+							,"clLib.REST.clLibServerURI" : "http://localhost:1983"
+							
 						}
 					// Task-specific options go here.
 					},
-					// Files to perform replacements and includes with
-					src: ['*.html', "*.xml"],
-					// Destination directory to copy files to
-					dest: 'dist/app/'
+					files : [
+						{
+							src: ['*.html', "*.xml"],
+							dest: 'dist/tmp/app/'
+						}
+						,{
+							src: ['js/*'],
+							dest: 'dist/tmp/app/'
+						}
+					]
 				}
 				,web_prod: {
 					options: {
 						flatten: true
 						,globals: {
 							NOWW: new Date().toISOString()
+							,"clLib.REST.baseURI" : "http://cllibserver.herokuapp.com/db"
+							,"clLib.REST.clLibServerURI" : "http://cllibserver.herokuapp.com"
 						}
 					// Task-specific options go here.
 					},
-					// Files to perform replacements and includes with
-					src: ['html/_web/*'],
-					// Destination directory to copy files to
-					dest: 'dist/tmp/html'
+					files : [
+						{ 
+							src: ['html/_web/*'],
+							dest: 'dist/tmp/web/'
+						}
+						,{ 
+							src: ['js/*'],
+							dest: 'dist/tmp/web/'
+						}
+					]
 				}
 		},
 		copy: {
@@ -58,6 +75,27 @@ grunt.initConfig({
 						{ src: ["js/*"], dest:"dist/app/" }
 						,{ src: ["css/*","css/**/*"],  dest:"dist/app/" }
 						,{ src: ["files/*", "files/**/*"] , dest:"dist/app/" }
+						,{ 
+							flatten: true
+							,expand: true
+							,cwd: "dist/tmp/app/html"
+							,src: [
+								"**"
+							]
+							,dest:"dist/app/html" 
+						}
+						,
+						{ 
+							flatten: true
+							,expand: true
+							,cwd: "dist/tmp/app/js"
+							,src: [
+								"**"
+							]
+							,dest:"dist/app/js" 
+						}
+						,
+						
 					]
 				}
 				,web_prod: {
@@ -84,11 +122,21 @@ grunt.initConfig({
 						{ 
 							flatten: true
 							,expand: true
-							,cwd: "dist/tmp/html"
+							,cwd: "dist/tmp/web/html"
 							,src: [
 								"**"
 							]
 							,dest:"dist/web/html" 
+						}
+						,
+						{ 
+							flatten: true
+							,expand: true
+							,cwd: "dist/tmp/web/js"
+							,src: [
+								"**"
+							]
+							,dest:"dist/web/js" 
 						}
 						,
 						{ 

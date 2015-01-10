@@ -123,6 +123,44 @@ mongolab.prototype.getEntities = function(options, callbackFunc, errorFunc) {
 	}
 };
 
+mongolab.prototype.getDistinct = function(options, callbackFunc, errorFunc) {
+	util.log("getting distinct entitites >"+ JSON.stringify(options) + "<");
+	var resultObj = {};
+	var entityName = options["entity"];
+	var whereObj = options["where"];
+	var fieldName = options["field"];
+	var limit = options["limit"];
+
+	if(!errorFunc) errorFunc = this.defaults["errorFunc"];
+	
+	var db = clLib.mongolab.conn;
+	
+	util.log("getting " + entityName + " with where >" + JSON.stringify(whereObj) + "<...");
+
+
+	db.collection(entityName).distinct(fieldName, whereObj || null, function(err, items) {
+		util.log(JSON.stringify("err: " + JSON.stringify(err)));
+		//util.log(JSON.stringify("items: " + JSON.stringify(items)));
+		if (JSON.stringify(err) != "{}" && JSON.stringify(err) != "null") {
+			util.log("ERROR:" + JSON.stringify(err));	
+			resultObj["error"] = JSON.stringify(err);
+			return errorFunc(resultObj);
+		}
+		if(options["requireResult"] && (!items || items.length == 0)) {
+			err = "no items found";
+			resultObj["error"] = JSON.stringify(err);
+			return errorFunc(resultObj);
+		}
+		
+		util.log("mongo results received.." + JSON.stringify(items.length));
+		
+		if(callbackFunc) {
+			util.log("Calling callback function, result OK(" + JSON.stringify(items) + ")!");
+			return callbackFunc(items);
+		}
+	});
+};
+
 mongolab.prototype.insertEntity = function(options, callbackFunc, errorFunc) {
 	util.log("inserting entity >"+ JSON.stringify(options) + "<");
 	var resultObj = {}, errorStr = "";

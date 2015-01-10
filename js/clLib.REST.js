@@ -7,12 +7,11 @@ clLib.clException= function(name, message) {
    this.name = name;
 };
 
-clLib.REST.baseURI = "http://localhost:1983/db";
-clLib.REST.baseURI = "http://cllibserver.herokuapp.com/db";
+
+clLib.REST.baseURI = "@@clLib.REST.baseURI";
 clLib.REST.baseCollectionsURI = clLib.REST.baseURI+ "/"; // + "/collections/";
 clLib.REST.baseUsersURI = clLib.REST.baseURI + "/users";
-clLib.REST.clLibServerURI = "http://localhost:1983";
-clLib.REST.clLibServerURI = "http://cllibserver.herokuapp.com";
+clLib.REST.clLibServerURI = "@@clLib.REST.clLibServerURI";
 
 
 
@@ -219,6 +218,26 @@ clLib.REST.getEntities = function(entityName, whereObj, successFunc, errorFunc, 
 
 	
 	
+	clLib.REST.executeRetrieve(uri, 'GET', whereObj, 
+	function(AJAXResult) {
+		var returnObj = {};
+		console.log("result first " + JSON.stringify(AJAXResult));
+		//alert("postfunc for >" + clLib.REST.baseURI + "< is >" + clLib.REST.postAJAXprocessing[clLib.REST.baseURI] + "(" + clLib.REST.postAJAXprocessing + ")<");
+		AJAXResult = clLib.REST.postAJAXprocessing[clLib.REST.baseURI](AJAXResult);
+		returnObj[entityName] = AJAXResult;
+		clLib.loggi("return type "+ typeof(AJAXResult));
+		
+		//clLib.loggi("returning(getEntities) " + JSON.stringify(returnObj));
+		successFunc(returnObj);
+	}
+	, errorFunc
+	,additionalParams
+	);
+}
+
+clLib.REST.getEntitiesDistinctFields = function(entityName, fieldName, whereObj, successFunc, errorFunc, additionalParams) {
+	var uri = clLib.REST.baseCollectionsURI + "distinct/" + entityName + "/" + fieldName;
+
 	clLib.REST.executeRetrieve(uri, 'GET', whereObj, 
 	function(AJAXResult) {
 		var returnObj = {};

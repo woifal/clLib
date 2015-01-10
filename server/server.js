@@ -446,6 +446,47 @@ server.get('/db/:entityName',
 
 });
 
+server.get('/db/distinct/:entityName/:fieldName', 
+		//authHandler.requiredAuthentication, 
+		function(req, res) 
+{
+	var errHandler = function(errorObj) {
+		return clLib.server.defaults.errorFunc(errorObj, res);
+	}
+	
+	try {
+		util.log("2getting.." + JSON.stringify(req.params));
+		var entityName = req.params.entityName;
+		var fieldName = req.params.fieldName;
+		// verify user.
+		DBHandler.getDistinct({
+			entity : entityName
+			,field: fieldName
+			,where : JSON.parse(req.params["where"])
+			,limit: req.params["limit"]
+		},
+		function(distinctValues) { 
+			// upon success...
+			util.log("Found entity(" + entityName + ", " + fieldName + ")>" + fooFunc(distinctValues) + "<"); 
+			
+			// User not found=
+			if(!distinctValues) {
+				res.send(500, JSON.stringify({
+				result: "Entity(" + entityName + "," + fieldName + ") not found: >" + JSON.stringify(req.params["where"]) + "<"}));
+				return;
+			}
+			res.send(JSON.stringify(distinctValues));
+
+		}
+		, errHandler
+		);
+	} catch(e) {
+		errHandler(new Error("UNHANDLED SERVER ERROR "  + e.name + " IS " + e.message + " !!!"));
+	}
+
+});
+
+
 server.put('/db/:entityName/:entityId', 
 //		authHandler.requiredAuthentication, 
 		function(req, res) 
