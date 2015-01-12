@@ -159,7 +159,7 @@ $pageclass = $params->get( 'pageclass_sfx' );
 
 						<div id="fav-header" class="span12">
 
-							<div id="fav-logo" class="span1">
+							<div id="fav-logo" class="span3">
 								<?php if (($showDefaultLogo) !=0) : ?>
 									<h1>
 										<a class="defaultLogo" href="<?php echo $this->baseurl; ?>/">
@@ -192,7 +192,7 @@ $pageclass = $params->get( 'pageclass_sfx' );
 							</div>
 
 								<?php if ($this->countModules('nav')) { ?>
-										 <div id="fav-nav" class="span11">
+										 <div id="fav-nav" class="span9">
 											<div class="navigation">
 												<jdoc:include type="modules" name="nav" style="icon" />
 											</div>

@@ -237,18 +237,41 @@ table.dataTable.display thead.hover th.clBlurred:hover td select
 
 
 #fav-nav .moduletable ul.nav.menu.clMenuContainer {
-		padding: 0;
+/*		padding: 0;
 		margin: 0;
+		margin: 0px 0 0 -90px;
 		border: none;
 		float: left; 
-		width: auto;
+		width: auto;*/
 /*
 		border-color: #063a72; 
 		background-color: #063a72; 
 */
 		color:white;
-		margin: 0px 0 0 -90px;
 	}
+
+#fav-nav .moduletable ul.nav.menu {
+	width: 100%;
+}
+
+#fav-nav .navigation ul.nav.menu li a {
+	text-align: center;
+}
+
+#fav-nav .moduletable ul.nav.menu li, #fav-nav .moduletable ul.nav.menu li li, #fav-nav .moduletable ul.nav.menu li li li, #fav-nav .moduletable ul.nav.menu li li li li {
+	width: 25%;
+}
+
+
+a.clUserInfo  {
+    background-color: #A0522D;
+    border: 1px solid #A0522D;
+    height: 25px;
+    border-radius: 9px !important;
+	color: white;
+	awidth: 400px;
+}
+
 	.hidden{
 		adisplay:none;
 	}
@@ -267,7 +290,7 @@ table.dataTable.display thead.hover th.clBlurred:hover td select
 		margin-bottom: 0; 
 		padding-top: 5px; 
 		padding-bottom: 5px;	
-		float: right; 
+	/*	float: right; */
 		background-color: white; /*#A63a72;*/
 		border-left: 1px solid white;
 		border-right: 1px solid white;
@@ -275,20 +298,9 @@ table.dataTable.display thead.hover th.clBlurred:hover td select
 		height: 30px;
 	}
 
-	#fav-nav .navigation ul.nav.menu.clLoginButton li a  {
-		background-color: #A63a72;
-		border-radius: 0px !important;
-		margin: 0;
-		padding: 0;
-		color: white;
-		height: 30px;
+	.navigation ul.nav.clMenuContainer > li {
+		float: right;
 	}
-	
-	#fav-nav .navigation ul.nav.menu.clUserInfo  {
-		afloat:left;
-	}
-
-
 	
 .ratingSelect > label {
 	float: none;

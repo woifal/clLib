@@ -49,6 +49,10 @@ clLibWeb.showUserInfo = function($targetEl) {
 	var displayName = clLib.getUserInfo()["displayName"] || "????";
 	var authType = clLib.getUserInfo()["authType"];
 
+	if(!imageURL) {
+		imageURL = "http://www.kurt-climbing.com/Joomla/KURT/files/views/assets/image/splashLogoNoBorders.png";
+	}
+	
 	$currentUser = $("<div>");
 	if(imageURL) {
 		$currentUser.append(
@@ -57,7 +61,8 @@ clLibWeb.showUserInfo = function($targetEl) {
 				"src" : imageURL
 			})
 			.css({
-				float: "left"
+				border: "0px solid red"
+				,float: "left"
 				,width : "25px"
 				,height : "25px"
 			})
@@ -68,9 +73,11 @@ clLibWeb.showUserInfo = function($targetEl) {
 			.css({
 				float: "left"
 				,"margin-left": "10px"
-				,border: "0px solid red"
+				,"border": "0px solid red"
+				,"font-size": "20px"
+				,"font-weight": "bold"
 			})
-			.text("Hello, >" + displayName + "< !!!")
+			.text(displayName)
 	)
 	;
 	if(authType == 'facebook' || authType == 'google') {
@@ -98,12 +105,32 @@ clLibWeb.showUserInfo = function($targetEl) {
 	$targetEl.empty();
 	console.log("appending new user info.." + $currentUser.html());
 	$targetEl.append($currentUser);
+	var $mouseOverEl = $("<div style='width: 100px; height: 30px; border: 1px solid red; position: relative; top: 0px; left: 0px;' class='expanded' style='border: 1px solid red'>" );
+/*
+	var $clickable = $("<a style='padding: 0; margin: 0;'>Hello!<br>Hello!<br>Hello!<br>Hello!<br>Hello!<br></a>");
+	$clickable.off("click").on("click", function(evt) {
+//		evt.stopImmediatePropagation();
+//		evt.preventDefault();
+		alert("clicked!");
+	});
+	$mouseOverEl.append($clickable);
+	$targetEl.on("mouseover", function() {
+		console.log("mousedover...");
+		$(this)
+			.append($mouseOverEl);
+	});	
+	$targetEl.on("mouseleave", function() {
+		console.log("mousedout...");
+		
+//		$(this).find(".expanded").remove();
+	});	
+*/
 }
 
 
 clLibWeb.loggedInCheck = function(successFunc, errorFunc) {
 	var $menuDiv = $(".clMenuContainer");
-	var $loginButton = $(".clLoginButton");
+	var $loginButton = $(".clUserInfo");
 
 	var currentPage = clLib["currentPage"];
 	if(!errorFunc) {
@@ -119,15 +146,14 @@ clLibWeb.loggedInCheck = function(successFunc, errorFunc) {
 	clLib.loggedInCheck(
 		function() {
 			//alert("logged in!");
-			$menuDiv.removeClass("hidden");
-			$loginButton.html('<li class="current"><a href="' + "#" + '">Logout</a></li>');
+			$menuDiv.find(".loggedInOnly").removeClass("hidden");
+			$loginButton.html('<a href="' + "#" + '">Logout</a>');
+/*
 			$loginButton.off().on("click", function(e) {
 				localStorage.clear();
 				document.location.href = "http://www.kurt-climbing.com/Joomla";
 			});
-
-			$menuDiv.find(".clMenuItem").removeClass("active");
-			$menuDiv.find(".mi" + currentPage).addClass("active");
+*/
 			clLibWeb.showUserInfo(
 				$("a.clUserInfo"));
 			return successFunc();
@@ -135,8 +161,8 @@ clLibWeb.loggedInCheck = function(successFunc, errorFunc) {
 		,function(e) {
 			//alert("not logged in!");
 			console.log("not logged in, hiding clMenu..");
-			$menuDiv.addClass("hidden");
-			$loginButton.html('<li class="current"><a href="' + clLibWeb.loginPageURL + '">Login</a></li>');
+			$menuDiv.find(".loggedInOnly").addClass("hidden");
+			$loginButton.html('<a href="' + clLibWeb.loginPageURL + '">Login</a>');
 
 			//alert("changing to login page...");
 			//clLib.PAGES.changeTo(clLibWeb.loginPageURL, {web: true});
@@ -152,10 +178,10 @@ document.addEventListener("DOMContentLoaded", function() {
 		$("#fav-nav .navigation .moduletable")
 			.append(
 				$('<div style="clear: both"></div>' + 
-					'<ul class="nav menu clMenuContainer hidden">' + 
-						'<li class="current"><a class="clUserInfo" href="#"></a></li>' + 
-						'<li class="current"><a href="http://www.kurt-climbing.com/Joomla/index.php/cllib-stats">My Routes</a></li>' + 
-						'<li class="current"><a href="http://www.kurt-climbing.com/Joomla/index.php/cllib-stats">My Statistics</a></li>' + 
+					'<ul class="nav menu clMenuContainer">' + 
+						'<li class="current" style="float: left; width: 50%;"><a class="clUserInfo" href="#"></a></li>' + 
+						'<li class="current loggedInOnly hidden"><a href="http://www.kurt-climbing.com/Joomla/index.php/cllib-stats">My Routes</a></li>' + 
+						'<li class="current loggedInOnly hidden"><a href="http://www.kurt-climbing.com/Joomla/index.php/cllib-stats">My Statistics</a></li>' + 
 	//					'<li class="current"><a href="#">Grade Conversion</a></li>' + 
 	//					'<li class="current"><a href="#">Buddies</a></li>' + 
 	//					'<li class="current"><a id="logoutButton" href="#">Logout</a></li>' + 
@@ -163,14 +189,6 @@ document.addEventListener("DOMContentLoaded", function() {
 					''
 				)
 			)
-/*			.append(
-				$('<div style="clear: both"></div>' + 
-					'<ul class="nav menu clLoginButton ">' + 
-						'<li class="current"><a href="' + clLibWeb.loginPageURL + '">Login</a></li>' + 
-					'</ul>'
-				)
-			)
-*/
 		;
 		//alert("appended!" + 	$("#fav-nav .navigation .moduletable").find(".clMenuContainer").length);
 	}
