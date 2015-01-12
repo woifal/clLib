@@ -20,8 +20,10 @@ grunt.initConfig({
 						flatten: true
 						,globals: {
 							NOWW: new Date().toISOString()
-							,"clLib.REST.baseURI" : "http://localhost:1983/db"
-							,"clLib.REST.clLibServerURI" : "http://localhost:1983"
+							,"clLib.REST.baseURI" : "http://cllibserver.herokuapp.com/db"
+							,"clLib.REST.clLibServerURI" : "http://cllibserver.herokuapp.com"
+/*							,"clLib.REST.baseURI" : "http://localhost:1983/db"
+							,"clLib.REST.clLibServerURI" : "http://localhost:1983"*/
 							
 						}
 					// Task-specific options go here.
@@ -78,11 +80,11 @@ grunt.initConfig({
 						,{ 
 							flatten: true
 							,expand: true
-							,cwd: "dist/tmp/app/html"
+							,cwd: "dist/tmp/app"
 							,src: [
 								"**"
 							]
-							,dest:"dist/app/html" 
+							,dest:"dist/app" 
 						}
 						,
 						{ 
