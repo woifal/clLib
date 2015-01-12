@@ -944,8 +944,13 @@ clLib.UI.elements = {
 		"dbField" : "Grade"
 		,"dependingOn": {
 			default: [
-				"gradeSystemSelect"
+				"gradeSystemSelect",
+				"gradeSystemSelectAll"
 			],
+			reduced: [
+				"gradeSystemSelect",
+				"gradeSystemSelectAll"
+			]
 		}
 		,"refreshFromEntity" : "Grades"
 		,"refreshHandler" : function($this) {
@@ -959,7 +964,6 @@ clLib.UI.elements = {
 			);
 
 			
-			console.log("preselecting " + selectedValue);
 			return clLib.UI.defaultRefreshHandler($this, {
 				selectedValue : selectedValue,
 				preserveCurrentValue : false,
@@ -974,6 +978,7 @@ clLib.UI.elements = {
 			},
 			reduced: {
 				"colourSelect" : {}
+				, "convertedGrades" : {}
 			}
 		}
 	}
