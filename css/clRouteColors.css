@@ -151,6 +151,11 @@ div.clCSSBgIconOnly  span.clCSSBg{
 	
 }
 
+.__UNKNOWN__ {
+    background-image: none;
+    background-color: #ffffff !important;
+	color: black;
+}
 .white-green-blue {
     background-repeat: repeat-y;
     background-position: 0px 0px;

@@ -2801,7 +2801,12 @@
 	
 		// Update the input elements whenever the table is filtered
 		$(settings.nTable).on( 'search.dt.DT', function ( ev, s ) {
+					if(window.clEdited) {
+						return;
+					}
+					
 			if ( settings === s ) {
+				console.log("searching..");
 				// IE9 throws an 'unknown error' if document.activeElement is used
 				// inside an iframe or frame...
 				try {
@@ -2827,6 +2832,9 @@
 	function _fnFilterComplete ( oSettings, oInput, iForce )
 	{
 		console.log("FILTER!!!" + JSON.stringify(oInput));
+		if(window.clEdited) {
+			return;
+		}
 		//console.log("2FILTER!!!" + JSON.stringify(JSON.stringify(Object.keys(oSettings))));
 		var oPrevSearch = oSettings.oPreviousSearch;
 		var aoPrevSearch = oSettings.aoPreSearchCols;
@@ -4285,7 +4293,10 @@
 	 *  @memberof DataTable#oApi
 	 */
 	function _fnThrottle( fn, freq ) {
-		var
+		if(window.clEdited) {
+			return;
+		}
+	var
 			frequency = freq !== undefined ? freq : 200,
 			last,
 			timer;
@@ -5171,6 +5182,7 @@
 	{
 		$(n)
 			.bind( 'click.DT', oData, function (e) {
+					if(window.clEdited) return;
 					n.blur(); // Remove focus outline for mouse users
 					fn(e);
 				} )
@@ -14150,6 +14162,7 @@
 				var attach = function( container, buttons ) {
 					var i, ien, node, button;
 					var clickHandler = function ( e ) {
+						if(window.clEdited) return;
 						_fnPageChange( settings, e.data.action, true );
 					};
 	
@@ -14451,7 +14464,11 @@
 				// on destroy, while the `dt` namespaced event is the one we are
 				// listening for
 				$(settings.nTable).on( 'order.dt.DT', function ( e, ctx, sorting, columns ) {
-					if ( settings !== ctx ) { // need to check this this is the host
+					
+					if(window.clEdited) {
+						return;
+					}
+				if ( settings !== ctx ) { // need to check this this is the host
 						return;               // table, not a nested one
 					}
 	
@@ -14482,6 +14499,11 @@
 	
 				// Attach a sort listener to update on sort
 				$(settings.nTable).on( 'order.dt.DT', function ( e, ctx, sorting, columns ) {
+					
+					if(window.clEdited) {
+						return;
+					}
+
 					if ( settings !== ctx ) {
 						return;
 					}

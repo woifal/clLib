@@ -822,12 +822,18 @@ ColReorder.prototype = {
 	 */
 	"_fnMouseListener": function ( i, nTh )
 	{
-		var that = this;
+
+	var that = this;
 		$(nTh).on( 'mousedown.ColReorder', function (e) {
+	
 			if(e.target.type && e.target.type.substr(0,6) == "select") {
 				return;
 			}
 			
+			if(window.clEdited) {
+				console.log("clEdited set - not doing anything on mouseListener..");
+				return;
+			}
 			console.log("MOUSEDOWN!" + e.target.type);
 			e.preventDefault();
 			that._fnMouseDown.call( that, e, nTh );
@@ -845,6 +851,7 @@ ColReorder.prototype = {
 	 */
 	"_fnMouseDown": function ( e, nTh )
 	{
+		
 		var that = this;
 
 		/* Store information about the mouse position */
@@ -887,6 +894,10 @@ ColReorder.prototype = {
 	 */
 	"_fnMouseMove": function ( e )
 	{
+		if(window.clEdited) {
+			console.error("clEdited - not doing anything on mousemove 1");
+			return;
+		}
 		var that = this;
 
 		if ( this.dom.drag === null )
@@ -951,6 +962,11 @@ ColReorder.prototype = {
 	 */
 	"_fnMouseUp": function ( e )
 	{
+		if(window.clEdited) {
+			console.log("clEdited set..not doing anything on mouseup 12...");
+			return;
+		}
+		
 		var that = this;
 
 		$(document).off( 'mousemove.ColReorder mouseup.ColReorder' );
