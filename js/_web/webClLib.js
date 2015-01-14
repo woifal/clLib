@@ -53,31 +53,17 @@ clLibWeb.showUserInfo = function($targetEl) {
 		imageURL = "http://www.kurt-climbing.com/Joomla/KURT/files/views/assets/image/splashLogoNoBorders.png";
 	}
 	
-	$currentUser = $("<div>");
+	$currentUser = $("<div class='unhovered'>");
 	if(imageURL) {
 		$currentUser.append(
 			$("<img>")
 			.attr({
 				"src" : imageURL
 			})
-			.css({
-				border: "0px solid red"
-				,float: "left"
-				,width : "25px"
-				,height : "25px"
-			})
 		)
 	}
 	$currentUser.append(
-		$("<span>")
-			.css({
-				float: "left"
-				,"margin-left": "10px"
-				,"border": "0px solid red"
-				,"font-size": "20px"
-				,"font-weight": "bold"
-			})
-			.text(displayName)
+		$("<span>").text(displayName)
 	)
 	;
 	if(authType == 'facebook' || authType == 'google') {
@@ -93,11 +79,6 @@ clLibWeb.showUserInfo = function($targetEl) {
 			.attr({
 				"src" : authTypeImgURL
 			})
-			.css({
-				width : "25px"
-				,height : "25px"
-				,float: "right"
-			})
 		);
 	}
 
@@ -105,8 +86,42 @@ clLibWeb.showUserInfo = function($targetEl) {
 	$targetEl.empty();
 	console.log("appending new user info.." + $currentUser.html());
 	$targetEl.append($currentUser);
-	var $mouseOverEl = $("<div style='width: 100px; height: 30px; border: 1px solid red; position: relative; top: 0px; left: 0px;' class='expanded' style='border: 1px solid red'>" );
+
+	var $logoutEl = $("<div class='hovered'>")
+		.css({
+			"display": "none"
+			,"padding-left" : "30px"
+		});
+	$logoutEl.append(
+		$("<span>").text("Logout!")
+	);
+	$targetEl.append($logoutEl);
+
+	$targetEl.off("mouseover").on("mouseover", function(evt) {
+		$targetEl
+			.find(".unhovered")
+			.css("display", "none")
+		;
+		$targetEl
+			.find(".hovered")
+			.css("display", "block")
+		;
+	});
+	$targetEl.off("mouseleave").on("mouseleave", function(evt) {
+		$targetEl
+			.find(".unhovered")
+			.css("display", "block")
+		;
+		$targetEl
+			.find(".hovered")
+			.css("display", "none")
+		;
+	});
+	
 /*
+	var $mouseOverEl = $("<div style='width: 100px; height: 30px; border: 1px solid red; position: relative; top: 0px; left: 0px;' class='expanded' style='border: 1px solid red'>" );
+	
+	
 	var $clickable = $("<a style='padding: 0; margin: 0;'>Hello!<br>Hello!<br>Hello!<br>Hello!<br>Hello!<br></a>");
 	$clickable.off("click").on("click", function(evt) {
 //		evt.stopImmediatePropagation();
@@ -148,12 +163,12 @@ clLibWeb.loggedInCheck = function(successFunc, errorFunc) {
 			//alert("logged in!");
 			$menuDiv.find(".loggedInOnly").removeClass("hidden");
 			$loginButton.html('<a href="' + "#" + '">Logout</a>');
-/*
+
 			$loginButton.off().on("click", function(e) {
 				localStorage.clear();
 				document.location.href = "http://www.kurt-climbing.com/Joomla";
 			});
-*/
+
 			clLibWeb.showUserInfo(
 				$("a.clUserInfo"));
 			return successFunc();

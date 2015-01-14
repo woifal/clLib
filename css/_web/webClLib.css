@@ -272,6 +272,21 @@ a.clUserInfo  {
 	awidth: 400px;
 }
 
+a.clUserInfo  span {
+	float: left;
+	margin-left: 10px;
+	border: 0px solid red;
+	font-size: 20px;
+	font-weight: bold;
+}
+
+a.clUserInfo  img {
+	float: left;
+	width : 25px;
+	height : 25px;
+}
+
+
 	.hidden{
 		adisplay:none;
 	}
