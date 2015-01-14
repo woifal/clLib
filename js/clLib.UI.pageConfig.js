@@ -868,6 +868,7 @@ clLib.UI.elements = {
 						geoPos : {
 							lat: position.coords.latitude
 							,lng: position.coords.longitude
+							,minDistance: 0
 						}
 					};
 					console.log("Getting areas for geopos >" + JSON.stringify(additionalParams) + "<");
