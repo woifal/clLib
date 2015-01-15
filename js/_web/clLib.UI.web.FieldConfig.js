@@ -470,7 +470,6 @@ clLib.webFieldConfig = {
 									$(currentFieldConfig.renderFunc(colour))
 										.on("click", function(e) {
 											console.log("setting colourdisplay to " + colour);
-											$colourDisplay = $("#xxx");
 											$colourDisplay.replaceWith($(currentFieldConfig.editElement.create(colName, colour, $thead, currentFieldConfig)));
 											$colourDisplay.data("clValue", colour);
 											$colourSelector.dialog("close");
