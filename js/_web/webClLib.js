@@ -177,7 +177,14 @@ clLibWeb.loggedInCheck = function(successFunc, errorFunc) {
 			//alert("not logged in!");
 			console.log("not logged in, hiding clMenu..");
 			$menuDiv.find(".loggedInOnly").addClass("hidden");
-			$loginButton.html('<a href="' + clLibWeb.loginPageURL + '">Login</a>');
+			$loginButton
+				.css({
+					"margin-left": "50px"
+					,"float": "left"
+				})
+				.html("Login")
+				.attr("href", clLibWeb.loginPageURL)
+			;
 
 			//alert("changing to login page...");
 			//clLib.PAGES.changeTo(clLibWeb.loginPageURL, {web: true});
