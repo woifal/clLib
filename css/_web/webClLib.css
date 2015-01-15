@@ -258,6 +258,29 @@ table.dataTable.display thead.hover th.clBlurred:hover td select
 	text-align: center;
 }
 
+#fav-nav .navigation ul.clMenuContainer.nav.menu li a span,
+#fav-nav .navigation ul.nav.menu li a span
+{
+	font-size: 20px;
+}
+#fav-nav .navigation ul.clMenuContainer.nav.menu li.active a span,
+#fav-nav .navigation ul.nav.menu li.active a span
+{
+	font-weight: bold;
+}
+#fav-nav .navigation ul.nav.menu li a:hover > span
+{
+	transition: all 0.2s ease-in-out;
+	border-bottom: 4px solid #073E78;
+	font-size: 21px;
+}
+#fav-nav .navigation ul.clMenuContainer.nav.menu li a:hover > span
+{
+	transition: all 0.2s ease-in-out;
+	border-bottom: 4px solid #A0522D;
+	font-size: 21px;
+}
+
 #fav-nav .moduletable ul.nav.menu li, #fav-nav .moduletable ul.nav.menu li li, #fav-nav .moduletable ul.nav.menu li li li, #fav-nav .moduletable ul.nav.menu li li li li {
 	width: 25%;
 }
@@ -277,7 +300,7 @@ a.clUserInfo  span {
 	margin-left: 10px;
 	border: 0px solid red;
 	font-size: 20px;
-	font-weight: bold;
+	afont-weight: bold;
 }
 
 a.clUserInfo  img {
