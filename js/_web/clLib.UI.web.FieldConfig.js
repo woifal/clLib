@@ -12,15 +12,52 @@ clLib.webFieldConfig = {
 		this.fieldConfigs = {};
 		this.defaults = {
 			collectionName : "_NO_FIELD_COLLECTION_DEFINED"
-			,saveHandler : function(fieldData, newRowFlag, successFunc) {
+			,entityName : "_NO_ENTITYNAME_DEFINED"
+			,getEntityName : function() {
+				alert("returning " + this.config.entityName);
+				return this.config.entityName;
+			}
+			,saveHandler : function(fieldData, newRowFlag, successFunc, errorFunc) {
 				alert("saving row(" + newRowFlag + ") with data >" + JSON.stringify(fieldData) + "<");
-				var newRowId = -123;
+
+				var targetFunc = newRowFlag ? clLib.REST.storeEntity : clLib.REST.updateEntity;
+				var entityId = -1;
+				
+				targetFunc(this.config.getEntityName(), fieldData
+				,function(realInstance) {
+					clLib.loggi("synced realInstance >" + JSON.stringify(realInstance) + "<");
+					entityId = realInstance["_id"];	
+
+					clLib.loggi("synced UP >" + fieldData["_id"] + "<, new id is (" + typeof(realInstance) + ")>" + realInstance["_id"] + "<, dummyId was >" + fieldData["_id"] + "<");
+					
+					return successFunc(entityId);
+				}
+				,function(e) {
+					var errorMsg = e.message;
+					var errorCode = "N/A";
+					if(e.message && JSON.parse(e.message)["responseText"]) {
+						errorCode = JSON.parse(JSON.parse(e.message)["responseText"])["code"];
+						errorMsg = JSON.parse(JSON.parse(e.message)["responseText"])["description"];
+					}
+					
+					var errString =  "could not sync item due to:" + e.name + " + (" + e.message + ") >" + errorCode + ">,<" + errorMsg + "<";
+					console.error(errString);
+					return errorFunc(errString);
+				}
+				);
+
+
+/*				var newRowId = -123;
 				
 				return successFunc(newRowId);
+*/
 			}
 			,deleteHandler : function(fieldData, successFunc, errorFunc) {
 				alert("deleting row with data >" + JSON.stringify(fieldData) + "<");
-				return successFunc();
+				
+				fieldData["deleted"]  = 1;
+
+				return this.config.saveHandler(fieldData, false /* =>newRowFlag */, successFunc, errorFunc);
 			}
 		};
 		this.add = function(fieldConfigObj) {
@@ -42,6 +79,8 @@ clLib.webFieldConfig = {
 		}
 		this.config = this.defaults;
 		this.config = $.extend(true, this.config, fieldConfigCollectionConfig);
+		this.config.getEntityName = this.config.getEntityName.bind(this);
+		this.config.saveHandler = this.config.saveHandler.bind(this);
 
 	}
 	,FieldConfig : function(fieldConfig) {
@@ -143,6 +182,7 @@ clLib.webFieldConfig = {
 
 		var routeLogConfig = new FieldConfigCollection({
 			collectionName: "routeLogConfig"
+			,entityName : "RouteLog"
 		});
 
 		routeLogConfig.add(new FieldConfig({
@@ -198,6 +238,13 @@ clLib.webFieldConfig = {
 								console.log("serRow is now >" + JSON.stringify(serRow) + "<");
 								
 							});
+							
+							//2DO: need to pass id to update!!!
+							alert("ID TO SAVE >" + JSON.stringify(rowData) + "<");
+							serRow["_id"] = rowData["_id"];
+							
+							
+							
 							console.log("Serialized row >" + JSON.stringify(serRow) + "<");
 							
 							routeLogConfig.config.saveHandler(
@@ -243,6 +290,8 @@ clLib.webFieldConfig = {
 								
 								}
 								,function(e) {
+									alert("Could not sync entity!");
+									alert(">" + e + "<");
 								}
 							);
 							

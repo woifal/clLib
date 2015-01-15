@@ -256,9 +256,10 @@ clLib.REST.getEntitiesDistinctFields = function(entityName, fieldName, whereObj,
 }
 
 clLib.REST.updateEntity = function (entityName, entityInstance, successFunc, errorFunc) {
-    var uri = clLib.REST.baseCollectionsURI + entityName + "/" + entityInstance["_id"];
+    console.log("updating entity >" + entityName + "< with instance >" + JSON.stringify(entityInstance) + "<");
+	var uri = clLib.REST.baseCollectionsURI + entityName + "/" + entityInstance["_id"];
 	delete(entityInstance["_id"]);
-    clLib.REST.executeInsert(uri, 'PUT', entityInstance, 
+	clLib.REST.executeInsert(uri, 'PUT', entityInstance, 
 	function(AJAXResult) {
 		AJAXResult = clLib.REST.postAJAXprocessing[clLib.REST.baseURI](AJAXResult);
 		successFunc(AJAXResult);
