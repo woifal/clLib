@@ -84,7 +84,8 @@ body {
 }
 
 table.dataTable.display {
-	width: auto !important;
+	width: 100%;
+	//width: auto !important;
 }
 
 
