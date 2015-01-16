@@ -372,3 +372,7 @@ label.untrated {
 {
  z-index: 1000 !important; /* must be > than popup editor (950) */
 }
+
+#fav-nav .moduletable { 
+	width: 100%;
+}
