@@ -242,7 +242,8 @@ clLib.webFieldConfig = {
 							//2DO: need to pass id to update!!!
 							alert("ID TO SAVE >" + JSON.stringify(rowData) + "<");
 							serRow["_id"] = rowData["_id"];
-							
+							alert("USER TO SAVE >" + JSON.stringify(rowData) + "<");
+							serRow["username"] = rowData["username"] || clLib.getUserInfo()["username"];
 							
 							
 							console.log("Serialized row >" + JSON.stringify(serRow) + "<");
