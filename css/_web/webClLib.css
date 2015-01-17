@@ -373,6 +373,63 @@ label.untrated {
  z-index: 1000 !important; /* must be > than popup editor (950) */
 }
 
-#fav-nav .moduletable { 
+#fav-nav .moduletable, 
+#fav-nav .navigation { 
 	width: 100%;
+}
+
+
+/* 
+	woifal 20141107
+*/
+
+
+body {
+	background-color: white;
+}
+
+ul.nav.menu {
+	aborder: 1px solid red;
+	margin-top: 0px;
+	margin-bottom: 0px;
+}
+#fav-nav .navigation ul.nav.menu li a{
+	aborder: 1px solid red;
+	padding: 18px 30px;
+	font-size:20px;
+	
+}
+#fav-nav{
+	border: none;
+	
+}
+#fav-logo {
+	padding-top: 10px;
+}
+
+.mediaLogo>img {
+	width: 300px;
+}
+
+@media (max-width: 1199px) {
+	.mediaLogo>img {
+		width: 200px;
+	}
+}
+@media handheld, only screen and (max-width: 768px) {
+	.mediaLogo>img {
+		width: 100px;
+	}
+
+}
+
+#fav-copyrightwrap {
+	border: none;
+}
+#fav-maincontent {
+	border-bottom:  2px solid #073E78 !important;
+}
+#fav-header {
+	border-bottom: 2px solid #073E78 !important;
+	padding: 10px 0px;
 }

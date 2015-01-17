@@ -26,10 +26,6 @@
 	<icon src="files/views/assets/image/splashLogoNoBorders.png" gap:platform="ios" width="120" height="120" />
 	<icon src="files/views/assets/image/splashLogoNoBorders.png" />
     
-	<platform name="ios">
-		<icon src="files/views/assets/image/senkrecht.jpg" width="60" height="60" />
-		<icon src="files/views/assets/image/senkrecht.jpg" width="120" height="120" />
-	</platform name="ios">
 	
     <gap:platform name="ios" />
     <gap:platform name="android" />
