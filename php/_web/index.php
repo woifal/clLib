@@ -43,7 +43,7 @@ $pageclass = $params->get( 'pageclass_sfx' );
   <meta name="generator" content="Joomla! - Open Source Content Management" />
   <title>Info &amp; Help</title>
   <link href="http://www.kurt-climbing.com/Joomla/" rel="canonical" />
-  <link href="/Joomla/templates/favourite/favicon.ico" rel="shortcut icon" type="image/vnd.microsoft.icon" />
+  <link href="/Joomla/KURT/files/views/assets/image/favicon.ico" rel="shortcut icon" type="image/vnd.microsoft.icon" />
   <link rel="stylesheet" href="/Joomla/media/jui/css/bootstrap.min.css" type="text/css" />
   <link rel="stylesheet" href="/Joomla/media/jui/css/bootstrap-responsive.css" type="text/css" />
 <!--  <script src="/Joomla/media/jui/js/jquery.min.js" type="text/javascript"></script>-->
