@@ -41,7 +41,7 @@ $pageclass = $params->get( 'pageclass_sfx' );
   <meta http-equiv="content-type" content="text/html; charset=utf-8" />
   <meta name="author" content="Super User" />
   <meta name="generator" content="Joomla! - Open Source Content Management" />
-  <title>Info &amp; Help</title>
+  <title>KURT Climbing</title>
   <link href="http://www.kurt-climbing.com/Joomla/" rel="canonical" />
   <link href="/Joomla/KURT/files/views/assets/image/favicon.ico" rel="shortcut icon" type="image/vnd.microsoft.icon" />
   <link rel="stylesheet" href="/Joomla/media/jui/css/bootstrap.min.css" type="text/css" />
