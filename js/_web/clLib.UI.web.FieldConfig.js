@@ -54,7 +54,6 @@ clLib.webFieldConfig = {
 			}
 			,deleteHandler : function(fieldData, successFunc, errorFunc) {
 				alert("deleting row with data >" + JSON.stringify(fieldData) + "<");
-				
 				fieldData["deleted"]  = 1;
 
 				return this.config.saveHandler(fieldData, false /* =>newRowFlag */, successFunc, errorFunc);
@@ -81,6 +80,7 @@ clLib.webFieldConfig = {
 		this.config = $.extend(true, this.config, fieldConfigCollectionConfig);
 		this.config.getEntityName = this.config.getEntityName.bind(this);
 		this.config.saveHandler = this.config.saveHandler.bind(this);
+		this.config.deleteHandler = this.config.deleteHandler.bind(this);
 
 	}
 	,FieldConfig : function(fieldConfig) {
