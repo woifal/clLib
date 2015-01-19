@@ -100,12 +100,23 @@ clLib.webFieldConfig = {
 				}
 				,create: function(colName, currentValue, $thead) {
 					//alert("(" + this.fieldName + ") creating >" + colName + "< with value >" + currentValue + "<");
-					return $thead
+					var $fieldValsSelect = $thead
 						.find("tr th." + colName + " select")
 						.clone()
 						// ensure control is editable...
 						.prop("disabled", false)
-						.val(currentValue)
+						.val(currentValue);
+					var fieldConfig = this.config;
+					$fieldValsSelect.on("change", function() {
+						if(fieldConfig.refreshOnUpdate) {
+							//alert("refreshing >" + fieldConfig.refreshOnUpdate + "<");
+							$(this).closest("tr").find(fieldConfig.refreshOnUpdate + " *" ).trigger("clRefresh");
+						}
+						else {
+							console.log("no refresh targets defined..");
+						}
+					});
+					return $fieldValsSelect;
 				}
 			}
 			,getAvailableItems : function(column, api, successFunc) {
@@ -284,7 +295,7 @@ clLib.webFieldConfig = {
 											// set underlying table cell data to new value..
 											rowData[colName] = serRow[colName];
 											// set table cell to NEW value(=> rendered :)
-											$td.html(currentFieldConfig["renderFunc"](serRow[colName]));
+											$td.html(currentFieldConfig["renderFunc"](serRow[colName], serRow));
 										});
 
 									}
@@ -402,9 +413,11 @@ clLib.webFieldConfig = {
 //			}
 //		}
 //
+			,refreshOnUpdate: ".score"
 		}));
 		routeLogConfig.add(new FieldConfig({
 			fieldName : "Grade"
+			,refreshOnUpdate: ".score"
 		}));
 		routeLogConfig.add(new FieldConfig({
 			fieldName : "Sector"
@@ -545,8 +558,30 @@ clLib.webFieldConfig = {
 			}
 			,editElement : {
 				create: function(colName, currentValue, $thead, currentFieldConfig, rowData) {
-					alert("rowData is >" + JSON.stringify(rowData) + "<");
+					//alert("rowData is >" + JSON.stringify(rowData) + "<");
 					var $el = $("<span>" + clLib.computeScore(rowData) + "</span>");
+					var fieldConfig = this.config;
+					$el.on("clRefresh", function() {
+						//alert("need to refresh me, which is >" + colName + "<");
+						var newValue = "";
+						var routeLog = {};
+						//alert("getting serialized version of >" + $(this).closest("tr").find(".GradeSystem")[0].outerHTML + "<");
+						routeLog["GradeSystem"] = 
+							routeLogConfig.get("GradeSystem").editElement.serialize(
+								$(this).closest("tr").find(".GradeSystem")
+							)
+						;
+						routeLog["Grade"] = 
+							routeLogConfig.get("Grade").editElement.serialize(
+								$(this).closest("tr").find(".Grade")
+							)
+						;
+						//alert("XXXroutelog is >" + JSON.stringify(routeLog) + "<");
+						newValue = fieldConfig.renderFunc("", routeLog);
+						//alert("XXXnewValue is >" + JSON.stringify(newValue) + "<");
+						
+						$(this).html(newValue);
+					});
 					return $el;
 				}
 				,serialize : function($editElement) {
