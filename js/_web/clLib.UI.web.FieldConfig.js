@@ -92,7 +92,7 @@ clLib.webFieldConfig = {
 			,className : this.fieldName
 			,visible : true
 			,orderable : true
-			,renderFunc : function(value) { return value; }
+			,renderFunc : function(colValue, rowValue) { return colValue; }
 			,editElement : {
 				serialize: function($editEl) {
 					console.log("(" + this.fieldName + ") the editEl is >" + $editEl + "<");
@@ -533,6 +533,32 @@ clLib.webFieldConfig = {
 			,visible: false
 		}));
 
+		routeLogConfig.add(new FieldConfig({
+			fieldName : "score"
+			,displayName: "Score"
+			,visible: true
+			,dummyField: true
+			,renderFunc : function(colValue, rowValue) {
+				var score = clLib.computeScore(rowValue);
+				console.log("returning score of >" + score + "<");
+				return score;
+			}
+			,editElement : {
+				create: function(colName, currentValue, $thead, currentFieldConfig, rowData) {
+					alert("rowData is >" + JSON.stringify(rowData) + "<");
+					var $el = $("<span>" + clLib.computeScore(rowData) + "</span>");
+					return $el;
+				}
+				,serialize : function($editElement) {
+					var val = 
+						$editElement.val() 
+					return val;
+				}
+			}				
+		}));
+
+		
+		
 		clLib.webFieldConfig["_routeLogConfig"] = routeLogConfig;
 
 

@@ -160,11 +160,12 @@ clLib.UI.web = {
 									(data + "") != ""
 								) 
 								|| curFieldConfig["fieldName"] == 'clControls'
+								|| curFieldConfig["dummyField"] == true
 							) {
 								//alert("value is >" + data + "<");
 								renderedVal = data;
 								if(typeof(curFieldConfig) == "object" && curFieldConfig["renderFunc"]) {
-									renderedVal = curFieldConfig["renderFunc"](data);
+									renderedVal = curFieldConfig["renderFunc"](data, full);
 								}
 								else {
 									alert("could not find renderer for >" + fieldName + "< and value >" + data + "<");
@@ -329,7 +330,7 @@ clLib.UI.web = {
 							var $editElement;
 							if(currentFieldConfig && currentFieldConfig["editElement"]/* && colName != 'clControls'*/) {
 								console.log("got custom edit element for " + colName);
-								$editElement = currentFieldConfig["editElement"]["create"](colName, currentValue, $thead, currentFieldConfig);
+								$editElement = currentFieldConfig["editElement"]["create"](colName, currentValue, $thead, currentFieldConfig, rowData);
 								console.error("editeleletn is now " + $editElement.html());
 
 								$td
