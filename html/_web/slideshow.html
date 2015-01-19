@@ -12,6 +12,7 @@
 }
 #fooContainer p {
 	font-size: 22px;
+	line-height: 40px;
 }
 
 .fadeIn {
@@ -138,6 +139,7 @@ and (max-device-width : 568px) {
 	display: none;
 }
 	</style>
+
 <div id="fooContainer" style="border: 0px solid blue; ">
 	<div class="clSlideContainer">
 		<div class="clSlide clActive slideBg" style="border: 0px solid yellow">	
@@ -161,56 +163,45 @@ and (max-device-width : 568px) {
 	var slideImgIdx = 0;
 	var slides = {
 		startScreen: {
-			bgImg: "http://www.kurt-climbing.com/Joomla/SLIDES/dogpatch.png"
-			,screenShotURL: "http://www.kurt-climbing.com/Joomla/SLIDES/ScreenshotEntryPage.png"
-			,header: "TRACK YOUR CLIMB"
+			bgImg: "http://www.kurt-climbing.com/Joomla/KURT/files/views/assets/image/slideshow/climb-silh.jpg"
+			,screenShotURL: "http://www.kurt-climbing.com/Joomla/KURT/files/views/assets/image/slideshow/ScreenshotStartpage.png"
+			,header: "SELECT YOUR CLIMBING AREA"
 			,body: "" + 
-				"<p>                                                                                                             " + 
-				"	Track your climbs while you are in the fucking climbing hall.                                                " + 
-				"</p>                                                                                                            " + 
-				"<p>				                                                                                             " + 
-				"You can keep track of your ticks, grades, colours, ticktypes, etc..                                             " + 
-				"</p>                                                                                                            " + 
-				"<p>				                                                                                             " + 
-				"You can keep track of your ticks, grades, colours, ticktypes, etc..                                             " + 
-				"</p>                                                                                                            " + 
-				"<p>                                                                                                             " + 
-				"	In selected climbing halls you have the choice to select from a pre-configured list of climbing routes.      " + 
-				"</p>                                                                                                            " + 
-				"<p>                                                                                                             " + 
-				"	&nbsp;                                                                                                       " + 
-				"</p>                                                                                                            " + 
-				"<p>                                                                                                             " + 
-				"	<b>Learn more...</b>                                                                                         " + 
-				"</p>                                                                                                            " + 
-				"	                                                                                                             " + 
-				"	                                                                                                             " + 
+				"<p>Choose a climbing hall or spot where you are going to climb or just continue without an area selection.</p>" + 
 				""
 		}
 		,routeLog: {
-			bgImg: "http://www.kurt-climbing.com/Joomla/SLIDES/climb-silh.jpg"
-			,screenShotURL: "http://www.kurt-climbing.com/Joomla/SLIDES/ScreenshotStartpage.png"
-			,header: "SOMETHING ELSE"
+			bgImg: "http://www.kurt-climbing.com/Joomla/KURT/files/views/assets/image/slideshow/dogpatch.png"
+			,screenShotURL: "http://www.kurt-climbing.com/Joomla/KURT/files/views/assets/image/slideshow/ScreenshotEntryPage.png"
+			,header: "ADD ASCENT DETAILS"
 			,body: "" + 
-				"<p>                                                                                                             " + 
-				"	asdfasdf asd fasd fasdf asdf asdf asd fasdf asd f.                                                " + 
+				"<p>				                                                                                             " + 
+				"	Easily track all your climbing ascents and achievements. " + 
 				"</p>                                                                                                            " + 
 				"<p>				                                                                                             " + 
-				"You can keep track of your ticks, grades, colours, ticktypes, etc..                                             " + 
+				"	If you red pointed, even flashed or simple tried a route or boulder problem, simple enter all details you want to add in your statistic. " + 
 				"</p>                                                                                                            " + 
-				"<p>                                                                                                             " + 
-				"	opip poi poi poikpok öljk ölk ölkölkölk ölk püoiüpoüpoüpoi üpk üpkl   " + 
+				"<p>				                                                                                             " + 
+				"	For climbing halls where route details are available, entering data is even more simple!" + 
 				"</p>                                                                                                            " + 
-				"<p>                                                                                                             " + 
-				"	&nbsp;                                                                                                       " + 
-				"</p>                                                                                                            " + 
-				"<p>                                                                                                             " + 
-				"	<b>Learn more...</b>                                                                                         " + 
-				"</p>                                                                                                            " + 
-				"	                                                                                                             " + 
-				"	                                                                                                             " + 
 				""
 		}
+		,stats: {
+			bgImg: "http://www.kurt-climbing.com/Joomla/KURT/files/views/assets/image/slideshow/dogpatch.jpg"
+			,screenShotURL: "http://www.kurt-climbing.com/Joomla/KURT/files/views/assets/image/slideshow/ScreenshotStatistics.png"
+			,header: "GET DETAILED STATISTICS"
+			,body: "" +
+				"<p>                                                                                                             " + 
+				"	Every ascent is available in your statistic.  " + 
+				"</p>                                                                                                            " + 
+				"<p>				                                                                                             " + 
+				"	Adding a point system to your ascents - based on ascent style and difficulty - will show your personal climbing progress.  " + 
+				"</p>                                                                                                            " + 
+				"<p>				                                                                                             " + 
+				"	Get detailed insight via multiple available statistics. " + 
+				"</p>                                                                                                            " + 
+				""
+		}		
 	};
 	
 	
