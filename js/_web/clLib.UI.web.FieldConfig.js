@@ -11,7 +11,7 @@ clLib.webFieldConfig = {
 	,FieldConfigCollection : function(fieldConfigCollectionConfig) {
 		this.fieldConfigs = {};
 		this.defaults = {
-			collectionName : "_NO_FIELD_COLLECTION_DEFINED"
+                collectionName : "_NO_FIELD_COLLECTION_DEFINED"
 			,entityName : "_NO_ENTITYNAME_DEFINED"
 			,getEntityName : function() {
 				alert("returning " + this.config.entityName);
@@ -98,6 +98,36 @@ clLib.webFieldConfig = {
 					console.log("(" + this.fieldName + ") the editEl is >" + $editEl + "<");
 					return $editEl.find("select").val();
 				}
+                , addRefreshHandler : function($editElement) {
+                    var fieldConfig = this.config;
+                    if(fieldConfig.editElement.refreshFrom) {
+                        $editElement.addClass("clRefreshable");
+						$editElement.on("clRefresh", function() {
+							alert("need to refresh me, which is >" + fieldConfig.fieldName + "<");
+							var newValue = "";
+							var routeLog = {};
+							
+							var $thisField = $(this);
+							$.each(fieldConfig.editElement.refreshFrom, function(idx, fromColName) {
+								console.log(">" + idx + "<,>" + fromColName + "<");
+								console.log("thisField >" + $thisField[0].outerHTML + "<");
+								console.log("2thisField >" + $thisField.closest("tr,th")[0].outerHTML + "<");
+								console.log("getting serialized version of >" + $thisField.closest("tr").find("." + fromColName)[0].outerHTML + "<");
+								routeLog[fromColName] = 
+									routeLogConfig.get(fromColName).editElement.serialize(
+										$thisField.closest("tr").find("." + fromColName)
+									)
+								;
+							});
+
+							fieldConfig.editElement.refresh($thisField, routeLog);
+						});
+					}
+                    
+                }
+                ,refresh: function($editElement, rowData) {
+                    return 1;
+                }
 				,create: function(colName, currentValue, $thead) {
 					//alert("(" + this.fieldName + ") creating >" + colName + "< with value >" + currentValue + "<");
 					var $fieldValsSelect = $thead
@@ -105,12 +135,17 @@ clLib.webFieldConfig = {
 						.clone()
 						// ensure control is editable...
 						.prop("disabled", false)
-						.val(currentValue);
+						.val(currentValue)
+                    ;
 					var fieldConfig = this.config;
 					$fieldValsSelect.on("change", function() {
 						if(fieldConfig.refreshOnUpdate) {
-							//alert("refreshing >" + fieldConfig.refreshOnUpdate + "<");
-							$(this).closest("tr").find(fieldConfig.refreshOnUpdate + " *" ).trigger("clRefresh");
+							console.log("refreshing >" + JSON.stringify(fieldConfig.refreshOnUpdate) + "<");
+                            var $editEl = $(this);
+							$.each(fieldConfig.refreshOnUpdate, function(idx, refreshSelector) {
+                                console.log("refreshing >" + JSON.stringify($editEl.closest("tr").find("." + refreshSelector + " .clRefreshable" )[0].outerHTML) + "<");
+                                $editEl.closest("tr").find("." + refreshSelector + " .clRefreshable" ).trigger("clRefresh");
+                            });
 						}
 						else {
 							console.log("no refresh targets defined..");
@@ -127,6 +162,32 @@ clLib.webFieldConfig = {
 				var foo = $('<br>').appendTo( $(column.header()) );
 				var select = $('<select style="width: 100%; ">');
 				select.addClass("editRelevant");
+				select.addClass("clRefreshable");
+                var fieldConfig = this.config;
+                select.on("clFilterRefresh", function(event, rowData) {
+                    console.error("filter refresh for " + $(column.header()).attr("class") + " with data >"  + JSON.stringify(rowData));
+                    var found = false;
+                    var newOption = rowData[fieldConfig.fieldName];
+                    if(newOption == "") {
+                        return;
+                    }
+                    
+                    $.each($(this).find("option"), function(name, val) {
+                        console.log(">" + val + "< == >" + newOption + "<");
+                        if($(val).val() == newOption) {
+                            found = true;
+                        }
+                    });
+                    if(!found) {
+                        console.log("not found >" + newOption + "<, appending..");
+                        $(this).append(
+                            "<option value='" + newOption + "'>" + newOption + "</option>"
+                        );
+                        // 2DO: Refresh filter on NEW value(because it was not there previously)
+                        //$(this).val(newOption);
+                    }
+                    
+                });
 				select.append('<option style="text-align: center;" value="">-- All --</option></select>');
 				select
 					.appendTo( $(column.header()) )
@@ -149,7 +210,7 @@ clLib.webFieldConfig = {
 				/*
 				*		Get all filter items...
 				*/
-				this.getAvailableItems(
+				this.config.getAvailableItems(
 					column
 					,api
 					,function(filterItems) {
@@ -176,13 +237,17 @@ clLib.webFieldConfig = {
 			}
 
 		}
-		
+
 		this.config = this.defaults;
 		this.config = $.extend(true, this.config, fieldConfig);
 		this.config.editElement.serialize = this.config.editElement.serialize.bind(this);
 		this.config.editElement.create = this.config.editElement.create.bind(this);
+        this.config.editElement.addRefreshHandler = this.config.editElement.addRefreshHandler.bind(this);
+        this.config.editElement.refresh = this.config.editElement.refresh.bind(this);
+        this.config.filterElement = this.config.filterElement.bind(this);
+        
 
-	}
+    }
 		
 };
 
@@ -271,15 +336,13 @@ clLib.webFieldConfig = {
 										//window.dtDebug = false;
 										var $newTr = $($dataTable.api().rows(dtRowNumber).nodes());
 										console.log("got " + JSON.stringify(Object.keys($newTr)));
-										alert("!!!!added (" + dtRowNumber + " with # " + $newTr.find("td").length + ")>" + JSON.stringify(foo) + "<");
+										alert("!!!!added (" + dtRowNumber + " with # " + $newTr.find("td").length + ")");
 										//$newTr.find("td").css("border", "1px solid red");
 										
 										// add class for correct styling of clControls buttons...
 										$newTr.find("td:eq(0)").addClass("clControls");
 										
 										//$tr.remove();
-										$table.api().draw();
-
 									}
 									else {
 										$tr.find("td").each(function() {
@@ -299,6 +362,12 @@ clLib.webFieldConfig = {
 										});
 
 									}
+                                    $table.api().draw();
+
+                                    // 2DO: refresh filter for column
+                                    alert("triggering refresh on " + $dataTable.find("thead")[0].outerHTML);
+                                    $dataTable.find("thead").find(".clRefreshable" ).trigger("clFilterRefresh", serRow);
+                                    
 								
 								}
 								,function(e) {
@@ -350,7 +419,7 @@ clLib.webFieldConfig = {
 
 		routeLogConfig.add(new FieldConfig({
 			fieldName : "DateISO"
-			,visible: false
+			,visible: true
 			,displayName: "Date"
 			,renderFunc : clLib.ISOStrToDate
 			,filterElement: function(column, api, i) {
@@ -400,12 +469,6 @@ clLib.webFieldConfig = {
 		}));
 
 		routeLogConfig.add(new FieldConfig({
-			fieldName : "Rating"
-			,renderFunc : function(x) {
-				return clLib.UI.ratingToStars(x);
-			}
-		}));
-		routeLogConfig.add(new FieldConfig({
 			fieldName : "GradeSystem"
 //			,editElement: {
 //			create: function(colName, currentValue) {
@@ -413,14 +476,114 @@ clLib.webFieldConfig = {
 //			}
 //		}
 //
-			,refreshOnUpdate: ".score"
+			,refreshOnUpdate: [
+                "Grade"
+                ,"score"
+            ]
+            ,getAvailableItems : function(column, api, successFunc) {
+                var gradeSystems = Object.keys(clLib.gradeConfig);
+                return successFunc(gradeSystems );
+			}
+
 		}));
 		routeLogConfig.add(new FieldConfig({
 			fieldName : "Grade"
-			,refreshOnUpdate: ".score"
+			,refreshOnUpdate: [
+                "score"
+            ]
+			,editElement : {
+				refreshFrom : [
+					"GradeSystem"
+				]
+                , refresh : function($editElement, rowData) {
+                    var gradeSystem = rowData["GradeSystem"];
+                    var grades = clLib.gradeConfig[gradeSystem] ? Object.keys(clLib.gradeConfig[gradeSystem]["grades"]) : ["??"];
+                    
+                    
+                    console.log("grades for gradesystem >" + gradeSystem + "> are >" + JSON.stringify(grades) + "<");
+                    var optionsAsString = "";
+                    $.each(grades, function(idx, grade) {
+                        optionsAsString += "<option value='" + grade + "'>" + grade + "</option>";
+                    });
+                    
+                    console.log("adding options >" + optionsAsString + "<");
+                    $editElement.find('option').remove().end().append($(optionsAsString));
+
+                }
+
+			}				
+        }));
+        
+
+		routeLogConfig.add(new FieldConfig({
+			fieldName : "score"
+			,displayName: "Score"
+			,visible: true
+			,dummyField: true
+			,renderFunc : function(colValue, rowValue) {
+				var score = clLib.computeScore(rowValue);
+				console.log("returning score of >" + score + "<");
+				return score;
+			}
+			,editElement : {
+				refreshFrom : [
+					"GradeSystem"
+					,"Grade"
+				]
+				, create: function(colName, currentValue, $thead, currentFieldConfig, rowData) {
+					//alert("rowData is >" + JSON.stringify(rowData) + "<");
+					var $el  = $("<span>..loading..</span>");
+                    return $el;
+				}
+                , refresh : function($editElement, rowData) {
+                    var fieldConfig = this.config;
+                    //alert("XXXroutelog is >" + JSON.stringify(rowData) + "<");
+                    var newValue = fieldConfig.renderFunc("", rowData);
+                    console.log("XXXnewValue is >" + JSON.stringify(newValue) + "<");
+
+                    $editElement.html(newValue);
+                }
+				,serialize : function($editElement) {
+					var val = 
+						$editElement.val() 
+					return val;
+				}
+			}				
 		}));
+        
+        routeLogConfig.add(new FieldConfig({
+			fieldName : "Rating"
+			,renderFunc : function(x) {
+				return clLib.UI.ratingToStars(x);
+			}
+            ,getAvailableItems : function(column, api, successFunc) {
+                alert("returning available 'rating' items..");
+                return successFunc([
+                    "1",
+                    "2",
+                    "3",
+                    "4",
+                    "5"
+                ]);
+			}
+            
+		}));
+
 		routeLogConfig.add(new FieldConfig({
 			fieldName : "Sector"
+			,getAvailableItems : function(column, api, successFunc) {
+				return clLib.REST.getEntitiesDistinctFields(
+					"RouteLog"
+					,this.fieldName
+					,{}//{"username": function() { return clLib.getUserInfo()["username"]}()} /*"foo6@gmail.com"} */ 
+					,function(items) {
+						console.log("1got items >" + items + "<");
+						console.log("1bgot items >" + JSON.stringify(items) + "<");
+						return successFunc(items["RouteLog"]);
+					}
+				);
+			}
+			
 		}));
 		routeLogConfig.add(new FieldConfig({
 			fieldName : "Line"
@@ -534,6 +697,16 @@ clLib.webFieldConfig = {
 		routeLogConfig.add(new FieldConfig({
 			fieldName : "character"
 		//	,renderFunc : clLib.getIconImg
+            ,getAvailableItems : function(column, api, successFunc) {
+                alert("returning available 'character' items..");
+                return successFunc([
+                    "slab",
+                    "vertical",
+                    "overhang",
+                    "roof"
+                ]);
+			}
+
 		}));
 		
 		routeLogConfig.add(new FieldConfig({
@@ -544,52 +717,6 @@ clLib.webFieldConfig = {
 		routeLogConfig.add(new FieldConfig({
 			fieldName : "deleted"
 			,visible: false
-		}));
-
-		routeLogConfig.add(new FieldConfig({
-			fieldName : "score"
-			,displayName: "Score"
-			,visible: true
-			,dummyField: true
-			,renderFunc : function(colValue, rowValue) {
-				var score = clLib.computeScore(rowValue);
-				console.log("returning score of >" + score + "<");
-				return score;
-			}
-			,editElement : {
-				create: function(colName, currentValue, $thead, currentFieldConfig, rowData) {
-					//alert("rowData is >" + JSON.stringify(rowData) + "<");
-					var $el = $("<span>" + clLib.computeScore(rowData) + "</span>");
-					var fieldConfig = this.config;
-					$el.on("clRefresh", function() {
-						//alert("need to refresh me, which is >" + colName + "<");
-						var newValue = "";
-						var routeLog = {};
-						//alert("getting serialized version of >" + $(this).closest("tr").find(".GradeSystem")[0].outerHTML + "<");
-						routeLog["GradeSystem"] = 
-							routeLogConfig.get("GradeSystem").editElement.serialize(
-								$(this).closest("tr").find(".GradeSystem")
-							)
-						;
-						routeLog["Grade"] = 
-							routeLogConfig.get("Grade").editElement.serialize(
-								$(this).closest("tr").find(".Grade")
-							)
-						;
-						//alert("XXXroutelog is >" + JSON.stringify(routeLog) + "<");
-						newValue = fieldConfig.renderFunc("", routeLog);
-						//alert("XXXnewValue is >" + JSON.stringify(newValue) + "<");
-						
-						$(this).html(newValue);
-					});
-					return $el;
-				}
-				,serialize : function($editElement) {
-					var val = 
-						$editElement.val() 
-					return val;
-				}
-			}				
 		}));
 
 		

@@ -220,32 +220,35 @@ clLib.UI.web = {
 					}
 					,"dom": 'CRlfrtip' // 'T<"clear">C<"clear">Rlfrtip' //'C<"clear">Rlfrtip' //lfrtip<"clear">
 					//,"scrollX": true
-					,initComplete: function () {
 /*
 *
 *	FILTER!!!!!
 *
 */
+					,initComplete: function () {
 					
-					var api = this.api();
-						api.columns().indexes().flatten().each( function ( i ) {
-							if($(api.column(i).header()).attr("data-clColName") == 'clControls') {
-								return;
-							}
+                        var api = this.api();
+                        api.columns().indexes().flatten().each( function ( i ) {
+                            if($(api.column(i).header()).attr("data-clColName") == 'clControls') {
+                                return;
+                            }
 
-							var column = api.column( i );
+                            var column = api.column( i );
 
-							if(routeLogConfig.get(dtColumnAt[i]).filterElement) {
-								console.log("found filter element for " +  dtColumnAt[i]);
-								return routeLogConfig.get(dtColumnAt[i]).filterElement(column, api, i);
-							}
+                            if(routeLogConfig.get(dtColumnAt[i]).filterElement) {
+                                console.log("found filter element for " +  dtColumnAt[i]);
+                                return routeLogConfig.get(dtColumnAt[i]).filterElement(column, api, i);
+                            }
 
 
-						} );
-					}		
+                        } );
+                    }		
 				})
 				;
 
+				//
+				// Add event listener to ADD a new row
+				//
 				$thTr.on('click', 'th.clControls img.clAdd', function () {
 					if(window.clEdited) return;
 					clLib.UI.web.tableEdited(true);
@@ -285,6 +288,10 @@ clLib.UI.web = {
 							$newTd
 									.append($editElement)
 								;
+
+                                // Let element refresh itself (if it wants to)
+                            currentFieldConfig["editElement"]["addRefreshHandler"]($editElement);
+                                
 							//}
 							$newTr.append($newTd);
 
@@ -336,7 +343,11 @@ clLib.UI.web = {
 								$td
 									.empty()
 									.append($editElement)
-								;
+                                ;
+                                
+                                // Let element refresh itself (if it wants to)
+                                currentFieldConfig["editElement"]["addRefreshHandler"]($editElement);
+
 							}
 
 						}
