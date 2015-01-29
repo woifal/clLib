@@ -237,7 +237,8 @@ and (max-device-width : 568px) {
 		}
 	};
 	
-	var changeSlideBg = function(slideContainerEl) {
+	var slideInitialized = false;
+    var changeSlideBg = function(slideContainerEl) {
 		if(slideImgIdx >= Object.keys(slides).length) {
 			slideImgIdx = 0;
 		}
@@ -252,7 +253,9 @@ and (max-device-width : 568px) {
 		currentSlideEl.className.replace("clActive", "");
 		
 		;
-
+        
+        var fadeOutTimeout = slideInitialized ? 1000 : 0;
+        slideInitialized = true;
 		setTimeout(function() {
 			currentSlideEl.className.replace("fadeOut", "");
 			currentSlideEl
@@ -272,7 +275,7 @@ and (max-device-width : 568px) {
 
 			setTimeout(function() {changeSlideBg(slideContainerEl)}, slideTimeout);
 		}
-		,0
+		,fadeOutTimeout
 		);
 	};
 	var slideContainerEl = document.getElementsByClassName("clSlideContainer")[0];
