@@ -138,7 +138,7 @@ var loadPageIntoDOM = function(url, $targetEl, options) {
 		)
 		;
 	}
-	
+	//alert("loading url >" + url + "<");
 	$.ajax({
 		url: url
 		,crossdomain: true

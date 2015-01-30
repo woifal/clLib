@@ -1,5 +1,8 @@
 "use strict";
 
+
+
+
 clLib.webFieldConfig = {
 	FieldConfigError: function (message) {
 	  this.name = 'FieldConfigError';
@@ -14,11 +17,11 @@ clLib.webFieldConfig = {
                 collectionName : "_NO_FIELD_COLLECTION_DEFINED"
 			,entityName : "_NO_ENTITYNAME_DEFINED"
 			,getEntityName : function() {
-				alert("returning " + this.config.entityName);
+				console.log("returning " + this.config.entityName);
 				return this.config.entityName;
 			}
 			,saveHandler : function(fieldData, newRowFlag, successFunc, errorFunc) {
-				alert("saving row(" + newRowFlag + ") with data >" + JSON.stringify(fieldData) + "<");
+				clLib.loggi("saving row(" + newRowFlag + ") with data >" + JSON.stringify(fieldData) + "<", "20150129");
 
 				var targetFunc = newRowFlag ? clLib.REST.storeEntity : clLib.REST.updateEntity;
 				var entityId = -1;
@@ -53,7 +56,7 @@ clLib.webFieldConfig = {
 */
 			}
 			,deleteHandler : function(fieldData, successFunc, errorFunc) {
-				alert("deleting row with data >" + JSON.stringify(fieldData) + "<");
+				clLib.loggi("deleting row with data >" + JSON.stringify(fieldData) + "<", "20150129");
 				fieldData["deleted"]  = 1;
 
 				return this.config.saveHandler(fieldData, false /* =>newRowFlag */, successFunc, errorFunc);
@@ -67,7 +70,7 @@ clLib.webFieldConfig = {
 		}
 		this.get = function(fieldName) {
 			if(!this.fieldConfigs[fieldName]) {
-				alert("field >" + fieldName + "< not found in collection.");
+				clLib.loggi("field >" + fieldName + "< not found in collection.", "20150129");
 				return {};
 				//throw new clLib.UI.web.FieldConfigError("field >" + fieldName + "< not found in collection.");
 			}
@@ -103,7 +106,7 @@ clLib.webFieldConfig = {
                     if(fieldConfig.editElement.refreshFrom) {
                         $editElement.addClass("clRefreshable");
 						$editElement.on("clRefresh", function() {
-							alert("need to refresh me, which is >" + fieldConfig.fieldName + "<");
+							clLib.loggi("need to refresh me, which is >" + fieldConfig.fieldName + "<", "20150129");
 							var newValue = "";
 							var routeLog = {};
 							
@@ -316,9 +319,9 @@ clLib.webFieldConfig = {
 							});
 							
 							//2DO: need to pass id to update!!!
-							alert("ID TO SAVE >" + JSON.stringify(rowData) + "<");
+							clLib.loggi("ID TO SAVE >" + JSON.stringify(rowData) + "<", "20150129");
 							serRow["_id"] = rowData["_id"];
-							alert("USER TO SAVE >" + JSON.stringify(rowData) + "<");
+							clLib.loggi("USER TO SAVE >" + JSON.stringify(rowData) + "<", "20150129");
 							serRow["username"] = rowData["username"] || clLib.getUserInfo()["username"];
 							
 							
@@ -336,7 +339,7 @@ clLib.webFieldConfig = {
 										//window.dtDebug = false;
 										var $newTr = $($dataTable.api().rows(dtRowNumber).nodes());
 										console.log("got " + JSON.stringify(Object.keys($newTr)));
-										alert("!!!!added (" + dtRowNumber + " with # " + $newTr.find("td").length + ")");
+										clLib.loggi("!!!!added (" + dtRowNumber + " with # " + $newTr.find("td").length + ")", "20150129");
 										//$newTr.find("td").css("border", "1px solid red");
 										
 										// add class for correct styling of clControls buttons...
@@ -365,7 +368,7 @@ clLib.webFieldConfig = {
                                     $table.api().draw();
 
                                     // 2DO: refresh filter for column
-                                    alert("triggering refresh on " + $dataTable.find("thead")[0].outerHTML);
+                                    clLib.loggi("triggering refresh on " + $dataTable.find("thead")[0].outerHTML, "20150129");
                                     $dataTable.find("thead").find(".clRefreshable" ).trigger("clFilterRefresh", serRow);
                                     
 								
@@ -557,7 +560,6 @@ clLib.webFieldConfig = {
 				return clLib.UI.ratingToStars(x);
 			}
             ,getAvailableItems : function(column, api, successFunc) {
-                alert("returning available 'rating' items..");
                 return successFunc([
                     "1",
                     "2",
@@ -571,6 +573,7 @@ clLib.webFieldConfig = {
 
 		routeLogConfig.add(new FieldConfig({
 			fieldName : "Sector"
+			,visible: false
 			,getAvailableItems : function(column, api, successFunc) {
 				return clLib.REST.getEntitiesDistinctFields(
 					"RouteLog"
@@ -587,6 +590,19 @@ clLib.webFieldConfig = {
 		}));
 		routeLogConfig.add(new FieldConfig({
 			fieldName : "Line"
+			,visible: false
+			,getAvailableItems : function(column, api, successFunc) {
+				return clLib.REST.getEntitiesDistinctFields(
+					"RouteLog"
+					,this.fieldName
+					,{}//{"username": function() { return clLib.getUserInfo()["username"]}()} /*"foo6@gmail.com"} */ 
+					,function(items) {
+						console.log("1got items >" + items + "<");
+						console.log("1bgot items >" + JSON.stringify(items) + "<");
+						return successFunc(items["RouteLog"]);
+					}
+				);
+			}
 		}));
 		routeLogConfig.add(new FieldConfig({
 			fieldName : "Colour"
@@ -698,7 +714,6 @@ clLib.webFieldConfig = {
 			fieldName : "character"
 		//	,renderFunc : clLib.getIconImg
             ,getAvailableItems : function(column, api, successFunc) {
-                alert("returning available 'character' items..");
                 return successFunc([
                     "slab",
                     "vertical",
