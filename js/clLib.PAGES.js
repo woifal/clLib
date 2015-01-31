@@ -1045,6 +1045,13 @@ clLib.PAGES.processAuthObj = function(urlAuthObj, successFunc) {
     }
 
 //    alert("Getting VALID authObj from URL params >" + urlAuthObj + "<");
+    //
+    // Strip off trailing "#_=_" in case of redirect from facebook oauth2
+    //
+    if(urlAuthObj.indexOf("#_=_") > -1) {
+        urlAuthObj = urlAuthObj.substring(0, urlAuthObj.indexOf("#_=_"));
+    }
+
     var authObj = JSON.parse(urlAuthObj);
 //    alert("GOT VALID authObj from URL params");
 	console.log("authObj:" + JSON.stringify(authObj));
