@@ -115,8 +115,8 @@ clLib.REST.postAJAXprocessing = {
 *	insert => do NOT encode obj props
 */
 clLib.REST.executeRetrieve = function (uri, method, whereObj, successFunc, errorFunc, additionalParams) {
-	var whereObj;
-	if(whereObj) {
+//	var whereObj;
+    if(whereObj) {
 		whereObj = "where=" + encodeURIComponent(JSON.stringify(whereObj));
 	}
 	var reqOptions = {};
