@@ -211,7 +211,9 @@ clLib.UI.web = {
 				window.$dataTable = $table.dataTable({
 					"a": "b"
 					,data : routeLogs
-					,order: []
+                    ,order: [
+                        dtColumnAt.indexOf("DateISO"), "desc"
+                    ]
 					,"columns": dtColumns
 					,"columnDefs": dtColumnDefs
 					,"fnRowCallback": function( nRow, aData, iDisplayIndex ) {
