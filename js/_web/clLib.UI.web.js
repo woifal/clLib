@@ -349,11 +349,14 @@ clLib.UI.web = {
                                 
                                 // Let element refresh itself (if it wants to)
                                 currentFieldConfig["editElement"]["addRefreshHandler"]($editElement);
-
 							}
 
 						}
+                        
+                        $td.find(".clRefreshable" ).trigger("clRefresh");                        
 					});
+                    
+                    
 		
 				} );				
 				
