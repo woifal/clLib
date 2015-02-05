@@ -9,51 +9,75 @@ clLib.webFieldConfig = {
 	  this.message = message || 'Unknown reason';
 	  alert("FieldConfigError " + JSON.stringify(this.message));
 	  this.prototype = new Error();
-	  this.prototype.constructor = clLib.UI.fc.FieldConfigError;
+	  //this.prototype.constructor = clLib.UI.fc.FieldConfigError;
 	}
 	,FieldConfigCollection : function(fieldConfigCollectionConfig) {
 		this.fieldConfigs = {};
 		this.defaults = {
-                collectionName : "_NO_FIELD_COLLECTION_DEFINED"
+            collectionName : "_NO_FIELD_COLLECTION_DEFINED"
 			,entityName : "_NO_ENTITYNAME_DEFINED"
 			,getEntityName : function() {
 				console.log("returning " + this.config.entityName);
 				return this.config.entityName;
 			}
-			,saveHandler : function(fieldData, newRowFlag, successFunc, errorFunc) {
-				clLib.loggi("saving row(" + newRowFlag + ") with data >" + JSON.stringify(fieldData) + "<", "20150129");
+            ,validateFields : function(fieldData, successFunc, errorFunc) {
+                var fieldCollection = this;
+                try {
+                    $.each(fieldData, function(fieldName, fieldData) {
+                        var fieldConfig = fieldCollection.get(fieldName);
+                        var validationResult = fieldConfig.validate(fieldData);
+                        clLib.loggi("validated field >" + fieldConfig.displayName + "< with result >" + validationResult + "<", "20150202");
+                    });
+                } catch(e) {
+                    return errorFunc(e);
+                }
+                return successFunc();
+            }
+            ,saveHandler : function(fieldData, newRowFlag, successFunc, errorFunc) {
+				var myErrorHandler = function(e) {
+                    var errorMsg = e.message;
+                    var errorCode = "N/A";
+                    if(e.message) {
+                        try {
+                            var jsonParsedMeassage = JSON.parse(e.message);
+                            if(jsonParsedMessage["responseText"]) {
+                                errorCode = JSON.parse(JSON.parse(e.message)["responseText"])["code"];
+                                errorMsg = JSON.parse(JSON.parse(e.message)["responseText"])["description"];
+                            }
+                        }
+                        catch(e) {
+                            console.log("no XHR error..");
+                        }
+                    }
+                    var errString =  "could not sync item due to:" + e.name + " + (" + e.message + ") >" + errorCode + ">,<" + errorMsg + "<";
+                    console.error(errString);
+                    return errorFunc(errString);
+                };
+                
+                clLib.loggi("saving row(" + newRowFlag + ") with data >" + JSON.stringify(fieldData) + "<", "20150129");
+                var fieldConfig = this.config;
+                return this.config.validateFields(
+                    fieldData
+                    ,function() {
+                        var targetFunc = newRowFlag ? clLib.REST.storeEntity : clLib.REST.updateEntity;
+                        var entityId = -1;
+                        
+                        return targetFunc(fieldConfig.getEntityName(), fieldData
+                        ,function(realInstance) {
+                            clLib.loggi("synced realInstance >" + JSON.stringify(realInstance) + "<");
+                            entityId = realInstance["_id"];	
 
-				var targetFunc = newRowFlag ? clLib.REST.storeEntity : clLib.REST.updateEntity;
-				var entityId = -1;
-				
-				targetFunc(this.config.getEntityName(), fieldData
-				,function(realInstance) {
-					clLib.loggi("synced realInstance >" + JSON.stringify(realInstance) + "<");
-					entityId = realInstance["_id"];	
+                            clLib.loggi("synced UP >" + fieldData["_id"] + "<, new id is (" + typeof(realInstance) + ")>" + realInstance["_id"] + "<, dummyId was >" + fieldData["_id"] + "<");
+                            
+                            return successFunc(entityId);
+                        }
+                        ,myErrorHandler
+                        );
 
-					clLib.loggi("synced UP >" + fieldData["_id"] + "<, new id is (" + typeof(realInstance) + ")>" + realInstance["_id"] + "<, dummyId was >" + fieldData["_id"] + "<");
-					
-					return successFunc(entityId);
-				}
-				,function(e) {
-					var errorMsg = e.message;
-					var errorCode = "N/A";
-					if(e.message && JSON.parse(e.message)["responseText"]) {
-						errorCode = JSON.parse(JSON.parse(e.message)["responseText"])["code"];
-						errorMsg = JSON.parse(JSON.parse(e.message)["responseText"])["description"];
-					}
-					
-					var errString =  "could not sync item due to:" + e.name + " + (" + e.message + ") >" + errorCode + ">,<" + errorMsg + "<";
-					console.error(errString);
-					return errorFunc(errString);
-				}
-				);
-
-
-/*				var newRowId = -123;
-				
-				return successFunc(newRowId);
-*/
+                    }
+                    ,myErrorHandler
+                );
+                
 			}
 			,deleteHandler : function(fieldData, successFunc, errorFunc) {
 				clLib.loggi("deleting row with data >" + JSON.stringify(fieldData) + "<", "20150129");
@@ -84,6 +108,7 @@ clLib.webFieldConfig = {
 		this.config.getEntityName = this.config.getEntityName.bind(this);
 		this.config.saveHandler = this.config.saveHandler.bind(this);
 		this.config.deleteHandler = this.config.deleteHandler.bind(this);
+		this.config.validateFields = this.config.validateFields.bind(this);
 
 	}
 	,FieldConfig : function(fieldConfig) {
@@ -95,6 +120,9 @@ clLib.webFieldConfig = {
 			,className : this.fieldName
 			,visible : true
 			,orderable : true
+            ,validate: function(fieldData) {
+                return true;
+            }
 			,renderFunc : function(colValue, rowValue) { return colValue; }
 			,editElement : {
 				serialize: function($editEl) {
@@ -107,7 +135,6 @@ clLib.webFieldConfig = {
                         $editElement.addClass("clRefreshable");
 						$editElement.on("clRefresh", function() {
 							clLib.loggi("need to refresh me, which is >" + fieldConfig.fieldName + "<", "20150129");
-							var newValue = "";
 							var routeLog = {};
 							
 							var $thisField = $(this);
@@ -248,6 +275,7 @@ clLib.webFieldConfig = {
         this.config.editElement.addRefreshHandler = this.config.editElement.addRefreshHandler.bind(this);
         this.config.editElement.refresh = this.config.editElement.refresh.bind(this);
         this.config.filterElement = this.config.filterElement.bind(this);
+        this.config.validate = this.config.validate.bind(this);
         
 
     }
@@ -370,7 +398,13 @@ clLib.webFieldConfig = {
                                     // 2DO: refresh filter for column
                                     clLib.loggi("triggering refresh on " + $dataTable.find("thead")[0].outerHTML, "20150129");
                                     $dataTable.find("thead").find(".clRefreshable" ).trigger("clFilterRefresh", serRow);
-                                    
+                                   							
+                                    $table.find("tr").removeClass("clBlurred");
+                                    $table.find("th").removeClass("clBlurred");
+                                    $tr.removeClass("clEdited");
+
+                                    clLib.UI.web.tableEdited(false);
+ 
 								
 								}
 								,function(e) {
@@ -379,12 +413,6 @@ clLib.webFieldConfig = {
 								}
 							);
 							
-							
-							$table.find("tr").removeClass("clBlurred");
-							$table.find("th").removeClass("clBlurred");
-							$tr.removeClass("clEdited");
-
-							clLib.UI.web.tableEdited(false);
 
 							
 						})
@@ -425,7 +453,16 @@ clLib.webFieldConfig = {
 			,visible: true
 			,displayName: "Date"
 			,renderFunc : clLib.ISOStrToDate
-			,filterElement: function(column, api, i) {
+            ,validate: function(fieldData) {
+                //alert("validating DateISO field for >" + fieldData + "<");
+                if(!fieldData) {
+                    clLib.loggi("wrong!", "20150202");
+                    throw new FieldConfigError(this.config.displayName + " is mandatory!");
+                }
+                clLib.loggi("correct!", "20150202");
+                return true;
+            }
+            ,filterElement: function(column, api, i) {
 				var cont = $('<div class="fromToFilter" style="">').appendTo( $(column.header()) );
 				
 				var $dateFrom = $("<input class='dateFrom' placeholder='from' style='width: 55px;'>")
@@ -499,6 +536,7 @@ clLib.webFieldConfig = {
 					"GradeSystem"
 				]
                 , refresh : function($editElement, rowData) {
+                    var oldValue = $editElement.val();
                     var gradeSystem = rowData["GradeSystem"];
                     var grades = clLib.gradeConfig[gradeSystem] ? Object.keys(clLib.gradeConfig[gradeSystem]["grades"]) : ["??"];
                     
@@ -511,6 +549,7 @@ clLib.webFieldConfig = {
                     
                     console.log("adding options >" + optionsAsString + "<");
                     $editElement.find('option').remove().end().append($(optionsAsString));
+                    $editElement.val(oldValue);
 
                 }
 
