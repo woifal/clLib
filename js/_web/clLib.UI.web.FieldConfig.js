@@ -195,7 +195,7 @@ clLib.webFieldConfig = {
 				select.addClass("clRefreshable");
                 var fieldConfig = this.config;
                 select.on("clFilterRefresh", function(event, rowData) {
-                    console.error("filter refresh for " + $(column.header()).attr("class") + " with data >"  + JSON.stringify(rowData));
+                    console.log("filter refresh for (" + fieldConfig.fieldName + ")" + $(column.header()).attr("class") + " with data >"  + rowData[fieldConfig.fieldName]);
                     var found = false;
                     var newOption = rowData[fieldConfig.fieldName];
                     if(newOption == "") {
@@ -509,6 +509,11 @@ clLib.webFieldConfig = {
 		}));
 
 		routeLogConfig.add(new FieldConfig({
+			fieldName : "_id"
+			,visible: true
+		}));
+
+		routeLogConfig.add(new FieldConfig({
 			fieldName : "GradeSystem"
 //			,editElement: {
 //			create: function(colName, currentValue) {
@@ -587,10 +592,12 @@ clLib.webFieldConfig = {
                 }
 				,serialize : function($editElement) {
 					var val = 
-						$editElement.val() 
+						$editElement.find("span").html();
 					return val;
 				}
 			}				
+			
+
 		}));
         
         routeLogConfig.add(new FieldConfig({
@@ -763,11 +770,6 @@ clLib.webFieldConfig = {
 
 		}));
 		
-		routeLogConfig.add(new FieldConfig({
-			fieldName : "_id"
-			,visible: false
-		}));
-
 		routeLogConfig.add(new FieldConfig({
 			fieldName : "deleted"
 			,visible: false
