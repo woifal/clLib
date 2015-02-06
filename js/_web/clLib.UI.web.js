@@ -35,7 +35,7 @@ clLib.UI.web = {
 	,addDateRangeSearch : function(forColIdx, $dateFromEl, $dateToEl) {
 		$.fn.dataTable.ext.search.push(
 			function( settings, data, dataIndex ) {
-				var eligibleFrom = false, eligibleTo = false;
+                var eligibleFrom = false, eligibleTo = false;
 				console.log("comparing " + $dateFromEl.val() + " and " + data[forColIdx]);
 				
 				if($dateFromEl.val()) {
@@ -88,11 +88,12 @@ clLib.UI.web = {
 	,createTable : function($tableContainer, options, successFunc, errorFunc) {
 		var routeLogConfig = clLib.webFieldConfig._routeLogConfig;
 		console.log(JSON.stringify(routeLogConfig));
-
+        
 		console.log(JSON.stringify(options["where"]));
+        options["where"] = {"username": function() { return clLib.getUserInfo()["username"]}()};
 		return clLib.REST.getEntities(
 			options["entity"]
-			,options["where"] || {"username": function() { return clLib.getUserInfo()["username"]}()} /*"foo6@gmail.com"} */ 
+			,options["where"] 
 			,function(resultObj) {
 				var routeLogs = resultObj.RouteLog;
 				console.log(routeLogs.length);
@@ -145,13 +146,14 @@ clLib.UI.web = {
 						"orderable": curFieldConfig["orderable"]
 						,"bUseRendered": false
 						,"render": function ( data, type, full, meta ) {
+                            if(type != "display") {
+                                return data;
+                            }
 							if(window.dtDebug) {
 								//alert("rendering >" + fieldName + "< and value >" + data + "<(" + (data !== undefined) + ")");
 							}
-
 							
-							
-						//console.log("render me!");
+                            //console.log("render me!");
 							var renderedVal = "";
 							if(
 								(
@@ -162,7 +164,6 @@ clLib.UI.web = {
 								|| curFieldConfig["fieldName"] == 'clControls'
 								|| curFieldConfig["dummyField"] == true
 							) {
-								//alert("value is >" + data + "<");
 								renderedVal = data;
 								if(typeof(curFieldConfig) == "object" && curFieldConfig["renderFunc"]) {
 									renderedVal = curFieldConfig["renderFunc"](data, full);
@@ -171,7 +172,7 @@ clLib.UI.web = {
 									alert("could not find renderer for >" + fieldName + "< and value >" + data + "<");
 								}
 							} else {
-								renderedVal = "?";
+                                renderedVal = "?";
 							}
 							
 							if(window.dtDebug) {
@@ -193,8 +194,12 @@ clLib.UI.web = {
 				//
 				$.each(routeLogs, function(idx, routeLog) {
 					$.each(routeLogConfig.fields(), function(idx, keyName) {
-						if(!(keyName in routeLog)) {
+                        var curFieldConfig = routeLogConfig.get(keyName) || {};
+						if(!(keyName in routeLog) || curFieldConfig["dummyField"]) {
 							routeLog[keyName] = '';
+                            if(curFieldConfig["renderFunc"]) {
+                                routeLog[keyName] = curFieldConfig.renderFunc("", routeLog);
+                            }
 						}
 					});
 				});
