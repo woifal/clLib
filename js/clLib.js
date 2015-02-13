@@ -229,31 +229,36 @@ clLib.rpad = function(str1, padString, length) {
 clLib.getIconImg = function(imgName) {
 	return $('<span style="width: 50px; height: 50px" class="' + imgName + '"></span>"');
 };
+
+
 clLib.ISOStrToDate = function(ISOStr) {
-	var x= new Date(ISOStr);
+	var x = new Date(ISOStr);
 	if(x.getHours() + "" == "NaN") {
-	//	alert("nope");
-		return "XXXXXXXXXX";
+        console.error("Invalid ISO date >" + ISOStr + "<");
+		return "";
 	}
-	return "" + 
-		(x.getYear() + 1900) + "-" +
-		clLib.lpad((x.getMonth() +1), '0', 2) + "-" +
-		clLib.lpad(x.getDate(), '0', 2) + " " +
-		clLib.lpad((x.getHours()), '0', 2) + ":" +
-		clLib.lpad(x.getMinutes(), '0', 2) + ":" +
-		clLib.lpad(x.getSeconds(), '0', 2);
+
+    return "" + 
+		(x.getFullYear())                       + "-" +
+		clLib.lpad((x.getMonth() +1),   '0', 2) + "-" +
+		clLib.lpad(x.getDate(),         '0', 2) + " " +
+		clLib.lpad(x.getHours() ,       '0', 2) + ":" +
+		clLib.lpad(x.getMinutes(),      '0', 2) + ":" +
+		clLib.lpad(x.getSeconds(),      '0', 2);
 };
 
 clLib.dateStrToISOStr = function(dateStr) {
 	//var dateStr =  "2014-05-19 23:36:13";
 	var dateStrRE = new RegExp("(....)-(..)-(..) (..):(..):(..)", "i");
-	var matches = dateStr.match(dateStrRE);
+	var _year,_month,_day,_hour,_min,_sec;
+    var matches = dateStr.match(dateStrRE);
 	
 	// Nothing to convert? ok, return nothing..
 	if(!dateStr || dateStr == " ") {
-		return "";
+        console.error("Invalid date str >" + dateStr + "<");
+        return "";
 	}
-	alert("dateStr >" + dateStr + "<");
+	//alert("dateStr >" + dateStr + "<");
 	if(!matches) {
 		dateStrRE = new RegExp("(....)-(..)-(..)", "i");
 		matches = dateStr.match(dateStrRE);
@@ -261,28 +266,41 @@ clLib.dateStrToISOStr = function(dateStr) {
 			alert("could not parse datestr >" + dateStr + "<");
 			return "";
 		}
-		matches[4] = "03";
-		matches[5] = "00";
-		matches[6] = "00";
-	}
-	var ISOStr = 
-		matches[1] 
-		+ "-" 
-		+ matches[2] 
-		+ "-" 
-		+ matches[3] 
-		+ "T" 
-		+ clLib.lpad(matches[4] -2, '0', 2) 
-		+ ":" 
-		+ matches[5] 
-		+ ":" 
-		+ matches[6] 
-		+ ".000" 
-		+ "Z";
-	console.log(JSON.stringify(matches));
-	console.log(JSON.stringify(ISOStr));
+
+        _hour = 0;
+        _min = 0;
+        _sec = 0;
+    } else {
+        _hour = matches[4];
+        _min = matches[5];
+        _sec = matches[6];
+    }
+    _year = matches[1];
+    _month = matches[2];
+    _day = matches[3];
+
+    var isoDate = new Date();
+    isoDate.setFullYear(_year);
+    isoDate.setMonth(_month - 1);
+    isoDate.setDate(_day);
+    isoDate.setHours(_hour);
+    isoDate.setMinutes(_min);
+    isoDate.setSeconds(_sec);
+
+    isoDate.setTime(isoDate.getTime() + (isoDate.getTimezoneOffset() * 60000));
+
+	var ISOStr = "" + 
+		(isoDate.getFullYear())                         + "-" +
+		clLib.lpad((isoDate.getMonth() +1),     '0', 2) + "-" +
+		clLib.lpad(isoDate.getDate(),           '0', 2) + "T" +
+		clLib.lpad(isoDate.getHours(),          '0', 2) + ":" +
+		clLib.lpad(isoDate.getMinutes(),        '0', 2) + ":" +
+		clLib.lpad(isoDate.getSeconds(),        '0', 2) + "Z"
+    ;
+
 	return ISOStr;
 };
+
 
 
 clLib.dateToStr = function(dateObj) {
