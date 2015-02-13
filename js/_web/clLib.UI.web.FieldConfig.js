@@ -123,7 +123,7 @@ clLib.webFieldConfig = {
             ,validate: function(fieldData) {
                 return true;
             }
-			,renderFunc : function(colValue, rowValue) { return colValue; }
+			,renderFunc : function(colValue, rowValue) { return "" + colValue; }
 			,editElement : {
 				serialize: function($editEl) {
 					console.log("(" + this.fieldName + ") the editEl is >" + $editEl + "<");
@@ -222,9 +222,9 @@ clLib.webFieldConfig = {
 				select
 					.appendTo( $(column.header()) )
 					.on( 'change', function () {
-						console.error("filtering on >" + this.value + "<");
-						console.error("Changed >" + i + "< >" + $(this).parent().index() + "< >" + column.header() + "<>" + $(column.header()).attr("class") + "<!!!");
-						console.error("column is >" + $(this).parent().index()+':visible' + "<");
+						console.log("filtering on >" + this.value + "<");
+						console.log("Changed >" + i + "< >" + $(this).parent().index() + "< >" + column.header() + "<>" + $(column.header()).attr("class") + "<!!!");
+						console.log("column is >" + $(this).parent().index()+':visible' + "<");
 						api
 							.column( $(this).parent().index()+':visible' )
 							.search( this.value )
@@ -361,21 +361,13 @@ clLib.webFieldConfig = {
 								,function(newId) {
 									if(newRow) {
 										serRow["_id"] = newId;
-										console.log("adding >" + JSON.stringify(serRow) + "<");
+										console.error("adding >" + JSON.stringify(serRow) + "<");
 										//window.dtDebug = true;
-										var dtRowNumber = $table.fnAddData(serRow);
-										//window.dtDebug = false;
-										var $newTr = $($dataTable.api().rows(dtRowNumber).nodes());
-										console.log("got " + JSON.stringify(Object.keys($newTr)));
-										clLib.loggi("!!!!added (" + dtRowNumber + " with # " + $newTr.find("td").length + ")", "20150129");
-										//$newTr.find("td").css("border", "1px solid red");
-										
-										// add class for correct styling of clControls buttons...
-										$newTr.find("td:eq(0)").addClass("clControls");
-										
-										//$tr.remove();
+                                        $table.api().row.add(serRow);
 									}
 									else {
+                                        serRow["_id"] = rowData["_id"];
+                                        
 										$tr.find("td").each(function() {
 											var $td = $(this);
 											var colIdx = $td.index();
@@ -389,15 +381,17 @@ clLib.webFieldConfig = {
 											// set underlying table cell data to new value..
 											rowData[colName] = serRow[colName];
 											// set table cell to NEW value(=> rendered :)
-											$td.html(currentFieldConfig["renderFunc"](serRow[colName], serRow));
+											console.log("serializing val >" + serRow[colName] + "< for row >" + colName + "<");
+                                            $td.html(currentFieldConfig["renderFunc"](serRow[colName], serRow));
 										});
 
-									}
-                                    $table.api().draw();
+                                        // Update underlying row data with (possibly) new values..
+                                        $table.api().row($tr).data(rowData);
 
+                                    }
                                     // 2DO: refresh filter for column
                                     clLib.loggi("triggering refresh on " + $dataTable.find("thead")[0].outerHTML, "20150129");
-                                    $dataTable.find("thead").find(".clRefreshable" ).trigger("clFilterRefresh", serRow);
+                                    //$dataTable.find("thead").find(".clRefreshable" ).trigger("clFilterRefresh", serRow);
                                    							
                                     $table.find("tr").removeClass("clBlurred");
                                     $table.find("th").removeClass("clBlurred");
@@ -405,7 +399,9 @@ clLib.webFieldConfig = {
 
                                     clLib.UI.web.tableEdited(false);
  
-								
+                                    console.log("refreshing table!");
+                                    $table.api().draw();
+                                    console.log("refreshed table!");
 								}
 								,function(e) {
 									alert("Could not sync entity!");
@@ -422,19 +418,28 @@ clLib.webFieldConfig = {
 					$ctlEl.append($("<img class='clCancel'>")
 						.on("click", function() {
 							var $tr = $(this).closest('tr');
-							$tr.removeClass("clEdited");
-							$tr.find("td").each(function(idx) {
-								console.log($(this).attr("class") + " <-> " + $origTr.find("td." + $.trim($(this).attr("class"))).attr("class"));
-								$(this).replaceWith($origTr.find("td." + $.trim($(this).attr("class"))));
 							
-							});
-							$table.find("tr").removeClass("clBlurred");
-							$table.find("th").removeClass("clBlurred");
-							$origTr.empty();
-							console.log("origtr restored.");
-							
-							clLib.UI.web.tableEdited(false);
-						})
+                            if(!window["$origTr"] || $origTr.find("td").size() == 0) {
+                                $tr.remove();
+                            }
+                            else 
+                            {
+                                $tr.removeClass("clEdited");
+                                $tr.find("td").each(function(idx) {
+                                    var $origTd = $origTr.find("td:eq(" + idx + ")")
+                                    console.log($(this).attr("class") + " <-> " + $origTd.attr("class"));
+                                    $(this).replaceWith($origTd.clone());
+                                
+                                });
+                                console.log("origtr restored.");
+                                $origTr.empty();
+                            }
+
+                            $table.find("tr").removeClass("clBlurred");
+                            $table.find("th").removeClass("clBlurred");
+                            
+                            clLib.UI.web.tableEdited(false);
+                        })
 					);
 				
 					return $ctlEl;
@@ -452,7 +457,7 @@ clLib.webFieldConfig = {
 			fieldName : "DateISO"
 			,visible: true
 			,displayName: "Date"
-			,renderFunc : clLib.ISOStrToDate
+			,renderFunc : function(x) { return clLib.ISOStrToDate(x); }
             ,validate: function(fieldData) {
                 //alert("validating DateISO field for >" + fieldData + "<");
                 if(!fieldData) {
@@ -477,7 +482,8 @@ clLib.webFieldConfig = {
 			}
 			,editElement : {
 				create: function(colName, currentValue) {
-					var $el = $("<div>");
+					var currentValue = clLib.ISOStrToDate(currentValue);
+                    var $el = $("<div>");
 					var $input = $("<input class='datePortion' style='width: 75px;'>")
 						.val(
 							currentValue.substring(0,10)
@@ -512,9 +518,10 @@ clLib.webFieldConfig = {
 			fieldName : "_id"
 			,visible: true
 		}));
-
-		routeLogConfig.add(new FieldConfig({
-			fieldName : "GradeSystem"
+		
+        routeLogConfig.add(new FieldConfig({
+            fieldName : "GradeSystem"
+            ,defaultValue: "UIAA"
 //			,editElement: {
 //			create: function(colName, currentValue) {
 //				return "<h1>" + colName + "--" + currentValue + "</h1";
@@ -533,7 +540,8 @@ clLib.webFieldConfig = {
 		}));
 		routeLogConfig.add(new FieldConfig({
 			fieldName : "Grade"
-			,refreshOnUpdate: [
+			,defaultValue: "I-"
+            ,refreshOnUpdate: [
                 "score"
             ]
 			,editElement : {
