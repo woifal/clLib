@@ -52,7 +52,7 @@ clLib.UI.web = {
 				} else {
 					eligibleTo = true;
 				}
-				
+				//alert("true!");
 				return eligibleFrom && eligibleTo;
 			}
 		);
@@ -91,6 +91,7 @@ clLib.UI.web = {
         
 		console.log(JSON.stringify(options["where"]));
         options["where"] = {"username": function() { return clLib.getUserInfo()["username"]}()};
+        //options["where"]["Comment"] = "popo8";
 		return clLib.REST.getEntities(
 			options["entity"]
 			,options["where"] 
@@ -210,7 +211,7 @@ clLib.UI.web = {
 
 
 				//alert("adding columns >" + JSON.stringify(dtColumns) + "<");
-				console.error("adding columns >" + JSON.stringify(dtColumns) + "<");
+				console.log("adding columns >" + JSON.stringify(dtColumns) + "<");
 				
 				
 				window.$dataTable = $table.dataTable({
@@ -266,6 +267,9 @@ clLib.UI.web = {
 
 					var $newTr = $("<tr>");
 					$newTr.addClass("clEdited odd");
+					$table.find("tr:not(.clEdited)").addClass("clBlurred");
+					$table.find("th:not(.clEdited)").addClass("clBlurred");
+
 					$thTr.find("th").each(function() {
 						var $th = $(this);
 						var $newTd = $("<td>");
@@ -280,13 +284,16 @@ clLib.UI.web = {
 							//alert("building edit control for >" + colName + "<");
 						
 							var currentValue;
-							currentValue = ""; //rowData[dtColumnAt.indexOf(colName)];
+							currentValue = "" + currentFieldConfig["defaultValue"];
+                            if(currentValue == "undefined") {
+                                currentValue = "";
+                            }
 							
 							var $editElement;
 							if(currentFieldConfig && currentFieldConfig["editElement"]) {
 								console.log("got custom edit element for " + colName);
 								$editElement = currentFieldConfig["editElement"]["create"](colName, currentValue, $thead, currentFieldConfig);
-								console.error("editeleletn is now " + $editElement.html());
+								console.log("editeleletn is now " + $editElement.html());
 							}
 							else {
 								alert("no editElement for >" + colName + "<, using renderFunc (=> readonly display)");
@@ -303,8 +310,10 @@ clLib.UI.web = {
 							$newTr.append($newTd);
 
 						}
+                                                
+                        $newTd.find(".clRefreshable" ).trigger("clRefresh");                        
+
 					});
-					
 					$tbody.prepend($newTr);
 				});
 
@@ -345,7 +354,7 @@ clLib.UI.web = {
 							if(currentFieldConfig && currentFieldConfig["editElement"]/* && colName != 'clControls'*/) {
 								console.log("got custom edit element for " + colName);
 								$editElement = currentFieldConfig["editElement"]["create"](colName, currentValue, $thead, currentFieldConfig, rowData);
-								console.error("editeleletn is now " + $editElement.html());
+								console.log("editeleletn is now " + $editElement.html());
 
 								$td
 									.empty()
