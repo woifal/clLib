@@ -25,6 +25,10 @@ clLib.webFieldConfig = {
                 try {
                     $.each(fieldData, function(fieldName, fieldData) {
                         var fieldConfig = fieldCollection.get(fieldName);
+                        if(!fieldConfig || Object.keys(fieldConfig).length == 0) {
+                            alert("No field config found for >" + fieldName + "<");
+                            return;
+                        }
                         var validationResult = fieldConfig.validate(fieldData);
                         clLib.loggi("validated field >" + fieldConfig.displayName + "< with result >" + validationResult + "<", "20150202");
                     });
@@ -33,7 +37,7 @@ clLib.webFieldConfig = {
                 }
                 return successFunc();
             }
-            ,saveHandler : function(fieldData, newRowFlag, successFunc, errorFunc) {
+            ,saveHandler : function(fieldData, newRowFlag, noValidationFlag, successFunc, errorFunc) {
 				var myErrorHandler = function(e) {
                     var errorMsg = e.message;
                     var errorCode = "N/A";
@@ -56,7 +60,16 @@ clLib.webFieldConfig = {
                 
                 clLib.loggi("saving row(" + newRowFlag + ") with data >" + JSON.stringify(fieldData) + "<", "20150129");
                 var fieldConfig = this.config;
-                return this.config.validateFields(
+                
+                // Bypass validation if specified..
+                var validateFunc = this.config.validateFields;
+                if(noValidationFlag) {
+                    validateFunc = function(fieldData, successFunc, errorFunc) {
+                        return successFunc();
+                    };
+                }
+                
+                return validateFunc(
                     fieldData
                     ,function() {
                         var targetFunc = newRowFlag ? clLib.REST.storeEntity : clLib.REST.updateEntity;
@@ -83,7 +96,12 @@ clLib.webFieldConfig = {
 				clLib.loggi("deleting row with data >" + JSON.stringify(fieldData) + "<", "20150129");
 				fieldData["deleted"]  = 1;
 
-				return this.config.saveHandler(fieldData, false /* =>newRowFlag */, successFunc, errorFunc);
+				return this.config.saveHandler(
+                    fieldData 
+                    ,false /* =>newRowFlag */
+                    ,true /* =>noValidationFlag */
+                    ,successFunc
+                    ,errorFunc);
 			}
 		};
 		this.add = function(fieldConfigObj) {
@@ -358,6 +376,7 @@ clLib.webFieldConfig = {
 							routeLogConfig.config.saveHandler(
 								serRow
 								,newRow
+                                ,false
 								,function(newId) {
 									if(newRow) {
 										serRow["_id"] = newId;
