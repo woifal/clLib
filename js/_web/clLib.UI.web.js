@@ -9,7 +9,25 @@ clLib.UI.web = {
 		$(".editRelevant").prop("disabled", yesno);
 	}
 	,buildDatePickerFilter : function($dpEl, api) {
-		$dpEl
+		var changeDoneToClearButtonFunc = function( input ) {
+            setTimeout(function() {
+                var $doneButton = $( input )
+                    .datepicker( "widget" )
+                    .find( ".ui-datepicker-buttonpane" )
+                    .find(".ui-datepicker-close")
+                    .html("Clear")
+                ;
+                $doneButton.click(function(e) {
+                    $(input)
+                        .val("")
+                        .trigger("change")
+                    ;
+                    
+                });
+            }, 1 );
+        };
+        
+        $dpEl
 			.on('change', function () {
 				if($(this).val() != $dpEl.attr("oldvalue")) {
 					api.draw();
@@ -24,7 +42,9 @@ clLib.UI.web = {
 				//buttonImage: "../files/views/assets/image/calendar.gif",
 				//buttonImageOnly: true,
 				//buttonText: "From Date"
-			})
+                ,beforeShow: changeDoneToClearButtonFunc
+                ,onChangeMonthYear: changeDoneToClearButtonFunc
+            })
 			.on('click', function(evt) {
 				$dpEl.datepicker("show");
 				evt.stopImmediatePropagation();
@@ -53,6 +73,7 @@ clLib.UI.web = {
 					eligibleTo = true;
 				}
 				//alert("true!");
+                console.log(">" + JSON.stringify(data[forColIdx]) + "< from >" + $dateFromEl.val() + "(=" + eligibleFrom + ")< to >" + $dateToEl.val() + "(=" + eligibleTo + ")<");
 				return eligibleFrom && eligibleTo;
 			}
 		);
