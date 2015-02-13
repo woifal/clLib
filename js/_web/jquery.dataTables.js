@@ -984,7 +984,10 @@
 	 */
 	function _fnAddData ( oSettings, aDataIn, nTr, anTds )
 	{
-		/* Create the object for storing information about this new row */
+        console.log('_fnAddData!!');
+        console.log("aDataIn:>" + JSON.stringify(aDataIn) + "<");
+        
+        /* Create the object for storing information about this new row */
 		var iRow = oSettings.aoData.length;
 		var oData = $.extend( true, {}, DataTable.models.oRow, {
 			src: nTr ? 'dom' : 'data'
@@ -1102,7 +1105,12 @@
 			console.error(colIdx + ": gotcellData >" + JSON.stringify(cellData) + "<, rowdata >" + JSON.stringify(rowData) + "< for >" + rowIdx + "<");
 		}
 
-		if ( cellData === undefined ) {
+
+        if ( cellData === undefined) {
+            cellData = null;
+        }
+
+		if ( cellData === undefined) {
 			if ( settings.iDrawError != draw && defaultContent === null ) {
 			console.error("2gotcellData >" + cellData + "< for >" + rowIdx + "<");
 			_fnLog( settings, 0, "Requested unknown parameter "+
@@ -7900,7 +7908,8 @@
 	
 	
 	_api_register( 'row.add()', function ( row ) {
-		// Allow a jQuery object to be passed in - only a single row is added from
+        console.info("ADDING ROW " + JSON.stringify(row));
+        // Allow a jQuery object to be passed in - only a single row is added from
 		// it though - the first element in the set
 		if ( row instanceof $ && row.length ) {
 			row = row[0];
