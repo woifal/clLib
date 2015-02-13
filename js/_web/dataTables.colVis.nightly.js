@@ -751,7 +751,11 @@ ColVis.prototype = {
 	 */
 	"_fnCollectionShow": function ()
 	{
-		var that = this, i, iLen, iLeft;
+        if(window.clEdited) {
+            console.log("clEdited set - not doing anything on _fnCollectionShow..");
+            return;
+        }
+        var that = this, i, iLen, iLeft;
 		var oPos = $(this.dom.button).offset();
 		var nHidden = this.dom.collection;
 		var nBackground = this.dom.background;
