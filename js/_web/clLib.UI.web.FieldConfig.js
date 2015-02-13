@@ -516,7 +516,7 @@ clLib.webFieldConfig = {
 
 		routeLogConfig.add(new FieldConfig({
 			fieldName : "_id"
-			,visible: true
+			,visible: false
 		}));
 		
         routeLogConfig.add(new FieldConfig({
