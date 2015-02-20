@@ -60,7 +60,28 @@ grunt.initConfig({
 						}
 					]
 				}
-		},
+				,web_dev: {
+					options: {
+						flatten: true
+						,globals: {
+							NOWW: new Date().toISOString()
+							,"clLib.REST.baseURI" : "http://localhost:1983/db"
+							,"clLib.REST.clLibServerURI" : "http://localhost:1983"
+						}
+					// Task-specific options go here.
+					},
+					files : [
+						{ 
+							src: ['html/_web/*'],
+							dest: 'dist/tmp/web/'
+						}
+						,{ 
+							src: ['js/*'],
+							dest: 'dist/tmp/web/'
+						}
+					]
+				}
+         },
 		copy: {
 				app_dev: {
 					expand: true,
@@ -192,6 +213,38 @@ grunt.initConfig({
 						,{ src: ["files/*", "files/**/*"] , dest:"dist/web/" }
 					]
 				}
+				,server_prod: {
+					expand: true,
+//					flatten: true,
+					files: [
+                        { 
+							flatten: true
+                            ,expand: true
+							,src: [
+								"js/clLib.js", "js/clLib.gradeConfig.js", "!js/_web"
+							]
+							,dest:"dist/server" 
+                        }
+                        ,
+                        { 
+							flatten: true
+                            ,expand: true
+							,src: [
+								"server/*"
+							]
+							,dest:"dist/server" 
+						}
+						,
+                        { 
+							//flatten: true
+							//,
+                            expand: true
+							//,cwd: "server"
+                            ,src: ["server/node_modules/*", "server/node_modules/**/*"] 
+                            ,dest:"dist" 
+                        }
+                     ]
+				}
 		},
         compress: {
 			  app_dev: {
@@ -241,5 +294,7 @@ grunt.initConfig({
     grunt.registerTask('appdev', ['includereplace:app_dev', 'copy:app_dev', 'compress:app_dev']);
     grunt.registerTask('appprod', ['includereplace:app_prod', 'copy:app_prod', 'compress:app_prod']);
     grunt.registerTask('webprod', ['includereplace:web_prod', 'copy:web_prod']);
+    grunt.registerTask('webdev', ['includereplace:web_dev', 'copy:web_prod']);
+    grunt.registerTask('serverprod', ['copy:server_prod']);
 
 };
