@@ -59,7 +59,7 @@ mongolab.prototype.getEntities = function(options, callbackFunc, errorFunc) {
 			}
 			,num: parseInt(limit) || 30
 			,spherical: true
-			,minDistance: geoPos["minDistance"]
+			,minDistance: geoPos["minDistance"] + 0
 			//,maxDistance : 10 
 			//,distanceMultiplier: 6371
 			,query: whereObj
@@ -172,8 +172,8 @@ mongolab.prototype.insertEntity = function(options, callbackFunc, errorFunc) {
 	var db = mongo.db(clLib.mongolab.mongoURI, {safe: true});
 
 	util.log("inserting into " + entityName + "");
-	var userColl = db.collection(entityName);
-	return userColl.insert(entityValues, function(err) {
+	var aCollection = db.collection(entityName);
+	return aCollection.insert(entityValues, function(err) {
 		if (JSON.stringify(err) != "{}" && JSON.stringify(err) != "null") {
 			util.log("ERROR:" + JSON.stringify(err));	
 			if(err["err"].indexOf("E11000") == 0) {
