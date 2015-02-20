@@ -12,6 +12,8 @@ var args = process.argv.splice(2);
 var tableName = args[0];
 var whereObj = JSON.parse(args[1]);
 var distinctColName = args[2];
+var sortByCol = args[3];
+var limitCount = parseInt(0 + args[4]);
 
 var exitCallBack = function() {
 	process.exit();
@@ -36,6 +38,30 @@ function testQuery(nextFunc) {
 	});
 
 };
+
+function testQuerySortLimit(nextFunc) {
+	var coll = conn.collection(tableName);
+	if(!coll) {
+		util.log("NO coll " + tableName + "found..");
+	}
+
+    var sortObj = {};
+    sortObj[sortByCol] = 1;
+    util.log("limitcount is >" + limitCount + "<");
+	coll.find(whereObj).sort(sortObj).limit(limitCount).toArray(function(err, items) {
+		if (err) {
+			util.log("ERROR:" + JSON.stringify(err));
+		}
+		
+		util.log("lenfth" + JSON.stringify(items.length));
+		util.log("items" + JSON.stringify(items));
+	});
+
+};
+
+
+
+
 
 function testUpdate(i) {
 	util.log("i is " + i);
@@ -96,9 +122,11 @@ function testDistinct(nextFunc) {
 
 //testInsert(function() {
 //	return testQuery(function() {
-		return testDistinct()
+//		return testDistinct()
 //	})
 //})
+//return testQuerySortLimit()
+return testQuery()
 ;
 //testUpdate(1);
 

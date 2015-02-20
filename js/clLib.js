@@ -1,6 +1,14 @@
 "use strict";
 
-function ClInfo(message, infoType) {
+var util;
+try {
+    util = require("util");
+} catch(e) {
+    util = console;
+}
+ 
+ 
+ function ClInfo(message, infoType) {
 	this.message = message;
 	this.infoType = infoType || 'info';
 }
@@ -619,7 +627,7 @@ Array.prototype.hasValue = function(needle) {
 
 
 clLib.loggi = function(text, priority) {
-	priority = priority || window.priority || 0;
+	priority = priority || 0; // || window.priority || 0;
 	if(priority) {
 		if(priority == 1) {
 			alert("asdfasdf" + text);
@@ -846,11 +854,15 @@ clLib.formatArrInt = function(resultObj, exprs) {
 	return newArr;
 };
 
-clLib.getObjValues = function(resultObj) {
+clLib.getObjValues = function(resultObj, sortKeys) {
 	var values = [];
-	for(var key in resultObj) {
-		values.push(resultObj[key]);
-	}
+    var keys2Iterate = Object.keys(resultObj);
+    if(sortKeys) {
+        keys2Iterate = keys2Iterate.sort();
+    }
+	for(var i = 0; i < keys2Iterate.length; i++) {
+		values.push(resultObj[i]);
+    }
 	//alert("values are " + JSON.stringify(values));
 	return values;
 };
@@ -959,7 +971,67 @@ clLib.getGeoLocation = function(successFunc, errorFunc, options) {
 		
 }
 
+clLib.objToSortedArray = function(objToSort, sortValues, elementFilterFunc) {
+    var resultArr = [];
+    var thisObj = objToSort;
+    $.each(sortValues, function(idx, sortValue) {
+        console.log("Pushing for sortValue >" + sortValue + "< >" + JSON.stringify(thisObj[sortValue]) + "<");  
+        var resultElement = thisObj[sortValue];
+        if(elementFilterFunc && typeof(elementFilterFunc) == "function") {
+            resultElement = elementFilterFunc(resultElement);
+        }
+        resultArr.push(resultElement);
+    });
+    return resultArr;
+}
 
+Array.prototype.sortByKey = function(sortKey, descSortFlag) {
+    this.sort(function(a, b) {
+		var sortResult = 
+			a[sortKey] < b[sortKey] ? -1 : 1;
+		if(descSortFlag) {
+			sortResult *= -1;
+		}
+		return sortResult;
+	});
+};
+
+Array.prototype.sortByFunction = function(sortFunction, descSortFlag) {
+	util.log("yes, sorting by function " + typeof(sortFunction));
+    this.sort(function(a, b) {
+		var sortResult = 
+			sortFunction(a) < sortFunction(b) ? -1 : 1;
+		if(descSortFlag) {
+			sortResult *= -1;
+		}
+		return sortResult;
+    });
+};
+
+Array.prototype.sortBy = function(sortBy, descSortFlag) {
+	var sortFunc;
+	util.log("sortBy " + JSON.stringify(sortBy));
+
+	if(clLib.isFunction(sortBy)) {
+		util.log("JSON.stringify " + typeof(sortBy));
+		return this.sortByFunction(sortBy, descSortFlag);	
+	} else {
+		return this.sortByKey(sortBy, descSortFlag);
+	}
+};
+
+clLib.isFunction = function(functionToCheck) {
+ var getType = {};
+ //alert("am i a function? :" + getType.toString.call(functionToCheck));
+ return functionToCheck && getType.toString.call(functionToCheck) === '[object Function]';
+}
+
+clLib.foo = "blerl";
+//exports.clLib = clLib;
+try {
+    global.clLib = clLib;
+} catch(e) {
+}
 
 //})(jQuery)
 ;

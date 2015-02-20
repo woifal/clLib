@@ -3,7 +3,19 @@ var util = require("util");
 var mongo = require('mongoskin');
 var BSON = mongo.BSONPure;
 
-var clLib = {};
+/*
+*
+* Global client/server shared .js files..
+* Object shared in global scope is "clLib".
+*
+*/
+require("./clLib");
+require("./clLib.gradeConfig");
+
+
+util.log("\n\n>>>>>>" + JSON.stringify(clLib.gradeConfig) + "<<<<<<<<<\n\n\n\n");
+
+//clLib = {};
 clLib.server = {};
 clLib.server.runtime = {
 	"sessionTokens" : {}
@@ -109,10 +121,7 @@ var statsResource = require("./clLib.statistics");
 var statsHandler = new statsResource.stats();
 
 
-
 var adminUserDetails = {};
-
-	
 var adminUserObj = {};
 adminUserObj["username"] = "clAdmin";
 adminUserObj["password"] = "foobar";
@@ -708,38 +717,51 @@ server.get('/stats',
 		function(req, res) 
 {
 	var errHandler = function(errorObj) {
-		return clLib.server.defaults.errorFunc(errorObj, res);
+		util.log("ERROR CAUGHT:\n>>>\n" + JSON.stringify(errorObj) + "\n<<<<<\n\n");
+        //return clLib.server.defaults.errorFunc(errorObj, res);
 	}
 
-	try {
+//	try {
 		
 		util.log("2getting.." + JSON.stringify(req.params));
-		
-		var whereObj = JSON.parse(req.params["where"] || "{}");
+		var options = req.params;
+        util.log("got options >" + JSON.stringify(options) + "<");
+        
+		var whereObj = options["where"] || "{}";
+        whereObj = JSON.parse(whereObj);
 
 		whereObj["deleted"] = {"$ne" : 1};
-		
+		util.log("§33");
+        options["where"] = whereObj;
+        
+        util.log("2got options >" + JSON.stringify(options) + "<");
+        
+/*
 		statsHandler.getRouteLogScoreStats({
-			datePortionFunc : statsHandler.ISODayPortion
+			//datePortionFunc : statsHandler.localDayPortion
+            //datePortionFunc : statsHandler.ISODayPortion
 			//datePortionFunc : statsHandler.ISOMonthPortion
 			//datePortionFunc : statsHandler.ISODayHourPortion
 			//datePortionFunc : statsHandler.ISOHourPortion
-			,where: whereObj
+			where: whereObj
 		}
-		, function(resultObj) {
-			util.log("2retrieved result:" + Object.keys(resultObj).length);
-			//util.log(">" + JSON.stringify(resultObj) + "<");
-			for (var i = 0; i < resultObj.length; i++) {
-				//util.log(JSON.stringify(resultObj[i]));
-			}
-			util.log("sending response..");
-			res.send(JSON.stringify(resultObj));
-		}
-		, errHandler
+*/
+        statsHandler.getEntityStats(
+            options
+            , function(resultObj) {
+                util.log("2retrieved result:" + Object.keys(resultObj).length);
+                //util.log(">" + JSON.stringify(resultObj) + "<");
+                for (var i = 0; i < resultObj.length; i++) {
+                    //util.log(JSON.stringify(resultObj[i]));
+                }
+                util.log("sending response..");
+                res.send(JSON.stringify(resultObj));
+            }
+            , errHandler
 		);
-	} catch(e) {
-		errHandler(new Error("UNHANDLED SERVER ERROR "  + e.name + " IS " + e.message + " !!!"));
-	}
+//	} catch(e) {
+//		errHandler(new Error("UNHANDLED SERVER ERROR "  + e.name + " IS " + e.message + " !!!"));
+//	}
 
 
 });

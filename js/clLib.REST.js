@@ -7,6 +7,7 @@ clLib.clException= function(name, message) {
    this.name = name;
 };
 
+//$.support.cors = true;
 
 clLib.REST.baseURI = "@@clLib.REST.baseURI";
 clLib.REST.baseCollectionsURI = clLib.REST.baseURI+ "/"; // + "/collections/";
@@ -327,6 +328,23 @@ clLib.REST.requestVerification = function(userInstance, successFunc, errorFunc) 
 	reqOptions["params"] = userInstance;
 	reqOptions["allowNoSessionToken"] = true;
 	clLib.REST.execAJAXRequest(reqOptions, successFunc, errorFunc);
+};
+
+clLib.REST.requestStatsNew = function(options, successFunc, errorFunc) {
+    var reqOptions = {};
+    if(options["where"]) {
+       options["where"] = JSON.stringify(options["where"]);
+    }
+	reqOptions["uri"] = clLib.REST.clLibServerURI + "/stats";
+	reqOptions["method"] = "GET";
+	reqOptions["params"] = options;
+	reqOptions["allowNoSessionToken"] = true;
+
+    /* if(whereObj) {
+		whereObj = "where=" + encodeURIComponent(JSON.stringify(whereObj));
+	}
+*/
+	return clLib.REST.execAJAXRequest(reqOptions, successFunc, errorFunc);
 };
 
 clLib.REST.requestStats = function(options, callbackFunc, errorFunc) {
