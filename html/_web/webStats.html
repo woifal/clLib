@@ -1,0 +1,110 @@
+<!DOCTYPE html> 
+<html >
+
+<head>
+	<meta charset="utf-8"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <meta http-equiv="no-cache"/>
+    <meta http-equiv="Expires" content="-1"/>
+    <meta http-equiv="Cache-Control" content="no-cache"/>
+
+	<title>Kurt Climbing 0408a</title> 
+	<link rel="stylesheet" href="http://www.kurt-climbing.com/Joomla/STATIC/css/THEMES/20140627/app1.css" />
+	<link rel="stylesheet" href="http://www.kurt-climbing.com/Joomla/STATIC/css/THEMES/20140627/jquery.mobile.structure-1.4.2.css" />
+	<link rel="stylesheet" href="http://www.kurt-climbing.com/Joomla/STATIC/css/THEMES/20140627/jquery.mobile.icons.min.css" />		
+
+    <link rel="stylesheet" href="../css/clRouteColors.css" />
+    <link rel="stylesheet" href="../css/clLib.css" />
+
+
+        <!-- phonegap integration? -->
+        <script type="text/javascript" src="../js/jquery-1.8.2.js"></script>
+        <script type="text/javascript" src="../js/Chart.js"></script>
+
+		
+
+
+        <script type="text/javascript" src="http://www.kurt-climbing.com/Joomla/STATIC/css/THEMES/20140405/jquery.mobile-1.4.2.js"></script>
+
+
+        <script type="text/javascript" src="../js/clLib.js"></script>
+        <script type="text/javascript" src="../js/clLib.auth.js"></script>
+        <script type="text/javascript" src="../js/clLib.gradeConfig.js"></script>
+        <script type="text/javascript" src="../js/clLib.localStorage.js"></script>
+        <script type="text/javascript" src="../js/clLib.localStorage.indexes.js"></script>
+        <script type="text/javascript" src="../js/clLib.UI.js"></script>
+        <script type="text/javascript" src="../js/clLib.REST.js"></script>
+<!--
+        <script type="text/javascript" src="../js/clLib.PAGES.js"></script>
+		
+		<script type="text/javascript" src="../js/clLib.PAGES.web.js"></script>
+-->	
+        
+		<script type="text/javascript" src="../js/clLib.IAP.js"></script>
+        <script type="text/javascript" src="../js/clLib.UI.pageConfig.js"></script>
+
+        <script type="text/javascript" src="../js/clLib.UI.web.GraphConfig.js"></script>
+<script>
+           
+    $(document).on('pagebeforeshow', function() {
+        $("#graphSelector").on("change", function(e) {
+            //alert("getting stats for user >" + $("#usernameSelector").val() + "<");
+            var newVal = $(this).val();
+            setTimeout(
+                function() { 
+                    clLib.graphConfig["_routeLogConfig"].get(newVal).draw({
+                        where: {
+                            username: $("#usernameSelector").val()
+                        }
+                    });
+                },
+                1
+            );
+            
+        });
+        
+    /*        setTimeout(
+            function() { 
+                clLib.graphConfig["_routeLogConfig"].get("allSessions").draw();
+            },
+            1
+        );
+*/        
+        $.each(clLib.graphConfig["_routeLogConfig"].graphs(), function(idx, graphName) {
+            $("#graphSelector").append(
+                "<option value='" + graphName + "'>" + graphName + "</option"
+            );
+        });
+
+        $("#graphSelector").val("highScoreByDay");
+        $("#graphSelector").trigger("change");
+        
+        
+    });
+
+</script>  
+		
+		</head> 
+
+
+<body style="background-color: white !important;" >  
+
+<input id="usernameSelector" type="text">
+<select id="graphSelector" data-role="none">
+<!--
+    <option value="allSessions">All Ssessions(bar)</option>
+    <option value="allSessionsLine">All Sessions(line)</option>
+-->
+</select>
+<div id="routeLogDiagramContainer" style="width: 800px; height: 400px; border: 1px solid green;">
+<canvas class="clCanvas" width="800px" height="400px" style="border: 1px solid red; awidth: 300px; aheight: 300px;"></canvas>
+</div>
+
+</body>
+
+<script>
+    
+</script>
+
+
+</html>
