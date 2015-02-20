@@ -193,7 +193,7 @@ routeLogConfig.add(new GraphConfig({
 routeLogConfig.add(new GraphConfig({
     graphName : "highScoreByDay"
     ,displayName: "High Score(by day)"
-    ,graphType: "bar"
+    ,graphType: "line"
     ,statsOptions: {
         entity:                 "RouteLog"
         ,datePortionFuncName :   "localDayPortion"
@@ -201,7 +201,7 @@ routeLogConfig.add(new GraphConfig({
         ,sortByFuncName:        "sort_localScoreAndDay"
         ,aggTopX:               10
         ,sortDescFlag:          true
-        ,nrOfEligibleDays:      30
+        ,nrOfEligibleDays:      365
     }
 }));
 

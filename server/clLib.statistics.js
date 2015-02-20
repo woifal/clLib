@@ -130,21 +130,23 @@ clStats.aggregateScoresByDatePortion = function(routeLogArr, options) {
 	for(var i = 0; i < routeLogArr.length; i++) {
 		var routeLog = routeLogArr[i];
 		var datePortion = clStats[options.statsOptions["datePortionFuncName"]](routeLog["DateISO"]);
-		util.log("datePortion is>" + datePortion + "<");
-        if(!(datePortion in aggResultObj)) {
-			aggResultObj[datePortion] = {
-				count : 0
-				,score : 0
-				,items : []
-			};
-		}
-		
-		if(aggResultObj[datePortion].count < options.statsOptions.aggTopX) {
-			util.log("Adding score of >" + clLib.computeScore(routeLog) + "<");
-            aggResultObj[datePortion].score += clLib.computeScore(routeLog);
-			aggResultObj[datePortion].count++;
-			aggResultObj[datePortion].items.push(routeLog);
-		}
+		if(datePortion) {
+            util.log("datePortion is>" + datePortion + "<");
+            if(!(datePortion in aggResultObj)) {
+                aggResultObj[datePortion] = {
+                    count : 0
+                    ,score : 0
+                    ,items : []
+                };
+            }
+            
+            if(aggResultObj[datePortion].count < options.statsOptions.aggTopX) {
+                util.log("Adding score of >" + clLib.computeScore(routeLog) + "<");
+                aggResultObj[datePortion].score += clLib.computeScore(routeLog);
+                aggResultObj[datePortion].count++;
+                aggResultObj[datePortion].items.push(routeLog);
+            }
+        }
 	}
 	JSON.stringify(aggResultObj);
 	return aggResultObj;
@@ -163,11 +165,14 @@ clStats.aggregateHighScoreByDatePortion = function(routeLogArr, options) {
         for(var i = 0; i < routeLogArr.length; i++) {
             var routeLog = routeLogArr[i];
             util.log("at >" + i + "< out of >" + routeLogArr.length + "<");
-            datePortions[datePortionFunc(routeLog["DateISO"])] = true;
+            var datePortion = datePortionFunc(routeLog["DateISO"]);
+            if(datePortion) {
+                datePortions[datePortion] = true;
+            }
         }
         util.log("Found discint date portions >" + JSON.stringify(datePortions) + "<");
         var datePortionsArr = Object.keys(datePortions);
-//        datePortionsArr = ["2015-07-26", "2015-03-15"];
+        //datePortionsArr = ["2015-07-26", "2015-03-15"];
         for(var i = 0; i < datePortionsArr.sort().length; i++) {
             var datePortion = datePortionsArr[i];
             
@@ -243,7 +248,7 @@ clStats.dateOlderThanDays = function(currentDateStr, dateToCheckStr, numDays){
     var dateToCheck = clStats.dateObjFromDateStr(dateToCheckStr);
     var daysDiff = clStats.daydiff(currentDate, dateToCheck);
     util.log("Calculated days of >" + daysDiff + "> between >" + currentDate + "< and >" + dateToCheck + "<");
-    return numDays > daysDiff;
+    return ((numDays > daysDiff) && (daysDiff >= 0));
 };
 
 clStats.dateObjFromDateStr = function(dateStr) {
