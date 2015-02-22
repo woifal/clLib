@@ -124,7 +124,7 @@ clLib.graphConfig = {
                         }
 
                         $(graphConfig.collection.containerSelector)[0].onclick = function(evt){
-                            alert("chart clicked!");
+                            //alert("chart clicked!");
                             var activePoints;
                             if(graphConfig.graphType == "line") {
                                 activePoints = window.myNewChart.getPointsAtEvent(evt);
@@ -133,7 +133,7 @@ clLib.graphConfig = {
                                 activePoints = window.myNewChart.getBarsAtEvent(evt);
                             }
                             $.each(activePoints, function(idx, data) {
-                                alert("clicked point >" + data["label"] + "<");
+                                //alert("clicked point >" + data["label"] + "<");
                             });
                             // => activePoints is an array of points on the canvas that are at the same position as the click event.
                             //alert("activePoints >" + JSON.stringify(activePoints) + "<");
@@ -166,7 +166,7 @@ var routeLogConfig = new GraphConfigCollection({
 
 routeLogConfig.add(new GraphConfig({
     graphName : "allSessionsByDay"
-    ,displayName: "All Sessions(by day)"
+    ,displayName: "All Sessions (by day)"
     ,graphType: "bar"
     ,statsOptions: {
         entity:                 "RouteLog"
@@ -179,7 +179,7 @@ routeLogConfig.add(new GraphConfig({
 }));
 routeLogConfig.add(new GraphConfig({
     graphName : "allSessionsByMonth"
-    ,displayName: "All Sessions(by month)"
+    ,displayName: "All Sessions (by month)"
     ,graphType: "bar"
     ,statsOptions: {
         entity:                 "RouteLog"
@@ -192,7 +192,7 @@ routeLogConfig.add(new GraphConfig({
 }));
 routeLogConfig.add(new GraphConfig({
     graphName : "highScoreByDay"
-    ,displayName: "High Score(by day)"
+    ,displayName: "High Score (by day)"
     ,graphType: "line"
     ,statsOptions: {
         entity:                 "RouteLog"
@@ -203,12 +203,6 @@ routeLogConfig.add(new GraphConfig({
         ,sortDescFlag:          true
         ,nrOfEligibleDays:      365
     }
-}));
-
-routeLogConfig.add(new GraphConfig({
-    graphName : "allSessionsLine"
-    ,displayName: "All Sessions(line)"
-    ,graphType: "line"
 }));
 
 
