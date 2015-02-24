@@ -207,8 +207,8 @@ document.addEventListener("DOMContentLoaded", function() {
 				$('<div style="clear: both"></div>' + 
 					'<ul class="nav menu clMenuContainer">' + 
 						'<li class="current" style="float: left; width: 50%;"><a class="clUserInfo" href="#"></a></li>' + 
-						'<li class="current loggedInOnly hidden clMenuMyRoutes"><a href="http://www.kurt-climbing.com/Joomla/index.php/cllib-stats"><span>My Routes</span></a></li>' + 
 						'<li class="current loggedInOnly hidden clMenuMyStats"><a href="http://www.kurt-climbing.com/Joomla/index.php/cllib-graph"><span>My Statistics</span></a></li>' + 
+						'<li class="current loggedInOnly hidden clMenuMyRoutes"><a href="http://www.kurt-climbing.com/Joomla/index.php/cllib-stats"><span>My Routes</span></a></li>' + 
 	//					'<li class="current"><a href="#">Grade Conversion</a></li>' + 
 	//					'<li class="current"><a href="#">Buddies</a></li>' + 
 	//					'<li class="current"><a id="logoutButton" href="#">Logout</a></li>' + 
