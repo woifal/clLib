@@ -42,10 +42,10 @@ $pageclass = $params->get( 'pageclass_sfx' );
   <meta name="author" content="Super User" />
   <meta name="generator" content="Joomla! - Open Source Content Management" />
   <title>KURT Climbing</title>
-  <link href="http://www.kurt-climbing.com/Joomla/" rel="canonical" />
-  <link href="/Joomla/KURT/files/views/assets/image/favicon.ico" rel="shortcut icon" type="image/vnd.microsoft.icon" />
-  <link rel="stylesheet" href="/Joomla/media/jui/css/bootstrap.min.css" type="text/css" />
-  <link rel="stylesheet" href="/Joomla/media/jui/css/bootstrap-responsive.css" type="text/css" />
+  <link href="http://www.kurt-climbing.com/" rel="canonical" />
+  <link href="/KURT/files/views/assets/image/favicon.ico" rel="shortcut icon" type="image/vnd.microsoft.icon" />
+  <link rel="stylesheet" href="/media/jui/css/bootstrap.min.css" type="text/css" />
+  <link rel="stylesheet" href="/media/jui/css/bootstrap-responsive.css" type="text/css" />
 <!--  <script src="/Joomla/media/jui/js/jquery.min.js" type="text/javascript"></script>-->
 <!--  <script src="/Joomla/media/jui/js/jquery-noconflict.js" type="text/javascript"></script>-->
 <!--  <script src="/Joomla/media/jui/js/jquery-migrate.min.js" type="text/javascript"></script>-->
@@ -78,7 +78,7 @@ $pageclass = $params->get( 'pageclass_sfx' );
 	<link href='css/googleFont_OpenSans300.css' rel='stylesheet' type='text/css' />
 	
 	<?php // Parameters
-	require($_SERVER['DOCUMENT_ROOT']."/Joomla/templates/favourite/admin/params.php"); ?>
+	require($_SERVER['DOCUMENT_ROOT']."/templates/favourite/admin/params.php"); ?>
 
 	<?php // Google Analytics Tracking Code
 	if($analyticsCode) {echo '<script type="text/javascript">'; echo $analyticsCode; echo '</script>';}?>
@@ -95,17 +95,17 @@ $pageclass = $params->get( 'pageclass_sfx' );
 		
 		<script type="text/javascript" src="<?php echo $this->baseurl ?>/KURT/js/webUtils.js"></script>
 
-		<script type="text/javascript" src="/Joomla/KURT/js/clLib.js"></script>
-		<script type="text/javascript" src="/Joomla/KURT/js/clLib.auth.js"></script>
-        <script type="text/javascript" src="/Joomla/KURT/js/clLib.gradeConfig.js"></script>
-        <script type="text/javascript" src="/Joomla/KURT/js/clLib.localStorage.js"></script>
-        <script type="text/javascript" src="/Joomla/KURT/js/clLib.localStorage.indexes.js"></script>
-        <script type="text/javascript" src="/Joomla/KURT/js/clLib.UI.js"></script>
-        <script type="text/javascript" src="/Joomla/KURT/js/clLib.REST.js"></script>
-        <script type="text/javascript" src="/Joomla/KURT/js/clLib.PAGES.js"></script>
-        <script type="text/javascript" src="/Joomla/KURT/js/clLib.IAP.js"></script>
-        <script type="text/javascript" src="/Joomla/KURT/js/clLib.UI.pageConfig.js"></script>
-        <script type="text/javascript" src="/Joomla/KURT/js/webClLib.js"></script>
+		<script type="text/javascript" src="/KURT/js/clLib.js"></script>
+		<script type="text/javascript" src="/KURT/js/clLib.auth.js"></script>
+        <script type="text/javascript" src="/KURT/js/clLib.gradeConfig.js"></script>
+        <script type="text/javascript" src="/KURT/js/clLib.localStorage.js"></script>
+        <script type="text/javascript" src="/KURT/js/clLib.localStorage.indexes.js"></script>
+        <script type="text/javascript" src="/KURT/js/clLib.UI.js"></script>
+        <script type="text/javascript" src="/KURT/js/clLib.REST.js"></script>
+        <script type="text/javascript" src="/KURT/js/clLib.PAGES.js"></script>
+        <script type="text/javascript" src="/KURT/js/clLib.IAP.js"></script>
+        <script type="text/javascript" src="/KURT/js/clLib.UI.pageConfig.js"></script>
+        <script type="text/javascript" src="/KURT/js/webClLib.js"></script>
 
 
 
