@@ -156,13 +156,24 @@ clLib.computeScore = function(routeLogObj) {
 	;
 	
 	// allow for flexible tick type factors a eval-able expressions...
+/*
 	$.each(gradeSystemScore["tickTypeFactors"], function(tickType, expr) {
 		//alert("checking " + tickType + ": " + routeLogObj[tickType]);
 		if(routeLogObj[tickType]) {
 			score = eval(score + gradeSystemScore["tickTypeFactors"][tickType]);
 		}
 	});
-	
+*/	
+    if(routeLogObj["tickType"]) {
+        if(!gradeSystemScore["tickTypeFactors"][routeLogObj["tickType"]]) {
+            console.log("no ticktype calc for >" + routeLogObj["tickType"] + "<");
+        }
+        else {
+            console.log("getting score for >" + routeLogObj["_id"] + "< ticktype >" + routeLogObj["tickType"] + "<");
+            score = eval(score + gradeSystemScore["tickTypeFactors"][routeLogObj["tickType"]]);
+        }
+    }
+
 	clLib.loggi("computed score >" + score + "< for route " + JSON.stringify(routeLogObj));
 	return score;
 };
@@ -617,7 +628,10 @@ clLib.sortByScoreFunc = function(routeLog) {
 
 
 
-
+clLib.isArray = function(o) {
+  //alert("checking " + Object.prototype.toString.call(o));
+  return Object.prototype.toString.call(o) === '[object Array]'; 
+};
 
 Array.prototype.hasValue = function(needle) {
 	return this.indexOf(needle) > -1;
