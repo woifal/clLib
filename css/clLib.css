@@ -570,21 +570,26 @@ border: 1px solid red;
 	padding-top: 5px;
 	height: 55px;
 }
-.clFieldset.clTicktypes .ui-controlgroup-controls .ui-btn.ui-checkbox-on{
+.clFieldset.clTicktypes .ui-controlgroup-controls .ui-btn.ui-checkbox-on
+,.clFieldset.clTicktypes .ui-controlgroup-controls .ui-btn.ui-radio-on
+{
 	/* TESTING: use dummy background for now..need to find selected-state-color */
 	background-image: url("../files/views/assets/image/ticktype_gradient_bg_1_60.png")/* !important */;
 }
-.clFieldset.clTicktypes .ui-controlgroup-controls .ui-btn.ui-checkbox-off{
+.clFieldset.clTicktypes .ui-controlgroup-controls .ui-btn.ui-checkbox-off
+,.clFieldset.clTicktypes .ui-controlgroup-controls .ui-btn.ui-radio-off{
 	background-image: none;
 	background-color: #bac1cb !important; /*1px solid red !important;*/
 }
 
-.clFieldset.clTicktypes  .ui-controlgroup-controls .ui-checkbox {
+.clFieldset.clTicktypes  .ui-controlgroup-controls .ui-checkbox 
+,.clFieldset.clTicktypes  .ui-controlgroup-controls .ui-radio {
 	border: 1px solid #cccccc;
 	width: 24.35% !important;
 	/*border: 1px solid red !important;*/
 }
-.clFieldset.clTicktypes.items3 .ui-controlgroup-controls .ui-checkbox {
+.clFieldset.clTicktypes.items3 .ui-controlgroup-controls .ui-checkbox 
+,.clFieldset.clTicktypes.items3 .ui-controlgroup-controls .ui-radio {
 	border: 1px solid #cccccc;
 	width: 32% !important;
 	/*border: 1px solid red !important;*/
