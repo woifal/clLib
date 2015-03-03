@@ -16,10 +16,10 @@ Attempt: 0 points
 
 */
 clLib.defaultTickTypeFactors = {
-	"tickType_redpoint" : "+0",
-	"tickType_flash" : "+53",
-	"tickType_attempt" : "*0",
-	"tickType_toprope" : "-150"
+	"redpoint" : "+0",
+	"flash" : "+53",
+	"attempt" : "*0",
+	"toprope" : "-150"
 };
 
 //
