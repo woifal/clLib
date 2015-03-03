@@ -152,7 +152,7 @@ clLib.webFieldConfig = {
                     if(fieldConfig.editElement.refreshFrom) {
                         $editElement.addClass("clRefreshable");
 						$editElement.on("clRefresh", function() {
-							clLib.loggi("need to refresh me, which is >" + fieldConfig.fieldName + "<", "20150129");
+							//alert("need to refresh me, which is >" + fieldConfig.fieldName + "<", "20150129");
 							var routeLog = {};
 							
 							var $thisField = $(this);
@@ -163,7 +163,9 @@ clLib.webFieldConfig = {
 								console.log("getting serialized version of >" + $thisField.closest("tr").find("." + fromColName)[0].outerHTML + "<");
 								routeLog[fromColName] = 
 									routeLogConfig.get(fromColName).editElement.serialize(
-										$thisField.closest("tr").find("." + fromColName)
+                                        function() {
+                                            return $thisField.closest("tr").find("." + fromColName);
+                                        }()
 									)
 								;
 							});
@@ -176,8 +178,10 @@ clLib.webFieldConfig = {
                 ,refresh: function($editElement, rowData) {
                     return 1;
                 }
-				,create: function(colName, currentValue, $thead) {
+
+				,create: function(colName, currentValue, $thead, currentFieldConfig, api) {
 					//alert("(" + this.fieldName + ") creating >" + colName + "< with value >" + currentValue + "<");
+/*
 					var $fieldValsSelect = $thead
 						.find("tr th." + colName + " select")
 						.clone()
@@ -185,6 +189,48 @@ clLib.webFieldConfig = {
 						.prop("disabled", false)
 						.val(currentValue)
                     ;
+*/                  
+
+                    var column = $table.api().column(this.config.fieldName + ":name");
+
+
+                    var $fieldValsSelect = $("<select>");
+                    this.config.getAvailableItems(
+                        column
+                        ,api
+                        ,function(filterItems) {
+
+                            if(clLib.isArray(filterItems)) {
+                                $.each(filterItems, function(idx, val) {
+                                    if(val != "") {
+                                        var option = '<option '
+                                            + ' value="' + val +'">'
+                                            + val
+                                            + '</option>'
+                                        ;
+                                        $fieldValsSelect.append( option );
+                                    }
+                                });
+                            } else {
+                                console.log("keys >" + Object.keys(filterItems) + "<");
+                                $.each(filterItems, function(val, desc) {
+                                    if(val != "") {
+                                        var option = '<option '
+                                            + ' value="' + val +'">'
+                                            + desc
+                                            + '</option>'
+                                        ;
+                                        $fieldValsSelect.append( option );
+                                    }
+                                });
+                            
+                            }
+                            
+                            $fieldValsSelect.val(currentValue);
+                        }
+                    );
+                    
+                    
 					var fieldConfig = this.config;
 					$fieldValsSelect.on("change", function() {
 						if(fieldConfig.refreshOnUpdate) {
@@ -203,7 +249,15 @@ clLib.webFieldConfig = {
 				}
 			}
 			,getAvailableItems : function(column, api, successFunc) {
-				return successFunc(column.data().unique().sort());
+				var uniqueItemsObj = column.data().unique().sort();
+                var uniqueItemsArr = [];
+                $.each(uniqueItemsObj, function(idx, val) {
+                    uniqueItemsArr.push(val);
+                });
+                return successFunc(uniqueItemsArr);
+			}
+			,getFilterItems : function(column, api, successFunc) {
+				return this.getAvailableItems(column, api, successFunc);
 			}
 			,filterElement: function(column, api, i) {
 				console.log("adding filter select..");
@@ -258,28 +312,37 @@ clLib.webFieldConfig = {
 				/*
 				*		Get all filter items...
 				*/
-				this.config.getAvailableItems(
+				this.config.getFilterItems(
+				//this.config.getAvailableItems(
 					column
 					,api
 					,function(filterItems) {
-						$.each(filterItems, function(idx, val) {
-							if(val != "") {
-// Renderd values currently not used for filter items..
-/*								
-								var renderedValue = val;
-								if(this.renderFunc) {
-									renderedValue = this.renderFunc(val);
-								}
-*/
-								var option = '<option '
-									+ ' value="' + val +'">'
-									+ val
-									+ '</option>'
-								;
-								select.append( option );
-							}
-						});
-					}
+                        console.log("filterItems for >" + fieldConfig.fieldName + "< is >" + clLib.isArray(filterItems) + "<>" + typeof(filterItems) + "<>" + filterItems + "<");
+                        if(clLib.isArray(filterItems)) {
+                            $.each(filterItems, function(idx, val) {
+                                if(val != "") {
+                                    var option = '<option '
+                                        + ' value="' + val +'">'
+                                        + val
+                                        + '</option>'
+                                    ;
+                                    select.append( option );
+                                }
+                            });
+                        } else {
+                            $.each(filterItems, function(val, desc) {
+                                if(val != "") {
+                                    var option = '<option '
+                                        + ' value="' + val +'">'
+                                        + desc
+                                        + '</option>'
+                                    ;
+                                    select.append( option );
+                                }
+                            });
+                        
+                        }
+                    }
 				);
 				
 			}
@@ -294,7 +357,8 @@ clLib.webFieldConfig = {
         this.config.editElement.refresh = this.config.editElement.refresh.bind(this);
         this.config.filterElement = this.config.filterElement.bind(this);
         this.config.validate = this.config.validate.bind(this);
-        
+        this.config.getAvailableItems = this.config.getAvailableItems.bind(this);
+        this.config.renderFunc = this.config.renderFunc.bind(this);
 
     }
 		
@@ -361,8 +425,13 @@ clLib.webFieldConfig = {
 								var serializedVal = serializeFunc($editEl) || "";
 								serRow[colName] = serializedVal;
 								console.log("serRow is now >" + JSON.stringify(serRow) + "<");
-								
 							});
+                            
+                            /*
+                            *    FieldConfigCollection post-processing for row...
+                            */
+                            
+                            
 							
 							//2DO: need to pass id to update!!!
 							clLib.loggi("ID TO SAVE >" + JSON.stringify(rowData) + "<", "20150129");
@@ -473,6 +542,34 @@ clLib.webFieldConfig = {
 		}));
 
 		routeLogConfig.add(new FieldConfig({
+			fieldName : "Area"
+			,displayName: "Area"
+			,visible: true
+ 			,getAvailableItems : function(column, api, successFunc) {
+                return clLib.REST.getEntitiesDistinctFields(
+					"AreaRaw3"
+					,"Name"
+					,{} // whereClause 
+					,function(items) {
+						console.log("1got items >" + items + "<");
+						console.log("1bgot items >" + JSON.stringify(items) + "<");
+						return successFunc(items["AreaRaw3"].sort());
+					}
+				);
+
+            }
+            ,getFilterItems : function(column, api, successFunc) {
+				var uniqueItemsObj = column.data().unique().sort();
+                var uniqueItemsArr = [];
+                $.each(uniqueItemsObj, function(idx, val) {
+                    uniqueItemsArr.push(val);
+                });
+                return successFunc(uniqueItemsArr);
+			}
+			
+		}));
+
+		routeLogConfig.add(new FieldConfig({
 			fieldName : "DateISO"
 			,visible: true
 			,displayName: "Date"
@@ -541,12 +638,6 @@ clLib.webFieldConfig = {
         routeLogConfig.add(new FieldConfig({
             fieldName : "GradeSystem"
             ,defaultValue: "UIAA"
-//			,editElement: {
-//			create: function(colName, currentValue) {
-//				return "<h1>" + colName + "--" + currentValue + "</h1";
-//			}
-//		}
-//
 			,refreshOnUpdate: [
                 "Grade"
                 ,"score"
@@ -587,7 +678,120 @@ clLib.webFieldConfig = {
 
 			}				
         }));
-        
+        routeLogConfig.add(new FieldConfig({
+			fieldName : "tickType"
+            ,refreshOnUpdate: [
+                "score"
+            ]
+			,visible: true
+            ,getAvailableItems : function(column, api, successFunc) {
+                return successFunc([
+                    "redpoint"
+                    ,"flash"
+                    ,"attempt"
+                    ,"toprope"
+                ]);
+			}
+            ,getFilterItems : function(column, api, successFunc) {
+                return successFunc({
+                    "redpoint" : "red point"
+                    ,"flash" : "flash"
+                    ,"attempt" : "try"
+                    ,"toprope" : "top rope"
+                });
+			}
+			,renderFunc : function(colData, rowData) { 
+                var tickTypeFound = colData;
+                
+                console.log("getting ticktype for >" + tickTypeFound + "<");
+
+                var $tickType = clLib.tickTypeSymbol(tickTypeFound, 1);
+                var $tickTypeDiv = $("<div>")
+                    .addClass("clTicktypes")
+                ;
+                $tickTypeDiv.append($tickType);
+
+                $tickTypeDiv.append(
+                    $("<input type='hidden' class='clValue' value='" + tickTypeFound + "'>")
+                );
+                $tickTypeDiv.addClass("clValueX" + tickTypeFound + "X");
+											
+                console.log("tickType = " + JSON.stringify($tickTypeDiv.html()));
+                return $tickTypeDiv[0].outerHTML;
+                //return $tickTypeDiv;
+            }
+
+			,editElement : {
+                create: function(colName, currentValue, $thead, currentFieldConfig, rowData) {
+					var $colourSelector = $('<div title="TickType Selector">');
+					var fieldConfig = this.config;
+					
+					var $colourDisplay; 
+					$colourDisplay = fieldConfig.renderFunc(currentValue);
+					console.log("1" + $colourDisplay);
+                    $colourDisplay = $($colourDisplay);
+					console.log("2" + $colourDisplay.html());
+					$colourDisplay.data("clValue", currentValue);
+					
+					this.config.getAvailableItems(
+						null
+						,null
+						,function(items) {
+							$colourDisplay.on("click", function(e) {
+								$colourSelector.dialog();
+							});
+							$.each(items, function(idx, colour) {
+								$colourSelector.append(
+									$(currentFieldConfig.renderFunc(colour))
+										.on("click", function(e) {
+											console.log("setting colourdisplay to " + colour);
+                                            var $newColourDisplay = $(currentFieldConfig.editElement.create(colName, colour, $thead, currentFieldConfig));
+											$colourDisplay.replaceWith($newColourDisplay);
+                                            $newColourDisplay.find(".clValue").val(colour);
+											$colourSelector.dialog("close");
+
+                                            $newColourDisplay
+                                                .trigger("change");
+                                        })
+                                    
+                                );
+							});
+							console.log("colourDisplay returned >" + $colourDisplay.html() + "<");
+                            $colourDisplay.on("change", function(e) {
+                                if(fieldConfig.refreshOnUpdate) {
+                                    console.log("refreshing >" + JSON.stringify(fieldConfig.refreshOnUpdate) + "<");
+                                    var $editEl = $(this);
+                                    $.each(fieldConfig.refreshOnUpdate, function(idx, refreshSelector) {
+                                        console.log("refreshing >" + JSON.stringify($editEl.closest("tr").find("." + refreshSelector + " .clRefreshable" )[0].outerHTML) + "<");
+                                        window.fooel = $editEl;
+                                        $editEl.closest("tr").find("." + refreshSelector + " .clRefreshable" ).trigger("clRefresh");
+                                    });
+                                }
+                                else {
+                                    console.log("no refresh targets defined..");
+                                }
+                            
+
+                            });
+
+                            return $colourDisplay;
+
+                            
+
+                        }
+					);
+					
+					return $colourDisplay;
+				}
+				,serialize : function($editElement) {
+                    var val = 
+						$editElement.find(".clTicktypes .clValue").val();
+					return val || "";
+				}
+			}		
+
+            
+		}));        
 
 		routeLogConfig.add(new FieldConfig({
 			fieldName : "score"
@@ -595,7 +799,7 @@ clLib.webFieldConfig = {
 			,visible: true
 			,dummyField: true
 			,renderFunc : function(colValue, rowValue) {
-				var score = clLib.computeScore(rowValue);
+                var score = clLib.computeScore(rowValue);
 				console.log("returning score of >" + score + "<");
 				return score;
 			}
@@ -603,6 +807,7 @@ clLib.webFieldConfig = {
 				refreshFrom : [
 					"GradeSystem"
 					,"Grade"
+					,"tickType"
 				]
 				, create: function(colName, currentValue, $thead, currentFieldConfig, rowData) {
 					//alert("rowData is >" + JSON.stringify(rowData) + "<");
@@ -641,6 +846,10 @@ clLib.webFieldConfig = {
                     "5"
                 ]);
 			}
+            ,getFilterItems : function(column, api, successFunc) {
+                //alert("get Filter items for rating.");
+                return this.getAvailableItems(column, api, successFunc);
+            }
             
 		}));
 
@@ -661,6 +870,7 @@ clLib.webFieldConfig = {
 			}
 			
 		}));
+
 		routeLogConfig.add(new FieldConfig({
 			fieldName : "Line"
 			,visible: false
@@ -676,6 +886,7 @@ clLib.webFieldConfig = {
 					}
 				);
 			}
+            
 		}));
 		routeLogConfig.add(new FieldConfig({
 			fieldName : "Colour"
@@ -759,6 +970,7 @@ clLib.webFieldConfig = {
 	
 		routeLogConfig.add(new FieldConfig({
 			fieldName : "Comment"
+            ,displayName : "Commentsssss"
 			,renderFunc : function(comment) {
 				comment = comment || "";
 				return comment;
