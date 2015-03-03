@@ -4,8 +4,8 @@
 
 
 var clLibWeb = {};
-clLibWeb.rootURL = "/Joomla/STATIC";
-clLibWeb.loginPageURL = "http://www.kurt-climbing.com/Joomla/index.php/cllib-users-cllogin";
+clLibWeb.rootURL = "/STATIC";
+clLibWeb.loginPageURL = "http://www.kurt-climbing.com/index.php/cllib-users-cllogin";
 
 
 
@@ -50,7 +50,7 @@ clLibWeb.showUserInfo = function($targetEl) {
 	var authType = clLib.getUserInfo()["authType"];
 
 	if(!imageURL) {
-		imageURL = "http://www.kurt-climbing.com/Joomla/KURT/files/views/assets/image/splashLogoNoBorders.png";
+		imageURL = "http://www.kurt-climbing.com/KURT/files/views/assets/image/splashLogoNoBorders.png";
 	}
 	
 	$currentUser = $("<div class='unhovered'>");
@@ -171,7 +171,7 @@ clLibWeb.loggedInCheck = function(successFunc, errorFunc) {
 
 			$loginButton.off().on("click", function(e) {
 				localStorage.clear();
-				document.location.href = "http://www.kurt-climbing.com/Joomla";
+				document.location.href = "http://www.kurt-climbing.com";
 			});
 
 			clLibWeb.showUserInfo(
@@ -207,8 +207,8 @@ document.addEventListener("DOMContentLoaded", function() {
 				$('<div style="clear: both"></div>' + 
 					'<ul class="nav menu clMenuContainer">' + 
 						'<li class="current" style="float: left; width: 50%;"><a class="clUserInfo" href="#"></a></li>' + 
-						'<li class="current loggedInOnly hidden clMenuMyStats"><a href="http://www.kurt-climbing.com/Joomla/index.php/cllib-graph"><span>My Statistics</span></a></li>' + 
-						'<li class="current loggedInOnly hidden clMenuMyRoutes"><a href="http://www.kurt-climbing.com/Joomla/index.php/cllib-stats"><span>My Routes</span></a></li>' + 
+						'<li class="current loggedInOnly hidden clMenuMyStats"><a href="http://www.kurt-climbing.com/index.php/cllib-graph"><span>My Statistics</span></a></li>' + 
+						'<li class="current loggedInOnly hidden clMenuMyRoutes"><a href="http://www.kurt-climbing.com/index.php/cllib-stats"><span>My Routes</span></a></li>' + 
 	//					'<li class="current"><a href="#">Grade Conversion</a></li>' + 
 	//					'<li class="current"><a href="#">Buddies</a></li>' + 
 	//					'<li class="current"><a id="logoutButton" href="#">Logout</a></li>' + 
