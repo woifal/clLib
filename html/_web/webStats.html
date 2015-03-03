@@ -11,7 +11,6 @@
 	<title>Kurt Climbing 0408a</title> 
 	<link rel="stylesheet" href="http://www.kurt-climbing.com/Joomla/STATIC/css/THEMES/20140627/app1.css" />
 	<link rel="stylesheet" href="http://www.kurt-climbing.com/Joomla/STATIC/css/THEMES/20140627/jquery.mobile.structure-1.4.2.css" />
-	<link rel="stylesheet" href="ahttp://www.kurt-climbing.com/Joomla/STATIC/css/THEMES/20140627/jquery.mobile.icons.min.css" />		
 
     <link rel="stylesheet" href="../css/clRouteColors.css" />
     <link rel="stylesheet" href="../css/clLib.css" />
@@ -23,8 +22,6 @@
 
 		
 
-
-        <script type="text/javascript" src="ahttp://www.kurt-climbing.com/Joomla/STATIC/css/THEMES/20140405/jquery.mobile-1.4.2.js"></script>
 
 
         <script type="text/javascript" src="../js/clLib.js"></script>
@@ -44,8 +41,24 @@
         <script type="text/javascript" src="../js/clLib.UI.pageConfig.js"></script>
 
         <script type="text/javascript" src="../js/clLib.UI.web.GraphConfig.js"></script>
+        <script type="text/javascript" src="../js/webClLib.js"></script>
+		<style>
+            ul#statsLinks { 
+                list-style: none;
+                padding: 10px 40px;
+                margin: 0px 20px;
+                font-weight: normal;
+            }
+            ul#statsLinks li a.active { 
+                font-weight: bold;
+            }
+            ul#statsLinks li { 
+                padding: 20px 0px;
+                border: 0px solid red;
+            }
+        </style>
 <script>
-           
+          
     $(document).ready(function() {
         $("#graphSelector").on("change", function(e) {
             //alert("getting stats for user >" + $("#usernameSelector").val() + "<");
@@ -54,7 +67,7 @@
                 function() { 
                     clLib.graphConfig["_routeLogConfig"].get(newVal).draw({
                         where: {
-                            username: $("#usernameSelector").val()
+                            username: clLib.getUserInfo()["username"]
                         }
                     });
                 },
@@ -72,25 +85,29 @@
         $("#graphSelector").val("highScoreByDay");
         //$("#graphSelector").trigger("change");
         
-        $.each(clLib.graphConfig["_routeLogConfig"].graphs(), function(idx, graphName) {
+        $.each(clLib.graphConfig["_routeLogConfig"].graphConfigs, function(idx, graphConfig) {
             $("#statsLinks").append(
                 $("<li>").append(
                     $("<a>")
-                        .data("graphName", graphName)
-                        .html(graphName)
+                        .data("graphName", graphConfig["graphName"])
+                        .html(graphConfig.config["displayName"])
                 )
             );
         });
 
         $("#statsLinks a").on("click", function(e) {
             var newVal = $(this).data("graphName");
+            $(this).parents("ul").find("a").removeClass("active");
+            $(this).addClass("active");
             console.log("getting stats >" + newVal + "<");
             
             setTimeout(
                 function() { 
                     clLib.graphConfig["_routeLogConfig"].get(newVal).draw({
                         where: {
-                            username: $("#usernameSelector").val()
+//                            username: $("#usernameSelector").val()
+                            username: clLib.getUserInfo()["username"]
+
                         }
                     });
                 },
@@ -106,20 +123,19 @@
     });
 
 </script>  
-		
+        
 		</head> 
 
 
 <body style="background-color: white !important;" >  
-
-<input id="usernameSelector" type="text">
+<input id="usernameSelector" type="text" style="display: none">
 <select id="graphSelector" data-role="none" style="display: none;">
 <!--
     <option value="allSessions">All Ssessions(bar)</option>
     <option value="allSessionsLine">All Sessions(line)</option>
 -->
 </select>
-<div style="float: right">
+<div style="float: left">
     <ul id="statsLinks">
     </ul>
 </div>
@@ -128,10 +144,5 @@
 </div>
 
 </body>
-
-<script>
-    
-</script>
-
 
 </html>
