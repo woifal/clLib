@@ -96,7 +96,10 @@ clLib.UI.list.formatStandardRow = function(dataRow) {
 };
 
 clLib.UI.tickTypeSymbolFunc = function(tickTypeName, dataRow) {
-	return clLib.UI.tickTypeSymbols[tickTypeName](dataRow);
+	if(!clLib.UI.tickTypeSymbols[tickTypeName]) {
+        return "?";
+    }
+    return clLib.UI.tickTypeSymbols[tickTypeName](dataRow);
 };
 
 clLib.UI.tickTypeSymbols = {
@@ -113,6 +116,18 @@ clLib.UI.tickTypeSymbols = {
 		return $('<span class="clTicktypesSmall"><img class="try"></span>');
 	}
 	, tickType_toprope : function(dataRow) {
+		return $('<span class="clTicktypesSmall"><img class="toprope"></span>');
+	}
+	,redpoint : function(dataRow) {
+		return $('<span class="clTicktypesSmall"><img class="redpoint"></span>');
+	}
+	, flash : function(dataRow) {
+		return $('<span class="clTicktypesSmall"><img class="flash"></span>');
+	}
+	, attempt :function(dataRow) {
+		return $('<span class="clTicktypesSmall"><img class="try"></span>');
+	}
+	, toprope : function(dataRow) {
 		return $('<span class="clTicktypesSmall"><img class="toprope"></span>');
 	}
 	, tickType_delete : function(dataRow) {
