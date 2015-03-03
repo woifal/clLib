@@ -1019,11 +1019,20 @@ clLib.UI.elements = {
 		"refreshHandler" : function($this) {
 			if(clLib.UI.getVal("gradeSystemSelect") == "Bleau") {
 				clLib.UI.byId$("tickType_toprope").parent(".ui-checkbox").hide();
+				clLib.UI.byId$("tickType_toprope").parent(".ui-radio").hide();
 				$this.addClass("items3");
 			} else {
 				clLib.UI.byId$("tickType_toprope").parent(".ui-checkbox").show();
+				clLib.UI.byId$("tickType_toprope").parent(".ui-radio").show();
 				$this.removeClass("items3");
 			}
+		}
+		,"customVal" : function($this) {
+            var jqString = "input:radio[name=" + clLib.UI.currentPage() + "_" + "tickType" + "]:checked";
+            console.log("jqSel.." + jqString);
+            var val = $this.find(jqString).val();
+            console.log("vallll.." + val);
+            return val;
 		}
     }
 	, "tickType_redpoint" : $.extend({}, {
