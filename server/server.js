@@ -210,7 +210,11 @@ server.post("/signup", function (req, res) {
 	
 	try {
 		var userObj = req.body;
-		util.log("USEROBJ to insert " + JSON.stringify(userObj));
+	
+        // ALL usernames should be lower case!!
+        userObj.username = userObj.username.toLowerCase();
+
+        util.log("USEROBJ to insert " + JSON.stringify(userObj));
 		var foo = this;
 		
 		var plainPwd = userObj.password;
@@ -306,7 +310,12 @@ server.get('/requestVerification', function(req, res) {
 		util.log("getting.." + JSON.stringify(req.params));
 		var resText = [];
 		var resCount = 0;
-		// verify user.
+		
+        // ALL usernames should be lower case!!
+        req.params["username"] = req.params["username"].toLowerCase();
+
+        
+        // verify user.
 		DBHandler.getEntities({
 			entity : clLib.server.usersCollectionName, 
 			where : {"username": req.params["username"]},
@@ -576,7 +585,12 @@ server.get('/verifyToken', function(req, res) {
 		res.send(302); 
 	}
 	
-	try {
+	
+    // ALL usernames should be lower case!!
+    req.params["username"] = req.params["username"].toLowerCase();
+
+    
+    try {
 		// verify user.
 		DBHandler.getEntities({
 			entity : clLib.server.usersCollectionName, 
@@ -633,7 +647,10 @@ server.get('/setPassword', function(req, res) {
 	}
 	
 	try {
-		// verify user.
+        // ALL usernames should be lower case!!
+        req.params["username"] = req.params["username"].toLowerCase();
+
+        // verify user.
 		DBHandler.getEntities({
 			entity : clLib.server.usersCollectionName, 
 			where : {"username": req.params["username"]},
