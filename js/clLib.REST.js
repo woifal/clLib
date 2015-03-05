@@ -131,6 +131,8 @@ clLib.REST.executeRetrieve = function (uri, method, whereObj, successFunc, error
 			reqOptions["params"] += key + "=" + encodeURIComponent(JSON.stringify(value)) + "&";
 		});
 	}
+    
+    console.log("reqOptions is >" + JSON.stringify(reqOptions) + "<");
 	
 	clLib.REST.execAJAXRequest(reqOptions, successFunc, errorFunc);
 }
