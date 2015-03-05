@@ -1085,11 +1085,19 @@ clLib.UI.byId$ = function(elementName, pageId) {
 	return $(newSelector);
 };
 
+String.prototype.endsWith = function(suffix) {
+    return this.indexOf(suffix, this.length - suffix.length) !== -1;
+};
 
 clLib.UI.elementNameFromId = function(id) {
 	var pageId = clLib.UI.currentPage();
-	var newId = id.replace(pageId + "_", "");
+    var newId;
+    if(pageId.endsWith("-dialog")) {
+        pageId = pageId.substring(0, pageId.indexOf("_"));
+    }
+	newId = id.replace(pageId + "_", "");
 	newId = newId.replace("_COMMON_" + "_", "");
+
 	return newId;
 };
 
@@ -2102,3 +2110,5 @@ clLib.UI.collapsible.formatRouteLogRow = function(dataRow) {
 clLib.UI.currentPage = function() {
 	return $.mobile.activePage.attr("id");
 }
+
+

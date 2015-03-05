@@ -331,13 +331,12 @@ clLib.PAGES.handlers = {
                 clLib.PAGES.changeTo("clLib_users.html");
             });
 
-
 		}
         , "pagebeforeshow": function (e, ui) {
             var $prevElement = $(ui.prevPage);//.prev();
 			var prevTag = $prevElement.prop("tagName");
 			var prevId = $prevElement.attr("id");
-			clLib.loggi("showing page!(prev:" + prevTag + " #" + prevId + ")");
+
 			
 			if (!prevId || !prevId.endsWith("-dialog")) {
 				clLib.UI.fillUIelements();
@@ -413,14 +412,18 @@ clLib.PAGES.handlers = {
 			//alert("init!");
 		}
         , "pagebeforeshow": function (e, ui) {
+/*
             var $prevElement = $(ui.prevPage);//.prev();
 			var prevTag = $prevElement.prop("tagName");
 			var prevId = $prevElement.attr("id");
 			//alert("showing page!(prev:" + prevTag + " #" + prevId + ")");
 			
 			if (!prevId || !prevId.endsWith("-dialog")) {
-				clLib.UI.fillUIelements();
+*/
+            clLib.UI.fillUIelements();
+/*
 			}
+*/
 		}
 	}
 
@@ -1014,7 +1017,7 @@ clLib.PAGES.changeTo = function(newURL, urlData, event, timeoutMillis) {
 
 					newURL = "#" + pageId;
 					
-                    //alert("navigating to >" + newURL + "<");
+                    console.log("navigating to >" + newURL + "<");
 					window._urlData = urlData;
 					$.mobile.navigate(newURL, $.extend(urlData, {"fuck": "me"}));	
                 }, 
