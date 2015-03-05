@@ -151,7 +151,9 @@ server.get("/login", function (req, res) {
 	}
 
 	try {
-		console.log("authHandler.defaults : >" + JSON.stringify(authHandler.defaults) + "<");
+        req.params["username"] = req.params["username"].toLowerCase();
+        
+        console.log("authHandler.defaults : >" + JSON.stringify(authHandler.defaults) + "<");
 		return authHandler.authenticate(
 			req.params
 			,function(userObj) {
