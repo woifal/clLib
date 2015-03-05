@@ -439,6 +439,9 @@ clLib.webFieldConfig = {
 							clLib.loggi("USER TO SAVE >" + JSON.stringify(rowData) + "<", "20150129");
 							serRow["username"] = rowData["username"] || clLib.getUserInfo()["username"];
 							
+                            // ALL usernames should be lower case!!
+                            serRow["username"] = serRow["username"].toLowerCase();
+							
 							
 							console.log("Serialized row >" + JSON.stringify(serRow) + "<");
 							
@@ -607,7 +610,7 @@ clLib.webFieldConfig = {
 					$el.append($input);
 					$input.datepicker({
 						showOn: "button",
-						buttonImage: "/Joomla/KURT/files/views/assets/image/calendar.gif",
+						buttonImage: "/KURT/files/views/assets/image/calendar.gif",
 						buttonImageOnly: true,
 						dateFormat: "yy-mm-dd"
 						//buttonText: "Select date"
