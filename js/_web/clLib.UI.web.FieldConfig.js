@@ -973,7 +973,7 @@ clLib.webFieldConfig = {
 	
 		routeLogConfig.add(new FieldConfig({
 			fieldName : "Comment"
-            ,displayName : "Commentsssss"
+            ,displayName : "Comments"
 			,renderFunc : function(comment) {
 				comment = comment || "";
 				return comment;
