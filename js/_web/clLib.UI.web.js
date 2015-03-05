@@ -111,7 +111,8 @@ clLib.UI.web = {
 		console.log(JSON.stringify(routeLogConfig));
         
 		console.log(JSON.stringify(options["where"]));
-        options["where"] = {"username": function() { return clLib.getUserInfo()["username"]}()};
+        options["where"] = {};
+        options["where"] ={"username": function() { return clLib.getUserInfo()["username"]}()};
         options["where"]["deleted"] = {"$ne" : 1};
 		
         return clLib.REST.getEntities(
@@ -423,6 +424,9 @@ clLib.UI.web = {
 
 			}
 			,errorFunc
+            ,{
+                requireResult : false
+            }
 		);
 	}
 };
