@@ -402,19 +402,22 @@ server.get('/db/:entityName/:entityId',
 		DBHandler.getEntities({
 			entity : entityName, 
 			where : {_id: entityId},
-			requireResult: true
+			requireResult: req.params["requireResult"] || true
 		},
 		function(resultObj) { 
 			// upon success...
 			var entityDetails = resultObj[0];
-			util.log("Found entity(" + entityName + ")>" + fooFunc(entityDetails) + "<"); 
-			
-			// User not found=
-			if(!entityDetails) {
+			// entity not found=
+			if(!entityDetails && (
+                options["requireResult"] == true ||
+                options["requireResult"] == "true"
+            )) {
+                util.log("!!!!!!NO RESUTL!!");
 				res.send(500, JSON.stringify({
-				result: "Entity(" + entityName + ") not found: >" + JSON.stringify(req.params["where"]) + "<"}));
+				result: "2Entity(" + entityName + ") not found: >" + JSON.stringify(req.params["where"]) + "<"}));
 				return;
 			}
+            util.log("3 sending result..");
 			res.send(JSON.stringify(resultObj));
 
 		}
@@ -443,14 +446,26 @@ server.get('/db/:entityName',
 			,where : JSON.parse(req.params["where"])
 			,geoPos : req.params["geoPos"] ? JSON.parse(req.params["geoPos"]) : null
 			,limit: req.params["limit"]
+            ,requireResult : req.params["requireResult"] || true
 		},
 		function(resultObj) { 
 			// upon success...
 			var entityDetails = resultObj[0];
-			util.log("Found entity(" + entityName + ")>" + fooFunc(entityDetails) + "<"); 
+            util.log("c2 Found entity(" + entityName + ")>" + fooFunc(entityDetails) + "<"); 
 			
+            util.log("b requireResult? >" + 
+                (
+                    options["requireResult"] == true ||
+                    options["requireResult"] == "true"
+                )
+            + "<");
+
 			// User not found=
-			if(!entityDetails) {
+            if(options["requireResult"] && (
+                options["requireResult"] == "true" 
+                || options["requireResult"] == true
+            ) && (!entityDetails || entityDetails.length == 0)) {
+
 				res.send(500, JSON.stringify({
 				result: "Entity(" + entityName + ") not found: >" + JSON.stringify(req.params["where"]) + "<"}));
 				return;
