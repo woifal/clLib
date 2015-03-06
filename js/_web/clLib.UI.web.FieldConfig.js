@@ -378,22 +378,22 @@ clLib.webFieldConfig = {
 			fieldName : "clControls"
 			,displayName: function() {
 				var $ctlEl = $("<span>");
-				$ctlEl.append($("<img src='/files/views/assets/image/dummy.png' class='clAdd'>")
+				$ctlEl.append($("<img src='/KURT/files/views/assets/image/dummy.png' class='clAdd'>")
 				);
 				return $ctlEl[0].outerHTML;
 			}()
 			,orderable: false
 			,renderFunc : function(x) {
 				var $ctlEl = $("<div>");
-				$ctlEl.append($("<img src='/files/views/assets/image/dummy.png' class='clEdit'>"));
-				$ctlEl.append($("<img src='/files/views/assets/image/dummy.png' class='clDelete'>"));
+				$ctlEl.append($("<img src='/KURT/files/views/assets/image/dummy.png' class='clEdit'>"));
+				$ctlEl.append($("<img src='/KURT/files/views/assets/image/dummy.png' class='clDelete'>"));
 				return $ctlEl[0].outerHTML;
 			}
 			,editElement : {
 				create: function(colName, currentValue) {
 					var $ctlEl = $("<span>");
 
-					$ctlEl.append($("<img src='/files/views/assets/image/dummy.png' class='clSave'>")
+					$ctlEl.append($("<img src='/KURT/files/views/assets/image/dummy.png' class='clSave'>")
 						.on("click", function(evt) {
 							var serRow  = {};
 							var newRow = false;
@@ -506,7 +506,7 @@ clLib.webFieldConfig = {
 					)
 					;
 
-					$ctlEl.append($("<img src='/files/views/assets/image/dummy.png' class='clCancel'>")
+					$ctlEl.append($("<img src='/KURT/files/views/assets/image/dummy.png' class='clCancel'>")
 						.on("click", function() {
 							var $tr = $(this).closest('tr');
 							
@@ -610,7 +610,7 @@ clLib.webFieldConfig = {
 					$el.append($input);
 					$input.datepicker({
 						showOn: "button",
-						buttonImage: "../files/views/assets/image/calendar.gif",
+						buttonImage: "/KURT/files/views/assets/image/calendar.gif",
 						buttonImageOnly: true,
 						dateFormat: "yy-mm-dd"
 						//buttonText: "Select date"
