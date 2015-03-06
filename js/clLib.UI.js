@@ -1084,15 +1084,13 @@ clLib.UI.byId$ = function(elementName, pageId) {
 	console.log("returning selector >" + newSelector + "<");
 	return $(newSelector);
 };
-
-String.prototype.endsWith = function(suffix) {
-    return this.indexOf(suffix, this.length - suffix.length) !== -1;
+clLib.UI.endsWith = function(str, suffix) {
+    return str.indexOf(suffix, str.length - suffix.length) !== -1;
 };
-
 clLib.UI.elementNameFromId = function(id) {
 	var pageId = clLib.UI.currentPage();
     var newId;
-    if(pageId.endsWith("-dialog")) {
+    if(clLib.UI.endsWith(pageId, "-dialog")) {
         pageId = pageId.substring(0, pageId.indexOf("_"));
     }
 	newId = id.replace(pageId + "_", "");
@@ -2107,8 +2105,12 @@ clLib.UI.collapsible.formatRouteLogRow = function(dataRow) {
 
 };
 
+
 clLib.UI.currentPage = function() {
-	return $.mobile.activePage.attr("id");
+    //alert("getting current page..");
+	var currentPage = $.mobile.activePage.attr("id");
+    //alert("returning currentPage >" + currentPage);
+    return currentPage;
 }
 
 
