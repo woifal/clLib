@@ -25,7 +25,7 @@ body {
 
 div.clPage {
 	min-height:480px; 
-	max-width:320px;
+	//max-width:320px;
 }
 
 .ui-header 
@@ -35,6 +35,22 @@ div.clPage {
 	/*margin-top: 0px;
 	/*padding-top: 17px;*/
 	/*background-color: red;*/
+}
+
+/* logo(located in header) styling */
+.headerLogoContainer {
+    width: 98%; 
+    border: 1px solid red; 
+    text-align:center;
+}
+
+.headerLogo {
+    text-align: center; 
+    background: none; 
+    width: 32%;
+    margin-top: 7px;
+    max-height: 40px;
+    max-width: 150px;
 }
 
 
@@ -601,9 +617,9 @@ border: 1px solid red;
 }
 
 .clTicktypes img {
-	margin-left: 13px;
+	//margin-left: 13px;
 	text-align: center;
-	display: block;
+	display: inline-block;
 	width: 45px; 
 	height: 45px;
 	border-radius: 50%;
