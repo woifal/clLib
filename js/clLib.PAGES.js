@@ -1013,16 +1013,12 @@ clLib.PAGES.changeTo = function(newURL, urlData, event, timeoutMillis) {
             clLib.PAGES.executeChainedFuncs(requisiteFunctions, 
                 function() { 
                     //alert("success!!" + pageId ); 
-                    window.urlData = urlData;
-
-					newURL = "#" + pageId;
-					
-                    console.log("navigating to >" + newURL + "<");
-					window._urlData = urlData;
+                    newURL = "#" + pageId;
+					console.log("navigating to >" + newURL + "<");
 					$.mobile.navigate(newURL, $.extend(urlData, {"fuck": "me"}));	
                 }, 
                 function(e) { 
-					alert("clLib.changeTo => error: " + e + "!!"); 
+					alert("clLib.changeTo(" + newURL + ") => error: " + e + "!!" + "(" + JSON.stringify(e) + ")"); 
 					return false;
 				}
             );

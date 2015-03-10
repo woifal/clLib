@@ -18,6 +18,12 @@ body {
 }
 
 
+.clContent {
+    padding: 0px 0px 0px 0px; 
+    margin:  0px 0px 0px 0px;
+    background-color: #FFFFFF; /* orig: #F0F0F0 */ /* #9d9595 */
+}
+
 
 .clHidden {
 	visibility: hidden;
@@ -40,7 +46,7 @@ div.clPage {
 /* logo(located in header) styling */
 .headerLogoContainer {
     width: 98%; 
-    border: 1px solid red; 
+    border: 0px solid red; 
     text-align:center;
 }
 
@@ -179,7 +185,7 @@ input.ui-input-text, textarea.ui-input-text {
 }
 
 .clButton.clFullWidth {
-	width: 300px;
+	width: 98%;
     margin: 20px 0px;
 	border-radius: 0px;
 	abackground: red; /*#C3cbd6;*/
