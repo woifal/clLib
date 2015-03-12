@@ -172,25 +172,33 @@ input.ui-input-text, textarea.ui-input-text {
 
 
 .clSmallMargin > .clButton {
-	margin: 0px 10px;
+	margin: 0px auto;
 }
+
+.clSmallMargin  {
+	text-align:center;
+}
+
+
 /* outer button outline.. */
 .clButton {
     width: 280px;
 	padding: 9px;
     border-radius: 8px;
 	box-shadow: inset 0px 2px 2px 1px #DDD;
-	margin: 20px 10px;
+	margin: 0 auto;
 	background: #FFFFFF;
+    display: block;
 }
 
 .clButton.clFullWidth {
 	width: 98%;
-    margin: 20px 0px;
+    margin: 0 auto;
 	border-radius: 0px;
 	abackground: red; /*#C3cbd6;*/
 	box-shadow: inset 0px 4px 4px -3px #RED;
 	padding-left: 10px;
+    display: block;
 }
 
 .clButton.clFullWidth.clNewRouteLog {
@@ -286,7 +294,8 @@ input.ui-input-text, textarea.ui-input-text {
 
 /* outer button outline.. */
 .clButton.clSmall {
-	margin: 0px 10px !important;
+	//margin: auto 0; /*0px 10px !important;*/
+    //display: block;
 }
 
 /* inner button outline.. */
@@ -613,7 +622,7 @@ border: 1px solid red;
 .clFieldset.clTicktypes.items3 .ui-controlgroup-controls .ui-checkbox 
 ,.clFieldset.clTicktypes.items3 .ui-controlgroup-controls .ui-radio {
 	border: 1px solid #cccccc;
-	width: 32% !important;
+	width: 33% !important;
 	/*border: 1px solid red !important;*/
 }
 
@@ -632,9 +641,9 @@ border: 1px solid red;
 	apadding-top: 0px !important;
 }
 .clTicktypes.items3 img {
-	margin-left: 25px;
+	//margin-left: 25px;
 	text-align: center;
-	display: block;
+	display: inline-block;
 	width: 45px; 
 	height: 45px;
 	border-radius: 50%;
@@ -976,3 +985,55 @@ div.clButton.clSmall.clInline {
 
 
 
+
+#clLib_start_top {
+    background: url(../files/views/assets/image/home_background_320.png);
+    background-position: top bottom, left top;
+    background-repeat: repeat-x;
+    padding-left: 0px;
+    padding-top: 20px;
+    margin-left: 0px;
+    width: 100%;	
+}
+
+#clLib_startClimbingButton {
+    width: 200px;
+    height: 200px;
+    display: block;
+    margin: 0 auto;
+}
+
+#clLib_areaSelectionContainer {
+    padding: 0px 0px 40px 0px;
+    text-align: center;
+    width: 100%;
+}
+
+#startScreen_areaButton {
+    width: 270px;
+    display: block;
+    margin: 0 auto;
+}
+
+#clLib_start_bottom {
+    background-image: none;
+    border-top: 5px solid #073e78;
+    padding-top: 5px;
+    padding-left: 0px;
+    margin-left: 0px;
+}
+
+#clLib_addRouteButton {
+    text-align: center;
+}
+
+
+#clLib_users_container {
+    background-color: #f5f5f5; /*#073f7c;*/
+    padding-left: 0px;
+    padding-top: 20px;
+    margin-left: 0px;
+    border: 0px solid yellow;
+    width: 100%;	
+    text-align: center;
+}

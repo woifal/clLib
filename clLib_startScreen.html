@@ -1,38 +1,28 @@
 ﻿@@include('grunt_includes/singlePage_Header.html', {"pageName": "startScreen"})
 			<div 
-				id="start_top"
-				style="
-					background: url(files/views/assets/image/home_background_320.png);
-					background-position: top bottom, left top;
-					background-repeat: no-repeat;
-					padding-left: 0px;
-					padding-top: 20px;
-					margin-left: 0px;
-					width: 100%;	
-				"
+				id="clLib_start_top"
 			>
 				<!-- Add new route.. -->
 				<a 
-					id="addRouteButton" href="#"
+					id="clLib_addRouteButton" 
+                    href="#"
 					data-role="none"
 				>
 					<img
-					src="files/views/assets/image/start_climbing.png"
-						style="
-							width: 200px;
-							height: 200px;
-							padding-left: 60px;
-					"					
+                        id="clLib_startClimbingButton"
+                        src="files/views/assets/image/start_climbing.png"
 					/>			
 				</a>
 
 				<!-- Area -->
 				<div
-					style="
-						padding: 0px 30px 40px 30px;
-					"
+                    id="clLib_areaSelectionContainer"
 				>
-					<a href="#" data-role="button" id="startScreen_areaButton">Area?</a>
+					<a 
+                        id="startScreen_areaButton"
+                        href="#" 
+                        data-role="button" 
+                    >Area?</a>
 				</div>
 					
 					
@@ -55,22 +45,14 @@
 			
 			<div>
 				<div 
-				id="start_bottom"
-				class="clSmallMargin"
-				style="
-					background-image: none;
-					border-top: 5px solid #073e78;
-					padding-top: 5px;
-					padding-left: 0px;
-					margin-left: 0px;
-				"
+                    id="clLib_start_bottom"
+                    class="clSmallMargin"
 				>
 					<!-- Statistics -->
 					<div 
 						id="startScreen_statsButton"
 						class="clButton foo"
 						data-role="none"
-						style="border: 0px solid red"
 					>
 						<div>
 						<a>
@@ -83,7 +65,6 @@
 					</div>
 					<!-- Today's score -->
 					<div 
-						style="border: 0px solid green"
 						id="startScreen_currentScore"
 						class="clButton clCurrentScore"
 						data-role="none"
