@@ -369,7 +369,7 @@ clLib.PAGES.handlers = {
 	        });
 
 	        // Link to New Route page..
-	        $("#addRouteButton").on("click", function (e) {
+	        $("#clLib_addRouteButton").on("click", function (e) {
 				clLib.UI.execWithMsg(function() {
 					// Only use default layout if selected area provides predefined route log data..
 					var currentArea = clLib.localStorage.getEntities(
