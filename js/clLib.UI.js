@@ -1713,7 +1713,7 @@ clLib.prefsCompleteCheck = function (successFunc, errorFunc) {
 };
 
 clLib.tryLogin = function(successFunc, errorFunc, noRedirectFlag) {
-	console.log("trying login with " + typeof(noRedirectFlag) + ":" + noRedirectFlag);
+	console.log("trying login with " + typeof(noRedirectFlag) + ":" + noRedirectFlag); // POPO
     // offline? no need to try to login..
 	if(!clLib.isOnline()) {
 		return errorFunc();

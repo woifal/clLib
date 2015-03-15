@@ -692,11 +692,20 @@ clLib.login = function(successFunc, errorFunc) {
 };
 
 clLib.isOnline = function() {
-	var onlineMode = "" + localStorage.getItem("onlineMode");
+    return true; // POPO2
+    
+	var onlineMode;
+    try {
+        onlineMode = "" + localStorage.getItem("onlineMode");
+    } catch(e) {
+        alert("1error in isOnline");
+        alert("2error in isOnline >" + e + "<");
+        onlineMode = "";
+    }
 	onlineMode = onlineMode != "false";
-//	alert("currentlyOnline? >" + onlineMode);
+	alert("currentlyOnline? >" + onlineMode);
 	if(onlineMode) {
-//		alert("yes, fuck you true!!!");
+		alert("yes, fuck you true!!!");
 	    onlineMode = navigator.onLine;
 	}
 	
@@ -743,7 +752,7 @@ clLib.loginErrorHandler = function(e) {
 
 
 clLib.loggedInCheck = function (callbackFunc, errorFunc) {
-    //alert("clLib.loggedInCheck called..");
+    console.log("clLib.loggedInCheck called.."); // POPO
 	//alert(clLib.sessionToken);
 	// not online? assume you're logged in..
 	if(!clLib.isOnline()) {
@@ -759,11 +768,12 @@ clLib.loggedInCheck = function (callbackFunc, errorFunc) {
 	
 	// no stored credentials. Ask user to provide some..
 	if(!clLib.getUserInfo()["username"]) {
-		return errorFunc(new ClInfo("Please login.", "error"));
+		console.log("!!! no username set in session!!!!"); // POPO
+        return errorFunc(new ClInfo("Please login.", "error"));
 	}
 	
 	// no session token found - try to logon using stored credentials
-	console.log("logging in..");
+	console.log("logging in.."); // POPO
 	return clLib.login(
 		function() {
 			// successfully logged in, return true

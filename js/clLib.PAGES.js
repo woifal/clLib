@@ -51,27 +51,31 @@ clLib.PAGES.defaultHandler = function (event, ui, aPageId) {
 
         }, 
 		function(e) { alert("error!! >" + JSON.stringify(e) + "<"); }
+        ,pageId + "." + eventName
 	);
 
 
 };
 
 
-clLib.PAGES.executeChainedFuncs = function(funcArray, successFunc, errorFunc) {
+clLib.PAGES.executeChainedFuncs = function(funcArray, successFunc, errorFunc, contextStr) {
 	var idx = -1;
-	return clLib.PAGES.executeChainedFunc(funcArray, idx, successFunc, errorFunc);
+	return clLib.PAGES.executeChainedFunc(funcArray, idx, successFunc, errorFunc, contextStr);
 };
-clLib.PAGES.executeChainedFunc = function(funcArray, idx, successFunc, errorFunc) {
+clLib.PAGES.executeChainedFunc = function(funcArray, idx, successFunc, errorFunc, contextStr) {
 	idx++;
+	console.log("page >" + contextStr + "<, idx = " + idx); // POPO
+
 	var curFunc = funcArray[idx];
 	
 	console.log("typeof successFunc is " + typeof(successFunc));
 	// Reached end of chain..
-	console.log("idx = " + idx);
 	if(!curFunc) {
 		return successFunc({"a": "b"});
 	}
 	
+    
+    
 	// Call next function in chain..
 	return curFunc(function(exitFlag) {
         console.log("executing next chained func? " + exitFlag);
@@ -83,6 +87,7 @@ clLib.PAGES.executeChainedFunc = function(funcArray, idx, successFunc, errorFunc
             return clLib.PAGES.executeChainedFunc(
                 funcArray, idx, 
                 successFunc, errorFunc
+                ,contextStr
             );
         }
 	},
@@ -1018,9 +1023,10 @@ clLib.PAGES.changeTo = function(newURL, urlData, event, timeoutMillis) {
 					$.mobile.navigate(newURL, $.extend(urlData, {"fuck": "me"}));	
                 }, 
                 function(e) { 
-					alert("clLib.changeTo(" + newURL + ") => error: " + e + "!!" + "(" + JSON.stringify(e) + ")"); 
+					alert("clLib.changeTo(" + newURL + " @" + pageId + "." + eventName + ") => error: " + e + "!!" + "(" + JSON.stringify(e) + ")"); 
 					return false;
 				}
+                ,pageId + "." + eventName// for debugging: add page name for current prerequisite functions
             );
             
         } else {
