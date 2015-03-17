@@ -37,6 +37,7 @@ var DBHandler = new DBResource.DBHandler();
 clStats.prototype.getEntityStats = function(options, callbackFunc, errorFunc) {
     var defaultStatsOptions = {
         sortDescFlag: true
+        ,entity: "RouteLog"
     };
     
 	DBHandler.getEntities({

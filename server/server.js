@@ -11,7 +11,7 @@ var BSON = mongo.BSONPure;
 */
 require("./clLib");
 require("./clLib.gradeConfig");
-
+require("./clLib.webSockets.js");
 
 util.log("\n\n>>>>>>" + JSON.stringify(clLib.gradeConfig) + "<<<<<<<<<\n\n\n\n");
 
@@ -21,8 +21,6 @@ clLib.server.runtime = {
 	"sessionTokens" : {}
 };
 clLib.server.email = {};
-
-exports.server = clLib.server;
 
 
 //Define the port to listen to
@@ -64,6 +62,10 @@ clLib.server.defaults = {
 //Create the server
 var server = restify.createServer(options);
  
+
+//clLib.server = server;
+exports.server = clLib.server;
+
 
  
 //Use bodyParser to read the body of incoming requests
