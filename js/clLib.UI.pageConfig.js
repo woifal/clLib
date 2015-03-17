@@ -62,7 +62,8 @@ clLib.UI.pageRequisites = {
 			function(successFunc, errorFunc) {
 //				alert("checking for full version...");
 				
-				//return successFunc();
+				// !!!! TESTING - return stats page without verifying purchase..
+                return successFunc();
 				
 				return clLib.IAP.hasFullVersion(
 					function() {
@@ -1704,15 +1705,24 @@ clLib.UI.elements = {
 			};
 
 
-			
-			clLib.REST.requestStats({
-				where : where
-			},
-			successHandler, 
-			function(e) {
-				alert("error!");
-				alert(clLib.formatError(e));
-			}
+            var options = {
+                statsOptions: {
+                    entity:                 "RouteLog"
+                    ,datePortionFuncName :   "localDayPortion"
+                    ,aggFuncName:           "aggregateScoresByDatePortion"
+                    ,sortByFuncName:        "sort_localDayAndScore"
+                    ,aggTopX:               10
+                    ,sortDescFlag:          true
+                }
+                ,where: where
+            }
+			clLib.REST.requestStatsNew(
+                options
+                ,successHandler
+                ,function(e) {
+                    alert("error!");
+                    alert(clLib.formatError(e));
+                }
 			);
 		
 			$allContainer.trigger("create");
