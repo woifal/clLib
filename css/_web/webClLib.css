@@ -139,10 +139,12 @@ table.dataTable thead th.sorting_asc {
 table.dataTable { width: auto; }
 
 
-#tableContainer table.dataTable thead th.clControls {
+#tableContainer table.dataTable thead th.clControls 
+,#tableContainer table.dataTable tbody td.clControls {
 	padding-left: 0px;
 	padding-right: 0px;
 	text-align: center;
+    width: 80px;
 }
 
 .clControls img {
