@@ -7,13 +7,22 @@ grunt.initConfig({
 						flatten: true
 						,globals: {
 							NOWW: "xxxxx"
+							,"clLib.REST.baseURI" : "http://localhost:1983/db"
+							,"clLib.REST.clLibServerURI" : "http://localhost:1983"
 						}
 					// Task-specific options go here.
 					},
-					// Files to perform replacements and includes with
-					src: ['*.html', "*.xml"],
-					// Destination directory to copy files to
-					dest: 'dist/app/'
+					files : [
+						{
+							src: ['*.html', "*.xml"],
+							dest: 'dist/tmp/app/'
+						}
+						,{
+							src: ['js/*'],
+							dest: 'dist/tmp/app/'
+						}
+					]
+
 				}
 				,app_prod: {
 					options: {
@@ -87,8 +96,30 @@ grunt.initConfig({
 					expand: true,
 					//flatten: true,
 					files: [
-						{ src: ["js/*", "js/**/*"], dest:"dist/app/" }
-						,{ src: ["js/*"], dest:"dist/app/" }
+						{ src: ["js/*"], dest:"dist/app/" }
+						,{ src: ["css/*","css/**/*"],  dest:"dist/app/" }
+						,{ src: ["files/*", "files/**/*"] , dest:"dist/app/" }
+						,{ 
+							flatten: true
+							,expand: true
+							,cwd: "dist/tmp/app"
+							,src: [
+								"**"
+							]
+							,dest:"dist/app" 
+						}
+						,
+						{ 
+							flatten: true
+							,expand: true
+							,cwd: "dist/tmp/app/js"
+							,src: [
+								"**"
+							]
+							,dest:"dist/app/js" 
+						}
+						,
+						
 					]
 				}
 				,app_prod: {
