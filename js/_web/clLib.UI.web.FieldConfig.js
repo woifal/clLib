@@ -110,6 +110,11 @@ clLib.webFieldConfig = {
 			}
 			this.fieldConfigs[fieldConfigObj.fieldName] = fieldConfigObj;
 		}
+		this.remove = function(fieldName) {
+            if(this.fieldConfigs[fieldName]) {
+                delete this.fieldConfigs[fieldName];
+            };
+		}
 		this.get = function(fieldName) {
 			if(!this.fieldConfigs[fieldName]) {
 				clLib.loggi("field >" + fieldName + "< not found in collection.", "20150129");
