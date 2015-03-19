@@ -119,7 +119,7 @@ clLib.graphConfig = {
                             //Get the context of the canvas element we want to select
                             var ctx = $(graphConfig.collection.containerSelector).find(".clCanvas")[0].getContext("2d");
                             if(window.myNewChart) {
-                                alert("clearing old chart!", "20150131");
+                                clLib.loggi("clearing old chart!", "20150131");
                                 window.myNewChart.destroy();
                             }
                             else {
