@@ -9,45 +9,56 @@
     <meta http-equiv="Cache-Control" content="no-cache"/>
 
 	<title>Kurt Climbing 0408a</title> 
-	<link rel="stylesheet" href="http://www.kurt-climbing.com/Joomla/STATIC/css/THEMES/20140627/app1.css" />
-	<link rel="stylesheet" href="http://www.kurt-climbing.com/Joomla/STATIC/css/THEMES/20140627/jquery.mobile.structure-1.4.2.css" />
 
-    <link rel="stylesheet" href="../css/clRouteColors.css" />
-    <link rel="stylesheet" href="../css/clLib.css" />
-
-
-        <!-- phonegap integration? -->
-        <script type="text/javascript" src="../js/jquery-1.8.2.js"></script>
+	<script type="text/javascript" src="../js/jquery-1.8.2.js"></script>
         <script type="text/javascript" src="../js/Chart.js"></script>
+	<link rel="stylesheet" href="../css/clLib.css" />
+	<link rel="stylesheet" href="../css/clRouteColors.css" />
+	<link rel="stylesheet" href="../css/webClLib.css" />
+	<link rel="stylesheet" href="../css/jquery-ui_smoothness.css">
 
+	
+	<script type="text/javascript" src="../js/jquery-1.8.2.js"></script>
+	<script type="text/javascript" src="../js/jquery-ui.js"></script>
 		
+	<script src="../js/jquery.dataTables.js"></script>
+	<link rel="stylesheet" href="../css/jquery.dataTables.css" />
+
+	<link href="../css/dataTables.colReorder.css" rel="stylesheet" type="text/css" />
+	<script src="../js/dataTables.colReorder.nightly.js"></script>
+
+	<script src="../js/dataTables.colVis.nightly.js"></script>
+	<link href="../css/dataTables.colVis.nightly.css" rel="stylesheet" type="text/css" />
+
+	<script type="text/javascript" src="../js/clLib.js"></script>
+	<script type="text/javascript" src="../js/clLib.auth.js"></script>
+	<script type="text/javascript" src="../js/clLib.gradeConfig.js"></script>
+	<script type="text/javascript" src="../js/clLib.localStorage.js"></script>
+	<script type="text/javascript" src="../js/clLib.localStorage.indexes.js"></script>
+	<script type="text/javascript" src="../js/clLib.UI.js"></script>
+	<script type="text/javascript" src="../js/clLib.REST.js"></script>
+	<script type="text/javascript" src="../js/clLib.IAP.js"></script>
+	<script type="text/javascript" src="../js/clLib.UI.pageConfig.js"></script>
+    <script type="text/javascript" src="../js/clLib.UI.web.GraphConfig.js"></script>
+	<script type="text/javascript" src="../js/webClLib.js"></script>
+	<script type="text/javascript" src="../js/clLib.UI.web.FieldConfig.js"></script>
+	<script type="text/javascript" src="../js/clLib.UI.web.js"></script>
 
 
+    
+    
+    
+    
 
-        <script type="text/javascript" src="../js/clLib.js"></script>
-        <script type="text/javascript" src="../js/clLib.auth.js"></script>
-        <script type="text/javascript" src="../js/clLib.gradeConfig.js"></script>
-        <script type="text/javascript" src="../js/clLib.localStorage.js"></script>
-        <script type="text/javascript" src="../js/clLib.localStorage.indexes.js"></script>
-        <script type="text/javascript" src="../js/clLib.UI.js"></script>
-        <script type="text/javascript" src="../js/clLib.REST.js"></script>
-<!--
-        <script type="text/javascript" src="../js/clLib.PAGES.js"></script>
-		
-		<script type="text/javascript" src="../js/clLib.PAGES.web.js"></script>
--->	
-        
-		<script type="text/javascript" src="../js/clLib.IAP.js"></script>
-        <script type="text/javascript" src="../js/clLib.UI.pageConfig.js"></script>
-
-        <script type="text/javascript" src="../js/clLib.UI.web.GraphConfig.js"></script>
-        <script type="text/javascript" src="../js/webClLib.js"></script>
 		<style>
-            ul#statsLinks { 
+        /*
+            ul#statsLinks 
+            { 
                 list-style: none;
                 padding: 10px 40px;
                 margin: 0px 20px;
                 font-weight: normal;
+                color: red;
             }
             ul#statsLinks li a.active { 
                 font-weight: bold;
@@ -56,6 +67,7 @@
                 padding: 20px 0px;
                 border: 0px solid red;
             }
+        */
         </style>
 <script>
           
@@ -90,15 +102,18 @@
                 $("<li>").append(
                     $("<a>")
                         .data("graphName", graphConfig["graphName"])
-                        .html(graphConfig.config["displayName"])
+                        .append($("<span>")
+                            .html(graphConfig.config["displayName"])
+                        )
                 )
             );
         });
 
         $("#statsLinks a").on("click", function(e) {
             var newVal = $(this).data("graphName");
-            $(this).parents("ul").find("a").removeClass("active");
-            $(this).addClass("active");
+            window.currentStat = newVal;
+            $(this).parents("ul").find("li").removeClass("active");
+            $(this).parents("li").addClass("active");
             console.log("getting stats >" + newVal + "<");
             
             setTimeout(
@@ -135,14 +150,51 @@
     <option value="allSessionsLine">All Sessions(line)</option>
 -->
 </select>
-<div style="float: left">
-    <ul id="statsLinks">
-    </ul>
+    <div style="float: left;">
+        <ul id="statsLinks" class="clLink clLinkVertical">
+        </ul>
+    </div>
+    <div id="routeLogDiagramContainer" style="padding: 10px 0px; width: 100%; height: 400px; ">
+    <canvas class="clCanvas" height="400px" style="border: 1px solid #CCCCCC;"></canvas>
 </div>
-<div id="routeLogDiagramContainer" style="padding: 10px 40px; width: 100%; height: 400px; ">
-<canvas class="clCanvas" width="800px" height="400px" style="border: 1px solid #CCCCCC; awidth: 300px; aheight: 300px;"></canvas>
+<div style="clear:both"></div>
+<div id="tableContainer" style="width: 100%; height: 400px; ">
 </div>
 
 </body>
+<script>
+    
+        $("canvas").each(function(i,el){
+            // Set the canvas element's height and width to it's parent's height and width.
+            // The parent element is the div.canvas-container
+            console.log("resetting width to.." + ($(el).parent().width() - 300));
+            $(el).attr({
+                "width": $(el).parent().width() -300
+            });
+        });
+/*
+	var $tableContainer = $("#tableContainer");
+	var $filterContainer = $("#filterContainer");
 
+
+	clLib.UI.web.createTable(
+		$tableContainer
+		,{
+			entity: "RouteLog"
+            ,items: {"RouteLog": JSON.parse(
+                "[{\"_id\":\"54f8bcda762ae60300000005\",\"GradeSystem\":\"UIAA\",\"Grade\":\"X+/XI-\",\"Sector\":\"__UNKNOWN__\",\"Colour\":\"__UNKNOWN__\",\"Line\":\"__UNKNOWN__\",\"searchRouteResults\":\"\",\"RouteName\":\"\",\"Comment\":\"\",\"Rating\":\"4\",\"tickType\":\"flash\",\"tickType_redpoint\":false,\"tickType_flash\":true,\"tickType_attempt\":false,\"tickType_toprope\":false,\"character\":\"__UNKNOWN__\",\"Area\":\"Kletterhalle Wien\",\"username\":\"foo6@gmail.com\",\"DateISO\":\"2015-03-05T20:30:17.606Z\",\"routeLogContainer\":\"\",\"localOnly\":0},{\"_id\":\"54cb3be3e1a78f0300000001\",\"clControls\":\"\",\"DateISO\":\"2015-01-13T10:00:00.000Z\",\"GradeSystem\":\"UIAA\",\"Grade\":\"X+\",\"score\":\"\",\"Rating\":\"3\",\"Sector\":\"Stadlauer-Mauer\",\"Line\":\"43\",\"Colour\":\"darkbrown\",\"Comment\":\"wewe\",\"character\":\"vertical\",\"username\":\"foo6@gmail.com\"},{\"_id\":\"54c6613b39f2750300000003\",\"clControls\":\"\",\"GradeSystem\":\"UIAA\",\"Grade\":\"X+\",\"score\":\"\",\"Rating\":\"4\",\"Sector\":\"\",\"Line\":\"\",\"Colour\":\"\",\"Comment\":\"\",\"character\":\"\",\"username\":\"foo6@gmail.com\"},{\"_id\":\"5505d00c9841af0300000002\",\"GradeSystem\":\"UIAA\",\"Grade\":\"IX\",\"Colour\":\"__UNKNOWN__\",\"tickType\":\"redpoint\",\"tickType_redpoint\":true,\"tickType_flash\":false,\"tickType_attempt\":false,\"tickType_toprope\":false,\"character\":\"__UNKNOWN__\",\"Comment\":\"\",\"Area\":\"Kletterhalle Wien\",\"username\":\"foo6@gmail.com\",\"DateISO\":\"2015-03-15T18:31:21.854Z\",\"routeLogContainer\":\"\",\"localOnly\":0},{\"_id\":\"54d8a69474a9380300000001\",\"clControls\":\"\",\"DateISO\":\"2015-02-10T11:00:00.000Z\",\"GradeSystem\":\"UIAA\",\"Grade\":\"IX-/IX\",\"score\":\"875\",\"Rating\":\"2\",\"Colour\":\"purple\",\"Comment\":\"zuzuz\",\"character\":\"slab\",\"username\":\"foo6@gmail.com\"},{\"_id\":\"54fb04a6b36a500300000001\",\"GradeSystem\":\"UIAA\",\"Grade\":\"VIII-\",\"Colour\":\"__UNKNOWN__\",\"tickType\":\"\",\"tickType_redpoint\":false,\"tickType_flash\":false,\"tickType_attempt\":false,\"tickType_toprope\":true,\"character\":\"__UNKNOWN__\",\"Comment\":\"\",\"Area\":\"Boulderbar Vienna\",\"username\":\"foo6@gmail.com\",\"DateISO\":\"2015-03-07T14:01:10.332Z\",\"routeLogContainer\":\"\",\"localOnly\":0}]"
+            )
+			}
+            ,where : null //
+		}
+		,function() {
+			alert("table built!");
+		}
+		,function(e) {
+			alert("table build error >" + JSON.stringify(e) + "<");
+		}
+	);
+	
+*/
+</script>
 </html>
