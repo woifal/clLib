@@ -11,7 +11,7 @@ var BSON = mongo.BSONPure;
 */
 require("./clLib");
 require("./clLib.gradeConfig");
-require("./clLib.webSockets.js");
+//require("./clLib.webSockets.js");
 
 util.log("\n\n>>>>>>" + JSON.stringify(clLib.gradeConfig) + "<<<<<<<<<\n\n\n\n");
 
@@ -84,11 +84,17 @@ function unknownMethodHandler(req, res) {
 		var allowHeaders = ['Accept', 'Accept-Version', 'Content-Type', 'Api-Version', 'Origin', 'X-Requested-With']; // added Origin & X-Requested-With
 
 		if (res.methods.indexOf('OPTIONS') === -1) res.methods.push('OPTIONS');
+        if (res.methods.indexOf('PUT') === -1) res.methods.push('PUT');
+        if (res.methods.indexOf('POST') === -1) res.methods.push('POST');
+        if (res.methods.indexOf('DELETE') === -1) res.methods.push('DELETE');
 
 		res.header('Access-Control-Allow-Credentials', true);
-		res.header('Access-Control-Allow-Headers', "content-type,x-appery-database-id,clSessionToken,clUserName,DNT,accept-language,accept");
+		res.header('Access-Control-Allow-Headers', "content-type,x-appery-database-id,clSessionToken,clUserName,DNT,accept-language,accept,Access-Control-Allow-Origin");
+        util.log("header.methods >" + res.methods.join(', ') + "<");
 		res.header('Access-Control-Allow-Methods', 	res.methods.join(', '));
-		res.header('Access-Control-Allow-Origin', req.headers.origin);
+        util.log("header.origin >" + req.headers.origin + "<");
+        res.header('Access-Control-Allow-Origin', req.headers.origin);
+		//res.header('Access-Control-Allow-Origin', "*");
 		console.log("sending 204...\n\n\n");
 		return res.send(204);
 	} else {
@@ -160,7 +166,8 @@ server.get("/login", function (req, res) {
 			req.params
 			,function(userObj) {
 				util.log("AUTHENTICATED!!! " + JSON.stringify(userObj));
-				return res.send(userObj);
+                res.header('Access-Control-Allow-Origin', "*");
+                return res.send(userObj);
 			}
 			,errHandler
 		);
