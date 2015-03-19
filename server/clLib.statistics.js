@@ -38,6 +38,8 @@ clStats.prototype.getEntityStats = function(options, callbackFunc, errorFunc) {
     var defaultStatsOptions = {
         sortDescFlag: true
         ,entity: "RouteLog"
+        ,startIdx: 0
+        ,endIdx: 99999999
     };
     
 	DBHandler.getEntities({
@@ -96,6 +98,15 @@ clStats.sort_localDayAndScore = function(routeLog, options) {
     util.log("got evalResult >" + evalResult + "<");
     return evalResult;
 };
+clStats.sort_score = function(routeLog, options) {
+    util.log("sort_score " + JSON.stringify(routeLog));
+    util.log("2sort_score " + JSON.stringify(options));
+    var datePortionFunc = clStats[options.statsOptions.datePortionFuncName];
+    
+    var evalResult = clLib.lpad(clLib.computeScore(routeLog), '0', 6);
+    util.log("got evalResult >" + evalResult + "<");
+    return evalResult;
+};
 clStats.sort_localScoreAndDay = function(routeLog, options) {
     util.log("sort_locaDayAndScore " + JSON.stringify(routeLog));
     util.log("2sort_locaDayAndScore " + JSON.stringify(options));
@@ -146,6 +157,48 @@ clStats.aggregateScoresByDatePortion = function(routeLogArr, options) {
                 aggResultObj[datePortion].score += clLib.computeScore(routeLog);
                 aggResultObj[datePortion].count++;
                 aggResultObj[datePortion].items.push(routeLog);
+            }
+        }
+	}
+	JSON.stringify(aggResultObj);
+	return aggResultObj;
+};
+
+clStats.aggregateByNone= function(routeLogArr, options) {
+    return clStats.aggregateById(routeLogArr, options);
+}
+clStats.aggregateById= function(routeLogArr, options) {
+	var aggResultObj = {};
+	var aggResultArr = [];
+    var foundCount = 0;
+	for(var i = 0; i < routeLogArr.length; i++) {
+        if(foundCount <= options.statsOptions.endIdx) {
+            var routeLog = routeLogArr[i];
+            var aggKey = 
+                clLib.lpad(clLib.computeScore(routeLog), '0', 6)
+                + "@"
+                + routeLog["DateISO"];
+            
+
+            if(aggKey) {
+                if(foundCount > options.statsOptions.startIdx) {
+                    util.log("id is>" + aggKey + "<");
+                    if(!(aggKey in aggResultObj)) {
+                        aggResultObj[aggKey] = {
+                            count : 0
+                            ,score : 0
+                            ,items : []
+                        };
+                    }
+                    
+                    if(aggResultObj[aggKey].count < options.statsOptions.aggTopX) {
+                        util.log("Adding score of >" + clLib.computeScore(routeLog) + "<");
+                        aggResultObj[aggKey].score += clLib.computeScore(routeLog);
+                        aggResultObj[aggKey].count++;
+                        aggResultObj[aggKey].items.push(routeLog);
+                    }
+                }
+                foundCount++;
             }
         }
 	}
