@@ -298,7 +298,39 @@ routeLogConfig.add(new GraphConfig({
         ,sortByFuncName:        "sort_score"
         ,aggTopX:               1
         ,sortDescFlag:          true
+        ,nrOfEligibleDays:      9999
+        ,startIdx:                 0
+        ,endIdx:                   10
+    }
+}));
+routeLogConfig.add(new GraphConfig({
+    graphName : "top10LastYear"
+    ,displayName: "Top 10(last year)"
+    ,graphType: "bar|table"
+    ,statsOptions: {
+        entity:                 "RouteLog"
+        ,datePortionFuncName :  null
+        ,aggFuncName:           "aggregateById"
+        ,sortByFuncName:        "sort_score"
+        ,aggTopX:               1
+        ,sortDescFlag:          true
         ,nrOfEligibleDays:      365
+        ,startIdx:                 0
+        ,endIdx:                   10
+    }
+}));
+routeLogConfig.add(new GraphConfig({
+    graphName : "top10_3months"
+    ,displayName: "Top 10(last 3 months)"
+    ,graphType: "bar|table"
+    ,statsOptions: {
+        entity:                 "RouteLog"
+        ,datePortionFuncName :  null
+        ,aggFuncName:           "aggregateById"
+        ,sortByFuncName:        "sort_score"
+        ,aggTopX:               1
+        ,sortDescFlag:          true
+        ,nrOfEligibleDays:      93
         ,startIdx:                 0
         ,endIdx:                   10
     }
