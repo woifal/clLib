@@ -192,6 +192,7 @@ clLib.REST.buildAJAXRequest = function(options, successFunc, errorFunc) {
 			xhr.setRequestHeader("DNT", "1");
 //			xhr.setRequestHeader("User-Agent", "Mozilla/5.0 (Windows NT 6.2; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0");
 			xhr.setRequestHeader("X-Appery-Database-Id", "52093c91e4b04c2d0a027d7f");
+            xhr.setRequestHeader('Access-Control-Allow-Origin','*');
 
             if(!options["allowNoSessionToken"]) {
 		        // only allow REST calls for authenticated users..
