@@ -257,17 +257,21 @@ table.dataTable.display thead.hover th.clBlurred:hover td select
 	width: 100%;
 }
 
-#fav-nav .navigation ul.nav.menu li a {
+#fav-nav .navigation ul.nav.menu li a
+,ul.clLink li a
+ {
 	text-align: center;
 }
 
 #fav-nav .navigation ul.clMenuContainer.nav.menu li a span,
 #fav-nav .navigation ul.nav.menu li a span
+,ul.clLink li a span
 {
 	font-size: 20px;
 }
 #fav-nav .navigation ul.clMenuContainer.nav.menu li.active a span,
 #fav-nav .navigation ul.nav.menu li.active a span
+,ul.clLink li.active a span
 {
 	font-weight: bold;
 }
@@ -277,14 +281,19 @@ table.dataTable.display thead.hover th.clBlurred:hover td select
 	border-bottom: 4px solid #073E78;
 	font-size: 21px;
 }
+
 #fav-nav .navigation ul.clMenuContainer.nav.menu li a:hover > span
+,ul.clLink li a:hover > span
 {
 	transition: all 0.2s ease-in-out;
 	border-bottom: 4px solid #A0522D;
 	font-size: 21px;
 }
 
-#fav-nav .moduletable ul.nav.menu li, #fav-nav .moduletable ul.nav.menu li li, #fav-nav .moduletable ul.nav.menu li li li, #fav-nav .moduletable ul.nav.menu li li li li {
+#fav-nav .moduletable ul.nav.menu li
+,#fav-nav .moduletable ul.nav.menu li li
+,#fav-nav .moduletable ul.nav.menu li li li
+,#fav-nav .moduletable ul.nav.menu li li li li {
 	width: 25%;
 }
 
@@ -325,19 +334,21 @@ a.clUserInfo  img {
 */
 		height: 30px;
 	}
-	#fav-nav .navigation ul.clMenuContainer.nav.menu li a {
-		color: sienna; /*white; */
-		margin-top: 0; 
-		margin-bottom: 0; 
-		padding-top: 5px; 
-		padding-bottom: 5px;	
-	/*	float: right; */
-		background-color: white; /*#A63a72;*/
-		border-left: 1px solid white;
-		border-right: 1px solid white;
-		border-radius: 0px !important;
-		height: 30px;
-	}
+#fav-nav .navigation ul.clMenuContainer.nav.menu li a 
+,ul.clLink li a 
+{
+    color: sienna; /*white; */
+    margin-top: 0; 
+    margin-bottom: 0; 
+    padding-top: 5px; 
+    padding-bottom: 5px;	
+/*	float: right; */
+    background-color: white; /*#A63a72;*/
+    border-left: 1px solid white;
+    border-right: 1px solid white;
+    border-radius: 0px !important;
+    height: 30px;
+}
 
 	.navigation ul.nav.clMenuContainer > li {
 		float: right;
@@ -390,17 +401,40 @@ body {
 	background-color: white;
 }
 
-ul.nav.menu {
+ul.nav.menu
+,ul.clLink  {
 	aborder: 1px solid red;
 	margin-top: 0px;
 	margin-bottom: 0px;
 }
-#fav-nav .navigation ul.nav.menu li a{
+#fav-nav .navigation ul.nav.menu li a
+,ul.clLink li a
+{
 	aborder: 1px solid red;
 	padding: 18px 30px;
 	font-size:20px;
 	
 }
+
+ul.clLink {
+    list-style: none outside none;
+    padding-left: 0;
+}
+ul.clLink.clLinkVertical {
+    width: 250px;   
+}
+
+ul.clLink li {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    height: 30px;
+}
+
+ul.clLink li a  {
+    padding: 0 0 0 0;
+}
+
+
 #fav-nav{
 	border: none;
 	
