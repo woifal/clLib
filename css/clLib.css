@@ -191,6 +191,57 @@ input.ui-input-text, textarea.ui-input-text {
     display: block;
 }
 
+.clButton.clButton50 {
+    afloat: left;
+    width: 151px;
+	padding: 9px;
+    border-radius: 8px;
+	box-shadow: inset 0px 2px 2px 1px #DDD;
+	margin: 0 auto;
+	background: #FFFFFF;
+    display: inline-block;
+    box-sizing: border-box;
+}
+
+.clButton.clButton50 >div {
+    padding-left: 4px;
+    padding-top: 4px;
+    height: 34px;
+    font-size: 0.9em;
+}
+  
+.clButton.clButton50 >div >a {
+    width: 35px;
+    height: 35px;
+    amargin-right: 8px;
+}  
+  
+.clButton.clButton50 >div >a >div {
+    top: 3px;
+    left: 3px;
+    width: 30px;
+    height: 30px;
+} 
+  
+.clButton.clButton50 >div >a >div >img {
+    top: 7px;
+    left: 7px;
+    width: 15px;
+    height: 15px;
+}    
+    
+.clButton.clButton50 >div > span {
+    /* padding-top: 6px; */
+    padding-left: 4px;
+    float: none;
+    height: 40px;
+    padding-top: 0px;
+    /* border: 1px solid blue; */
+    display: table-cell;
+    vertical-align: middle;
+}
+
+
 .clButton.clFullWidth {
 	width: 98%;
     margin: 0 auto;

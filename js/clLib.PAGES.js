@@ -373,6 +373,11 @@ clLib.PAGES.handlers = {
 				}, {text: "Loading statistics.."});
 	        });
 
+            $("#startScreen_gradeConversionButton").die("click").click(function () {
+				clLib.UI.execWithMsg(function() {
+					clLib.PAGES.changeTo("clLib_gradeConversion.html");
+				}, {text: "Loading grade conversion.."});
+	        });
 	        // Link to New Route page..
 	        $("#clLib_addRouteButton").on("click", function (e) {
 				clLib.UI.execWithMsg(function() {
