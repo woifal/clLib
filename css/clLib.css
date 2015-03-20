@@ -34,6 +34,10 @@ div.clPage {
 	//max-width:320px;
 }
 
+#startScreen.clPage {
+    background-color: white;
+}
+
 .ui-header 
 {
 	margin-top: 17x;
