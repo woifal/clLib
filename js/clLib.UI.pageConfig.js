@@ -166,6 +166,7 @@ clLib.UI.autoLoad = {
 			"areaSelect"
 			, "onlineIcon"
 			, "currentScore"
+			, "currentTotalScore"
 			, "areaButton"
 			]
 	}
@@ -253,6 +254,7 @@ clLib.UI.elementsToReset = {
 	]
 	, startScreen : [
 		"currentScore"
+		,"currentTotalScore"
 		,"areaButton"
 	]
 	, gradeConversion: [
@@ -369,6 +371,7 @@ clLib.UI.pageElements = {
 			, "selectedArea"
 			, "onlineIcon"
 			, "currentScore"
+			, "currentTotalScore"
 			,"areaButton"
 	    ]
 	}
@@ -1317,6 +1320,50 @@ clLib.UI.elements = {
 			//alert("Todays score is: " + todaysTopScore);
 
 			var currentScoreText = "Today: <strong>" + todaysTopScore + "</strong> pts"
+
+			$this.empty();
+			$this.append(currentScoreText);
+		}
+	}
+	, "currentTotalScore" : {
+		"refreshHandler" : function($this) { 
+            var where;
+			where = clLib.getCurrentUserWhere();
+
+            var totalScore = 0;
+            var successHandler = function(statsResults) {
+                statsResults = JSON.parse(statsResults);
+				console.log("results is >" + JSON.stringify(statsResults)  + "<");
+                $.each(statsResults, function(idx, statsResult) {
+                    console.log("working on >" + idx + "< with score >" + statsResult["score"] + "<");
+                    totalScore += statsResult["score"];
+                });
+            };
+
+            var options = {
+                statsOptions: {
+                    entity:                 "RouteLog"
+                    ,datePortionFuncName :  null
+                    ,aggFuncName:           "aggregateById"
+                    ,sortByFuncName:        "sort_score"
+                    ,aggTopX:               1
+                    ,sortDescFlag:          true
+                    ,nrOfEligibleDays:      365
+                    ,startIdx:                 0
+                    ,endIdx:                   10
+                }
+                ,where: where
+            }
+            clLib.REST.requestStatsNew(
+                options
+                ,successHandler
+                ,function(e) {
+                    alert("error!");
+                    alert(clLib.formatError(e));
+                }
+            );
+            
+			var currentScoreText = "Total: <strong>" + totalScore + "</strong> pts"
 
 			$this.empty();
 			$this.append(currentScoreText);
