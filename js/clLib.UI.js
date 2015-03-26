@@ -1195,9 +1195,26 @@ clLib.UI.defaultRefreshHandler = function($element, additionalOptions) {
 			,value: clLib.UI.NOTSELECTED.value
 		}
 	};
-	//alert(JSON.stringify(results));
-	//alert("elContentOptions are " + JSON.stringify(additionalOptions));
-	$.extend(elContentOptions, additionalOptions);
+	console.log(JSON.stringify(results));
+	console.log("elContentOptions are " + JSON.stringify(additionalOptions));
+	
+    alert("results are >"+ JSON.stringify(results) + "<");
+    if(
+        (
+            !results || results.length == 0
+        )
+        && additionalOptions["showMoreButton"]
+    ) {
+        console.log("show ALL items for >" + $element.attr("id") + "<");
+
+        dependingPageElements = [];
+        console.log("old results is >" + results.length + "<");
+        results = clLib.UI.defaultEntitySearch(entityName, resultColName, dependingPageElements, true, null);
+        console.log("new results is >" + results.length + "<");
+        elContentOptions["dataObj"] = results;  
+
+        }
+    $.extend(elContentOptions, additionalOptions);
 	
 	
 
@@ -1242,8 +1259,8 @@ clLib.UI.defaultEntitySearch = function(entityName, resultColName, dependentPage
 	} else {
 		where = baseWhere;
 	}
-	//alert("where = " + JSON.stringify(where));
-
+	//alert("where(" + entityName + ") = " + JSON.stringify(where));
+    
 	if(distinctFlag) {
 		results = clLib.localStorage.getDistinct(entityName, where, resultColName, "defaultStorage");
 	} else {

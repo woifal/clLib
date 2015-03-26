@@ -1128,7 +1128,10 @@ clLib.UI.elements = {
 		    //alert("refreshing colours with >" + JSON.stringify(additionalOptions) + "<");
 			clLib.UI.defaultRefreshHandler(
 				$this
-				,$.extend(additionalOptions, { preserveCurrentValue: false })
+				,$.extend(additionalOptions, { 
+                    preserveCurrentValue: false 
+                    ,showMoreButton: true
+                })
 			);
 		    clLib.addCSSBackground($this.attr("id"), {addClasses: "clColourBg"});
 			$("#" + clLib.UI.currentPage() + "_colourSelect-listbox-popup")
