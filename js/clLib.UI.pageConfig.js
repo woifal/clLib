@@ -1366,7 +1366,7 @@ clLib.UI.elements = {
                 }
             );
             
-			var currentScoreText = "Total: <strong>" + totalScore + "</strong> pts"
+			var currentScoreText = "Annual Score: <strong>" + totalScore + "</strong> pts"
 
 			$this.empty();
 			$this.append(currentScoreText);
