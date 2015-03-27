@@ -11,7 +11,6 @@ var BSON = mongo.BSONPure;
 */
 require("./clLib");
 require("./clLib.gradeConfig");
-//require("./clLib.webSockets.js");
 
 util.log("\n\n>>>>>>" + JSON.stringify(clLib.gradeConfig) + "<<<<<<<<<\n\n\n\n");
 
@@ -27,6 +26,7 @@ clLib.server.email = {};
 var PORT = process.env.PORT || 1983;
 //Include retify.js framework
 var restify = require('restify');
+var socketIO = require("socket.io");
 var http = require('http');
  
 var options = {
@@ -64,7 +64,6 @@ var server = restify.createServer(options);
  
 
 //clLib.server = server;
-exports.server = clLib.server;
 
 
  
@@ -102,6 +101,7 @@ function unknownMethodHandler(req, res) {
 	}
 }
 
+
 server.use(restify.queryParser()); 
 server.use(restify.fullResponse());
 server.on('MethodNotAllowed', unknownMethodHandler);
@@ -111,9 +111,20 @@ server.use(restify.CORS());
 server.use(restify.fullResponse());
 //server.use(restify.session());
 
-util.log("listening "+PORT);
- 
 
+util.log("listening "+PORT);
+
+exports.server = clLib.server;
+exports.socketIO = socketIO;
+
+var io = socketIO.listen(server.server); //Note server.server instead of just server
+
+
+var ioSocketResource = require("./clLib.webSockets.js");
+var ioSocketHandler = new ioSocketResource.webSockets();
+
+util.log("1");
+ioSocketHandler.connect(io);
  
  //IMPORT RESOURCES
 var eventsResource = require('./events');
