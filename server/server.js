@@ -117,6 +117,20 @@ util.log("listening "+PORT);
 exports.server = clLib.server;
 exports.socketIO = socketIO;
 
+ //IMPORT RESOURCES
+var eventsResource = require('./events');
+var mailResource = require("./clMail.gmail");
+var authResource = require("./clLib.authentification");
+//var DBResource = require("./clLib.server.db.apperyREST.js");
+var DBResource = require("./clLib.server.db.mongolab");
+var DBHandler = new DBResource.DBHandler();
+clLib.server.DBHandler = DBHandler;
+var mailHandler = new mailResource.mail();
+var authHandler = new authResource.auth();
+
+var statsResource = require("./clLib.statistics");
+var statsHandler = new statsResource.stats();
+
 var io = socketIO.listen(server.server); //Note server.server instead of just server
 
 
@@ -126,18 +140,6 @@ var ioSocketHandler = new ioSocketResource.webSockets();
 util.log("1");
 ioSocketHandler.connect(io);
  
- //IMPORT RESOURCES
-var eventsResource = require('./events');
-var mailResource = require("./clMail.gmail");
-var authResource = require("./clLib.authentification");
-//var DBResource = require("./clLib.server.db.apperyREST.js");
-var DBResource = require("./clLib.server.db.mongolab");
-var DBHandler = new DBResource.DBHandler();
-var mailHandler = new mailResource.mail();
-var authHandler = new authResource.auth();
-
-var statsResource = require("./clLib.statistics");
-var statsHandler = new statsResource.stats();
 
 
 var adminUserDetails = {};
