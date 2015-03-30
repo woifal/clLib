@@ -154,6 +154,9 @@ clLib.PAGES.handlers = {
 	        clLib.UI.byId$("preferencesButton", pageId).die("click").live("click", function () {
 	            clLib.PAGES.changeTo("clLib_preferences.html");
 	        });
+	        clLib.UI.byId$("buddiesButton", pageId).die("click").live("click", function () {
+	            clLib.PAGES.changeTo("clLib_buddies.html");
+	        });
 	        clLib.UI.byId$("gradeConversionButton", pageId).die("click").live("click", function () {
 	            clLib.PAGES.changeTo("clLib_gradeConversion.html");
 	        });
@@ -552,6 +555,14 @@ clLib.PAGES.handlers = {
 			$("#stats_allDiagram").on("click", function () {
                 clLib.PAGES.changeTo("clLib_diagram.html");
             });
+		}
+        , "pagebeforeshow": function () {
+			//alert("show!");
+	        clLib.UI.fillUIelements();
+        }
+	}
+	, "buddies": {
+	    "pagecreate": function () {
 		}
         , "pagebeforeshow": function () {
 			//alert("show!");
@@ -1088,6 +1099,7 @@ clLib.PAGES.processAuthObj = function(urlAuthObj, successFunc) {
 			//alert("checking for image urll.");
 			userObj["imageURL"] = authObj.image.url;
 			userObj["username"] = authObj.id;
+			userObj["_id"] = authObj["_id"] + "X";
 			
 	//        alert("got userObj of >" + JSON.stringify(userObj) + "<");
 			

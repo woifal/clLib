@@ -20,7 +20,14 @@ clLib.UI.pageRequisites = {
         "clBeforeChange" : [
             function(successFunc, errorFunc) {
                 console.log("!?!?!?! change to users - but WITH redirect!!!!");
-                return clLib.tryLogin(successFunc, errorFunc, false);
+                return clLib.tryLogin(
+                    function() {
+                        clLib.webSocketClient.connect(clLib.getUserInfo());
+                        return successFunc();
+                    }
+                    , errorFunc
+                    , false
+                );
             }
             ,clLib.prefsCompleteCheck
             ,clLib.wasOnlineCheck
@@ -57,6 +64,7 @@ clLib.UI.pageRequisites = {
     }] }
     , "users_verification": { }
     , "buy": { }
+    , "buddies": { }
     , "stats": {
 		"clBeforeChange" : [
 			function(successFunc, errorFunc) {
@@ -106,8 +114,40 @@ clLib.UI.pageRequisites = {
 
 clLib.UI.saveHandlers= {
       "preferences": clLib.UI.localStorageSaveHandler
-    , "newRouteLog_default": clLib.UI.RESTSaveHandler
-    , "newRouteLog_reduced": clLib.UI.RESTSaveHandler
+    , "newRouteLog_default": function(options, successFunc, errorFunc) {
+        return clLib.UI.RESTSaveHandler(
+            options
+            ,function(resultObj) {
+                var msg = { 
+                    name: "notifyBuddies"
+                    ,username: clLib.getUserInfo()["username"]
+                    ,text: ">" + clLib.getUserInfo()["username"] + "< saved a route with >" + clLib.computeScore(resultObj) + "< points."
+                };
+                alert("sending msg >" + JSON.stringify(msg) + "< to buddies");
+                clLib.webSocketClient.send(msg);
+
+                return successFunc();
+            }
+            ,errorFunc
+        );
+    }
+    , "newRouteLog_reduced": function(options, successFunc, errorFunc) {
+        return clLib.UI.RESTSaveHandler(
+            options
+            ,function(resultObj) {
+                var msg = { 
+                    name: "notifyBuddies"
+                    ,username: clLib.getUserInfo()["username"]
+                    ,text: ">" + clLib.getUserInfo()["username"] + "< saved a route with >" + clLib.computeScore(resultObj) + "< points."
+                };
+                alert("sending msg >" + JSON.stringify(msg) + "< to buddies");
+                clLib.webSocketClient.send(msg);
+
+                return successFunc();
+            }
+            ,errorFunc
+        );
+    }
     , "startScreen": clLib.UI.RESTSaveHandler
     , "users": clLib.UI.userHandler
     , "users_clLogin": clLib.UI.userHandler
@@ -211,6 +251,12 @@ clLib.UI.autoLoad = {
 			,"allRouteLogs"
 		]
 	}
+    ,"buddies": {
+        default: [
+            "buddyList"
+            ,"searchBuddies"
+        ]
+    }
     ,"diagram" : {
 		default: [
 		]
@@ -292,6 +338,11 @@ clLib.UI.elementsToReset = {
 		"todaysRouteLogs"
 		,"allRouteLogs"
 	]
+    ,buddies: [
+        "buddyList"
+        ,"searchBuddies"
+        ,"searchBuddiesResults"
+    ]
 
 };
 
@@ -418,6 +469,13 @@ clLib.UI.pageElements = {
 			//, "monthRouteLogs"
 			, "allRouteLogs"
 			, "yearRouteLogs"
+        ]
+    }
+    ,"buddies": {
+        default: [
+            "buddyList"
+            ,"searchBuddies"
+            ,"searchBuddiesResults"
         ]
     }
     ,"diagram": {
@@ -1461,6 +1519,7 @@ clLib.UI.elements = {
 				container : $container
 				,items : todaysRouteLogs
 				,clearCurrentItems : true
+                ,createItemFunc: clLib.UI.collapsible.formatRouteLogRow
 			});
 
 			// Scroll down so that collapsible header in on top of viewport..
@@ -1578,6 +1637,7 @@ clLib.UI.elements = {
 				container : $container
 				,items : todaysRouteLogs
 				,clearCurrentItems : true
+                ,createItemFunc: clLib.UI.collapsible.formatRouteLogRow
 			});
 	
 		}
@@ -1631,6 +1691,253 @@ clLib.UI.elements = {
 		
 		}
 	}		
+	,"searchBuddies" : {
+		"dbField" : "username"
+		,"refreshHandler" : function($this, options) { 
+			$this.bind("keyup.clLib", function() {
+				console.log("keyup in buddiesSearch..");
+                clLib.UI.byId$("searchBuddiesResults").trigger(
+					"refresh.clLib", 
+					clLib.UI.addObjArr(options || {}, ["eventSourcePath"], $this.attr("id"))
+				);
+			});
+			$this.bind("click.clLib", function() {
+				clLib.UI.byId$("searchBuddiesResults").trigger(
+					"refresh.clLib", 
+					clLib.UI.addObjArr(options || {}, ["eventSourcePath"], $this.attr("id"))
+				);
+			});
+
+		
+		}
+		,"setSelectedValueHandler" : function($this, changeOptions) {
+			if(changeOptions["value"] == clLib.UI.NOTSELECTED.value) {
+				$this.val("");
+				return;
+			}
+			console.log("setting search result >" + changeOptions["value"] + "<");
+			$this.val(changeOptions["value"]);
+		}
+	}
+	,"searchBuddiesResults" : {
+		"refreshHandler" : function($this, options) { 
+		    console.log("refreshing buddyreeults!!!");
+            options = options || {};
+			var $inElement = $this;
+			var $forElement = clLib.UI.byId$("searchBuddies");
+			;
+			
+            clLib.REST.getEntities("Users", 
+            {
+				"$or": [
+                    {
+                        "$and" : [
+                            {
+                                "authType" : {
+                                    "$in": [
+                                        "facebook", "google"
+                                    ]
+                                }
+                            }
+                            ,{
+                                "displayName": { 
+                                    "$regex": $forElement.val()
+                                    ,"$options": 'i'
+                                }
+                            }
+                        ]
+                    }
+                    ,{
+                        "username": {
+                            "$regex": $forElement.val()
+                            ,"$options": 'i'
+                        }
+                    }
+                ]
+            }
+            ,function(resultObj) {
+                console.log("Found users >" + JSON.stringify(resultObj) + "<");
+                var userList = resultObj["Users"];
+
+                
+                
+                clLib.UI.list.formatBuddyUserRow = function(userObj) {
+                    var displayImg = $("<img>")
+                        .attr("width", "36px")
+                        .attr("height", "36px")
+                        .css({
+                            width: "36px"
+                            ,height: "36px"
+                        })
+                        .addClass("ui-li-icon ui-corner-none")
+                    ;
+                    
+                    if(userObj["authType"] == 'google' || userObj["authType"] == 'facebook') {
+                        userObj["displayName"] = userObj.displayName;
+                        displayImg
+                            .attr("src", userObj.imageURL)
+                            .attr("alt", userObj["authType"].substring(0,1))
+                        ;
+                    } else {
+                        userObj["displayName"] = userObj.username;
+                        displayImg
+                            .attr("src", "?")
+                            .attr("alt", "K")
+                        ;
+                    }
+                    
+                    var displayName = 
+                        userObj["displayName"] // + "(" + userObj["authType"] + ")"
+                    ;
+
+                    var liItem = 
+                        $("<li data-icon='plus'>")
+                            .append($("<a href='#'>")
+                                .append(displayImg)
+                                .append(displayName)
+                            )
+                    ;
+                    
+                    
+                    liItem.click(function() {
+                        if(confirm("Do you want to add >" + displayName + "< ?")) {
+                            clLib.REST.storeEntity(
+                                "buddyList"
+                                ,{
+                                    "username" : clLib.getUserInfo()["username"]
+                                    ,"buddyUsername" : displayName
+                                    ,"buddyId" : userObj["_id"]
+                                    ,"approved" : false
+                                }
+                                ,function(resultObj) {
+                                    alert("saved >" + JSON.stringify(resultObj) + "<");
+                                    clLib.UI.byId$("buddyList").trigger("refresh.clLib");
+                                    return;
+                                }
+                                ,function(e) {
+                                    alert("While adding buddy: >" + e + "<,>" + JSON.stringify(e) + "<");
+                                }
+                            );
+                        }
+                    });
+                   
+                    return liItem;
+                    
+                };
+                
+
+                clLib.UI.addListItems(
+                    $inElement
+                    ,userList
+                    ,clLib.UI.list.formatBuddyUserRow
+                    ,20
+                    ,true
+                );
+
+
+            }
+            ,function(e) {
+                alert("While fetching buddyList: >" + e + "<,>" + JSON.stringify(e) + "<");
+            }
+            ,{
+                "requireResult": false
+            }
+            )
+            ;            
+		}
+	}
+    ,"buddyList": {
+		"setSelectedValueHandler" : function($this, changeOptions) { return $this.trigger("refresh.clLib"); }
+		,"refreshHandler" : function($this) { 
+            console.log("refreshing buddies..");
+    		var $buddyListContainer = $this;
+			$buddyListContainer.empty();
+
+            clLib.REST.getEntities("buddyList", 
+            {
+                "username" : clLib.getUserInfo()["username"]
+                ,"deleted": {
+                    "$ne": true
+                }
+            }
+            ,function(resultObj) {
+                console.log("Found buddies  >" + JSON.stringify(resultObj) + "<");
+                var buddyItems = resultObj["buddyList"];
+                if(buddyItems.length == 0) {
+                    $buddyListContainer.append("<div>No buddies found..</div>");
+                }
+                $.each(buddyItems, function(idx, item) {
+                    var addButton = $(
+                    );
+                    var $deleteButton;
+
+                    $deleteButton = $("<div>Remove!</div>");
+                    $deleteButton
+                        .buttonMarkup({
+                            "icon": "none"
+                            ,"iconpos": "noicon"
+                            ,"theme": "a"
+                        });
+
+                    $deleteButton.click(function() {
+                        return clLib.UI.execWithMsg(function() {
+            				alert("remvoing instance..");
+
+                            clLib.REST.updateEntity(
+                                "buddyList"
+                                ,{
+                                    "deleted" : true
+                                    ,"_id": item["_id"]
+                                }
+                                ,function(resultObj) {
+                                    alert("saved >" + JSON.stringify(resultObj) + "<");
+                                    clLib.UI.byId$("buddyList").trigger("refresh.clLib");
+                                    return;
+                                }
+                                ,function(e) {
+                                    alert("While deleting buddy: >" + e + "<,>" + JSON.stringify(e) + "<");
+                                }
+                            );
+
+            //				alert("resetting ui elements..");
+                            clLib.UI.resetUIelements();
+                        }, {text: "Deleting buddy.."});
+                        
+                    });
+
+                    var $buddyListItem = $("" + 
+                        "<div data-role=\"collapsible\"" + 
+//                        "   data-collapsed-icon=\"plus\" data-expanded-icon=\"minus\"" + 
+                        ">"
+                    );
+                    $buddyListItem.append(
+                        "<h3>" + item["buddyUsername"] + "</h3>"
+                    );
+                    $.each(item, function(itemKey, itemValue) {
+                        $buddyListItem.append($(
+                            "<p>" + itemKey + ": <strong>" + itemValue + "</strong></p>"
+                        ));
+                    
+                    });
+                    $buddyListItem.append($deleteButton);
+                    
+                    $buddyListContainer.append($buddyListItem);
+                });
+                $buddyListContainer.trigger("create");
+
+
+            }
+            ,function(e) {
+                alert("While fetching buddyList: >" + e + "<,>" + JSON.stringify(e) + "<");
+            }
+            ,{
+                "requireResult": false
+            }
+            )
+            ;
+                
+        }
+    }
 	,"allRouteLogs": {
 		"setSelectedValueHandler" : function($this, changeOptions) { return $this.trigger("refresh.clLib"); }
 		,"refreshHandler" : function($this) { 
@@ -1739,6 +2046,7 @@ clLib.UI.elements = {
 					container : $container
 					,items : resultObj[key].items
 					,clearCurrentItems : true
+                    ,createItemFunc: clLib.UI.collapsible.formatRouteLogRow
 				});
 				console.log(">>>>" + JSON.stringify(resultObj[key]));
 
