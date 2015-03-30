@@ -62,7 +62,12 @@ clWebSockets.prototype.connect = function(io) {
             
             server.DBHandler.getEntities({
                 entity : "buddyList"
-                ,where : {"username": data["username"]}
+                ,where : {
+                    "username": data["username"]
+                    ,"deleted": {
+                        "$ne" : true
+                    }
+                }
                 ,requireResult: false
             }, 
             function(resultObj) { 
