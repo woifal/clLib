@@ -647,7 +647,7 @@ clLib.populateSelectBox_plain = function($selectBox, dataObj, selectedValue, pre
 
 // $inElement = $("#startScreen_nameSearchResult").
 // $forElement = Appery("nameSearchField");
-clLib.populateSearchProposals = function($forElement, $inElement, dataObj, hideOnSingleResult, liFormatFunc) {
+clLib.populateSearchProposals = function($forElement, $inElement, dataObj, hideOnSingleResult, liFormatFunc, numInitiallyItems) {
 	
 	//clLib.loggi(JSON.stringify(dataObj));
 	if(hideOnSingleResult && dataObj.length == 1) {
@@ -690,11 +690,11 @@ clLib.populateSearchProposals = function($forElement, $inElement, dataObj, hideO
 		});
 		return $listItem;
 	},
-	2, 
+	numInitiallyItems || 2, 
 	true
 	);
 
-	clLib.loggi("shown" + $inElement.children().length);
+	console.error("shown" + $inElement.children().length);
 
 };
 
@@ -1198,7 +1198,7 @@ clLib.UI.defaultRefreshHandler = function($element, additionalOptions) {
 	console.log(JSON.stringify(results));
 	console.log("elContentOptions are " + JSON.stringify(additionalOptions));
 	
-    alert("results are >"+ JSON.stringify(results) + "<");
+    console.log("results are >"+ JSON.stringify(results) + "<");
     if(
         (
             !results || results.length == 0
@@ -1262,7 +1262,7 @@ clLib.UI.defaultEntitySearch = function(entityName, resultColName, dependentPage
 	//alert("where(" + entityName + ") = " + JSON.stringify(where));
     
 	if(distinctFlag) {
-		results = clLib.localStorage.getDistinct(entityName, where, resultColName, "defaultStorage");
+        results = clLib.localStorage.getDistinct(entityName, where, resultColName, "defaultStorage");
 	} else {
 		results = clLib.localStorage.getEntities(entityName, where, "defaultStorage");
 	}
@@ -1335,7 +1335,6 @@ clLib.UI.localStorageSaveHandler = function (options, successFunc, errorFunc) {
 }
 
 
-
 clLib.UI.RESTSaveHandler = function (options, successFunc, errorFunc) {
     var saveObj = {};
 	var pageId = options["currentPage"];
@@ -1365,7 +1364,8 @@ clLib.UI.RESTSaveHandler = function (options, successFunc, errorFunc) {
 		dbEntity = options["additionalData"]["dbEntity"];
 	}
     clLib.localStorage.addInstance(dbEntity, saveObj, "defaultStorage");
-    successFunc();
+    
+    return successFunc(saveObj);
 }
 
 
@@ -1828,7 +1828,7 @@ clLib.UI.addCollapsiblesNEW = function(options) {
 	}
 	
 	//alert("adding collapsible children..>" + JSON.stringify(items));
-	clLib.UI.addCollapsiblesChildren($containerContent, items, clLib.UI.collapsible.formatRouteLogRow, 2, false); //true);
+	clLib.UI.addCollapsiblesChildren($containerContent, items, options["createItemFunc"], 2, false); //true);
 	//alert("added coll children");
 	if(needToAppendContent) {
 		$container.append($containerContent);
@@ -1863,11 +1863,15 @@ clLib.UI.addCollapsiblesNEW = function(options) {
 
 clLib.UI.addCollapsiblesChildren = function($containerEl, dataObj, createItemFunc, count, startWithEmptycontainerEl) {
 	if(startWithEmptycontainerEl) {
-		//alert("yes, empty container..");
+		console.log("yes, empty container..");
 		$containerEl.empty();
 		$containerEl.data("itemsShown", 0);
 	}
-	createItemFunc = createItemFunc || clLib.UI.collapsible.formatStandardRow;
+	console.log("createItemFunc is " + typeof(createItemFunc));
+    if(typeof(createItemFunc) == "undefined") {
+        createItemFunc = clLib.UI.list.formatStandardRow;
+    }
+	console.log("2createItemFunc is now " + typeof(createItemFunc));
 	count = count || 2;
 	// containerEl could have been rebuilt by jqm - check for parents itemShown attr as well..
 	var itemsShown = 
@@ -1875,10 +1879,10 @@ clLib.UI.addCollapsiblesChildren = function($containerEl, dataObj, createItemFun
 		|| $containerEl.parents(".collContainer").first().data("itemsShown")
 		|| 0;
 	
-	//alert("old count(" +  $containerEl.attr("id") + "): " + itemsShown);
-	//alert("this >" + $containerEl.attr("id") + "<, parents >" + $containerEl.parents("#2014-10-11-content").attr("id") + "<, itemsshow >" + itemsShown + "<");
-	//alert("old count(" +  $containerEl.parents("#2014-10-11-content").attr("id") + "): " + itemsShown);
-	//alert("adding >" + count + "< items (now: >" + itemsShown + "< from >" + JSON.stringify(dataObj.length) + "<");
+	console.log("old count(" +  $containerEl.attr("id") + "): " + itemsShown);
+	console.log("this >" + $containerEl.attr("id") + "<, parents >" + $containerEl.parents("#2014-10-11-content").attr("id") + "<, itemsshow >" + itemsShown + "<");
+	console.log("old count(" +  $containerEl.parents("#2014-10-11-content").attr("id") + "): " + itemsShown);
+	console.log("adding >" + count + "< items (now: >" + itemsShown + "< from >" + JSON.stringify(dataObj.length) + "<");
 	
 	if(!dataObj || Object.keys(dataObj).length == 0) {
 		dataObj = [];
@@ -2121,6 +2125,8 @@ clLib.UI.collapsible.formatRouteLogRow = function(dataRow) {
 	return $collapsibleItem;
 
 };
+
+
 
 
 clLib.UI.currentPage = function() {
