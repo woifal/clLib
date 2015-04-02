@@ -16,6 +16,11 @@ util.log("server = " + JSON.stringify(server));
 var ZZio = socketIO.listen(server.server); //Note server.server instead of just server
 server.runtime.connectedUsers = {};
 
+ //IMPORT RESOURCES
+var DBResource = require("./clLib.server.db.mongolab");
+var DBHandler = new DBResource.DBHandler();
+
+
 clWebSockets.prototype.foo= function() {
     util.log("FOOOO");
 };
@@ -25,7 +30,7 @@ clWebSockets.prototype.connect = function(io) {
     io.sockets.on('connection', function (socket) {
         // der Client ist verbunden
         util.log("connected id >" + socket.id + "<- sending welcome message..");
-        socket.emit('chat', { zeit: new Date(), text: 'Du bist nun mit dem Server verbunden!' });
+        socket.emit('chat', { zeit: new Date(), text: 'Connected to server.' });
         // wenn ein Benutzer einen Text senden
         socket.on('chat', function (data) {
             util.log("message received from >" + socket.id + "<, >" + JSON.stringify(data) + "<");
@@ -60,7 +65,7 @@ clWebSockets.prototype.connect = function(io) {
             util.log("BUDDIES: message received from >" + socket.id + "<, >" + JSON.stringify(data) + "<");
             
             
-            server.DBHandler.getEntities({
+            return DBHandler.getEntities({
                 entity : "buddyList"
                 ,where : {
                     "username": data["username"]
@@ -78,9 +83,19 @@ clWebSockets.prototype.connect = function(io) {
                         util.log("!!!! No connection for user >" + buddyObj["buddyId"] + "< found."); 
                     }
                     else {
-                        util.log("emitting only to id >" + server.runtime.connectedUsers[buddyObj["buddyId"]] + "<");
+                        var aSocketId = server.runtime.connectedUsers[buddyObj["buddyId"]]["socketId"];
+                        util.log("aSocketId >" + aSocketId + "<");
+                        util.log("emitting only to id >" + server.runtime.connectedUsers[buddyObj["buddyId"]]["socketId"] + "<");
                         util.log("emitting msg >" + JSON.stringify(buddyObj) + "<");
-                        io.sockets.connected[server.runtime.connectedUsers[buddyObj["buddyId"]]["socketId"]].emit(
+                        var aSocket = io.sockets.connected[aSocketId];
+                        util.log("\n\nFOUND SOCKET!\n\n");
+                        util.log("\n\nFOUND SOCKET >" + JSON.stringify(aSocketId) + "<\n\n");
+                        
+                        if(!aSocket) {
+                            util.log("Socket >" + aSocketId + "< is DEAD!!!");
+                            return false;
+                        }
+                        aSocket.emit(
                             'chat', 
                             {
                                 zeit: new Date(), 
@@ -89,11 +104,17 @@ clWebSockets.prototype.connect = function(io) {
                                 toUser : buddyObj["buddyId"] 
                             }
                         );
+                        util.log("Emitted!");
                     }
 
                 });
             }
             ,function(errorObj) {
+                util.log("XXXXXXXXXXXXXXXX");
+                util.log("XXXXXXXXXXXXXXXX");
+                util.log("XXXX            " + JSON.stringify(errorObj) + "        XXXXXXXXXXXX");
+                util.log("XXXXXXXXXXXXXXXX");
+                util.log("XXXXXXXXXXXXXXXX");
                 return clLib.server.defaults.errorFunc(errorObj, res);
             }
             );

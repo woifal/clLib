@@ -451,6 +451,20 @@ server.get('/db/:entityName/:entityId',
 
 });
 	
+
+server.parseParam = function(paramHash, paramName) {
+    if(!paramHash[paramName]) {
+        return null;
+    }
+    try {
+        var paramValue = JSON.parse(paramHash[paramName]);
+        return paramValue;
+    }
+    catch(e) {
+        throw new Error("Malformed param >" + paramName + "< >" + e + "<");
+    }
+};
+    
 server.get('/db/:entityName', 
 		//authHandler.requiredAuthentication, 
 		function(req, res) 
@@ -462,11 +476,14 @@ server.get('/db/:entityName',
 	try {
 		util.log("2getting.." + JSON.stringify(req.params));
 		var entityName = req.params.entityName;
-		// verify user.
+        
+        var where = this.parseParam(req.params, "where");
+        var geoPos = this.parseParam(req.params, "geoPos");
+
 		DBHandler.getEntities({
 			entity : entityName
-			,where : JSON.parse(req.params["where"])
-			,geoPos : req.params["geoPos"] ? JSON.parse(req.params["geoPos"]) : null
+			,where : where
+			,geoPos : geoPos
 			,limit: req.params["limit"]
             ,requireResult : req.params["requireResult"] || true
 		},
@@ -954,3 +971,23 @@ server.get('/verifyOAuth2Code',
 
 });
 
+server.get("/logSockets", function (req, res) {
+	var errHandler = function(errorObj) {
+		return clLib.server.defaults.errorFunc(errorObj, res);
+	}
+
+	try {
+        util.log("<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+        util.log("<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+        util.log("<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+        util.log("<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+        util.log(JSON.stringify(clLib.server.runtime.connectedUsers));
+        util.log("<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+        util.log("<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+        util.log("<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+				res.send({"result" : JSON.stringify(clLib.server.runtime.connectedUsers)});
+
+        } catch(e) {
+		errHandler(new Error("UNHANDLED SERVER ERROR "  + e.name + " IS " + e.message + " !!!"));
+	}
+});
