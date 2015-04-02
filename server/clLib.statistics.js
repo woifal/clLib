@@ -49,35 +49,35 @@ clStats.prototype.getEntityStats = function(options, callbackFunc, errorFunc) {
 	}, 
 	function(resultObj) { 
 		// upon success...
-		util.log("Found " + options.entity + "s >" + JSON.stringify(resultObj.length) + "<"); 
-        util.log("options >" + JSON.stringify(Object.keys(options)) + "<");
-        util.log("evaling >" + options.statsOptions.sortByFuncName+ "<");
-		util.log("evaled >" + typeof(clStats[options.statsOptions.sortByFuncName]) + "<");
+		clLib.loggi("Found " + options.entity + "s >" + JSON.stringify(resultObj.length) + "<"); 
+        clLib.loggi("options >" + JSON.stringify(Object.keys(options)) + "<");
+        clLib.loggi("evaling >" + options.statsOptions.sortByFuncName+ "<");
+		clLib.loggi("evaled >" + typeof(clStats[options.statsOptions.sortByFuncName]) + "<");
         
         var sortByFunc = clStats[options.statsOptions.sortByFuncName];
         
-        util.log("sortDesc? " + options.statsOptions.sortDescFlag);
+        clLib.loggi("sortDesc? " + options.statsOptions.sortDescFlag);
         if(sortByFunc) {
-			util.log("sorting by " + typeof(sortByFunc));
+			clLib.loggi("sorting by " + typeof(sortByFunc));
 			resultObj.sortBy(
                 function(entity) {
                 //    return "AAA";
-                    util.log("in sortfunction for >" + JSON.stringify(entity) + "<");
+                    clLib.loggi("in sortfunction for >" + JSON.stringify(entity) + "<");
                     var sortResult = sortByFunc(entity, options);
-                    util.log("sortResult >" + sortResult + "<");
+                    clLib.loggi("sortResult >" + sortResult + "<");
                     return sortResult;
                 }
                 , options.statsOptions.sortDescFlag
             );
-			//util.log("sorted result " + JSON.stringify(resultObj));
-			util.log("sorted result #" + JSON.stringify(resultObj.length));
+			//clLib.loggi("sorted result " + JSON.stringify(resultObj));
+			clLib.loggi("sorted result #" + JSON.stringify(resultObj.length));
 		}
 		// aggregate it!
 		var aggResultArr = [];
         console.log("aggFunName >" + options.statsOptions["aggFuncName"] + "<" + typeof(options.statsOptions["aggFuncName"]));
 		aggResultArr = clStats[options.statsOptions.aggFuncName](resultObj, options);
-		//util.log("aggregatedResult >" + JSON.stringify(aggResultArr) + "<");
-		util.log("aggregatedResult2 >" + JSON.stringify(aggResultArr.length) + "<");
+		//clLib.loggi("aggregatedResult >" + JSON.stringify(aggResultArr) + "<");
+		clLib.loggi("aggregatedResult2 >" + JSON.stringify(aggResultArr.length) + "<");
 
 		return callbackFunc(aggResultArr);
 	}
@@ -90,29 +90,29 @@ clStats.prototype.getEntityStats = function(options, callbackFunc, errorFunc) {
 
 
 clStats.sort_localDayAndScore = function(routeLog, options) {
-    util.log("sort_locaDayAndScore " + JSON.stringify(routeLog));
-    util.log("2sort_locaDayAndScore " + JSON.stringify(options));
+    clLib.loggi("sort_locaDayAndScore " + JSON.stringify(routeLog));
+    clLib.loggi("2sort_locaDayAndScore " + JSON.stringify(options));
     var datePortionFunc = clStats[options.statsOptions.datePortionFuncName];
     
     var evalResult = datePortionFunc(routeLog["DateISO"]) + "_" + clLib.lpad(clLib.computeScore(routeLog), '0', 6);
-    util.log("got evalResult >" + evalResult + "<");
+    clLib.loggi("got evalResult >" + evalResult + "<");
     return evalResult;
 };
 clStats.sort_score = function(routeLog, options) {
-    util.log("sort_score " + JSON.stringify(routeLog));
-    util.log("2sort_score " + JSON.stringify(options));
+    clLib.loggi("sort_score " + JSON.stringify(routeLog));
+    clLib.loggi("2sort_score " + JSON.stringify(options));
     var datePortionFunc = clStats[options.statsOptions.datePortionFuncName];
     
     var evalResult = clLib.lpad(clLib.computeScore(routeLog), '0', 6);
-    util.log("got evalResult >" + evalResult + "<");
+    clLib.loggi("got evalResult >" + evalResult + "<");
     return evalResult;
 };
 clStats.sort_localScoreAndDay = function(routeLog, options) {
-    util.log("sort_locaDayAndScore " + JSON.stringify(routeLog));
-    util.log("2sort_locaDayAndScore " + JSON.stringify(options));
+    clLib.loggi("sort_locaDayAndScore " + JSON.stringify(routeLog));
+    clLib.loggi("2sort_locaDayAndScore " + JSON.stringify(options));
     var datePortionFunc = clStats[options.statsOptions.datePortionFuncName];
     var evalResult = clLib.lpad(clLib.computeScore(routeLog), '0', 6) + "_" + datePortionFunc(routeLog["DateISO"]);
-    util.log("got evalResult >" + evalResult + "<");
+    clLib.loggi("got evalResult >" + evalResult + "<");
     return evalResult;
 };
 
@@ -143,7 +143,7 @@ clStats.aggregateScoresByDatePortion = function(routeLogArr, options) {
 		var routeLog = routeLogArr[i];
 		var datePortion = clStats[options.statsOptions["datePortionFuncName"]](routeLog["DateISO"]);
 		if(datePortion) {
-            util.log("datePortion is>" + datePortion + "<");
+            clLib.loggi("datePortion is>" + datePortion + "<");
             if(!(datePortion in aggResultObj)) {
                 aggResultObj[datePortion] = {
                     count : 0
@@ -153,7 +153,7 @@ clStats.aggregateScoresByDatePortion = function(routeLogArr, options) {
             }
             
             if(aggResultObj[datePortion].count < options.statsOptions.aggTopX) {
-                util.log("Adding score of >" + clLib.computeScore(routeLog) + "<");
+                clLib.loggi("Adding score of >" + clLib.computeScore(routeLog) + "<");
                 aggResultObj[datePortion].score += clLib.computeScore(routeLog);
                 aggResultObj[datePortion].count++;
                 aggResultObj[datePortion].items.push(routeLog);
@@ -182,7 +182,7 @@ clStats.aggregateById= function(routeLogArr, options) {
 
             if(aggKey) {
                 if(foundCount > options.statsOptions.startIdx) {
-                    util.log("id is>" + aggKey + "<");
+                    clLib.loggi("id is>" + aggKey + "<");
                     if(!(aggKey in aggResultObj)) {
                         aggResultObj[aggKey] = {
                             count : 0
@@ -192,7 +192,7 @@ clStats.aggregateById= function(routeLogArr, options) {
                     }
                     
                     if(aggResultObj[aggKey].count < options.statsOptions.aggTopX) {
-                        util.log("Adding score of >" + clLib.computeScore(routeLog) + "<");
+                        clLib.loggi("Adding score of >" + clLib.computeScore(routeLog) + "<");
                         aggResultObj[aggKey].score += clLib.computeScore(routeLog);
                         aggResultObj[aggKey].count++;
                         aggResultObj[aggKey].items.push(routeLog);
@@ -208,29 +208,29 @@ clStats.aggregateById= function(routeLogArr, options) {
 
 clStats.aggregateHighScoreByDatePortion = function(routeLogArr, options) {
     try {
-        util.log("in XXXXXX");
+        clLib.loggi("in XXXXXX");
     // topX, datePortionFunc
         var aggResultObj = {};
         var aggResultArr = [];
         
         var datePortionFunc = clStats[options.statsOptions["datePortionFuncName"]];
-        util.log("datePirtionFunc is type >" + typeof(datePortionFunc) + "<");
+        clLib.loggi("datePirtionFunc is type >" + typeof(datePortionFunc) + "<");
         var datePortions = {};
         for(var i = 0; i < routeLogArr.length; i++) {
             var routeLog = routeLogArr[i];
-            util.log("at >" + i + "< out of >" + routeLogArr.length + "<");
+            clLib.loggi("at >" + i + "< out of >" + routeLogArr.length + "<");
             var datePortion = datePortionFunc(routeLog["DateISO"]);
             if(datePortion) {
                 datePortions[datePortion] = true;
             }
         }
-        util.log("Found discint date portions >" + JSON.stringify(datePortions) + "<");
+        clLib.loggi("Found discint date portions >" + JSON.stringify(datePortions) + "<");
         var datePortionsArr = Object.keys(datePortions);
         //datePortionsArr = ["2015-07-26", "2015-03-15"];
         for(var i = 0; i < datePortionsArr.sort().length; i++) {
             var datePortion = datePortionsArr[i];
             
-            util.log("datePortion is>" + datePortion + "<");
+            clLib.loggi("datePortion is>" + datePortion + "<");
             if(!(datePortion in aggResultObj)) {
                 aggResultObj[datePortion] = {
                     count : 0
@@ -239,11 +239,11 @@ clStats.aggregateHighScoreByDatePortion = function(routeLogArr, options) {
                 };
             }
             
-            util.log("--------------------------------");
-            util.log("--------------------------------");
-            util.log("--------------------------------");
-            util.log("--------------------------------");
-            util.log("Computing high score...");
+            clLib.loggi("--------------------------------");
+            clLib.loggi("--------------------------------");
+            clLib.loggi("--------------------------------");
+            clLib.loggi("--------------------------------");
+            clLib.loggi("Computing high score...");
             // Compute high score in all given routes max 365 in the past to the 
             // currently processed date...
             var fooOptions = options;
@@ -281,7 +281,7 @@ clStats.computeHighScore = function(routeLogArr, options) {
             ,daysBack
         )) {
             if(count < options.statsOptions.aggTopX) {
-                util.log("Adding score of >" + clLib.computeScore(routeLog) + "<");
+                clLib.loggi("Adding score of >" + clLib.computeScore(routeLog) + "<");
                 aggScores += clLib.computeScore(routeLog);
                 eligRouteLogs.push(routeLog);
                 count++
@@ -290,7 +290,7 @@ clStats.computeHighScore = function(routeLogArr, options) {
             }
         }
 	}
-	util.log("Returning high score for date >" + JSON.stringify(aggScores) + "<");
+	clLib.loggi("Returning high score for date >" + JSON.stringify(aggScores) + "<");
 	return {
         score: aggScores,
         "eligRouteLogs": eligRouteLogs
@@ -301,7 +301,7 @@ clStats.dateOlderThanDays = function(currentDateStr, dateToCheckStr, numDays){
     var currentDate = clStats.dateObjFromDateStr(currentDateStr);
     var dateToCheck = clStats.dateObjFromDateStr(dateToCheckStr);
     var daysDiff = clStats.daydiff(currentDate, dateToCheck);
-    util.log("Calculated days of >" + daysDiff + "> between >" + currentDate + "< and >" + dateToCheck + "<");
+    clLib.loggi("Calculated days of >" + daysDiff + "> between >" + currentDate + "< and >" + dateToCheck + "<");
     return ((numDays > daysDiff) && (daysDiff >= 0));
 };
 
@@ -317,7 +317,7 @@ clStats.dateObjFromDateStr = function(dateStr) {
     isoDate.setMonth(_month - 1);
     isoDate.setDate(_day);
     
-    util.log("returnig >" + isoDate + "<");
+    clLib.loggi("returnig >" + isoDate + "<");
     return isoDate;
 };
 
@@ -327,7 +327,7 @@ clStats.daydiff = function(first, second) {
 
 
 clStats.prototype.ISODayPortion = function(ISODateStr) {
-	//util.log("ISODayPortion for " + JSON.stringify(ISODateStr));
+	//clLib.loggi("ISODayPortion for " + JSON.stringify(ISODateStr));
 	ISODateStr = ISODateStr || "";
 	return ISODateStr.substring(0, 10);
 };
