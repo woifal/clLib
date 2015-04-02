@@ -123,7 +123,7 @@ clLib.UI.saveHandlers= {
                     ,username: clLib.getUserInfo()["username"]
                     ,text: ">" + clLib.getUserInfo()["username"] + "< saved a route with >" + clLib.computeScore(resultObj) + "< points."
                 };
-                alert("sending msg >" + JSON.stringify(msg) + "< to buddies");
+                //alert("sending msg >" + JSON.stringify(msg) + "< to buddies");
                 clLib.webSocketClient.send(msg);
 
                 return successFunc();
@@ -140,7 +140,7 @@ clLib.UI.saveHandlers= {
                     ,username: clLib.getUserInfo()["username"]
                     ,text: ">" + clLib.getUserInfo()["username"] + "< saved a route with >" + clLib.computeScore(resultObj) + "< points."
                 };
-                alert("sending msg >" + JSON.stringify(msg) + "< to buddies");
+                //alert("sending msg >" + JSON.stringify(msg) + "< to buddies");
                 clLib.webSocketClient.send(msg);
 
                 return successFunc();
@@ -1424,7 +1424,7 @@ clLib.UI.elements = {
                 }
             );
             
-			var currentScoreText = "Annual Score: <strong>" + totalScore + "</strong> pts"
+			var currentScoreText = "Year: <strong>" + totalScore + "</strong> pts"
 
 			$this.empty();
 			$this.append(currentScoreText);

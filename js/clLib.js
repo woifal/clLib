@@ -169,7 +169,7 @@ clLib.computeScore = function(routeLogObj) {
             console.log("no ticktype calc for >" + routeLogObj["tickType"] + "<");
         }
         else {
-            console.log("getting score for >" + routeLogObj["_id"] + "< ticktype >" + routeLogObj["tickType"] + "<");
+            clLib.loggi("getting score for >" + routeLogObj["_id"] + "< ticktype >" + routeLogObj["tickType"] + "<");
             score = eval(score + gradeSystemScore["tickTypeFactors"][routeLogObj["tickType"]]);
         }
     }

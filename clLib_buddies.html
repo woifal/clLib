@@ -1,0 +1,58 @@
+﻿@@include('grunt_includes/singlePage_Header.html', {"pageName": "buddies"})
+
+                <!-- Buddies -->
+<!--
+                <div 
+                    id="buddies_addButton"
+                    class="clButton clButton50"
+                    data-role="none"
+                >
+                    <div>
+                    <a>
+                        <div>
+                            <img src="files/views/assets/image/img_40_40/button_plus_white.png"></img>
+                        </div>
+                    </a>
+                    <span>ADD</span>
+                    </div>
+                </div>
+-->
+                    <h3>Current buddies</h3>
+                    <div 
+                            id="buddies_buddyList" 
+                            data-role="collapsibleset" 
+                            data-inset="true"
+                            data-mini="true"
+                            data-content-theme="a"
+                            data-theme="a"
+                            cl-role="content"
+                    >
+                    </div>
+
+                    <h3>Add new buddies</h3>
+				<!-- searchBuddies -->
+				<div>
+                    <div>
+                        <label class="clUIElement select" for="buddies_searchBuddies">Route Name</label>
+                        <input data-role="search" class="clTextInput" type="search" data-iconpos="left" data-iconpos="arrow-d" 
+								id="buddies_searchBuddies" name="buddies_searchBuddies"
+                               value="" placeholder="Buddy Name?" data-theme="a" tabindex="7" />
+                    </div>
+				</div>
+				<div>
+                    <!-- searchBuddiesResults -->
+                    <ul data-role="listview" id="buddies_searchBuddiesResults"
+                        data-inset="true" data-theme="a"
+                        data-divider-theme="a" data-count-theme="a">
+                        <!-- searchRouteResult -->
+<!--                        <li>
+                            <a id="newRouteLog_default_searchRouteResult"
+                               tabindex="18">
+                                <h3>Item 1</h3>
+                            </a>
+                        </li>
+-->
+					</ul>
+				</div>
+                        
+@@include('grunt_includes/singlePage_Footer.html', {"pageName": "buddies"})

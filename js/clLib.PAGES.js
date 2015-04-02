@@ -1099,7 +1099,7 @@ clLib.PAGES.processAuthObj = function(urlAuthObj, successFunc) {
 			//alert("checking for image urll.");
 			userObj["imageURL"] = authObj.image.url;
 			userObj["username"] = authObj.id;
-			userObj["_id"] = authObj["_id"] + "X";
+			userObj["_id"] = authObj["_id"];
 			
 	//        alert("got userObj of >" + JSON.stringify(userObj) + "<");
 			

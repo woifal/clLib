@@ -8,3 +8,16 @@
 
 					<div class="clLoading clHidden"></div>
 					<div class="clLoadingBg clHidden"></div>
+
+                    <div class="clNotification clHidden"></div>
+					<div class="clNotificationBg clHidden"></div>
+                    <script>
+                        $(".clNotification").off("click").on("click", function() {
+                            console.log("hiding!");
+                            clLib.UI.notiActive = false;
+                            
+                            $(this)
+                                .hide()
+                                .addClass("clHidden");
+                        });
+                    </script>

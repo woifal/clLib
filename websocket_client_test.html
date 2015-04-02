@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8' />
+    <script src="js/clLib.js"></script>
+<!--    <ascript src="http://localhost:1983/socket.io/socket.io.js"></ascript>-->
+    <script src="https://cdn.socket.io/socket.io-1.3.4.js"></script>
+    <script src="js/clLib.webSocketClient.js"></script>
+    </head>
+  <body>
+    username: <input type="text" id="username">
+    <a href="#" id="connectButton">Connect</a>
+    <br>
+    <input type="text" id="toUser">
+    <input type="text" id="socketClientMessage">
+    <a href="#" id="socketClientSendButton">Send</a>
+    <a href="#" id="socketClientNotifyBuddiesButton">Send to buddies</a>
+    <br>
+    <div id="websocketOutput">
+        waiting..
+    </div>
+    <div id="buddies">
+    </div>
+    </body>
+    <script>
+        
+        var socket;
+        
+        var connectButton = document.getElementById('connectButton');
+        connectButton.onclick = function() {
+            var username = document.getElementById('username').value;
+            var userInfoObj = {
+                "_id": username
+                ,username: username
+            };
+            alert("connecting >" + JSON.stringify(userInfoObj) + "<");
+            clLib.webSocketClient.connect(userInfoObj);
+            
+        };
+        
+        
+        var socketClientSendButton = document.getElementById('socketClientSendButton');
+        socketClientSendButton.onclick = function() {
+            var socketClientMessage = document.getElementById('socketClientMessage').value;
+            var toUser = document.getElementById('toUser').value;
+            
+        
+            // Socket senden
+            alert("emitting..");
+            var msg = { name: "chat",  "toUser" : toUser, text: socketClientMessage };
+            clLib.webSocketClient.send(msg);
+        };
+
+        var socketClientNotifyBuddiesButton = document.getElementById('socketClientNotifyBuddiesButton');
+        socketClientNotifyBuddiesButton.onclick = function() {
+            var socketClientMessage = document.getElementById('socketClientMessage').value;
+            // Socket senden
+            var username = document.getElementById('username').value;
+            alert("BUDDY : emitting for >" + username + "<..");
+            
+            var msg = { 
+                name: "notifyBuddies"
+                ,username: username
+                ,text: socketClientMessage };
+            clLib.webSocketClient.send(msg);
+        };
+
+
+
+        </script>
+    
+</html>

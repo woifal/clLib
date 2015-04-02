@@ -6,7 +6,8 @@ var async = require("async");
 
 var mongoURI ="";
 mongoURI = "mongodb://clAdmin:blerl1la@ds053438.mongolab.com:53438/climbinglog";
-var conn = mongo.db(mongoURI, {safe: true});
+var conn;
+conn = mongo.db(mongoURI, {safe: true});
 
 var args = process.argv.splice(2);
 var tableName = args[0];
@@ -38,6 +39,7 @@ function testQuery(nextFunc) {
 	});
 
 };
+
 
 function testQuerySortLimit(nextFunc) {
 	var coll = conn.collection(tableName);

@@ -694,7 +694,7 @@ clLib.populateSearchProposals = function($forElement, $inElement, dataObj, hideO
 	true
 	);
 
-	console.error("shown" + $inElement.children().length);
+	console.log("shown" + $inElement.children().length);
 
 };
 
@@ -1005,6 +1005,92 @@ clLib.UI.hideLoading = function() {
 //	$.mobile.loading( "hide");
 };
 
+clLib.UI.notiQueue = [];
+clLib.UI.notiActive = false;
+clLib.UI.notiLastExpiry = 0;
+
+clLib.UI.newNotification = function(spinnerParams, delayShowMillis) {
+	delayShowMillis = delayShowMillis || 10000;
+    var now = Date.now();
+    spinnerParams["id"] = now;
+    if(!clLib.UI.notiLastExpiry) {
+        clLib.UI.notiLastExpiry = now;
+    }
+    clLib.UI.notiLastExpiry = clLib.UI.notiLastExpiry + delayShowMillis;
+	setTimeout(function() {
+        clLib.UI.showNotification(spinnerParams);
+    }, 10);
+
+	setTimeout(function() {
+		clLib.UI.hideNotification(spinnerParams);
+	}, delayShowMillis);
+};
+
+
+clLib.UI.showNotification = function(options) {
+    //alert("showing clNotifiction.." + JSON.stringify(options));
+    //return true;
+    // Currently displayed:
+    //    - Add to popup
+	if(clLib.UI.notiActive) {
+        console.log("open, need to add noti!");
+         $(".clNotification")
+            .append($("<p>")
+                .attr("id", options["id"])
+                .html(options["text"])
+            )
+         ;
+    }
+    // Not displayed at the moment:
+    //    - Pop it up..
+    else {
+        console.log("pop it up!");
+        clLib.UI.notiActive = true;
+        $(".clNotification")
+            .empty()
+            .append($("<p>")
+                .attr("id", options["id"])
+                .html(options["text"])
+            )
+            .show()
+            .removeClass("clHidden");
+        //alert("showing load bg");
+/*
+        $(".clNotificationBg")
+            .show()
+            .removeClass("clHidden")
+            .css("top", "0px")
+            .css("border", "0px solid red")
+        ;
+*/
+    }
+};
+
+clLib.UI.hideNotification = function(options) {
+	//alert("hiding clloading..");
+
+    $(".clNotification").find("p#" + options["id"])
+        .fadeOut(300, function() { 
+            
+            $(this).remove();
+            
+            if($(".clNotification").find("p").length == 0) {
+                clLib.UI.notiActive = false;
+                
+                $(".clNotification")
+                    .hide()
+                    .addClass("clHidden");
+
+        /*
+                $(".clNotificationBg")
+                    .hide()
+                    .addClass("clHidden");
+        */
+            }
+        })
+    ;
+//	$.mobile.loading( "hide");
+};
 
 
 clLib.UI.showAllTodayScores = function(buddyNames, targetElement) {
@@ -1203,7 +1289,7 @@ clLib.UI.defaultRefreshHandler = function($element, additionalOptions) {
         (
             !results || results.length == 0
         )
-        && additionalOptions["showMoreButton"]
+        && (additionalOptions && additionalOptions["showMoreButton"])
     ) {
         console.log("show ALL items for >" + $element.attr("id") + "<");
 
