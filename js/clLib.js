@@ -166,7 +166,7 @@ clLib.computeScore = function(routeLogObj) {
 */	
     if(routeLogObj["tickType"]) {
         if(!gradeSystemScore["tickTypeFactors"][routeLogObj["tickType"]]) {
-            console.log("no ticktype calc for >" + routeLogObj["tickType"] + "<");
+            clLib.loggi("no ticktype calc for >" + routeLogObj["tickType"] + "<");
         }
         else {
             clLib.loggi("getting score for >" + routeLogObj["_id"] + "< ticktype >" + routeLogObj["tickType"] + "<");
@@ -253,7 +253,7 @@ clLib.getIconImg = function(imgName) {
 clLib.ISOStrToDate = function(ISOStr) {
 	var x = new Date(ISOStr);
 	if(x.getHours() + "" == "NaN") {
-        console.error("Invalid ISO date >" + ISOStr + "<");
+        //console.error("Invalid ISO date >" + ISOStr + "<");
 		return "";
 	}
 
