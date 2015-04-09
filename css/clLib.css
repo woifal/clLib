@@ -166,7 +166,8 @@ input.ui-input-text, textarea.ui-input-text {
     font-weight: bold;
     left: 0;
     opacity: 0.9;
-    padding: 20px;
+    padding-top: 20px;
+    padding-bottom: 20px;
     position: fixed;
     text-align: center;
     top: 0;
