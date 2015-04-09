@@ -800,26 +800,17 @@ server.get('/stats',
 		var options = req.params;
         util.log("got options >" + JSON.stringify(options) + "<");
         
+        //options = JSON.parse(options);
 		var whereObj = options["where"] || "{}";
         whereObj = JSON.parse(whereObj);
 
 		whereObj["deleted"] = {"$ne" : 1};
-		util.log("§33");
         options["where"] = whereObj;
+
         
         util.log("2got options >" + JSON.stringify(options) + "<");
         
-/*
-		statsHandler.getRouteLogScoreStats({
-			//datePortionFunc : statsHandler.localDayPortion
-            //datePortionFunc : statsHandler.ISODayPortion
-			//datePortionFunc : statsHandler.ISOMonthPortion
-			//datePortionFunc : statsHandler.ISODayHourPortion
-			//datePortionFunc : statsHandler.ISOHourPortion
-			where: whereObj
-		}
-*/
-        statsHandler.getEntityStats(
+        return statsHandler.getEntityStats(
             options
             , function(resultObj) {
                 util.log("2retrieved result:" + Object.keys(resultObj).length);

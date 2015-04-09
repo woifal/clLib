@@ -42,50 +42,91 @@ clStats.prototype.getEntityStats = function(options, callbackFunc, errorFunc) {
         ,endIdx: 99999999
     };
     
-	DBHandler.getEntities({
-		entity : options.statsOptions.entity 
-		,where : options.where
-		,requireResult: false
-	}, 
-	function(resultObj) { 
-		// upon success...
-		clLib.loggi("Found " + options.entity + "s >" + JSON.stringify(resultObj.length) + "<"); 
-        clLib.loggi("options >" + JSON.stringify(Object.keys(options)) + "<");
-        clLib.loggi("evaling >" + options.statsOptions.sortByFuncName+ "<");
-		clLib.loggi("evaled >" + typeof(clStats[options.statsOptions.sortByFuncName]) + "<");
+    util.log("OPTIONS >" + JSON.stringify(options) + "<");
+    var usersToFetchFor = [];
+    util.log("TYPEOF buddies " + typeof(options["buddies"]));
+    var buddiesStr = options["buddies"];
+    var buddiesArr = buddiesStr ? buddiesStr.split(",") : [];
+    
+    $.each(buddiesArr, function(idx, buddyUsername) {
+        usersToFetchFor.push(buddyUsername);
+    });
+    util.log("1USERSTOFETCHFOR >" + usersToFetchFor + "<");
+    usersToFetchFor.push(options["where"]["username"]);
+    util.log("2USERSTOFETCHFOR >" + usersToFetchFor + "<");
+    util.log("3USERSTOFETCHFOR >" + usersToFetchFor.length + "<");
         
-        var sortByFunc = clStats[options.statsOptions.sortByFuncName];
-        
-        clLib.loggi("sortDesc? " + options.statsOptions.sortDescFlag);
-        if(sortByFunc) {
-			clLib.loggi("sorting by " + typeof(sortByFunc));
-			resultObj.sortBy(
-                function(entity) {
-                //    return "AAA";
-                    clLib.loggi("in sortfunction for >" + JSON.stringify(entity) + "<");
-                    var sortResult = sortByFunc(entity, options);
-                    clLib.loggi("sortResult >" + sortResult + "<");
-                    return sortResult;
-                }
-                , options.statsOptions.sortDescFlag
-            );
-			//clLib.loggi("sorted result " + JSON.stringify(resultObj));
-			clLib.loggi("sorted result #" + JSON.stringify(resultObj.length));
-		}
-		// aggregate it!
-		var aggResultArr = [];
-        console.log("aggFunName >" + options.statsOptions["aggFuncName"] + "<" + typeof(options.statsOptions["aggFuncName"]));
-		aggResultArr = clStats[options.statsOptions.aggFuncName](resultObj, options);
-		//clLib.loggi("aggregatedResult >" + JSON.stringify(aggResultArr) + "<");
-		clLib.loggi("aggregatedResult2 >" + JSON.stringify(aggResultArr.length) + "<");
+    var finalStatsResults = {};
+    var currentUser = "";
+    
+    var getEntityStatsInnerFunc = function() {
+        util.log("GETENTITYSTATSINNFERFUNC >>" + currentUser + "<<");
+        return DBHandler.getEntities({
+            entity : options.statsOptions.entity 
+            ,where : {"username": currentUser}
+            ,requireResult: false
+        }, 
+        function(resultObj) { 
+            // upon success...
+            util.log("Found " + options.entity + "s >" + JSON.stringify(resultObj.length) + "<"); 
+            util.log("options >" + JSON.stringify(Object.keys(options)) + "<");
+            util.log("evaling >" + options.statsOptions.sortByFuncName+ "<");
+            util.log("evaled >" + typeof(clStats[options.statsOptions.sortByFuncName]) + "<");
+            var aggResultArr = [];
+            
+            var sortByFunc = clStats[options.statsOptions.sortByFuncName];
+            
+            clLib.loggi("sortDesc? " + options.statsOptions.sortDescFlag);
+            if(sortByFunc) {
+                clLib.loggi("sorting by " + typeof(sortByFunc));
+                resultObj.sortBy(
+                    function(entity) {
+                    //    return "AAA";
+                        clLib.loggi("in sortfunction for >" + JSON.stringify(entity) + "<");
+                        var sortResult = sortByFunc(entity, options);
+                        clLib.loggi("sortResult >" + sortResult + "<");
+                        return sortResult;
+                    }
+                    , options.statsOptions.sortDescFlag
+                );
+                //clLib.loggi("sorted result " + JSON.stringify(resultObj));
+                clLib.loggi("sorted result #" + JSON.stringify(resultObj.length));
+            }
+            // aggregate it!
+            console.log("aggFunName >" + options.statsOptions["aggFuncName"] + "<" + typeof(options.statsOptions["aggFuncName"]));
+            aggResultArr = clStats[options.statsOptions.aggFuncName](resultObj, options);
+            //clLib.loggi("aggregatedResult >" + JSON.stringify(aggResultArr) + "<");
+            clLib.loggi("aggregatedResult2 >" + JSON.stringify(aggResultArr.length) + "<");
 
-		return callbackFunc(aggResultArr);
-	}
-    , function(e) {
-        util.log("e(obj) " + e.message);
-        util.log("e(json) " + JSON.stringify(e));
+            finalStatsResults[currentUser] = aggResultArr;
+            util.log("calling executeAll");
+            var foo = executeAll();
+            util.log("returning foo");
+            return foo;
+        }
+        , function(e) {
+            util.log("e(obj) " + e.message);
+            util.log("e(json) " + JSON.stringify(e));
+        }
+        );
+        
+    };
+    
+    var executeAll = function() {
+        currentUser = usersToFetchFor.pop();
+        util.log("CURRENTUSER >" + currentUser + "<");
+        if(currentUser) {
+            return getEntityStatsInnerFunc();
+        }
+        else {
+            util.log("RETURNING FINAL RESULTS >" + JSON.stringify(Object.keys(finalStatsResults).length) + "<");
+            return callbackFunc(finalStatsResults);
+        }
     }
-	);
+    
+    return executeAll();
+
+
 };
 
 
@@ -293,7 +334,7 @@ clStats.computeHighScore = function(routeLogArr, options) {
 	clLib.loggi("Returning high score for date >" + JSON.stringify(aggScores) + "<");
 	return {
         score: aggScores,
-        "eligRouteLogs": eligRouteLogs
+        "items": eligRouteLogs
     };
 };
 
