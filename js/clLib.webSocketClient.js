@@ -26,7 +26,7 @@ clLib.webSocketClient = {
         var mySocket = this.socket;
 
         mySocket.on("reconnect", function(data) {
-            alert("reconnected >" + data + "<");
+            //alert("reconnected >" + data + "<");
         });
         mySocket.on("connect", function(data) {
             //var userInfoObj = clLib.getUserInfo();
