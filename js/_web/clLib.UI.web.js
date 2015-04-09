@@ -212,9 +212,15 @@ clLib.UI.web = {
             // 
             // Table body
             //
+            console.log("Eaching routeLogs >" + JSON.stringify(routeLogs) + "<");
+            if(routeLogs[0] == null) {
+                alert("fuck me, I'm null!!");
+                routeLogs = [];
+            }
             $.each(routeLogs, function(idx, routeLog) {
                 $.each(routeLogConfig.fields(), function(idx, keyName) {
                     var curFieldConfig = routeLogConfig.get(keyName) || {};
+                    console.log("routeLog >" + JSON.stringify(routeLog) + "<");
                     if(!(keyName in routeLog) || curFieldConfig["dummyField"]) {
                         routeLog[keyName] = '';
                         if(curFieldConfig["renderFunc"]) {
@@ -433,8 +439,32 @@ clLib.UI.web = {
                 options["where"] = {};
             }
         
-            options["where"] ={"username": function() { return clLib.getUserInfo()["username"]}()};
-            options["where"]["deleted"] = {"$ne" : 1};
+            //options["where"] ={"username": function() { return clLib.getUserInfo()["username"]}()};
+            options["where"]["deleted"] = {
+                "$or" : [
+
+//                    {
+//                        "$and": [
+//                            {
+//                                    "$exists" : true
+//                            },
+
+                            {
+
+                                    "$ne" : 1
+                            }
+//                        ]
+
+//                    }
+//                    ,
+//                    {
+//                        "$exists" : false
+//                    }
+
+                    ]
+
+            };
+            
 
             return clLib.REST.getEntities(
                 options["entity"]
