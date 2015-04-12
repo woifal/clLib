@@ -120,7 +120,7 @@ mongolab.prototype.getEntities = function(options, callbackFunc, errorFunc) {
 			util.log("mongo results received.." + JSON.stringify(items.length));
 			
 			if(callbackFunc) {
-				util.log("Calling callback function, result OK(" + JSON.stringify(items) + ")!");
+				util.log("Calling callback function, result OK(" + JSON.stringify(items.length) + ")!");
 				return callbackFunc(items);
 			}
 		});
@@ -159,7 +159,7 @@ mongolab.prototype.getDistinct = function(options, callbackFunc, errorFunc) {
 		util.log("mongo results received.." + JSON.stringify(items.length));
 		
 		if(callbackFunc) {
-			util.log("Calling callback function, result OK(" + JSON.stringify(items) + ")!");
+			util.log("Calling callback function, result OK(" + JSON.stringify(items.length) + ")!");
 			return callbackFunc(items);
 		}
 	});

@@ -12,6 +12,33 @@ conn = mongo.db(mongoURI, {safe: true});
 var args = process.argv.splice(2);
 var tableName = args[0];
 var whereObj = JSON.parse(args[1]);
+util.log("old where: >" + JSON.stringify(whereObj) + "<");
+whereObj = {
+        "$or" : [
+            {
+                "$and": [
+                    {
+                        "deleted": {
+                            "$exists" : true
+                        }
+                    },
+                    {
+                        "deleted": {
+                            "$ne" : 1
+                        }
+                    }
+                ]
+            }
+            ,
+            {
+                "deleted": {
+                    "$exists" : false
+                }
+            }
+        ]
+};
+util.log("new where: >" + JSON.stringify(whereObj) + "<");
+           
 var distinctColName = args[2];
 var sortByCol = args[3];
 var limitCount = parseInt(0 + args[4]);
@@ -34,8 +61,8 @@ function testQuery(nextFunc) {
 			util.log("ERROR:" + JSON.stringify(err));
 		}
 		
-		util.log("lenfth" + JSON.stringify(items.length));
-		util.log("items" + JSON.stringify(items));
+		util.log("length" + JSON.stringify(items.length));
+		//util.log("items" + JSON.stringify(items));
 	});
 
 };

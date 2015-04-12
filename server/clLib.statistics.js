@@ -216,6 +216,7 @@ clStats.aggregateById= function(routeLogArr, options) {
         if(foundCount <= options.statsOptions.endIdx) {
             var routeLog = routeLogArr[i];
             var aggKey = 
+                "" + 
                 clLib.lpad(clLib.computeScore(routeLog), '0', 6)
                 + "@"
                 + routeLog["DateISO"];
@@ -233,7 +234,7 @@ clStats.aggregateById= function(routeLogArr, options) {
                     }
                     
                     if(aggResultObj[aggKey].count < options.statsOptions.aggTopX) {
-                        clLib.loggi("Adding score of >" + clLib.computeScore(routeLog) + "<");
+                        util.log("Adding score of >" + clLib.computeScore(routeLog) + "<");
                         aggResultObj[aggKey].score += clLib.computeScore(routeLog);
                         aggResultObj[aggKey].count++;
                         aggResultObj[aggKey].items.push(routeLog);
@@ -243,8 +244,29 @@ clStats.aggregateById= function(routeLogArr, options) {
             }
         }
 	}
-	JSON.stringify(aggResultObj);
-	return aggResultObj;
+    util.log("ASFASDFASDFSF" + JSON.stringify(aggResultObj));
+	//JSON.stringify(aggResultObj);
+    var newAggResultObj = {}
+    var scoresAt = []
+	$.each(Object.keys(aggResultObj).sort(), function(idx, key) {
+        util.log("eaching..");
+        var values = aggResultObj[key];
+        var scorePortion = 
+            idx + 1; // Add 1 to start with position 1 instead of 0
+        //key.substring(0, 6);
+        if(!scoresAt[scorePortion]) {
+            scoresAt[scorePortion] = 0;
+        }
+        scoresAt[scorePortion]++;
+        util.log("scorePortion >" + scorePortion + "<");
+        if(newAggResultObj[scorePortion]) {
+            scorePortion = scorePortion + "(" + scoresAt[scorePortion] + ")";
+        }
+        newAggResultObj[scorePortion] = values;
+    });
+    return newAggResultObj;
+
+    return aggResultObj;
 };
 
 clStats.aggregateHighScoreByDatePortion = function(routeLogArr, options) {
