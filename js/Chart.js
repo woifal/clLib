@@ -2567,7 +2567,8 @@
 		name: "Line",
 		defaults : defaultConfig,
 		initialize:  function(data){
-			//Declare the extension of the default point, to cater for the options passed in to the constructor
+            console.log("initializign..");
+        //Declare the extension of the default point, to cater for the options passed in to the constructor
 			this.PointClass = Chart.Point.extend({
 				strokeWidth : this.options.pointDotStrokeWidth,
 				radius : this.options.pointDotRadius,
@@ -2761,7 +2762,8 @@
 			this.scale.update(newScaleProps);
 		},
 		draw : function(ease){
-			var easingDecimal = ease || 1;
+			console.log("drawing..");
+            var easingDecimal = ease || 1;
 			this.clear();
 
 			var ctx = this.chart.ctx;

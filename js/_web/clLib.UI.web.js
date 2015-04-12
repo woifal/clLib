@@ -439,32 +439,37 @@ clLib.UI.web = {
                 options["where"] = {};
             }
         
+
+
+
+
+
             //options["where"] ={"username": function() { return clLib.getUserInfo()["username"]}()};
-            options["where"]["deleted"] = {
+            options["where"] ={
                 "$or" : [
-
-//                    {
-//                        "$and": [
-//                            {
-//                                    "$exists" : true
-//                            },
-
+                    {
+                        "$and": [
                             {
-
+                                "deleted": {
+                                    "$exists" : true
+                                }
+                            },
+                            {
+                                "deleted": {
                                     "$ne" : 1
+                                }
                             }
-//                        ]
-
-//                    }
-//                    ,
-//                    {
-//                        "$exists" : false
-//                    }
-
-                    ]
-
+                        ]
+                    }
+                    ,
+                    {
+                        "deleted": {
+                            "$exists" : false
+                        }
+                    }
+                ]
             };
-            
+
 
             return clLib.REST.getEntities(
                 options["entity"]

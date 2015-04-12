@@ -209,13 +209,16 @@ clLib.graphConfig = {
 
 
                             //Get the context of the canvas element we want to select
+                            console.log("containerSelector 2 is >" + graphConfig.collection.containerSelector + "<");
+
                             var ctx = $(graphConfig.collection.containerSelector).find(".clCanvas")[0].getContext("2d");
+                            console.log("ctx is >" + ctx + "<");
                             if(window.myNewChart) {
-                                clLib.loggi("clearing old chart!", "20150131");
+                                console.log("clearing old chart!", "20150131");
                                 window.myNewChart.destroy();
                             }
                             else {
-                                clLib.loggi("no chart yet..>" + window.myNewChart + "<", "20150131");
+                                console.log("no chart yet..>" + window.myNewChart + "<", "20150131");
                             }
 
                             var $tableContainer = $("#tableContainer");
@@ -236,13 +239,14 @@ clLib.graphConfig = {
                             console.log("labels is >" + data["labels"] + "<");
                             
                             if(graphTypes.indexOf("bar") > -1) {
+                                console.log("building new chart widht data >" + JSON.stringify(data) +"<..");
                                 window.myNewChart = new Chart(ctx).Bar(data, graphOptions);
-                                
                             } else if(graphTypes.indexOf("line") > -1 ) {
+                                console.log("building new chart widht data >" + JSON.stringify(data) +"<..");
                                 window.myNewChart = new Chart(ctx).Line(data, graphOptions);
                             }
                             
-                            
+                            return;
                             
                             
                             

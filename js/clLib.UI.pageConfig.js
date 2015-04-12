@@ -249,6 +249,7 @@ clLib.UI.autoLoad = {
 			"todaysRouteLogs"
 			//,"monthRouteLogs"
 			,"allRouteLogs"
+            ,"routeLogDiagramContainer"
 		]
 	}
     ,"buddies": {
@@ -469,6 +470,7 @@ clLib.UI.pageElements = {
 			//, "monthRouteLogs"
 			, "allRouteLogs"
 			, "yearRouteLogs"
+            , "routeLogDiagramContainer"
         ]
     }
     ,"buddies": {
@@ -1395,9 +1397,12 @@ clLib.UI.elements = {
             var successHandler = function(statsResults) {
                 statsResults = JSON.parse(statsResults);
 				console.log("results is >" + JSON.stringify(statsResults)  + "<");
+                statsResults = statsResults[clLib.getUserInfo()["username"]];
+                
                 $.each(statsResults, function(idx, statsResult) {
                     console.log("working on >" + idx + "< with score >" + statsResult["score"] + "<");
                     totalScore += statsResult["score"];
+                    console.log("totalScore is now >" + totalScore + "<");
                 });
             };
 
@@ -1592,11 +1597,11 @@ clLib.UI.elements = {
 			//alert("items retrieved(high-scored first) " + JSON.stringify(todaysTopRouteLogs));
 			//alert("items retrieved(high-scored first) " + todaysTopRouteLogs.length);
 			//alert("items retrieved(latest first) " + JSON.stringify(todaysRouteLogs));
+            console.error("Todays routes is: " + JSON.stringify(todaysTopRouteLogs));
 
 			// calculate today's score
 			var todaysTopScore = clLib.calculateScore(todaysTopRouteLogs);
 			//alert("Todays score is: " + todaysTopScore);
-
 			
 			var titleText;
 			if(clLib.UI.currentPage() == "stats") {
@@ -1938,6 +1943,50 @@ clLib.UI.elements = {
                 
         }
     }
+    ,"routeLogDiagramContainer"    : {
+        "refreshHandler" : function($this) { 
+            console.log("setting containerSelector to >" + "#" + $this.attr("id") + "<");
+            var $thisEl = $this;
+            
+            var routeLogConfig = clLib.graphConfig["_routeLogConfig"];
+            setTimeout(function() {
+                $("#" + $thisEl.attr("id") + " .clCanvas").each(function(i,el){
+                    // Set the canvas element's height and width to it's parent's height and width.
+                    // The parent element is the div.canvas-container
+                    console.log("resetting width to.." + ($(el).parent().width()));
+                    $(el).attr({
+                        "width": $(el).parent().width()
+                    });
+                    $("#legendContainer")
+                        .css({
+        //                    position: "absolute"
+                            top: ($(el).offset().top)
+        //                    ,left: "450px" //($(el).offset().left)
+        //                    ,border: "0px solid red"
+                        })
+                    ;
+                });
+
+            
+                routeLogConfig["containerSelector"] = "#" + $thisEl.attr("id");
+               
+                var graphConfigObj = routeLogConfig.get("highScoreByDay");
+                console.error("keys >" + Object.keys(graphConfigObj) + "<");
+                routeLogConfig.get("highScoreByDay")["collection"]["containerSelector"] = "#" + $thisEl.attr("id");
+                return clLib.UI.execWithMsg(function() {
+                    routeLogConfig.get("highScoreByDay").draw({
+                        where: {
+                            username: clLib.getUserInfo()["username"]
+                        }
+                        //,buddies: function() { return getSelectedBuddies(); }()
+                    });
+                }, {text: "drawing graph.."});
+
+            }, 1);
+     
+            
+		}
+	}		
 	,"allRouteLogs": {
 		"setSelectedValueHandler" : function($this, changeOptions) { return $this.trigger("refresh.clLib"); }
 		,"refreshHandler" : function($this) { 

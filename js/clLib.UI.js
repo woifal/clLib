@@ -33,7 +33,7 @@ clLib.UI.setSelectedValue = function($element, newValue) {
 
 
 clLib.UI.addListItems = function($list, dataObj, createItemFunc, count, startWithEmptyList) {
-	//alert("adding list items for " + $list.attr("id") + ">" + JSON.stringify(dataObj) + "<");
+	console.log("adding list items for " + $list.attr("id") + ">" + JSON.stringify(dataObj) + "<");
 	if(startWithEmptyList) {
 		$list.empty();
 		$list.data("itemsShown", 0);
@@ -1931,6 +1931,7 @@ clLib.UI.addCollapsiblesNEW = function(options) {
 				container : $container
 				,items : items
 				,clearCurrentItems : false
+                ,createItemFunc: options["createItemFunc"]
 			});
 			
 			// Scroll down so that collapsible header in on top of viewport..
@@ -1968,11 +1969,11 @@ clLib.UI.addCollapsiblesChildren = function($containerEl, dataObj, createItemFun
 	console.log("old count(" +  $containerEl.attr("id") + "): " + itemsShown);
 	console.log("this >" + $containerEl.attr("id") + "<, parents >" + $containerEl.parents("#2014-10-11-content").attr("id") + "<, itemsshow >" + itemsShown + "<");
 	console.log("old count(" +  $containerEl.parents("#2014-10-11-content").attr("id") + "): " + itemsShown);
-	console.log("adding >" + count + "< items (now: >" + itemsShown + "< from >" + JSON.stringify(dataObj.length) + "<");
 	
 	if(!dataObj || Object.keys(dataObj).length == 0) {
 		dataObj = [];
 	}
+	console.log("adding >" + count + "< items (now: >" + itemsShown + "< from >" + JSON.stringify(dataObj.length) + "<");
 	$.each(dataObj.slice(itemsShown, itemsShown + count), function(index, dataRow) {
 		var $itemsToAdd = createItemFunc(dataRow);
 
