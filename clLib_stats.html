@@ -2,6 +2,86 @@
                     <div id="stats_routeLogDiagramContainer" style="padding: 10px 0px; width: 100%; height: 150px; ">
                         <canvas class="clCanvas" height="150px" style="border: 1px solid #CCCCCC;"></canvas>
                     </div>
+<style>
+        #legendContainer {
+            border: 0px solid red;
+            background-color: none; /*#FFFFFF;*/ /*#063a72;*/
+            color: #063a72; /* white;*/
+            font-weight: bold;
+            padding: 5px;
+            border-radius: 3px 3px 3px 3px;
+            display: block;
+            width: 100%;
+        }
+        #legendContainer .legendContent {
+            display: inline;
+        }
+
+</style>
+                    <div id="legendContainer" style="">
+                        Legendary... ;)
+                    </div>
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                <div id="stats_statsBuddiesButton" class="clButton clSmall clFullWidth">
+					<div>
+					<a>
+						<div>
+							<img src="files/views/assets/image/img_22_22/button_plus_white.png"></img>
+						</div>
+					</a>
+						<span style="width: auto;" >Show/Hide Buddies</span>
+					</div>
+				</div>
+		
+
+				<a id="stats_statsBuddiesButton_a" style="display: none" data-rel="popup" href="#stats_statsBuddiesPopup">b</a>
+				<div id="stats_statsBuddiesPopup" data-overlay-theme="a" data-role="popup" data-dismissible="false" class="clExtra" >
+					<div data-role="header">
+						<h1>Select Buddies to show</h1>
+					</div>
+					<div data-role="content">
+                        <fieldset 
+                            style="text-align: center"
+                            id="stats_selectedBuddies"
+                            data-role="controlgroup" data-type="vertical" data-inset="true"
+                            cl-data-type="checkbox"
+                        >
+                        </fieldset>												
+
+						<a href="#" style="margin-top: 20px;" data-rel="back" class="ui-btn ui-btn-center ui-corner-all">Done!</a>
+                        
+					</div>
+				</div>				
+
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
 					<h2>
 						<ul data-role="listview"  data-theme="c">
 							<li><span id="stats_todaysTopScoreBubble" class="ui-li-count"></span>Today</li>
@@ -39,6 +119,7 @@
 							data-theme="a"
 					>
 					</div>
+<!--
                     <div style="text-align:center">
 								<div 
 									id="stats_allDiagram"
@@ -56,34 +137,5 @@
 									</div>
 								</div>
                     </div>
-                                
-                    <!--
-				<div 
-						style="margin: 0px 0px 0px 0px; padding: 0px 0px 0px 0px ;" 
-						data-role="collapsible-set" 
-						data-theme="a" 
-						data-content-theme="a"
-						data-inset="false"
-						data-collapsed-icon="cl_home"
-				>
-					<div data-role="collapsible" data-inset="false" data-theme="a">
-						<h3>Daily Details</h3>
-						<div 
-								id="stats_monthRouteLogs" 
-								style="margin: 0px 0px 0px 0px; padding: 0px 0px 0px 0px ;" 
-								data-role="collapsible" 
-								data-theme="a" 
-								data-content-theme="a"
-								data-inset="false"
-						>
-						</div>
-						
-					</div>
-					<div id="stats_todaysDiagram" data-role="collapsible" data-inset="false">
-						<h3>Show Diagram</h3>
-					</div>
-
-
-				</div>
--->				
+-->
 @@include('grunt_includes/singlePage_Footer.html', {"pageName": "stats"})

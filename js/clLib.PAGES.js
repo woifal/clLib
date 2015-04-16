@@ -555,9 +555,20 @@ clLib.PAGES.handlers = {
 			$("#stats_allDiagram").on("click", function () {
                 clLib.PAGES.changeTo("clLib_diagram.html");
             });
+            $("#stats_statsBuddiesButton").on("click", function () {
+                $("#stats_statsBuddiesPopup").on( "popupafterclose", function( event, ui ) {
+                    clLib.UI.fillUIelements();
+                } );
+                $("#stats_statsBuddiesPopup").popup( "open");
+			});
+
 		}
         , "pagebeforeshow": function () {
 			//alert("show!");
+	        //clLib.UI.fillUIelements();
+        }
+        , "pageshow": function () {
+			//alert("shown!");
 	        clLib.UI.fillUIelements();
         }
 	}
@@ -1000,7 +1011,7 @@ clLib.PAGES.handlers = {
 	};
 
 
-var eventsToBind = "pagecreate pagebeforeshow";
+var eventsToBind = "pagecreate pagebeforeshow pageshow";
 
 // bind "pagecreate"/"pagebeforeshow" events for all pages..
 $("div[data-role=page]").die(eventsToBind).live(eventsToBind, function (event, ui) {

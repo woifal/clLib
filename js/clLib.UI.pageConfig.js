@@ -250,6 +250,7 @@ clLib.UI.autoLoad = {
 			//,"monthRouteLogs"
 			,"allRouteLogs"
             ,"routeLogDiagramContainer"
+            ,"selectedBuddies"
 		]
 	}
     ,"buddies": {
@@ -471,6 +472,7 @@ clLib.UI.pageElements = {
 			, "allRouteLogs"
 			, "yearRouteLogs"
             , "routeLogDiagramContainer"
+            , "selectedBuddies"
         ]
     }
     ,"buddies": {
@@ -1597,7 +1599,7 @@ clLib.UI.elements = {
 			//alert("items retrieved(high-scored first) " + JSON.stringify(todaysTopRouteLogs));
 			//alert("items retrieved(high-scored first) " + todaysTopRouteLogs.length);
 			//alert("items retrieved(latest first) " + JSON.stringify(todaysRouteLogs));
-            console.error("Todays routes is: " + JSON.stringify(todaysTopRouteLogs));
+            console.log("Todays routes is: " + JSON.stringify(todaysTopRouteLogs));
 
 			// calculate today's score
 			var todaysTopScore = clLib.calculateScore(todaysTopRouteLogs);
@@ -1648,54 +1650,6 @@ clLib.UI.elements = {
 		}
 	}	
 	
-	,"monthRouteLogs": {
-		"setSelectedValueHandler" : function($this, changeOptions) { return $this.trigger("refresh.clLib"); }
-		,"refreshHandler" : function($this) { 
-			//alert("refreshing monthRouteLogs...");
-				
-			var $container = $this;
-			// build where clause for today's routelogs
-			var where = clLib.getRouteLogWhereToday(clLib.getCurrentUserWhere());
-			
-			var successHandler = function(resultObj) {
-				resultObj = JSON.parse(resultObj);
-				//alert("success!!" + typeof(resultObj) + "-" + JSON.stringify(resultObj));
-
-				$("#stats_monthScoreBubble").html("????");
-
-				var i;
-				var aggResultKeys = Object.keys(resultObj);
-				for (var i = 0; i < aggResultKeys.length; i++) {
-					
-					var titleText = aggResultKeys[i];
-					//alert("adding item >" + titleText + "<");
-					clLib.UI.addCollapsible({
-						collapsibleSet : $container,
-						titleText : titleText,
-						listItems : resultObj[aggResultKeys[i]].items
-						//,clearCurrentItems : true
-					});
-
-					console.log(JSON.stringify(resultObj[aggResultKeys[i]]));
-				}
-				
-			};
-
-			
-			
-			clLib.REST.requestStats({
-				where : where
-			},
-			successHandler, 
-			function(e) {
-				alert("error!");
-				alert(clLib.formatError(e));
-			}
-			);
-		
-		
-		}
-	}		
 	,"searchBuddies" : {
 		"dbField" : "username"
 		,"refreshHandler" : function($this, options) { 
@@ -1971,14 +1925,15 @@ clLib.UI.elements = {
                 routeLogConfig["containerSelector"] = "#" + $thisEl.attr("id");
                
                 var graphConfigObj = routeLogConfig.get("highScoreByDay");
-                console.error("keys >" + Object.keys(graphConfigObj) + "<");
+                console.log("keys >" + Object.keys(graphConfigObj) + "<");
                 routeLogConfig.get("highScoreByDay")["collection"]["containerSelector"] = "#" + $thisEl.attr("id");
                 return clLib.UI.execWithMsg(function() {
                     routeLogConfig.get("highScoreByDay").draw({
                         where: {
                             username: clLib.getUserInfo()["username"]
+                            
                         }
-                        //,buddies: function() { return getSelectedBuddies(); }()
+                        ,buddies: localStorage.getItem("selectedBuddies") || ""
                     });
                 }, {text: "drawing graph.."});
 
@@ -2004,6 +1959,7 @@ clLib.UI.elements = {
 				var i;
 				startFrom = startFrom || 0;
 				var aggResultKeys = Object.keys(resultObj);
+                console.log("building dayroutes >", resultObj, "<");
 				
 				for (var i = startFrom ; i < aggResultKeys.length && i < startFrom + itemCount; i++) {
 					buildSingleDayRouteLogs(resultObj, aggResultKeys[i]);
@@ -2057,6 +2013,9 @@ clLib.UI.elements = {
 			//		.append(dataRow[dataFormat["bubble"]])
 				;
 				$bubble.html(resultObj[key].score);
+                
+                console.log("routelogs for >" + key + "<");
+                console.log("routelogs for >" , resultObj[key], "<");
 
 
 				var $container = $('' + 
@@ -2105,6 +2064,7 @@ clLib.UI.elements = {
 			
 			var successHandler = function(resultObj) {
 				resultObj = JSON.parse(resultObj);
+                resultObj = resultObj[clLib.getUserInfo()["username"]];
 				//alert("success!!" + typeof(resultObj) + "-" + JSON.stringify(resultObj));
 				buildDaysRouteLogs(resultObj, daysToShow);
 
@@ -2115,25 +2075,109 @@ clLib.UI.elements = {
             var options = {
                 statsOptions: {
                     entity:                 "RouteLog"
-                    ,datePortionFuncName :   "localDayPortion"
+                    ,datePortionFuncName :  "localDayPortion"
                     ,aggFuncName:           "aggregateScoresByDatePortion"
                     ,sortByFuncName:        "sort_localDayAndScore"
                     ,aggTopX:               10
                     ,sortDescFlag:          true
+                    ,nrOfEligibleDays:      365
+                    ,startIdx:                 0
+                    ,endIdx:                   10
                 }
-                ,where: where
+                ,where: {
+                    username: clLib.getUserInfo()["username"]
+                    ,buddies: localStorage.getItem("selectedBuddies") || ""
+                }
             }
-			clLib.REST.requestStatsNew(
+            console.log("getting new stats..");
+            clLib.REST.requestStatsNew(
                 options
                 ,successHandler
                 ,function(e) {
                     alert("error!");
                     alert(clLib.formatError(e));
                 }
-			);
+            );
 		
 			$allContainer.trigger("create");
 	
 		}
 	}		
+    
+    , "selectedBuddies" : {
+		"localVarField" : "selectedBuddies"
+		,"dbField" : "selectedBuddies"
+		,"refreshHandler" : function($this) { 
+            
+            
+            
+            
+            
+            clLib.REST.getEntities("buddyList", 
+                {
+                    "username" : clLib.getUserInfo()["username"]
+                    ,"deleted": {
+                        "$ne": true
+                    }
+                }
+                ,function(resultObj) {
+                    console.log("Found buddies  >" + JSON.stringify(resultObj) + "<");
+                    var buddyItems = resultObj["buddyList"];
+                    var buddyUsernames = [];
+                    $.each(buddyItems, function(idx, item) {
+                        buddyUsernames.push(item["buddyUsername"]);
+                    });
+                    var buddiesStr = buddyUsernames.join(",");
+                    
+                    clLib.UI.localStorageRefreshHandler($this, {
+                        preserveCurrentValue : true
+                        ,strDataObj : buddiesStr
+        //				,strDataObj: function() { return clLib.UI.getVal("selectedBuddies"); }()
+                        ,localStorageVar : "selectedBuddies"
+                    });
+
+                    $("input[type='checkbox']", $this).off("click").on("click", function(e) {
+                        var $optionEl = $(this);
+                        //alert("this checked is" + ($optionEl.is(":checked")));
+                        var selectedOptions = clLib.UI.getVal(clLib.UI.elementNameFromId($this.attr("id")));
+                        var selectedOptionsArr = selectedOptions ? selectedOptions.split(",") : [];
+                        if(selectedOptionsArr.length > 3) {
+                            alert("Only 3 default grade systems can be selected!");
+                            $(this).prop("checked", false);
+                        }
+                        selectedOptions = clLib.UI.getVal(clLib.UI.elementNameFromId($this.attr("id")));
+                        localStorage.setItem("selectedBuddies", selectedOptions);
+                        
+                    });
+
+                }
+                ,function(e) {
+                    alert("While fetching buddyList: >" + e + "<,>" + JSON.stringify(e) + "<");
+                }
+                ,{
+                    "requireResult": false
+                }
+            )
+            ;
+
+            
+            
+
+
+		}
+		,"customVal" : function($this) {
+			//alert("getting customval for selectedGradeTyoeSystems..");
+			var commaSepVals = [];
+			$.each($this.find("input:checkbox:checked"), function(idx, el) {
+				commaSepVals.push($(el).val());
+			});
+			commaSepVals = commaSepVals.join(",");
+			//alert("commaSepVals = " + commaSepVals);
+			return commaSepVals;
+		}
+
+
+    }
+
+    
 };

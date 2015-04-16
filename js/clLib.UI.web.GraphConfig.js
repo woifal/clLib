@@ -90,7 +90,7 @@ clLib.graphConfig = {
                                 ,datasetFill: false
                                 ,showTooltips: true
                                 ,legendTemplate : 
-                                    "<div style=\"float: left;\" class=\"<%=name.toLowerCase()%>-legend\">" + 
+                                    "<div class=\"legendContent <%=name.toLowerCase()%>-legend\">" + 
                                         "<% for (var i=0; i<datasets.length; i++){%>" + 
                                                 "<span style=\"background-color:<%=datasets[i].strokeColor%>\">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>&nbsp;&nbsp;&nbsp;" +
                                                 "<%if(datasets[i].label){%>" + 
@@ -246,7 +246,7 @@ clLib.graphConfig = {
                                 window.myNewChart = new Chart(ctx).Line(data, graphOptions);
                             }
                             
-                            return;
+ //                           return;
                             
                             
                             

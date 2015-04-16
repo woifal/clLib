@@ -315,7 +315,8 @@ clLib.createCheckboxGroup = function(options) {
 	var elementName = clLib.UI.elementNameFromId(options.selectBoxElement.attr("id"));
 	clLib.UI.killEventHandlers(options.selectBoxElement, "change.clLib");
 
-	var needRefresh = clLib.populateCheckboxes_plain(
+	console.log("populating checkbox plain with >" , options ,  "<");
+    var needRefresh = clLib.populateCheckboxes_plain(
 		options.selectBoxElement,
 		options.dataObj,
 		options.selectedValue,
@@ -1219,7 +1220,7 @@ clLib.UI.localStorageRefreshHandler = function($element, additionalOptions) {
 	var elContentOptions = {
 		selectBoxElement : $element,
 		dataObj : results,
-		preserveCurrentValue : true,
+//		preserveCurrentValue : true,
 		// additionalValue : clLib.UI.NOTSELECTED
 		additionalValue : {
 			 //text: clLib.UI.elementNameFromId($element.attr("id"))
@@ -1227,6 +1228,14 @@ clLib.UI.localStorageRefreshHandler = function($element, additionalOptions) {
 			,value: clLib.UI.NOTSELECTED.value
 		}
 	};
+    
+    var selectedValue = localStorage.getItem(elementConfig["localVarField"]) || "";
+    console.log("1 selectedValue is >" + selectedValue + "<");
+    selectedValue = selectedValue.split(",");
+    console.log("2 selectedValue is >" + JSON.stringify(selectedValue) + "<");
+    additionalOptions["selectedValue"] = selectedValue;
+    
+    
 	$.extend(elContentOptions, additionalOptions);
 	
 	// Assume controlgroups consist of radio buttons..
@@ -1242,7 +1251,6 @@ clLib.UI.localStorageRefreshHandler = function($element, additionalOptions) {
 	} 
 	else {
 		//console.log("?!?! populating select " + JSON.stringify(elContentOptions));
-		//alert("?!?!");
 		clLib.populateSelectBox(elContentOptions);
 	}
 }
