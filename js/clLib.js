@@ -761,8 +761,9 @@ clLib.loggedInCheck = function (callbackFunc, errorFunc) {
 	// online - check for valid sessiontoken
 	// if VERIFY_LOGIN is not set, don't login user
 	if (!clLib.VERIFY_LOGIN || clLib.sessionToken) {
+        clLib.setUserInfo({deviceToken: localStorage.getItem("pushDeviceToken")});
+        
         clLib.webSocketClient.connect(clLib.getUserInfo());
-
         //alert("yes, logged in mofu!");
 		return callbackFunc(/*true*/);
     }

@@ -17,20 +17,41 @@
 	<script>
 document.addEventListener('deviceready', function() {
   navigator.splashscreen.hide();
+//        $.mobile.autoInitializePage = false;
+//		setTimeout(function() { $.mobile.initializePage(); }, 5000);
+    var pushNotification = window.plugins.pushNotification;
+    alert("pushNotification is >" + pushNotification + "<");
+    var tokenHandler = function(token) {
+        alert("Got token >" + token + "<");
+        localStorage.setItem("pushDeviceToken", token);
+        
+    }
+    var errorHandler = function(error) {
+        alert("got NO token >", error, "<");
+    }
+    try {
+        pushNotification.register(
+            tokenHandler,
+            errorHandler,
+            {
+                "badge":"true",
+                "sound":"true",
+                "alert":"true",
+                "ecb":"onNotificationAPN"
+            }
+        );
+    }
+    catch(e) {
+        alert("init error >", e, "<");
+    }
 });  
 </script>
         <!-- phonegap integration? -->
         <script type="text/javascript" charset="utf-8" src="cordova.js"></script>  
+        <script type="text/javascript" src="js/PushNotification.js"></script>
         
         <script type="text/javascript" src="js/jquery-1.8.2.js"></script>
         <script type="text/javascript" src="js/Chart.js"></script>
-
-<script>
-$(document).bind("mobileinit", function () {
-//        $.mobile.autoInitializePage = false;
-//		setTimeout(function() { $.mobile.initializePage(); }, 5000);
-});	
-</script>
 
         <script type="text/javascript" src="css/THEMES/20140405/jquery.mobile-1.4.2.js"></script>
 

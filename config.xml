@@ -72,6 +72,8 @@
 	
 	<gap:plugin name="cc.fovea.plugins.inapppurchase"/>    
 
+    <gap:plugin name="com.phonegap.plugins.pushplugin" version="2.4.0" />
+    
 	<access origin="*" />
     
 </widget>
