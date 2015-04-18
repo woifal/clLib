@@ -136,11 +136,13 @@ var io = socketIO.listen(server.server); //Note server.server instead of just se
 
 var ioSocketResource = require("./clLib.webSockets.js");
 var ioSocketHandler = new ioSocketResource.webSockets();
-
 util.log("1");
 ioSocketHandler.connect(io);
  
-
+var apnResource = require("./clLib.push.apn");
+var apnHandler = new apnResource.clPushApn;
+apnHandler.connect();
+util.log("!!! APN connected.");
 
 var adminUserDetails = {};
 var adminUserObj = {};
@@ -979,6 +981,25 @@ server.get("/logSockets", function (req, res) {
 				res.send({"result" : JSON.stringify(clLib.server.runtime.connectedUsers)});
 
         } catch(e) {
+		errHandler(new Error("UNHANDLED SERVER ERROR "  + e.name + " IS " + e.message + " !!!"));
+	}
+});
+
+server.get("/sendApn", function (req, res) {
+	var errHandler = function(errorObj) {
+		return clLib.server.defaults.errorFunc(errorObj, res);
+	}
+
+	try {
+        var pushOptions = req.params;
+        return apnHandler.push(
+            pushOptions
+            ,function(resultObj) {
+				res.send({"result" : JSON.stringify(resultObj)});
+            }
+            ,errHandler
+        );
+    } catch(e) {
 		errHandler(new Error("UNHANDLED SERVER ERROR "  + e.name + " IS " + e.message + " !!!"));
 	}
 });

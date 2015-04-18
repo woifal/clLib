@@ -274,6 +274,47 @@ grunt.initConfig({
                             ,src: ["server/node_modules/*", "server/node_modules/**/*"] 
                             ,dest:"dist" 
                         }
+                        ,
+                        { 
+							//flatten: true
+							//,
+                            expand: true
+							//,cwd: "server"
+                            ,src: ["server/appCertificates/*", "server/appCertificates/**/*"] 
+                            ,dest:"dist" 
+                        }
+                     ]
+				}
+				,server_dev: {
+					expand: true,
+//					flatten: true,
+					files: [
+                        { 
+							flatten: true
+                            ,expand: true
+							,src: [
+								"js/clLib.js", "js/clLib.gradeConfig.js", "!js/_web"
+							]
+							,dest:"dist/server" 
+                        }
+                        ,
+                        { 
+							flatten: true
+                            ,expand: true
+							,src: [
+								"server/*"
+							]
+							,dest:"dist/server" 
+						}
+                        ,
+                        { 
+							//flatten: true
+							//,
+                            expand: true
+							//,cwd: "server"
+                            ,src: ["server/appCertificates/*", "server/appCertificates/**/*"] 
+                            ,dest:"dist" 
+                        }
                      ]
 				}
 		},
@@ -327,5 +368,6 @@ grunt.initConfig({
     grunt.registerTask('webprod', ['includereplace:web_prod', 'copy:web_prod']);
     grunt.registerTask('webdev', ['includereplace:web_dev', 'copy:web_prod']);
     grunt.registerTask('serverprod', ['copy:server_prod']);
+    grunt.registerTask('serverdev', ['copy:server_dev']);
 
 };

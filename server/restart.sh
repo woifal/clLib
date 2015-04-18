@@ -1,4 +1,4 @@
 cd ../..
-grunt serverprod
+grunt serverdev
 cd dist/server
 nodemon server.js
