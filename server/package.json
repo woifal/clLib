@@ -6,7 +6,7 @@
     "pg": "0.6.x",
 	"nodemailer": "0.3.x"
 	,"socket.io": "1.3.x"
-    ,"apn": "1.7.3",
+    ,"apn": "1.7.3"
   },
     "engines": {
     "node": "0.10.x",
