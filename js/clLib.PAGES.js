@@ -133,8 +133,11 @@ clLib.PAGES.handlers = {
 //
             }
             if(urlAuthObj) {
+                //
+                // Store auth object to be processed by clLib.login later on..
+                //
                 clLib.UI.execWithMsg(function() {
-                    clLib.PAGES.processAuthObj(urlAuthObj);
+                    clLib.auth.processAuthObj(urlAuthObj);
 	            }, {text: "Processing authentication.."});
             };
 
@@ -670,17 +673,10 @@ clLib.PAGES.handlers = {
 				clLib.UI.execWithMsg(function() {
 					clLib.UI.save({ additionalData: { action: "setPwd" }}
 					,function(returnObj) {
-						//alert("password changed(" + JSON.stringify(returnObj) + ")");
-
-						// Override current user info with response from signup callback..
-						returnObj = JSON.parse(returnObj);
-						returnObj["name"] = returnObj["username"];
-						returnObj["displayName"] = returnObj["username"];
-						returnObj["id"] = returnObj["username"];
-						returnObj["image"] = {};
-						returnObj["image"]["url"] = "";
-
-						return clLib.PAGES.processAuthObj(JSON.stringify(returnObj));
+						//
+                        //  Process returned user info..
+                        //
+                        return clLib.auth.processAuthObj(returnObj);
 					}
 					, function(e) {
 						clLib.loginErrorHandler(e);
@@ -771,20 +767,30 @@ clLib.PAGES.handlers = {
                 //var resCode = window._cordovaNative;
                 //alert("resCode is >" + resCode + "<");
 //                return resCode;
-                return true;
+                return false;
             }
             clLib.detectChildURLChange = function(childRef, callbackFunc) {
                 if(inPhoneGap()) {
+                    clLib.loggi("yes phonegap!!", "20150429");
                     return childRef.addEventListener('loadstart', callbackFunc);
                 }
                 else {
+                    clLib.loggi("no phonegap..trying anyway..", "20150429");
                     var oldUrl = "";
                     var checkUrl = function(windowRef) {
                         setTimeout(function() {
-                            var newUrl = windowRef.window.document.location.href;
+                            var newUrl = "";
+                            try {
+                                newUrl = windowRef.window.document.location.href;
+                            }
+                            catch(e) {
+                                newUrl = oldUrl;
+                                console.error("could not get newUrl >" + e + ">");
+                            }
+                            
                             if(newUrl != oldUrl) {
                                 oldUrl = newUrl;
-                                alert("child.window.href is >" + newUrl);
+                                console.log("child.window.href is >" + newUrl);
 
                                 var dummyEvent = {};
                                 dummyEvent.url = newUrl;
@@ -793,7 +799,7 @@ clLib.PAGES.handlers = {
                                     return checkUrl(windowRef);
                                 }
                             }
-                            checkUrl(windowRef);
+                            //checkUrl(windowRef);
                         }
                         , 500);
                     };      
@@ -816,7 +822,8 @@ clLib.PAGES.handlers = {
               
                 var redirectURL = "";
                 var appEntryURL = "";
-                appEntryURL = "http://www.kurt-climbing.com/dist/authenticated.html"
+                var host = location.protocol+'//'+location.hostname+(location.port ? ':'+location.port: '');
+                appEntryURL = host + "/asdf.html"
                 redirectURL = clLib.REST.clLibServerURI + "/getOAuth2URL?authType=" + authType + "&clLib.redirectURL=" + appEntryURL + "&redirectURL=" + appEntryURL+ "&redirect_uri=" + appEntryURL;
                 //alert("changing to " + redirectURL);
                 clLib.UI.byId$("displayName", pageId).trigger("refresh.clLib");
@@ -834,7 +841,9 @@ clLib.PAGES.handlers = {
                     if(childURL.indexOf(appEntryURL) == 0) {
                         //alert("authenticated url detected!" + childURL.substr(0,30));
   
+//                        alert("closing child window..");
                         ref.close(); 
+//                        alert("closed chld window..");
                         setTimeout(function() { 
                             
                             if(childURL.indexOf("?authObj") == -1) {
@@ -848,7 +857,10 @@ clLib.PAGES.handlers = {
                             );
                             //alert("decoded >" + JSON.stringify(urlAuthObj) + "<");
 
-                            clLib.PAGES.processAuthObj(urlAuthObj);
+                            //
+                            //  Store authObj to be processed by clLib.login later on..
+                            //
+                            clLib.auth.processAuthObj(urlAuthObj);
                         }
                         ,50
                         );
@@ -921,15 +933,10 @@ clLib.PAGES.handlers = {
 	            clLib.UI.execWithMsg(function() {
 					clLib.UI.save({ additionalData: { action: "login", plainPwd : true}}
 					,function(returnObj) {
-						//alert("password changed(" + JSON.stringify(returnObj) + ")");
-
-						// Override current user info with response from signup callback..
-						returnObj["name"] = returnObj["username"];
-						returnObj["displayName"] = returnObj["username"];
-						returnObj["id"] = returnObj["username"];
-						returnObj["image"] = {};
-						returnObj["image"]["url"] = "";
-						return clLib.PAGES.processAuthObj(JSON.stringify(returnObj));
+                        //
+                        //  Process returned user info..
+                        //
+						return clLib.auth.processAuthObj(JSON.stringify(returnObj));
 
 					}
 					, function(e) {
@@ -952,14 +959,11 @@ clLib.PAGES.handlers = {
 				//alert("signup button clicked!");
 				clLib.UI.execWithMsg(function() {
 					clLib.UI.save({ additionalData: { action: "create" }}
-					, function(returnObj) {
-						// Override current user info with response from signup callback..
-						returnObj["name"] = returnObj["username"];
-						returnObj["displayName"] = returnObj["username"];
-						returnObj["id"] = returnObj["username"];
-						returnObj["image"] = {};
-						returnObj["image"]["url"] = "";
-						return clLib.PAGES.processAuthObj(JSON.stringify(returnObj));
+					,function(returnObj) {
+						//
+                        //  Process returned user info..
+                        //
+                        return clLib.auth.processAuthObj(JSON.stringify(returnObj));
 					}
 					, function(e) {
 						//alert("error " + JSON.stringify(e));
@@ -1057,7 +1061,7 @@ clLib.PAGES.changeTo = function(newURL, urlData, event, timeoutMillis) {
             );
             
         } else {
-            alert("navigating to " + newURL);
+            clLib.loggi("navigating to " + newURL, "20150429");
             document.location.href = newURL;
             //$.mobile.navigate(newURL);	
         }
@@ -1071,69 +1075,4 @@ clLib.PAGES.changeTo = function(newURL, urlData, event, timeoutMillis) {
 
 
 
-clLib.PAGES.processAuthObj = function(urlAuthObj, successFunc) {
-    var errorFunc = function(error) {
-        alert("error >" + JSON.stringify(error));
-    }
 
-//    alert("Getting VALID authObj from URL params >" + urlAuthObj + "<");
-    //
-    // Strip off trailing "#_=_" in case of redirect from facebook oauth2
-    //
-    if(urlAuthObj.indexOf("#_=_") > -1) {
-        urlAuthObj = urlAuthObj.substring(0, urlAuthObj.indexOf("#_=_"));
-    }
-
-    var authObj = JSON.parse(urlAuthObj);
-//    alert("GOT VALID authObj from URL params");
-	console.log("authObj:" + JSON.stringify(authObj));
-    
-    if(authObj) {
-		try {
-			//alert("authObj found...trying to process OAuth2 results..");
-			//alert("authObj found(" + typeof(authObj) + "...trying to process OAuth2 results..");
-			//alert("authObj keys: " + Object.keys(authObj));
-			//alert("authObj >" + JSON.stringify(authObj) + "<");
-	//                console.log("authObj2 >" + JSON.stringify(JSON.parse(decodeURI(authObj))) + "<");
-			
-			var userObj = {};
-			userObj["password"] = authObj["password"];
-			userObj["authType"] = authObj["authType"];
-			userObj["accessToken"] = authObj["accessToken"];
-			//alert("checking for displayname..");
-			if(userObj["authType"] == 'google') {
-				userObj["displayName"] = authObj.name.givenName || authObj.displayName;
-			} else {
-				userObj["displayName"] = authObj.name;
-			}
-			
-			//alert("checking for image urll.");
-			userObj["imageURL"] = authObj.image.url;
-			userObj["username"] = authObj.id;
-			userObj["_id"] = authObj["_id"];
-			
-	//        alert("got userObj of >" + JSON.stringify(userObj) + "<");
-			
-			clLib.setUserInfo(userObj);
-	//       alert("userinfo was set..");
-			if(!successFunc) {
-				successFunc = function() {
-					clLib.PAGES.changeTo("clLib_startScreen.html");
-				};
-			}
-			
-			return clLib.login(
-				successFunc
-				,errorFunc
-			);
-		} catch(e) { alert("ERROR OF TYPE "  + e.name + " IS " + e.message + " !!!"); };
-    }
-    else {
-        alert("something weird happened, proceeding to start screen");
-        setTimeout(function() {
-            //console.log("changing to startscreen..");
-            clLib.PAGES.changeTo("clLib_startScreen.html");
-        }
-        ,2000);
-    }
-};

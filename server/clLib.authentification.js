@@ -27,7 +27,7 @@ HTMLServerURL = "http://www.kurt-climbing.com";
 
 /* 
 *   Google OAuth2 objects.. 
-*/
+*/  
 var gApi = require('googleapis');
 var gOAuth2 = gApi.auth.OAuth2;
 var gCLIENT_ID = "366201815473-t9u61cghvmf36kh0dgtenahgitvsuea8.apps.googleusercontent.com";
@@ -213,6 +213,8 @@ auth.prototype.verifyOAuth2Code = function(code, req, res) {
                   refresh_token: tokens.refresh_token
                 };
 
+                util.log(">>>>" + JSON.stringify(gApi) + "<<<<<");
+                
                 return gApi
                     .discover('plus', 'v1')
                     .execute(function(err, client) {
@@ -252,21 +254,37 @@ auth.prototype.requiredAuthentication = function(req, res, next) {
 	util.log("header.." + JSON.stringify(req.headers));
 
 	//var username = req.params.username;
-	var username = req.headers["clUserName"];
-	var sessionToken = req.headers["clSessionToken"];
-	//var sessionToken = req.params.sessionToken;
-	var cachedSessions = authHandler.getUserTokens(username);
+	var userId = req.headers["clUserId"];
+	var sessionId  = req.headers["clSessionToken"];
+    
+    
+    
+    
+    
+    
+    
+    /*
+    *
+    *    ??????????????????
+    */
+    var mySessionId = authHandler.checkUser(userId)["sessionId"];
+    
+    
+    
+    
+    
+    
 	
-    if(!(sessionToken in cachedSessions)) {
+    if(!(sessionId == mySessionId)) {
         res.send(500, JSON.stringify({
-            result: "Request session token >" + sessionToken+ "< is not known"
+            result: "Request session id >" + sessionId + "< is not known"
         }));
     }
     else {
         // verify is session/accestoke is still valid..
         
 
-        util.log("sessionToken >" + sessionToken + "<for user >" + username + "< is OK!");
+        util.log("sessionToken >" + sessionId + "<for user >" + userId + "< is OK!");
         next();
     }
 
@@ -283,7 +301,13 @@ $.extend = function(options, addOptions) {
     return options;
 }
 
-auth.prototype.getUser = function(userObj, callbackFunc, errorFunc, addOptions) {
+/*
+*       MAIN AUTHENTIFICATION FUNCTION!!
+*
+*       Verify login info against the one stored on this server.
+*
+*/
+auth.prototype.validateUser = function(userObj, callbackFunc, errorFunc, addOptions) {
     util.log("getUser getting user >" + JSON.stringify(userObj) + "<");
     var authHandler = this;
     var options = {
@@ -300,17 +324,11 @@ auth.prototype.getUser = function(userObj, callbackFunc, errorFunc, addOptions) 
     ,function(resultObj) { 
         // upon success...
         var userDetails = resultObj[0];
-        util.log("Found user >" + JSON.stringify(userDetails) + "<"); 
+        util.log("Found user >" + JSON.stringify(resultObj) + "<"); 
     
         // User not found=
         if(!userDetails) {
-            if(options && options.create && options.create == true) {
-                return authHandler.createUser(userObj, callbackFunc, errorFunc);
-            }
-            // User was mandatory..return error because user was not found.
-            else {
-                return errorFunc("User not found>" + JSON.stringify(userObj) + "<");
-            }
+            return errorFunc("User not found>" + JSON.stringify(userObj) + "<");
         }
         else {
             util.log("found user..");
@@ -318,78 +336,131 @@ auth.prototype.getUser = function(userObj, callbackFunc, errorFunc, addOptions) 
             // save sessionToken to verify against in subsequent request..
             if(userObj.authType == "google" || userObj.authType == "facebook") {
                 util.log("users is " + JSON.stringify(userObj));
-                userObj["sessionToken"] = userObj["accessToken"];
-                return authHandler.addUserToken(userObj
-                    ,function(userObj) {
-                        return callbackFunc(userObj);
-                    }
-                    ,errorFunc);
+                
+                return authHandler.verifyAccessToken(userObj, function(newUserObj) {
+                    util.log("ORIG USEROBJ >" + JSON.stringify(userObj) + "<");
+                    util.log("GOOGLE USEROBJ >" + JSON.stringify(newUserObj) + "<");
+                    newUserObj["sessionToken"] = userObj["accessToken"];
+                    newUserObj["_id"] = newUserObj["id"];
+                    newUserObj = $.extend(newUserObj, userObj);
+                    util.log("\n\n\n\n COMBINED USEROBJ >" + JSON.stringify(newUserObj) + "<\n\n\n\n ");
+                    return authHandler.addUser(
+                        newUserObj
+                        ,callbackFunc
+                        ,errorFunc
+                    );
+                }
+                , errorFunc
+                );
             }
-            
-            return callbackFunc(userDetails);
+            // username/pwd kurtl authentication
+            else {
+                return authHandler.verifyPassword(userDetails, userObj, function(newUserObj) {
+                    newUserObj["sessionToken"] = newUserObj["sessionToken"];
+                    var hashedPassword = newUserObj["password"];
+                    newUserObj = $.extend(newUserObj, userObj);
+                    newUserObj["plainPwd"] = userObj["plainPwd"];
+                    newUserObj["password"] = hashedPassword;
+                    
+                    util.log("newUserObj for KURTL authentification..");
+                    util.log(JSON.stringify(newUserObj));
+                    return authHandler.addUser(
+                        newUserObj
+                        ,callbackFunc
+                        ,errorFunc
+                    );
+                }
+                , errorFunc
+                );
+            }
         }
     }
     ,errorFunc
     );
 };
 
-auth.prototype.createUser = function(userObj, callbackFunc, errorFunc) {
+/*
+*   Verify password against username for KURTL authentifications..
+*/
+auth.prototype.verifyPassword = function(userObj, authObj, callbackFunc, errorFunc) {
     var authHandler = this;
-    // verify user.
-    DBHandler.insertEntity({
-        entity : usersCollName, 
-        values : userObj
+
+    util.log("VERIFIYING PASSWORD FOR >" + JSON.stringify(userObj) + "< and >" + JSON.stringify(authObj) + "<");
+    var userName = userObj.username;
+    var password = authObj["password"];
+    var meMyselfAndI = this;
+    
+    if(!userName || userName == "") {
+        return errorFunc("username is missing..");
     }
-    // upon success...
-    ,function(userObj) { 
-        // save refreshToken if authtype is oauth2
-        authHandler.addUserToken(
-            userObj
-        ,function(userObj) {
-                return callbackFunc(userObj);
+
+    util.log("!!!!!! Found user >" + JSON.stringify(userObj) + "<"); 
+
+    //util.log(JSON.stringify(this));
+    
+    var realPwd = userObj["password"];
+    
+    function checkPassword(givenPwd, realPwd, callbackFunc, errorFunc) {
+        util.log("comparing " + givenPwd + " and " + realPwd);
+        // Password hashes match?
+        if (givenPwd == realPwd) {
+            util.log("passwords match!");
+            var sessionToken = serverResource.generateRandomToken();
+            // indicate in session that user was authenticated..
+            userObj["sessionToken"] = sessionToken;
+            return callbackFunc(userObj);     
         }
-        ,errorFunc
-        );
-    }
-    ,errorFunc
-    );
-
-};
-
-auth.prototype.getUserTokens = function(userId) {
-    var authHandler = this;
-    if(!authHandler.userTokens) {
-        authHandler.userTokens = {};
-    }
-    return authHandler.userTokens[userId];
-
-};
-
-auth.prototype.addUserToken = function(userObj, callbackFunc, errorFunc) {
-    var authHandler = this;
-    var userTokens = authHandler.getUserTokens(userObj["username"]) || {
-        sessionTokens : {}
+        // no, they don't..
+        util.log('non-matching passwords..');
+        //errorFunc("asdfasfd");
+        return errorFunc(new Error('invalid password'));
     };
-    
-    // new refreshtoken?
-    // invalidate all other accesstokens for user
-    if(userObj["refreshToken"]) {
-        userTokens["refreshToken"] = userObj["refreshToken"];
-        userTokens["currentAccessToken"] = userObj["accessToken"];
-        userTokens["sessionTokens"] = {};
-        authHandler.userTokens[userObj["username"]] = userTokens;
+
+    util.log("plainPwd >" + authObj["plainPwd"] + "<, >" + (authObj["plainPwd"] != true) + "<");
+    if(authObj["plainPwd"] == "true") {
+        util.log("password is PLAIN! need to hash it..");
+        return meMyselfAndI.hash(password, userName, 
+        function (hash) {
+            util.log("hash for password >" + password + "< is >" + hash + "<");
+            return checkPassword(hash, realPwd, callbackFunc, errorFunc);
+        },
+        function(err) {
+            util.log('could not generate hash for password..');
+            return errorFunc(new Error('could not generate hash for password..'));
+        }
+        );
+    } else {
+        util.log("password is HASHED! use it..");
+        return checkPassword(password, realPwd, callbackFunc, errorFunc);
     }
-    return authHandler.verifyAccessToken(userObj, function(userObj) {
-        userTokens["currentAccessToken"] = userObj["accessToken"];
-        userTokens["sessionTokens"][userObj["sessionToken"]] = true;
-        authHandler.userTokens[userObj["username"]] = userTokens;
-        return callbackFunc(userObj);
-    }
-    , errorFunc
-    );
-    
 };
 
+
+/*
+* Adds newly authenticated user to server runtime collection..
+*/
+auth.prototype.addUser = function(userObj, callbackFunc, errorFunc) {
+    var authHandler = this;
+    
+    userObj["LOGON_TIME"] = new Date();
+
+    // Check for last known websocket id..
+    if(clLib.server.runtime["connectedUsers"][userObj["_id"]]) {
+        if(clLib.server.runtime["connectedUsers"][userObj["_id"]]["socketId"]) {
+            userObj["socketId"] = clLib.server.runtime["connectedUsers"][userObj["_id"]]["socketId"];
+        }
+    }
+
+    
+    // Add user info to collection of currently authenticated users 
+    clLib.server.runtime["connectedUsers"][userObj["_id"]] = userObj;
+
+    return callbackFunc(userObj);
+};
+
+/*
+*   Verify access token for OAUTH2 authentifications..
+*/
 auth.prototype.verifyAccessToken = function(userObj, callbackFunc, errorFunc) {
     if(userObj.authType == "google") {
         // Retrieve tokens via token exchange explaind above.
@@ -398,24 +469,17 @@ auth.prototype.verifyAccessToken = function(userObj, callbackFunc, errorFunc) {
           access_token: userObj["accessToken"]
         };
 
-        //return callbackFunc(userObj);
-
+        util.log("---------------> verifying accesstoken >" + userObj["accessToken"] + "<");
         // Verify token by trying to retrieve profile information..
-        return gApi
-            .discover('plus', 'v1')
-            .execute(function(err, client) {
-                // handle discovery errors
-                client
-                    .plus.people.get({ userId: 'me' })
-                    .withAuthClient(gOAuth2Client)
-                    .execute(function(err, user) {
-                        if(err) {
-                            return errorFunc(err);
-                        }
-                        return callbackFunc(userObj);
-                    });
-            });
-        ;
+        var plus = gApi.plus('v1');
+        return plus.people.get({ userId: 'me', auth: gOAuth2Client }, function(err, response) {
+            // handle err and response
+            util.log("err >" + err + "<,>" + JSON.stringify(response) + "<");
+            if(err) {
+                return errorFunc(err);
+            }
+            return callbackFunc(response);
+        });
     }
     else if(userObj.authType == "facebook") {
         return callbackFunc(userObj);
@@ -431,78 +495,7 @@ auth.prototype.verifyAccessToken = function(userObj, callbackFunc, errorFunc) {
 auth.prototype.authenticate = function(authObj, callbackFunc, errorFunc) {
     var authHandler = this;
 	util.log('authenticating >' + JSON.stringify(authObj) + "<");
-    if(
-        authObj["authType"] == "google"
-    ) {
-        // user exists?
-        return this.getUser(authObj, callbackFunc, errorFunc);
-    }
-    else if(
-        authObj["authType"] == "facebook"
-    ) {
-        // user exists?
-        return this.getUser(authObj, callbackFunc, errorFunc);
-    }
-    // username/pwd kurtl authentication
-    else {
-        var userName = authObj.username;
-        var password = authObj.password;
-        var meMyselfAndI = this;
-        
-        if(!userName || userName == "") {
-            return errorFunc("username is missing..");
-        }
-
-        return this.getUser(
-        {"username": authObj["username"]}
-        // upon success...
-        ,function(userObj) { 
-            util.log("!!!!!! Found user >" + JSON.stringify(userObj) + "<"); 
-
-            //util.log(JSON.stringify(this));
-            
-            var realPwd = userObj["password"];
-            
-            function checkPassword(givenPwd, realPwd, callbackFunc, errorFunc) {
-                util.log("comparing " + givenPwd + " and " + realPwd);
-                // Password hashes match?
-                if (givenPwd == realPwd) {
-                    util.log("passwords match!");
-                    var sessionToken = serverResource.generateRandomToken();
-                    // indicate in session that user was authenticated..
-                    userObj["sessionToken"] = sessionToken;
-                    return authHandler.addUserToken(userObj, function(userObj) {
-						return callbackFunc(userObj);
-					}, errorFunc);                    
-                }
-                // no, they don't..
-                util.log('non-matching passwords..');
-                //errorFunc("asdfasfd");
-                return errorFunc(new Error('invalid password'));
-            };
-
-            util.log("plainPwd >" + authObj["plainPwd"] + "<, >" + (authObj["plainPwd"] != true) + "<");
-            if(authObj["plainPwd"] == "true") {
-				util.log("password is PLAIN! need to hash it..");
-                return meMyselfAndI.hash(password, userName, 
-                function (hash) {
-                    util.log("hash for password >" + password + "< is >" + hash + "<");
-                    return checkPassword(hash, realPwd, callbackFunc, errorFunc);
-                },
-                function(err) {
-                    util.log('could not generate hash for password..');
-                    return errorFunc(new Error('could not generate hash for password..'));
-                }
-                );
-            } else {
-				util.log("password is HASHED! use it..");
-                return checkPassword(password, realPwd, callbackFunc, errorFunc);
-            }
-        }
-        ,errorFunc
-        , { create: false } // basic kurtl authentication: need user to authenticate
-        );
-    }
+    return this.validateUser(authObj, callbackFunc, errorFunc);
 };
 
 auth.prototype.defaults = {

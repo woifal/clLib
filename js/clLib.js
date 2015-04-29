@@ -668,7 +668,7 @@ clLib.alert = function (text, html) {
 
 
 clLib.login = function(successFunc, errorFunc) {
-	//alert("clLib.login called.....");
+	clLib.loggi("!!!!clLib.login called.....", "20150429");
 	var userObj = {};
 	userObj = clLib.getUserInfo();
     //userObj["username"] = clLib.getUserInfo()["username"];
@@ -677,15 +677,28 @@ clLib.login = function(successFunc, errorFunc) {
 	function(returnObj) {
 		var sessionToken = returnObj["sessionToken"];
 		var currentUserId = returnObj["_id"];
-		//alert("success login!");
-		console.log("retrieved sessionToken >" + sessionToken + "<");
-		clLib.sessionToken = sessionToken;
+        
+        //
+        //  Process stored authObj
+        //
+        return clLib.auth.processAuthObj(JSON.stringify(returnObj), function() {
+            
+            //alert("success login!");
+            console.log("retrieved sessionToken >" + sessionToken + "<");
+            clLib.sessionToken = sessionToken;
 
-		// Clear any "old" error messages 
-		clLib.setUIMessage(new ClInfo("Logged in."), true);
-		
-		//alert("logged in, return success");
-		return successFunc(returnObj);
+            // Clear any "old" error messages 
+            clLib.setUIMessage(new ClInfo("Logged in."), true);
+
+            // Setup/Reset push notifications for user currently logged on
+            clLib.push.initialize();
+            
+            //alert("logged in, return success");
+            return successFunc(returnObj);
+        }
+        ,true
+        );
+        
 	}
 	, errorFunc
 	);
@@ -761,9 +774,8 @@ clLib.loggedInCheck = function (callbackFunc, errorFunc) {
 	// online - check for valid sessiontoken
 	// if VERIFY_LOGIN is not set, don't login user
 	if (!clLib.VERIFY_LOGIN || clLib.sessionToken) {
-        clLib.setUserInfo({deviceToken: localStorage.getItem("pushDeviceToken")});
+        console.log("logged on alyredy..");
         
-        clLib.webSocketClient.connect(clLib.getUserInfo());
         //alert("yes, logged in mofu!");
 		return callbackFunc(/*true*/);
     }

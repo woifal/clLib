@@ -26,6 +26,7 @@ clWebSockets.prototype.foo= function() {
 };
 
 clWebSockets.prototype.connect = function(io) {
+    clWebSockets.ioObj = io;
     // Websocket
     io.sockets.on('connection', function (socket) {
         // der Client ist verbunden
@@ -62,76 +63,83 @@ clWebSockets.prototype.connect = function(io) {
             }
         });
         socket.on('notifyBuddies', function (data) {
-            util.log("BUDDIES: message received from >" + socket.id + "<, >" + JSON.stringify(data) + "<");
-            
-            
-            return DBHandler.getEntities({
-                entity : "buddyList"
-                ,where : {
-                    "username": data["username"]
-                    ,"deleted": {
-                        "$ne" : true
-                    }
-                }
-                ,requireResult: false
-            }, 
-            function(resultObj) { 
-                // upon success...
-                $.each(resultObj, function(idx, buddyObj) {
-                    util.log("yes, only to user >" + buddyObj["buddyId"] + "<");
-                    if(!server.runtime.connectedUsers[buddyObj["buddyId"]]) {
-                        util.log("!!!! No connection for user >" + buddyObj["buddyId"] + "< found."); 
-                    }
-                    else {
-                        var aSocketId = server.runtime.connectedUsers[buddyObj["buddyId"]]["socketId"];
-                        util.log("aSocketId >" + aSocketId + "<");
-                        util.log("emitting only to id >" + server.runtime.connectedUsers[buddyObj["buddyId"]]["socketId"] + "<");
-                        util.log("emitting msg >" + JSON.stringify(buddyObj) + "<");
-                        var aSocket = io.sockets.connected[aSocketId];
-                        util.log("\n\nFOUND SOCKET!\n\n");
-                        util.log("\n\nFOUND SOCKET >" + JSON.stringify(aSocketId) + "<\n\n");
-                        
-                        if(!aSocket) {
-                            util.log("Socket >" + aSocketId + "< is DEAD!!!");
-                            return false;
-                        }
-                        aSocket.emit(
-                            'chat', 
-                            {
-                                zeit: new Date(), 
-                                name: data.name || 'Anonym', 
-                                text: data.text, 
-                                toUser : buddyObj["buddyId"] 
-                            }
-                        );
-                        util.log("Emitted!");
-                    }
+// OBSOLETE!!!
+/* 
 
-                });
-            }
-            ,function(errorObj) {
-                util.log("XXXXXXXXXXXXXXXX");
-                util.log("XXXXXXXXXXXXXXXX");
-                util.log("XXXX            " + JSON.stringify(errorObj) + "        XXXXXXXXXXXX");
-                util.log("XXXXXXXXXXXXXXXX");
-                util.log("XXXXXXXXXXXXXXXX");
-                return clLib.server.defaults.errorFunc(errorObj, res);
-            }
-            );
+                if(!server.runtime.connectedUsers[buddyObj["buddyId"]]) {
+                    util.log("!!!! No connection for user >" + buddyObj["buddyId"] + "< found."); 
+                }
+                else {
+                    var aSocketId = server.runtime.connectedUsers[buddyObj["buddyId"]]["socketId"];
+                    util.log("aSocketId >" + aSocketId + "<");
+                    util.log("emitting only to id >" + server.runtime.connectedUsers[buddyObj["buddyId"]]["socketId"] + "<");
+                    util.log("emitting msg >" + JSON.stringify(buddyObj) + "<");
+                    var aSocket = io.sockets.connected[aSocketId];
+                    util.log("\n\nFOUND SOCKET!\n\n");
+                    util.log("\n\nFOUND SOCKET >" + JSON.stringify(aSocketId) + "<\n\n");
+                    
+                    if(!aSocket) {
+                        util.log("Socket >" + aSocketId + "< is DEAD!!!");
+                        return false;
+                    }
+                    aSocket.emit(
+                        'chat', 
+                        {
+                            zeit: new Date(), 
+                            name: data.name || 'Anonym', 
+                            text: data.text, 
+                            toUser : buddyObj["buddyId"] 
+                        }
+                    );
+                    util.log("Emitted!");
+                }
+*/
         });
         socket.on('setUserInfo', function (userInfoObj) {
             util.log("New user for >" + socket.id + "<, >" + JSON.stringify(userInfoObj) + "<");
+            if(!server.runtime.connectedUsers[userInfoObj._id]) {
+                return false;
+            }
+            server.runtime.connectedUsers[userInfoObj._id]["socketId"] = socket.id;
+            util.log("connectedUsers: \n>" + JSON.stringify(server.runtime.connectedUsers) + "<");
             // so wird dieser Text an alle anderen Benutzer gesendet
             io.sockets.emit('chat', { zeit: new Date(), name: 'newUser', text: userInfoObj.username });
-            userInfoObj["socketId"] = socket.id;
-            server.runtime.connectedUsers[userInfoObj._id] = userInfoObj;
-            util.log("connectedUsers: \n>" + JSON.stringify(server.runtime.connectedUsers) + "<");
         });
     });
 
 };
 
 
+clWebSockets.prototype.push = function(options, successFunc, errorFunc) {
+    if(!server.runtime.connectedUsers[options["_id"]]) {
+        util.log("!!!! No connection for user >" + options["_id"] + "< found."); 
+    }
+    else {
+        // get user's device id from runtime collection of collected users..
+        var aSocketId = clLib.server.runtime["connectedUsers"][options["_id"]]["socketId"];
+
+        util.log("aSocketId >" + aSocketId + "<");
+        util.log("emitting msg >" + JSON.stringify(options) + "<");
+        var aSocket = clWebSockets.ioObj.sockets.connected[aSocketId];
+        util.log("\n\nFOUND SOCKET!\n\n");
+        util.log("\n\nFOUND SOCKET >" + JSON.stringify(aSocketId) + "<\n\n");
+        
+        if(!aSocket) {
+            util.log("Socket >" + aSocketId + "< is DEAD!!!");
+            return false;
+        }
+        aSocket.emit(
+            'chat', 
+            {
+                zeit: new Date()
+                ,name: options["name"] || 'Anonym'
+                ,text: options["msgText"]
+            }
+        );
+        util.log("Emitted!");
+    }
+};
+    
 /*
 *
 *   pushi sends a "chat" message to every client every 3 seconds..

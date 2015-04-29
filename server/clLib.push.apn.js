@@ -55,7 +55,10 @@ clPushApn.prototype = {
                 return errorFunc("APN is not connected.");
             }
             
-            var myDevice = this.getDevice(options["deviceId"]);
+            // get user's device id from runtime colleciton of collected users..
+            var deviceId = clLib.server.runtime["connectedUsers"][options["_id"]]["deviceId"];
+            
+            var myDevice = this.getDevice(deviceId);
              
             var note = new apn.Notification();
             note.badge = 1;

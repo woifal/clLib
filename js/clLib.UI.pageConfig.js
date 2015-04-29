@@ -22,7 +22,6 @@ clLib.UI.pageRequisites = {
                 console.log("!?!?!?! change to users - but WITH redirect!!!!");
                 return clLib.tryLogin(
                     function() {
-                        clLib.webSocketClient.connect(clLib.getUserInfo());
                         return successFunc();
                     }
                     , errorFunc
@@ -118,15 +117,20 @@ clLib.UI.saveHandlers= {
         return clLib.UI.RESTSaveHandler(
             options
             ,function(resultObj) {
-                var msg = { 
+                var msgOptions = { 
                     name: "notifyBuddies"
                     ,username: clLib.getUserInfo()["username"]
                     ,text: ">" + clLib.getUserInfo()["username"] + "< saved a route with >" + clLib.computeScore(resultObj) + "< points."
                 };
                 //alert("sending msg >" + JSON.stringify(msg) + "< to buddies");
-                clLib.webSocketClient.send(msg);
-
-                return successFunc();
+                
+                return clLib.REST.notifyBuddies(
+                    msgOptions
+                    ,successFunc
+                    ,errorFunc
+                )
+                ;
+//                clLib.webSocketClient.send(msg);
             }
             ,errorFunc
         );
@@ -2062,11 +2066,17 @@ clLib.UI.elements = {
 				
 			}
 			
+            var buildUserRouteLogs = function(routeStats, daysToShow) {
+                return buildDaysRouteLogs(routeStats, daysToShow);
+            };
+            
 			var successHandler = function(resultObj) {
 				resultObj = JSON.parse(resultObj);
-                resultObj = resultObj[clLib.getUserInfo()["username"]];
-				//alert("success!!" + typeof(resultObj) + "-" + JSON.stringify(resultObj));
-				buildDaysRouteLogs(resultObj, daysToShow);
+                $.each(resultObj, function(username, routeStats) {
+                    //alert("success!!" + typeof(routeStats) + "-" + JSON.stringify(routeStats));
+                    buildDaysRouteLogs(resultObj, daysToShow);
+
+                });
 
 							
 			};

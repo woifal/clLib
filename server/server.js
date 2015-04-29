@@ -18,6 +18,7 @@ util.log("\n\n>>>>>>" + JSON.stringify(clLib.gradeConfig) + "<<<<<<<<<\n\n\n\n")
 clLib.server = {};
 clLib.server.runtime = {
 	"sessionTokens" : {}
+    ,"connectedUsers": {}
 };
 clLib.server.email = {};
 
@@ -88,7 +89,7 @@ function unknownMethodHandler(req, res) {
         if (res.methods.indexOf('DELETE') === -1) res.methods.push('DELETE');
 
 		res.header('Access-Control-Allow-Credentials', true);
-		res.header('Access-Control-Allow-Headers', "content-type,x-appery-database-id,clSessionToken,clUserName,DNT,accept-language,accept,Access-Control-Allow-Origin");
+		res.header('Access-Control-Allow-Headers', "content-type,x-appery-database-id,clSessionToken,clUserName,clUserId,DNT,accept-language,accept,Access-Control-Allow-Origin");
         util.log("header.methods >" + res.methods.join(', ') + "<");
 		res.header('Access-Control-Allow-Methods', 	res.methods.join(', '));
         util.log("header.origin >" + req.headers.origin + "<");
@@ -128,6 +129,12 @@ clLib.server.DBHandler = DBHandler;
 var mailHandler = new mailResource.mail();
 var authHandler = new authResource.auth();
 
+var pushResource = require("./clLib.push");
+var pushHandler = new pushResource.clPush();
+clLib.server.pushHandler = pushHandler;
+clLib.server.pushHandler.connect();
+
+
 var statsResource = require("./clLib.statistics");
 var statsHandler = new statsResource.stats();
 
@@ -143,6 +150,11 @@ var apnResource = require("./clLib.push.apn");
 var apnHandler = new apnResource.clPushApn;
 apnHandler.connect();
 util.log("!!! APN connected.");
+
+var gcmResource = require("./clLib.push.gcm");
+var gcmHandler = new gcmResource.clPushGcm;
+gcmHandler.connect();
+util.log("!!! GCM connected.");
 
 var adminUserDetails = {};
 var adminUserObj = {};
@@ -1003,3 +1015,117 @@ server.get("/sendApn", function (req, res) {
 		errHandler(new Error("UNHANDLED SERVER ERROR "  + e.name + " IS " + e.message + " !!!"));
 	}
 });
+
+server.post("/notifyBuddies", function (req, res) {
+	var errHandler = function(errorObj) {
+		return clLib.server.defaults.errorFunc(errorObj, res);
+	}
+
+	try {
+
+        util.log("BUDDIES: message received from >" + socket.id + "<, >" + JSON.stringify(data) + "<");
+        
+        return DBHandler.getEntities({
+            entity : "buddyList"
+            ,where : {
+                "username": data["username"]
+                ,"deleted": {
+                    "$ne" : true
+                }
+            }
+            ,requireResult: false
+        }, 
+        function(resultObj) { 
+            // upon success...
+            var notityResults = {};
+            var iterSuccessFunc = function(resultObj, idx) {
+                var buddyObj = resultObj[idx];
+                if(buddyObj) {
+                    return pushHandler.pushNotification(
+                        {
+                            _id: buddyObj["buddyId"]
+                            ,name: data["name"]
+                            ,msgText: data["text"]
+                        }
+                        ,function(resultObj) {
+                            notifyResults[buddyObj["buddyId"]] = true;
+                            return iterSuccessFunc(resultObj, idx++);
+                        }
+                        ,function(errorObj) {
+                            notifyResults[buddyObj["buddyId"]] = false;
+                            return iterSuccessFunc(resultObj, idx++);
+                        }
+                    );
+                }
+                else  {
+                    res.send(notifyResults);
+                }
+
+            }
+
+            return iterSuccessFunc(resultObj, 0);
+            
+        }
+        ,function(errorObj) {
+            util.log("XXXXXXXXXXXXXXXX");
+            util.log("XXXXXXXXXXXXXXXX");
+            util.log("XXXX            " + JSON.stringify(errorObj) + "        XXXXXXXXXXXX");
+            util.log("XXXXXXXXXXXXXXXX");
+            util.log("XXXXXXXXXXXXXXXX");
+            return clLib.server.defaults.errorFunc(errorObj, res);
+        }
+        );
+    }
+    catch(e) {
+        return errorFunc(e);
+    }
+
+
+});
+
+server.get("/logUsers", function (req, res) {
+	var errHandler = function(errorObj) {
+		return clLib.server.defaults.errorFunc(errorObj, res);
+	}
+
+	try {
+        util.log("<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+        util.log("<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+        util.log("<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+        util.log("<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+        util.log(JSON.stringify(clLib.server.runtime.connectedUsers));
+        util.log("<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+        util.log("<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+        util.log("<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+        res.send(JSON.stringify(clLib.server.runtime.connectedUsers));
+
+        } catch(e) {
+		errHandler(new Error("UNHANDLED SERVER ERROR "  + e.name + " IS " + e.message + " !!!"));
+	}
+});
+
+server.get("/pushUsers", function (req, res) {
+	var errHandler = function(errorObj) {
+		return clLib.server.defaults.errorFunc(errorObj, res);
+	}
+
+    try {
+        return pushHandler.pushNotification(
+            {
+                _id :req.params["_id"]
+                ,name: req.params["name"]
+                ,msgText: req.params["msgText"]
+            }
+            ,function(resultObj) {
+                util.log("Pushed...");
+            }
+            ,function(errorObj) {
+                util.log("NOT Pushed >" + JSON.stringify(errorObj) + "<");
+            }
+        );
+
+    } catch(e) {
+        errHandler(new Error("UNHANDLED SERVER ERROR "  + e.name + " IS " + e.message + " !!!"));
+	}
+});
+

@@ -1508,7 +1508,7 @@ clLib.UI.userHandler = function (options, successFunc, errorFunc) {
 		return errorFunc(new Error("Username must be a valid email address!"));
 	}
 	
-	//alert("userAction=" + userAction);
+	clLib.loggi("userAction=" + userAction, "20150429");
 	if (userAction == "create") {
 		return clLib.REST.createUser(userObj, 
 		function(returnObj) {
@@ -1525,7 +1525,8 @@ clLib.UI.userHandler = function (options, successFunc, errorFunc) {
 		, errorFunc);
 	}
 	else if (userAction == "login") {
-		return clLib.REST.loginUser(userObj, 
+		clLib.loggi("logging in with userobj >" + JSON.stringify(userObj) + "<", "20150429");
+        return clLib.REST.loginUser(userObj, 
 		function(returnObj) {
 			// Clear any "old" error messages 
 			clLib.setUIMessage(new ClInfo("Logged in."), true);

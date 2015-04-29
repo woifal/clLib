@@ -7,17 +7,32 @@ clLib.webSocketClient = {
     ,socket: null
     ,connectOptions: {
         reconnection: true
+        ,'force new connection':true
+        ,'forceNew':true
     }
     ,connect:  function(
         userInfoObj
+        ,successFunc
+        ,errorFunc
     ) {
+        console.log("connecting io.socket at >" + this.socketServerURL + "<");
+        console.log("connecting with userInfoObj >" + JSON.stringify(Object.keys(userInfoObj)) + "<");
         // Check for active connection
         if(this.socket && this.socket["connected"]) {
-            //alert("already connected!");
-            return true;
+            this.socket.disconnect();
+            console.log("already connected!");
         }
         
+        util.log("io.socket connecting..");
+        var userInfoObj = clLib.getUserInfo();
+        if(!userInfoObj["_id"]) {
+            clLib.loggi("not logged in, not connection websocket for now..", "20150429");
+            return;
+        }
+
+        clLib.loggi("connecting..", "20150429");
         // Open a new socket connection
+        
         this.socket = io.connect(
             this.socketServerURL
             ,this.connectOptions
@@ -26,40 +41,24 @@ clLib.webSocketClient = {
         var mySocket = this.socket;
 
         mySocket.on("reconnect", function(data) {
-            //alert("reconnected >" + data + "<");
+           console.log("reconnected >" + data + "<");
         });
         mySocket.on("connect", function(data) {
-            //var userInfoObj = clLib.getUserInfo();
             //var userInfoObj = data;
-            console.log("connected >" + userInfoObj["_id"] + "< with name >" + userInfoObj["username"] + "<");
+            clLib.loggi("connected >" + userInfoObj["_id"] + "< with name >" + userInfoObj["username"] + "<", "20150429");
             mySocket.emit('setUserInfo', userInfoObj);
         });
         
         mySocket.off("chat").on('chat', function (data) {
             console.log("chat!!");
             console.log(">" + JSON.stringify(data) + "<");
-            var zeit = new Date(data.zeit);
-            var webSocketOutputEl = document.getElementById("websocketOutput");
-            var aStr = "";
-            aStr += 
-                "[" +
-                    (zeit.getHours() < 10 ? '0' + zeit.getHours() : zeit.getHours()).toString() +
-                ":" +
-                    (zeit.getMinutes() < 10 ? '0' + zeit.getMinutes() : zeit.getMinutes()) + 
-                '] ' + 
-                '<b>' + (typeof(data.name) != 'undefined' ? data.name + ': ' : '') + 
-                '<span>' + data.text + 
-//                "--"
-                '</b>'
-            ;
-            if(webSocketOutputEl) {
-                webSocketOutputEl.innerHTML += aStr + "<br>--";
-            }
-/*            alert(aStr);
-            alert(11111);
-*/
-            clLib.UI.newNotification({text: aStr});
-        });        
+            clLib.push.showNotification({
+                text: data.text
+                ,timestamp: data.zeit
+            });
+        });  
+
+        return successFunc({'yes' :'we can'});
         
     }
     ,send: function(msgObj) {

@@ -16,34 +16,11 @@
 
 	<script>
 document.addEventListener('deviceready', function() {
+    //alert("deviceready..");
   navigator.splashscreen.hide();
 //        $.mobile.autoInitializePage = false;
 //		setTimeout(function() { $.mobile.initializePage(); }, 5000);
-    var pushNotification = window.plugins.pushNotification;
-    alert("pushNotification is >" + pushNotification + "<");
-    var tokenHandler = function(token) {
-        alert("Got token >" + token + "<");
-        localStorage.setItem("pushDeviceToken", token);
-        
-    }
-    var errorHandler = function(error) {
-        alert("got NO token >", error, "<");
-    }
-    try {
-        pushNotification.register(
-            tokenHandler,
-            errorHandler,
-            {
-                "badge":"true",
-                "sound":"true",
-                "alert":"true",
-                "ecb":"onNotificationAPN"
-            }
-        );
-    }
-    catch(e) {
-        alert("init error >", e, "<");
-    }
+    
 });  
 </script>
         <!-- phonegap integration? -->
@@ -70,7 +47,8 @@ document.addEventListener('deviceready', function() {
     
 
 		<script type="text/javascript" src="js/socket.io-1.3.4.js"></script>
-        <script src="js/clLib.webSocketClient.js"></script>
+        <script type="text/javascript" src="js/clLib.webSocketClient.js"></script>
+        <script type="text/javascript" src="js/clLib.push.js"></script>
 
         
 <!--
