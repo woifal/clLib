@@ -849,8 +849,11 @@ clLib.UI.elements = {
     }
 	, "gradeSystemSelect" : {
 		"dbField" : "GradeSystem"
+        ,"localVarField": "defaultGradeSystem"
 		,"refreshFromEntity" : "Grades"
 		,"refreshHandler" : function($this) { 
+            console.log("preselecting gradesystem >" + (localStorage.getItem("defaultGradeSystem") || "UIAA") + "<");
+
 			return clLib.UI.localStorageRefreshHandler($this, {
 				selectedValue : localStorage.getItem("defaultGradeSystem") || "UIAA",
 				preserveCurrentValue : true,

@@ -1211,6 +1211,7 @@ clLib.UI.localStorageRefreshHandler = function($element, additionalOptions) {
 			else {
 				localStorageVarValue = "";
 			}
+            console.log("localStorageVarValue is now >" + localStorageVarValue + "<");
 		}
 		results = localStorageVarValue.split(",");
 		console.log("local var AFTER: " + JSON.stringify(results));
@@ -1229,12 +1230,15 @@ clLib.UI.localStorageRefreshHandler = function($element, additionalOptions) {
 		}
 	};
     
-    var selectedValue = localStorage.getItem(elementConfig["localVarField"]) || "";
-    console.log("1 selectedValue is >" + selectedValue + "<");
-    selectedValue = selectedValue.split(",");
-    console.log("2 selectedValue is >" + JSON.stringify(selectedValue) + "<");
-    additionalOptions["selectedValue"] = selectedValue;
-    
+    if(!additionalOptions["selectedValue"]) {
+        var selectedValue = localStorage.getItem(elementConfig["localVarField"]) || "";
+        console.log("1 selectedValue is >" + selectedValue + "<");
+        selectedValue = selectedValue.split(",");
+        console.log("2 selectedValue is >" + JSON.stringify(selectedValue) + "<");
+        
+        additionalOptions["selectedValue"] = selectedValue;
+    }
+   
     
 	$.extend(elContentOptions, additionalOptions);
 	
