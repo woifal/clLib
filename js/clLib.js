@@ -100,7 +100,7 @@ clLib.findEquivalentGrade = function(origGradeSystem, origGrade, newGradeSystem)
 		);
 		var defaultScore = results[0];
         
-        console.log("origGS >" + origGradeSystem + "<,>" + origGrade + "<");
+        console.log("origGS >" + origGradeSystem + "<,>" + origGrade + "<, default score >" + defaultScore + "<");
 		
 		// 2) find equivalent for default score in currently selected grade system..
 		var results = clLib.localStorage.getDistinct("Grades", { 
@@ -113,7 +113,7 @@ clLib.findEquivalentGrade = function(origGradeSystem, origGrade, newGradeSystem)
 			, "defaultStorage"
 		);
 		var equivalentGrade = results[0];
-		clLib.loggi("found equivalent grade: " + equivalentGrade);
+		console.log("found equivalent grade: " + equivalentGrade);
 		newGrade = equivalentGrade;
 	}
 

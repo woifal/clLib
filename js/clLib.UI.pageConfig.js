@@ -28,8 +28,8 @@ clLib.UI.pageRequisites = {
                     , false
                 );
             }
-            ,clLib.prefsCompleteCheck
             ,clLib.wasOnlineCheck
+            ,clLib.prefsCompleteCheck
         ]
     }
     , "preferences": {}
@@ -754,6 +754,7 @@ clLib.UI.elements = {
 				selectedValue : clLib.UI.varDefaults["selectedGradeSystems"],
 				preserveCurrentValue : true,
 				additionalValue : null	
+                ,dataObj: Object.keys(clLib.gradeConfig)
 			});
 			$("input[type='checkbox']", $this).off("click").on("click", function(e) {
 				var $optionEl = $(this);

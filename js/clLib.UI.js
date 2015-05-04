@@ -1278,9 +1278,14 @@ clLib.UI.defaultRefreshHandler = function($element, additionalOptions) {
 	var resultColName = elementConfig["dbField"];
 
 	var entityName = elementConfig["refreshFromEntity"] || "Routes";
-	
-	var results = clLib.UI.defaultEntitySearch(entityName, resultColName, dependingPageElements, true, null);
-	console.log("got results: " + JSON.stringify(results));
+	var results;
+    if(additionalOptions["dataObj"]) {
+        results = additionalOptions["dataObj"];
+    }
+    else {
+        results = clLib.UI.defaultEntitySearch(entityName, resultColName, dependingPageElements, true, null);
+	}
+    console.log("got results: " + JSON.stringify(results));
 
 	var elContentOptions = {
 		selectBoxElement : $element,
@@ -1819,6 +1824,14 @@ clLib.UI.elementConfig.plainElement = {
 clLib.prefsCompleteCheck = function (successFunc, errorFunc) {
     //alert("pref complete?");
 	var prefsComplete = false;
+    if(localStorage.getItem("defaultGrade")) {
+        return successFunc();
+    }
+    else {
+		clLib.setUIMessage(new ClInfo("Please setup preferences...", "error"), true);
+		return clLib.PAGES.changeTo("clLib_preferences.html");
+    }
+    /*
     if (clLib.getUserInfo()["username"]) {
         return successFunc();
     }
@@ -1826,6 +1839,7 @@ clLib.prefsCompleteCheck = function (successFunc, errorFunc) {
 		clLib.setUIMessage(new ClInfo("No username specified.", "error"), true);
 		return clLib.PAGES.changeTo("clLib_users.html", {noRedirectFlag: false});
 	}
+    */
 };
 
 clLib.tryLogin = function(successFunc, errorFunc, noRedirectFlag) {
