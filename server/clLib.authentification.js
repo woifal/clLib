@@ -214,36 +214,32 @@ auth.prototype.verifyOAuth2Code = function(code, req, res) {
                 };
 
                 util.log(">>>>" + JSON.stringify(gApi) + "<<<<<");
-                
-                return gApi
-                    .discover('plus', 'v1')
-                    .execute(function(err, client) {
-                        // handle discovery errors
-                        client
-                            .plus.people.get({ userId: 'me' })
-                            .withAuthClient(gOAuth2Client)
-                            .execute(function(err, user) {
-                                util.log("google+ err >" + JSON.stringify(err) + "<");
-                                util.log("google+ user >" + JSON.stringify(user) + "<");
-                                
-                                user["accessToken"] = tokens.access_token;
-                                user["refreshToken"] = tokens.refresh_token;
-                                user["authType"] = "google";
 
-                                util.log("google+ user(incl. tokens) >" + JSON.stringify(user) + "<");
-                                
-                                delete(user["kind"]);
-                                
-                                var redirectURL = stateParams["clLib.redirectURL"];
-                                util.log("redirecting to >" + redirectURL);
-                                //a
-                                // redirect back to clLib app 
-    //                            res.header('Location', HTMLServerURL + "/dist/index.html?authObj=" + encodeURI(JSON.stringify(user)));
-                                res.header('Location', redirectURL + "?authObj=" + encodeURI(JSON.stringify(user)));
-                                res.send(302); 
-                            });
-                    })
+                // Verify token by trying to retrieve profile information..
+                var plus = gApi.plus('v1');
+                return plus.people.get({ userId: 'me', auth: gOAuth2Client }, function(err, user) {
+                    util.log("google+ err >" + JSON.stringify(err) + "<");
+                    util.log("google+ user >" + JSON.stringify(user) + "<");
+                   
+                    user["accessToken"] = tokens.access_token;
+                    user["refreshToken"] = tokens.refresh_token;
+                    user["authType"] = "google";
+
+                    util.log("google+ user(incl. tokens) >" + JSON.stringify(user) + "<");
+                    
+                    delete(user["kind"]);
+                    
+                    var redirectURL = stateParams["clLib.redirectURL"];
+                    util.log("redirecting to >" + redirectURL);
+                    //a
+                    // redirect back to clLib app 
+//                            res.header('Location', HTMLServerURL + "/dist/index.html?authObj=" + encodeURI(JSON.stringify(user)));
+                    res.header('Location', redirectURL + "?authObj=" + encodeURI(JSON.stringify(user)));
+                    res.send(302); 
+                })
                 ;
+
+                
             }
         );
     }
