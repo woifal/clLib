@@ -29,12 +29,11 @@ clLib.UI.pageRequisites = {
                 );
             }
             ,clLib.wasOnlineCheck
-            ,clLib.prefsCompleteCheck
         ]
     }
     , "preferences": {}
     , "newRouteLog_default": { 
-		"clBeforeChange" : [clLib.prefsCompleteCheck, clLib.tryLogin, clLib.wasOnlineCheck
+		"clBeforeChange" : [clLib.tryLogin, clLib.wasOnlineCheck
 /*            ,function (callbackFunc, errorFunc) {
 				var options = {};
 				options.uri = clLib.REST.clLibServerURI + "/sleep/5";
@@ -44,7 +43,7 @@ clLib.UI.pageRequisites = {
         ] 
 	}
     , "newRouteLog_reduced": { 
-		"clBeforeChange" : [clLib.prefsCompleteCheck, clLib.tryLogin, clLib.wasOnlineCheck
+		"clBeforeChange" : [clLib.tryLogin, clLib.wasOnlineCheck
 /*            ,function (callbackFunc, errorFunc) {
 				var options = {};
 				options.uri = clLib.REST.clLibServerURI + "/sleep/5";

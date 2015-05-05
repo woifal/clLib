@@ -805,6 +805,15 @@ clLib.loggedInCheck = function (callbackFunc, errorFunc) {
 	alert("should not get here 45345");
 };
 
+clLib.setLocalDefaults = function() {
+    $.each(clLib.UI.varDefaults, function(key, defaultValue) {
+        if(!localStorage.getItem(key)) {
+            localStorage.setItem(key, defaultValue);
+        }
+    });
+};
+
+
 clLib.wasOnlineCheck = function (successFunc, errorFunc) {
 	//alert("last refresh:" + clLib.localStorage.getLastRefreshDate("defaultStorage"));
 	// data from previous refresh found?
@@ -812,7 +821,10 @@ clLib.wasOnlineCheck = function (successFunc, errorFunc) {
         console.log("was refresh already at >" + clLib.localStorage.getLastRefreshDate("defaultStorage") + "<");
         return successFunc();
     }
-
+    
+    // Set default values for preferences..
+    clLib.setLocalDefaults();
+    
 	return clLib.localStorage.refreshAllData(
 		function() {
 			//alert("refreshed!");

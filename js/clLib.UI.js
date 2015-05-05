@@ -13,6 +13,8 @@ clLib.UI.elementConfig= {};
 clLib.UI.varDefaults = {};
 clLib.UI.varDefaults["selectedGradeSystems"] = "UIAA,French,Bleau";
 clLib.UI.varDefaults["allGradeSystems"] = Object.keys(clLib.gradeConfig).join(',');
+clLib.UI.varDefaults["defaultGradeSystem"] = "UIAA";
+clLib.UI.varDefaults["defaultGrade"] = "VI";
 
 
 
@@ -1821,26 +1823,6 @@ clLib.UI.elementConfig.plainElement = {
 };
 
 
-clLib.prefsCompleteCheck = function (successFunc, errorFunc) {
-    //alert("pref complete?");
-	var prefsComplete = false;
-    if(localStorage.getItem("defaultGrade")) {
-        return successFunc();
-    }
-    else {
-		clLib.setUIMessage(new ClInfo("Please setup preferences...", "error"), true);
-		return clLib.PAGES.changeTo("clLib_preferences.html");
-    }
-    /*
-    if (clLib.getUserInfo()["username"]) {
-        return successFunc();
-    }
-	else {
-		clLib.setUIMessage(new ClInfo("No username specified.", "error"), true);
-		return clLib.PAGES.changeTo("clLib_users.html", {noRedirectFlag: false});
-	}
-    */
-};
 
 clLib.tryLogin = function(successFunc, errorFunc, noRedirectFlag) {
 	console.log("trying login with " + typeof(noRedirectFlag) + ":" + noRedirectFlag); // POPO
