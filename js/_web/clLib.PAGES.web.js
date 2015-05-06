@@ -1,8 +1,9 @@
 "use strict";
 
 var origProcessAuthObj = clLib.PAGES.processAuthObj;
-clLib.PAGES.processAuthObj = function(urlAuthObj, successFunc) {
-	console.log("OVERRIDDEN PROCESSAUTHOBJ!!!!" + parent.document.location.href);
+alert("custom pages!");
+clLib.auth.processAuthObj = function(urlAuthObj, successFunc) {
+	alert("OVERRIDDEN PROCESSAUTHOBJ!!!!" + parent.document.location.href);
 //	if(!successFunc) {
 		successFunc = function() {
 			if(parent.document.location.href == 'http://www.kurt-climbing.com/index.php/cllib-users-cllogin') {
