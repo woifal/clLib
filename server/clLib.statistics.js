@@ -63,7 +63,7 @@ clStats.prototype.getEntityStats = function(options, callbackFunc, errorFunc) {
         util.log("GETENTITYSTATSINNFERFUNC >>" + currentUser + "<<");
         return DBHandler.getEntities({
             entity : options.statsOptions.entity 
-            ,where : {"username": currentUser}
+            ,where : options["where"] //{"username": currentUser}
             ,requireResult: false
         }, 
         function(resultObj) { 
