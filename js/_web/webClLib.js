@@ -171,7 +171,7 @@ clLibWeb.loggedInCheck = function(successFunc, errorFunc) {
 
 			$loginButton.off().on("click", function(e) {
 				localStorage.clear();
-				alert("changing to homepage..");
+				console.log("changing to homepage..");
                 document.location.href = "http://www.kurt-climbing.com";
 			});
 
