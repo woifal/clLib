@@ -107,6 +107,10 @@ $pageclass = $params->get( 'pageclass_sfx' );
         <script type="text/javascript" src="/KURT/js/clLib.UI.pageConfig.js"></script>
         <script type="text/javascript" src="/KURT/js/webClLib.js"></script>
 
+        <script type="text/javascript" src="/KURT/js/socket.io-1.3.4.js"></script>
+        <script type="text/javascript" src="/KURT/js/clLib.webSocketClient.js"></script>
+        <script type="text/javascript" src="/KURT/js/clLib.push.js"></script>
+
 
 
 	</head>
