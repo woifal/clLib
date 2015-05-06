@@ -45,6 +45,10 @@
 	<script type="text/javascript" src="../js/clLib.UI.web.js"></script>
 
 
+    <script type="text/javascript" src="../js/socket.io-1.3.4.js"></script>
+    <script type="text/javascript" src="../js/clLib.webSocketClient.js"></script>
+    <script type="text/javascript" src="../js/clLib.push.js"></script>
+
     
     
     
@@ -179,13 +183,14 @@
 
 
 
-
-            clLib.REST.getEntities("buddyList", 
-            {
+            var whereObj =  {
                 "username" : clLib.getUserInfo()["username"]
-                ,"deleted": {
-                    "$ne": true
-                }
+            };
+            whereObj = $.extend(whereObj, clLib.mongoNe("deleted",1));;
+       
+            clLib.REST.getEntities(
+                "buddyList"
+                ,whereObj
             }
             ,function(resultObj) {
                 console.log("Found buddies  >" + JSON.stringify(resultObj) + "<");
