@@ -440,40 +440,13 @@ clLib.UI.web = {
             }
         
 
-
-
-
-
-            //options["where"] ={"username": function() { return clLib.getUserInfo()["username"]}()};
-            options["where"] ={
-                "$or" : [
-                    {
-                        "$and": [
-                            {
-                                "deleted": {
-                                    "$exists" : true
-                                }
-                            },
-                            {
-                                "deleted": {
-                                    "$ne" : 1
-                                }
-                            }
-                        ]
-                    }
-                    ,
-                    {
-                        "deleted": {
-                            "$exists" : false
-                        }
-                    }
-                ]
-            };
-
-
+            var whereObj = options["where"];
+            whereObj["username"] = function() { return clLib.getUserInfo()["username"]}();
+            whereObj = $.extend(whereObj, clLib.mongoNe("deleted",1));;
+            
             return clLib.REST.getEntities(
                 options["entity"]
-                ,options["where"] 
+                ,whereObj 
                 ,processEntities
                 ,errorFunc
                 ,{
