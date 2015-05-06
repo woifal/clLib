@@ -189,9 +189,8 @@
             whereObj = $.extend(whereObj, clLib.mongoNe("deleted",1));;
        
             clLib.REST.getEntities(
-                "buddyList"
-                ,whereObj
-            }
+            "buddyList"
+            ,whereObj
             ,function(resultObj) {
                 console.log("Found buddies  >" + JSON.stringify(resultObj) + "<");
                 var buddyItems = resultObj["buddyList"];
