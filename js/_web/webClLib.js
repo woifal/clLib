@@ -32,7 +32,7 @@ clLibWeb.checkURLParams = function() {
 	}
 	if(urlAuthObj) {
 		clLib.UI.execWithMsg(function() {
-			clLib.PAGES.processAuthObj(urlAuthObj, function() {
+			clLib.auth.processAuthObj(urlAuthObj, function() {
 				clLib.loggi("Hello >" + clLib.getUserInfo()["displayName"] + "<", "20150129");
 				//document.location.href="http://www.kurt-climbing.com/Joomla";
 				clLibWeb.loggedInCheck(function() { console.log("yeah, logged in man.."); }, function() { console.log("geh scheissen, not logged in!");});
@@ -171,7 +171,8 @@ clLibWeb.loggedInCheck = function(successFunc, errorFunc) {
 
 			$loginButton.off().on("click", function(e) {
 				localStorage.clear();
-				document.location.href = "http://www.kurt-climbing.com";
+				alert("changing to homepage..");
+                document.location.href = "http://www.kurt-climbing.com";
 			});
 
 			clLibWeb.showUserInfo(
