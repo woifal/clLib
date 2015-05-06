@@ -818,7 +818,9 @@ server.get('/stats',
 		var whereObj = options["where"] || "{}";
         whereObj = JSON.parse(whereObj);
 
-		whereObj["deleted"] = {"$ne" : 1};
+        util.log("OLD WHERE >>>" + JSON.stringify(whereObj) + "<<<<");
+		whereObj = $.extend(whereObj, clLib.mongoNe("deleted",1));;
+        util.log("NEW WHERE >>>" + JSON.stringify(whereObj) + "<<<<");
         options["where"] = whereObj;
 
         
@@ -1024,15 +1026,14 @@ server.post("/notifyBuddies", function (req, res) {
 	try {
 
         util.log("BUDDIES: message received from >" + socket.id + "<, >" + JSON.stringify(data) + "<");
+        var whereObj = {
+            "username": data["username"]
+        };
+        whereObj = $.extend(whereObj, clLib.mongoNe("deleted",1));;
         
         return DBHandler.getEntities({
             entity : "buddyList"
-            ,where : {
-                "username": data["username"]
-                ,"deleted": {
-                    "$ne" : true
-                }
-            }
+            ,where : whereObj
             ,requireResult: false
         }, 
         function(resultObj) { 
@@ -1129,3 +1130,14 @@ server.get("/pushUsers", function (req, res) {
 	}
 });
 
+
+var $ = {};
+$.extend = function(options, addOptions) {
+    addOptions = addOptions || {};
+    for(var aKey in Object.keys(addOptions)) { var aKey2 = Object.keys(addOptions)[aKey];
+        //console.log("key" + aKey2); 
+        options[aKey2] = addOptions[aKey2];
+    };
+    //console.log("options is >" + JSON.stringify(options) + "<");
+    return options;
+}
