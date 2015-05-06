@@ -1079,12 +1079,49 @@ clLib.isFunction = function(functionToCheck) {
  return functionToCheck && getType.toString.call(functionToCheck) === '[object Function]';
 }
 
+
+clLib.mongoNe = function(colName,colValue) {
+    var mongoClause = {};
+    var mongoClauseStr = '' + 
+    '{                                                    \n' + 
+    '    "$or": [                                         \n' + 
+    '    {                                                \n' + 
+    '            "$and": [                                \n' + 
+    '                {                                    \n' + 
+    '                    "' + colName + '": {             \n' + 
+    '                        "$exists" : true             \n' + 
+    '                    }                                \n' + 
+    '                },                                   \n' + 
+    '                {                                    \n' + 
+    '                    "' + colName + '": {             \n' + 
+    '                        "$ne" : ' + JSON.stringify(colValue) + '   \n' + 
+    '                    }                                \n' + 
+    '                }                                    \n' + 
+    '            ]                                        \n' + 
+    '        }                                            \n' + 
+    '        ,                                            \n' + 
+    '        {                                            \n' + 
+    '            "' + colName + '": {                     \n' + 
+    '                "$exists" : false                    \n' + 
+    '            }                                        \n' + 
+    '        }                                            \n' + 
+    '    ]                                                \n' + 
+    '}                                                    \n' + 
+    '';
+    var mongoClause = JSON.parse(mongoClauseStr);
+    return mongoClause;
+}
+
 clLib.foo = "blerl";
 //exports.clLib = clLib;
 try {
     global.clLib = clLib;
 } catch(e) {
 }
+
+
+
+
 
 //})(jQuery)
 ;
