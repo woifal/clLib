@@ -1281,7 +1281,7 @@ clLib.UI.defaultRefreshHandler = function($element, additionalOptions) {
 
 	var entityName = elementConfig["refreshFromEntity"] || "Routes";
 	var results;
-    if(additionalOptions["dataObj"]) {
+    if(additionalOptions && additionalOptions["dataObj"]) {
         results = additionalOptions["dataObj"];
     }
     else {

@@ -788,18 +788,24 @@ clLib.PAGES.handlers = {
                                 console.error("could not get newUrl >" + e + ">");
                             }
                             
+                            console.log("child.window.href was >" + oldUrl);
+                            console.log("child.window.href is >" + newUrl);
                             if(newUrl != oldUrl) {
+                                console.log("ok, check for userObj..");
                                 oldUrl = newUrl;
-                                console.log("child.window.href is >" + newUrl);
 
                                 var dummyEvent = {};
                                 dummyEvent.url = newUrl;
 
                                 if(!callbackFunc(dummyEvent)) {
+                                    console.log("no success, checking again....");
                                     return checkUrl(windowRef);
+                                } else {
+                                    console.log("success!!");
                                 }
+                            } else {
+                                checkUrl(windowRef);
                             }
-                            //checkUrl(windowRef);
                         }
                         , 500);
                     };      
@@ -823,8 +829,10 @@ clLib.PAGES.handlers = {
                 var redirectURL = "";
                 var appEntryURL = "";
                 var host = location.protocol+'//'+location.hostname+(location.port ? ':'+location.port: '');
-                appEntryURL = host + "/asdf.html"
-                appEntryURL = "http://www.kurt-climbing.com/dist/authenticated.html";
+                console.log(">" + location.protocol+'< //>'+location.hostname+ '<>' + (location.port ? ':'+location.port: '') + '<');
+                appEntryURL = host + "/authenticated.html";
+                console.log("appEntryUrl is >" + appEntryURL + "<");
+                //appEntryURL = "http://www.kurt-climbing.com/dist/authenticated.html";
                 redirectURL = clLib.REST.clLibServerURI + "/getOAuth2URL?authType=" + authType + "&clLib.redirectURL=" + appEntryURL + "&redirectURL=" + appEntryURL+ "&redirect_uri=" + appEntryURL;
                 //alert("changing to " + redirectURL);
                 clLib.UI.byId$("displayName", pageId).trigger("refresh.clLib");
@@ -835,7 +843,7 @@ clLib.PAGES.handlers = {
                 clLib.detectChildURLChange(ref, 
                 function(event) { 
                     var childURL = event.url;
-                    clLib.loggi('child url changed to: ' + event.url, "20150430"); 
+                    console.error('child url changed to: ' + event.url, "20150430"); 
                     /*
                         detect end of oauth2 process..
                     */

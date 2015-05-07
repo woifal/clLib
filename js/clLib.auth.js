@@ -74,14 +74,16 @@ clLib.auth = {
                     userObj["username"] = authObj.id;
                     userObj["_id"] = authObj["_id"];
                     userObj["sessionToken"] = userObj["accessToken"];
-
                 } 
                 // Facebook logins
                 else if(userObj["authType"] == "facebook") {
+                    console.error("facebook userObj >" + JSON.stringify(userObj) + "<");
                     userObj["displayName"] = authObj.name;
                     userObj["imageURL"] = authObj.image.url;
                     userObj["username"] = authObj.id;
                     userObj["_id"] = authObj["_id"];
+                    userObj["sessionToken"] = userObj["accessToken"];
+                    console.error("facebook userObj parsed..");
                 } 
                 // KURT logins
                 else {
