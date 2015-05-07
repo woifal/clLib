@@ -143,6 +143,10 @@ auth.prototype.generateAuthURL = function(authObj) {
 
 auth.prototype.verifyOAuth2Code = function(code, req, res) {
     var stateParams = JSON.parse(req.params.state);
+        util.log("+\n+\n+\n+\n+\n+\n+\n+\n+\n+\n");
+        util.log("VERIFYING  OAUTH CODE!!");
+        util.log("+\n+\n+\n+\n+\n+\n+\n+\n+\n+\n");
+
     if(stateParams.authType == "facebook") {
         return fbOAuth2Client.getToken(
             code,
@@ -478,6 +482,44 @@ auth.prototype.verifyAccessToken = function(userObj, callbackFunc, errorFunc) {
         });
     }
     else if(userObj.authType == "facebook") {
+        userObj["IamFucked"] = true;
+                util.log("fb data >" + JSON.stringify(userObj) + "<");
+
+				var access_token = userObj["accessToken"]
+				
+                return fbOAuth2Client.getGraphInfo("/me", access_token, function(graphInfoObj) {
+					var FBuserObj = {};
+					FBuserObj = JSON.parse(graphInfoObj["strData"]);
+					
+					util.log("fb user >" + JSON.stringify(FBuserObj) + "<");
+                    
+                    FBuserObj["accessToken"] = access_token;
+                    FBuserObj["authType"] = "facebook";
+
+                    util.log("fb user(incl. tokens) >" + JSON.stringify(FBuserObj) + "<");
+
+					return fbOAuth2Client.getPictureInfo("/me/picture", access_token, function(pictureInfoObj) {
+						var pictureObj = {};
+						var pictureObjData = {};
+						pictureObj = JSON.parse(pictureInfoObj["strData"]);
+						pictureObjData = pictureObj["data"];
+						util.log("fb picturr >" + JSON.stringify(pictureObj) + "<");
+						util.log("fb picturr data>" + JSON.stringify(pictureObjData) + "<");
+                    
+						FBuserObj["image"] = {};
+						FBuserObj["image"]["url"] = pictureObjData["url"];
+
+						util.log("222222222fb user(incl. tokens) >" + JSON.stringify(FBuserObj) + "<");
+                    
+                        return callbackFunc(FBuserObj);
+                    
+					}, function(e) {
+                        return errorFunc("FACEBOOKERROR OF TYPE "  + e["name"] + " IS " + e["message"] + ": " + JSON.stringify(e) + " !!!"); 
+					});
+                }, function(e) {
+                        return errorFunc("FACEBOOKERROR OF TYPE "  + e["name"] + " IS " + e["message"] + ": " + JSON.stringify(e) + " !!!"); 
+				});        
+        
         return callbackFunc(userObj);
     }
     else {
