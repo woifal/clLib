@@ -45,14 +45,26 @@ clStats.prototype.getEntityStats = function(options, callbackFunc, errorFunc) {
     util.log("OPTIONS >" + JSON.stringify(options) + "<");
     var usersToFetchFor = [];
     util.log("TYPEOF buddies " + typeof(options["buddies"]));
+
+    /* buddies */
     var buddiesStr = options["buddies"];
     var buddiesArr = buddiesStr ? buddiesStr.split(",") : [];
     
     $.each(buddiesArr, function(idx, buddyUsername) {
         usersToFetchFor.push(buddyUsername);
     });
+
+    /* other users */
+    var usersStr = options["users"];
+    var usersArr = usersStr ? usersStr.split(",") : [];
+    
+    $.each(usersArr, function(idx, username) {
+        usersToFetchFor.push(username);
+    });
+
+
     util.log("1USERSTOFETCHFOR >" + usersToFetchFor + "<");
-    usersToFetchFor.push(options["where"]["username"]);
+    //usersToFetchFor.push(options["where"]["username"]);
     util.log("2USERSTOFETCHFOR >" + usersToFetchFor + "<");
     util.log("3USERSTOFETCHFOR >" + usersToFetchFor.length + "<");
         
@@ -61,14 +73,24 @@ clStats.prototype.getEntityStats = function(options, callbackFunc, errorFunc) {
     
     var getEntityStatsInnerFunc = function() {
         util.log("GETENTITYSTATSINNFERFUNC >>" + currentUser + "<<");
+        // fetch routes for currently iterated user(and keep other where clauses)..
+        var myWhere = {
+            "$and": [
+                options["where"]
+                ,{
+                    "username": currentUser
+                }
+            ]
+        };
+//        options["where"]["username"] = currentUser;
         return DBHandler.getEntities({
             entity : options.statsOptions.entity 
-            ,where : options["where"] //{"username": currentUser}
+            ,where : myWhere 
             ,requireResult: false
         }, 
         function(resultObj) { 
             // upon success...
-            util.log("Found " + options.entity + "s >" + JSON.stringify(resultObj.length) + "<"); 
+            util.log("Found " + options.statsOptions.entity  + "(s) >" + JSON.stringify(resultObj.length) + "<"); 
             util.log("options >" + JSON.stringify(Object.keys(options)) + "<");
             util.log("evaling >" + options.statsOptions.sortByFuncName+ "<");
             util.log("evaled >" + typeof(clStats[options.statsOptions.sortByFuncName]) + "<");
@@ -93,10 +115,10 @@ clStats.prototype.getEntityStats = function(options, callbackFunc, errorFunc) {
                 clLib.loggi("sorted result #" + JSON.stringify(resultObj.length));
             }
             // aggregate it!
-            console.log("aggFunName >" + options.statsOptions["aggFuncName"] + "<" + typeof(options.statsOptions["aggFuncName"]));
+            util.log("aggFunName >" + options.statsOptions["aggFuncName"] + "<" + typeof(options.statsOptions["aggFuncName"]));
             aggResultArr = clStats[options.statsOptions.aggFuncName](resultObj, options);
             //clLib.loggi("aggregatedResult >" + JSON.stringify(aggResultArr) + "<");
-            clLib.loggi("aggregatedResult2 >" + JSON.stringify(aggResultArr.length) + "<");
+            util.log("XXXX aggregatedResult2 >" + JSON.stringify(aggResultArr.length) + "<");
 
             finalStatsResults[currentUser] = aggResultArr;
             util.log("calling executeAll");
@@ -212,16 +234,18 @@ clStats.aggregateById= function(routeLogArr, options) {
 	var aggResultObj = {};
 	var aggResultArr = [];
     var foundCount = 0;
-	for(var i = 0; i < routeLogArr.length; i++) {
-        if(foundCount <= options.statsOptions.endIdx) {
+	util.log(">>>>>>>>iterating routelogArr >" + JSON.stringify(routeLogArr) + "<");
+    for(var i = 0; i < routeLogArr.length; i++) {
+        util.log(">>>>>>>>at routelogArr[" + i + "] >" + JSON.stringify(routeLogArr[i]) + "<(endidx:" + options.statsOptions.endIdx + ")");
+        
+        if(foundCount < options.statsOptions.endIdx) {
             var routeLog = routeLogArr[i];
             var aggKey = 
                 "" + 
                 clLib.lpad(clLib.computeScore(routeLog), '0', 6)
                 + "@"
                 + routeLog["DateISO"];
-            
-
+            foundCount++;
             if(aggKey) {
                 if(foundCount > options.statsOptions.startIdx) {
                     clLib.loggi("id is>" + aggKey + "<");
@@ -240,33 +264,36 @@ clStats.aggregateById= function(routeLogArr, options) {
                         aggResultObj[aggKey].items.push(routeLog);
                     }
                 }
-                foundCount++;
+                
             }
         }
 	}
-    //util.log("ASFASDFASDFSF" + JSON.stringify(aggResultObj));
+    util.log("ASFASDFASDFSF" + JSON.stringify(aggResultObj));
 	//JSON.stringify(aggResultObj);
     var newAggResultObj = {}
     var scoresAt = []
-	$.each(Object.keys(aggResultObj).sort(), function(idx, key) {
-        clLib.loggi("eaching..");
-        var values = aggResultObj[key];
-        var scorePortion = 
-            idx + 1; // Add 1 to start with position 1 instead of 0
-        //key.substring(0, 6);
-        if(!scoresAt[scorePortion]) {
-            scoresAt[scorePortion] = 0;
-        }
-        scoresAt[scorePortion]++;
-        clLib.loggi("scorePortion >" + scorePortion + "<");
-        if(newAggResultObj[scorePortion]) {
-            scorePortion = scorePortion + "(" + scoresAt[scorePortion] + ")";
-        }
-        newAggResultObj[scorePortion] = values;
-    });
-    return newAggResultObj;
-
-    return aggResultObj;
+	try {
+        $.each(Object.keys(aggResultObj).sort().reverse(), function(idx, key) {
+            util.log("eaching..");
+            var values = aggResultObj[key];
+            var scorePortion = 
+                parseInt(idx) + 1; // Add 1 to start with position 1 instead of 0
+            //key.substring(0, 6);
+            if(!scoresAt[scorePortion]) {
+                scoresAt[scorePortion] = 0;
+            }
+            scoresAt[scorePortion]++;
+            util.log("scorePortion >" + scorePortion + "<");
+            if(newAggResultObj[scorePortion]) {
+                scorePortion = scorePortion + "(" + scoresAt[scorePortion] + ")";
+            }
+            newAggResultObj[scorePortion] = values;
+        });
+        util.log("returning >" + JSON.stringify(newAggResultObj) + "<");
+        return newAggResultObj;
+    } catch(e) {
+        util.log("ERRRORRRRRRRRRRR" + JSON.stringify(e) + "," + e);
+    }
 };
 
 clStats.aggregateHighScoreByDatePortion = function(routeLogArr, options) {

@@ -1025,12 +1025,12 @@ server.post("/notifyBuddies", function (req, res) {
 
 	try {
 
-        util.log("BUDDIES: message received from >" + socket.id + "<, >" + JSON.stringify(data) + "<");
+        util.log("BUDDIES: message received.."); // >" + JSON.stringify(req) + "<");
         var whereObj = {
-            "username": data["username"]
+            "username": req["username"]
         };
         whereObj = $.extend(whereObj, clLib.mongoNe("deleted",1));;
-        
+        var notifyResults = {};
         return DBHandler.getEntities({
             entity : "buddyList"
             ,where : whereObj
@@ -1045,8 +1045,8 @@ server.post("/notifyBuddies", function (req, res) {
                     return pushHandler.pushNotification(
                         {
                             _id: buddyObj["buddyId"]
-                            ,name: data["name"]
-                            ,msgText: data["text"]
+                            ,name: req["name"]
+                            ,msgText: req["text"]
                         }
                         ,function(resultObj) {
                             notifyResults[buddyObj["buddyId"]] = true;
@@ -1078,7 +1078,7 @@ server.post("/notifyBuddies", function (req, res) {
         );
     }
     catch(e) {
-        return errorFunc(e);
+        clLib.server.defaults.errorFunc(e);
     }
 
 
