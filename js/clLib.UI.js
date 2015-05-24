@@ -954,7 +954,13 @@ clLib.UI.addObjArr = function(anObj, pathArray, objValue) {
 *	Executes function "func" and displays spinner with "spinnerParams" while executing..
 *
 */
+
+clLib.UI.processQueue = {
+};
+
 clLib.UI.execWithMsg = function(func, spinnerParams, delayShowMillis) {
+    var timestamp = Date.now(); 
+    spinnerParams["timestamp"] = timestamp;
 	delayShowMillis = 1000; //delayShowMillis || 500;
 	setTimeout(function() {
         clLib.UI.showLoading(spinnerParams);
@@ -962,16 +968,19 @@ clLib.UI.execWithMsg = function(func, spinnerParams, delayShowMillis) {
 
 	setTimeout(function() {
 		func();
-		clLib.UI.hideLoading();
+		clLib.UI.hideLoading(spinnerParams);
 	}, delayShowMillis);
 };
 
 clLib.UI.showLoading = function(spinnerParams) {
 //	alert("showing clLoading.." + JSON.stringify(spinnerParams));
-	$(".clLoading")
-		.empty().
-		append(
-			spinnerParams["text"]
+	if(spinnerParams["timestamp"]) {
+        clLib.UI.processQueue[spinnerParams["timestamp"]] = 1;
+    }
+    $(".clLoading")
+		//.empty()
+		.append(
+			$("<span id='" + spinnerParams["timestamp"] + "'>" + spinnerParams["text"] + "<br></span>")
 		)
 //		.css("top", (window.pageYOffset + 150) + "px")
 		.show()
@@ -995,8 +1004,16 @@ clLib.UI.showLoading = function(spinnerParams) {
 */
 };
 
-clLib.UI.hideLoading = function() {
-	//alert("hiding clloading..");
+clLib.UI.hideLoading = function(spinnerParams) {
+	if(spinnerParams["timestamp"]) {
+        delete clLib.UI.processQueue[spinnerParams["timestamp"]]; 
+        $("span#" + spinnerParams["timestamp"]).remove();
+    }
+    
+    if(!Object.keys(clLib.UI.processQueue).length == 0) {
+        return;
+    }
+    //alert("hiding clloading..");
 	$(".clLoading")
 		.hide()
 		.addClass("clHidden");
@@ -1922,12 +1939,14 @@ clLib.UI.addCollapsiblesNEW = function(options) {
 		$containerContent.children("div[data-role=collapsible]").remove();
 	}
 	
-	//alert("adding collapsible children..>" + JSON.stringify(items));
-	clLib.UI.addCollapsiblesChildren($containerContent, items, options["createItemFunc"], 2, false); //true);
-	//alert("added coll children");
+	clLib.loggi("adding collapsible children..>" + JSON.stringify(items));
+	clLib.UI.addCollapsiblesChildren($containerContent, items, options["createItemFunc"], 2, false, options); //true);
+	clLib.loggi("added coll children");
+    clLib.loggi("containerContent iiiiiiiiiiiiiiis" + $containerContent[0].outerHTML);
 	if(needToAppendContent) {
 		$container.append($containerContent);
 	}
+
 	//alert("added coll children..");
 
 	$(".addMore *", $containerContent)
@@ -1949,6 +1968,7 @@ clLib.UI.addCollapsiblesNEW = function(options) {
 	// remember number of items  currently shown
 	var itemsShown = $containerContent.data("itemsShown");
 	//alert("itemsShown >" + itemsShown + "<");
+    clLib.loggi("$container is >" + $container[0].outerHTML + "<");
 	$container.trigger("create");
 	$containerContent = $(".ui-collapsible-content", $container).first();
 	$containerContent.data("itemsShown", itemsShown);
@@ -1957,7 +1977,7 @@ clLib.UI.addCollapsiblesNEW = function(options) {
 
 
 
-clLib.UI.addCollapsiblesChildren = function($containerEl, dataObj, createItemFunc, count, startWithEmptycontainerEl) {
+clLib.UI.addCollapsiblesChildren = function($containerEl, dataObj, createItemFunc, count, startWithEmptycontainerEl, options) {
 	if(startWithEmptycontainerEl) {
 		console.log("yes, empty container..");
 		$containerEl.empty();
@@ -1999,6 +2019,9 @@ clLib.UI.addCollapsiblesChildren = function($containerEl, dataObj, createItemFun
 	});
 
 	var $addMoreElement = $containerEl.find(".addMore").remove();
+//    alert("adding classes " + options["classes"].join(" ") + "<");
+    var classes = options["classes"] || [];
+    
 	$addMoreElement = $("<div>")
 		.addClass("addMore")
 		.attr("data-role", "collapsible")
@@ -2008,6 +2031,7 @@ clLib.UI.addCollapsiblesChildren = function($containerEl, dataObj, createItemFun
 		.css("text-align", "center")
 		.attr("data-collapsed-icon", "cl_plus_blue")
 		.attr("data-expanded-icon", "cl_minus_blue")
+        .addClass(classes.join(" "))
 	;
 	
 	
@@ -2048,6 +2072,7 @@ clLib.UI.ratingToStars = function(ratingScore) {
 
 clLib.UI.collapsible = {};
 clLib.UI.collapsible.formatRouteLogRow = function(dataRow) {
+    clLib.loggi("formatting row: >" + JSON.stringify(dataRow["Grade"]) + "<");
 	var dataFormat = {
 		header: {
 			/*"GradeSystem" : null*/
@@ -2233,3 +2258,62 @@ clLib.UI.currentPage = function() {
 }
 
 
+clLib.UI.createCollapsible = function(options) {
+    var $collContainer = options["container"];
+    var classes = options["classes"] || [];
+    var $containerContent = $("<div>")
+        .attr("id", options["id"])
+        .attr("cl-role", "content")
+        .attr("data-role", "collapsible")
+        .attr("data-content-theme", "a")
+        .attr("data-theme", "a")
+        .attr("data-collapsed-icon", "cl_plus_blue")
+        .attr("data-expanded-icon", "cl_minus_blue")
+        .attr("data-inset", "false")
+        .addClass(classes.join(" "))
+    ;
+    
+    var $title = $("<h3>" + options["title"] + "</h3>");
+    
+    if(options["bubble"]) {
+        $title
+            .append(
+                "<span class='ui-li-count'>" + options["bubble"] + "</span>"
+            )
+        ;
+    }
+    
+    $containerContent
+        .append($title)
+    ;
+    
+    if($(">.ui-collapsible-content", $collContainer).length > 0 ) {
+        //alert("CONTAINER CONTENT AVAILABLE..APPEND THERE");
+        $(">.ui-collapsible-content", $collContainer).first().append($containerContent);
+    } else {
+        $collContainer.append($containerContent);
+    }
+    $collContainer.trigger("create");
+
+    return $containerContent;
+};            
+clLib.UI.createCollapsibleSet = function(options) {
+    var $setContainer = options["container"];
+    var classes = options["classes"] || [];
+    var $containerContent = $("<div>")
+        .attr("id", options["id"])
+        .attr("cl-role", "content")
+//        .attr("data-role", "collapsibleset")
+        .attr("data-role", "collapsible")
+        .attr("data-content-theme", "a")
+        .attr("data-theme", "a")
+        .attr("data-collapsed-icon", "cl_plus_blue")
+        .attr("data-expanded-icon", "cl_minus_blue")
+        .attr("data-inset", "false")
+        .addClass(classes.join(" "))
+    ;
+    $setContainer.append($containerContent);
+    $setContainer.trigger("create");
+
+    return $setContainer;
+};     

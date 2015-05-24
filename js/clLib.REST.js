@@ -373,12 +373,12 @@ clLib.REST.requestStats = function(options, callbackFunc, errorFunc) {
 	, errorFunc);
 };
 
-clLib.REST.notifyBuddies = function(options, callbackFunc, errorFunc) {
+clLib.REST.notifyBuddies = function(options, successFunc, errorFunc) {
     var reqOptions = {};
 	reqOptions["uri"] = clLib.REST.clLibServerURI + "/notifyBuddies";
 	reqOptions["method"] = "POST";
-	reqOptions["params"] = options;
-	reqOptions["allowNoSessionToken"] = true;
+	reqOptions["params"] = JSON.stringify(options);
+	reqOptions["allowNoSessionToken"] = false;
 
 	return clLib.REST.execAJAXRequest(reqOptions, successFunc, errorFunc);
 };

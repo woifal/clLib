@@ -457,13 +457,21 @@ clLib.PAGES.handlers = {
 			
 		   //alert("444isave handler..");
 	        $("#newRouteLog_default_save_tick").on("click", function () {
-				clLib.UI.execWithMsg(function() {
+                var errorFunc = function(error) {
+                    alert("error >" + JSON.stringify(error));
+                }
+
+                clLib.UI.execWithMsg(function() {
+                    clLib.loggi("before saving..");
 	                clLib.UI.save({}, function() {
+                        clLib.loggi("saving..");
 						// clear UI elements's content
 						clLib.UI.resetUIelements();
 						// scroll to top
 						$.mobile.silentScroll(0);
-					});
+					}
+                    ,errorFunc
+                    );
 	            }, {text: "Saving route logs.."}, 200);
 	        });
 
@@ -830,9 +838,13 @@ clLib.PAGES.handlers = {
                 var appEntryURL = "";
                 var host = location.protocol+'//'+location.hostname+(location.port ? ':'+location.port: '');
                 console.log(">" + location.protocol+'< //>'+location.hostname+ '<>' + (location.port ? ':'+location.port: '') + '<');
-                appEntryURL = host + "/authenticated.html";
+                if(inPhoneGap()) {
+                    appEntryURL = "http://www.kurt-climbing.com/dist/authenticated.html";
+                }
+                else {
+                    appEntryURL = host + "/authenticated.html";
+                }
                 console.log("appEntryUrl is >" + appEntryURL + "<");
-                //appEntryURL = "http://www.kurt-climbing.com/dist/authenticated.html";
                 redirectURL = clLib.REST.clLibServerURI + "/getOAuth2URL?authType=" + authType + "&clLib.redirectURL=" + appEntryURL + "&redirectURL=" + appEntryURL+ "&redirect_uri=" + appEntryURL;
                 //alert("changing to " + redirectURL);
                 clLib.UI.byId$("displayName", pageId).trigger("refresh.clLib");

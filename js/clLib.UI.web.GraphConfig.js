@@ -112,21 +112,21 @@ clLib.graphConfig = {
                                 {
                                     WTF : 1
                                     ,label: "ASFASDFASDF"
-                                    ,fillColor : "#FF0000"
-                                    ,strokeColor: "#FF0000"
-                                    ,highlightFill: "#FF0000"
+                                    ,fillColor : "#FF6666"
+                                    ,strokeColor: "#FF6666"
+                                    ,highlightFill: "#FF6666"
                                 }
                                 ,{
                                     WTF : 2
-                                    ,fillColor : "#00FF00"
-                                    ,strokeColor: "#00FF00"
-                                    ,highlightFill: "#00FF00"
+                                    ,fillColor : "#66FF66"
+                                    ,strokeColor: "#66FF66"
+                                    ,highlightFill: "#66FF66"
                                 }
                                 ,{
                                     WTF : 3
-                                    ,fillColor : "#0000FF"
-                                    ,strokeColor: "#0000FF"
-                                    ,highlightFill: "#0000FF"
+                                    ,fillColor : "#6666FF"
+                                    ,strokeColor: "#6666FF"
+                                    ,highlightFill: "#6666FF"
                                 }
                                 ,{
                                     WTF : 4
@@ -267,81 +267,83 @@ clLib.graphConfig = {
                             
                             
 
-                            $(graphConfig.collection.containerSelector + " .clCanvas")[0].onclick = function(evt){
-                                console.log("chart clicked! >" + JSON.stringify(Object.keys(evt)) + "< + >" + evt.pageX + "<");
-                                var activePoints;
-                                if(graphTypes.indexOf("line") > -1) {
-                                    activePoints = window.myNewChart.getPointsAtEvent(evt);
-                                }
-                                else if(graphTypes.indexOf("bar") > -1) {
-                                    activePoints = window.myNewChart.getBarsAtEvent(evt);
-                                }
-                                console.log("activePoints >" + JSON.stringify(activePoints) + "<");
-                                var resultItems = [];       
-                                Chart.helpers.each(activePoints, function(activePoint){
-                                    var eachFunc;
-                                    ;
-                                    
-                                    
-                                    if(graphTypes.indexOf("bar") > -1) {
-                                        eachFunc = window.myNewChart.eachBars;
-                                    } else if(graphTypes.indexOf("line") > -1 ) {
-                                        eachFunc = window.myNewChart.eachPoints;
+                            if(!options["noClick"]) {
+                                $(graphConfig.collection.containerSelector + " .clCanvas")[0].onclick = function(evt){
+                                    console.log("chart clicked! >" + JSON.stringify(Object.keys(evt)) + "< + >" + evt.pageX + "<");
+                                    var activePoints;
+                                    if(graphTypes.indexOf("line") > -1) {
+                                        activePoints = window.myNewChart.getPointsAtEvent(evt);
                                     }
-                                    
-                                    eachFunc = eachFunc.bind(window.myNewChart);
-                                    //eachPoints
-                                    eachFunc(function(bar) {
-                                        console.log("Restoring bar >" + JSON.stringify(bar) + "<");
-                                        bar.restore(["fillColor"]);
-                                        bar.strokeColor = "#EEEEEE";
-                                        bar.fillColor = "#EEEEEE"; //rgba(220,220,220)";
-                                        //bar.highlightFill = "#EEEEEE";
+                                    else if(graphTypes.indexOf("bar") > -1) {
+                                        activePoints = window.myNewChart.getBarsAtEvent(evt);
+                                    }
+                                    console.log("activePoints >" + JSON.stringify(activePoints) + "<");
+                                    var resultItems = [];       
+                                    Chart.helpers.each(activePoints, function(activePoint){
+                                        var eachFunc;
+                                        ;
+                                        
+                                        
+                                        if(graphTypes.indexOf("bar") > -1) {
+                                            eachFunc = window.myNewChart.eachBars;
+                                        } else if(graphTypes.indexOf("line") > -1 ) {
+                                            eachFunc = window.myNewChart.eachPoints;
+                                        }
+                                        
+                                        eachFunc = eachFunc.bind(window.myNewChart);
+                                        //eachPoints
+                                        eachFunc(function(bar) {
+                                            console.log("Restoring bar >" + JSON.stringify(bar) + "<");
+                                            bar.restore(["fillColor"]);
+                                            bar.strokeColor = "#EEEEEE";
+                                            bar.fillColor = "#EEEEEE"; //rgba(220,220,220)";
+                                            //bar.highlightFill = "#EEEEEE";
+                                        });
+
+                                        activePoint.strokeColor = "#063a72";
+                                        activePoint.fillColor = "#063a72";
+                                        //activePoint.highlightFill = "#00FF00";
+                                        window.myNewChart.update();
+                                        
+                                        console.log("activePoint >" + JSON.stringify(activePoint) + "<");
+
+                                        console.log("resultObj >", resultObj, "<");
+                                        console.log("showing table for >" + activePoint["datasetLabel"] + "< at >" + activePoint["label"] + "<");
+                                        if(!activePoint || !activePoint["datasetLabel"] || !allGraphDatasets[activePoint["label"]][activePoint["datasetLabel"]]) {
+                                            return false;
+                                        }
+                                        $.each(resultObj[activePoint["datasetLabel"]][activePoint["label"]]["items"], function(idx, item) {
+                                            //alert(">" + idx + "<");
+                                            resultItems.push(item);
+                                        });
+                                        console.log("resultItems is now sized  >" + resultItems.length + "<");
+
+
+                                        
                                     });
 
-                                    activePoint.strokeColor = "#063a72";
-                                    activePoint.fillColor = "#063a72";
-                                    //activePoint.highlightFill = "#00FF00";
-                                    window.myNewChart.update();
-                                    
-                                    console.log("activePoint >" + JSON.stringify(activePoint) + "<");
-
-                                    console.log("resultObj >", resultObj, "<");
-                                    console.log("showing table for >" + activePoint["datasetLabel"] + "< at >" + activePoint["label"] + "<");
-                                    if(!activePoint || !activePoint["datasetLabel"] || !allGraphDatasets[activePoint["label"]][activePoint["datasetLabel"]]) {
-                                        return false;
+                                    var $tableContainer = $("#tableContainer");
+                                    $tableContainer.empty();
+                                    clLib.UI.web.createTable(
+                                    $tableContainer
+                                    ,{
+                                        entity: "RouteLog"
+                                        ,items: {"RouteLog": resultItems}
+                                        ,where : null /*{"username": "foo6@gmail.com"}*/
+                                        ,readonly: true
                                     }
-                                    $.each(resultObj[activePoint["datasetLabel"]][activePoint["label"]]["items"], function(idx, item) {
-                                        //alert(">" + idx + "<");
-                                        resultItems.push(item);
-                                    });
-                                    console.log("resultItems is now sized  >" + resultItems.length + "<");
+                                    ,function() {
+                                        console.log("table builtttttttttttt!");
+                                    }
+                                    ,function(e) {
+                                        alert("table build error >" + JSON.stringify(e) + "<");
+                                    }
+                                    );
 
-
-                                    
-                                });
-
-                                var $tableContainer = $("#tableContainer");
-                                $tableContainer.empty();
-                                clLib.UI.web.createTable(
-                                $tableContainer
-                                ,{
-                                    entity: "RouteLog"
-                                    ,items: {"RouteLog": resultItems}
-                                    ,where : null /*{"username": "foo6@gmail.com"}*/
-                                    ,readonly: true
-                                }
-                                ,function() {
-                                    console.log("table builtttttttttttt!");
-                                }
-                                ,function(e) {
-                                    alert("table build error >" + JSON.stringify(e) + "<");
-                                }
-                                );
-
-                                // => activePoints is an array of points on the canvas that are at the same position as the click event.
-                                //alert("activePoints >" + JSON.stringify(activePoints) + "<");
-                            };
+                                    // => activePoints is an array of points on the canvas that are at the same position as the click event.
+                                    //alert("activePoints >" + JSON.stringify(activePoints) + "<");
+                                };
+                            }
                         }
                         if(
                             graphTypes.indexOf("table") > -1
