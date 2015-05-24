@@ -131,7 +131,8 @@ input.ui-input-text, textarea.ui-input-text {
 	left: 50%;
 	margin-left: -120px;
 	amargin-top: -100px;
-	width: 200px;
+	width: 50%;
+    max-width: 400px;
 	aheight: 200px;
 	border-radius: 10px;
 	abox-shadow: inset 0px 2px 2px 1px #DDD;
@@ -933,7 +934,7 @@ border: 1px solid red;
 
 /* todaysroutelogs header */
 .clRouteLogs >.ui-collapsible-heading>.ui-btn{
-	font-size: 1.6em;
+	font-size: 1em;
 	background-color: #FFFFFF !important;
 	background-image: none;
 	
@@ -1023,8 +1024,140 @@ border: 1px solid red;
 	font-size: 0.85em;
 }
 
-#stats_allRouteLogs .ui-collapsible-heading>.ui-btn{
+.collapsiblesetContainer>li {
+    font-size: 1em;
+    background-color: blue;
+}
+
+div.clRouteLogs .ui-collapsible-content {
+    padding: 1px 1em 0em 1em;
+}
+div.clRouteLogs span.ui-li-count {
+    margin-right: 20px !important;
+}
+
+/* first level */
+div.clRouteLogs.scheme1>h3.ui-collapsible-heading>a.ui-collapsible-heading-toggle {
+    background-color: #FF8080 !important;
+}
+/* second level */
+div.clRouteLogs.scheme1>div.ui-collapsible-content>div.ui-collapsible>h3.ui-collapsible-heading>a.ui-collapsible-heading-toggle {
+    background-image: none;
+    background-color: #FF9999 !important;
+}
+div.clRouteLogs.scheme1>div.ui-collapsible-content>div.ui-collapsible>div.ui-collapsible-content {
+    background-image: none;
+    background-color: #FFCCCC !important;
+}
+
+.addMore.ui-collapsible.scheme1>h1>a
+,.addMore2.ui-collapsible.scheme1>h1>a {
+    background-color:  #FF9999 !important;
+    background-image:  none;
+}
+.
+/* third level */
+div.clRouteLogs.scheme1>div.ui-collapsible-content>div.ui-collapsible>div.ui-collapsible-content>div.ui-collapsible>h3.ui-collapsible-heading>a.ui-collapsible-heading-toggle {
+    background-image: none;
+    background-color: #FFB3B3 !important;
+}
+
+/* first level */
+div.clRouteLogs.scheme2>h3.ui-collapsible-heading>a.ui-collapsible-heading-toggle {
+    background-color: #80FF80 !important;
+}
+/* second level */
+div.clRouteLogs.scheme2>div.ui-collapsible-content>div.ui-collapsible>h3.ui-collapsible-heading>a.ui-collapsible-heading-toggle {
+    background-image: none;
+    background-color: #99FF99 !important;
+}
+div.clRouteLogs.scheme2>div.ui-collapsible-content>div.ui-collapsible>div.ui-collapsible-content {
+    background-image: none;
+    background-color: #CCFFCC !important;
+}
+
+
+.addMore.ui-collapsible.scheme2>h1>a
+,.addMore2.ui-collapsible.scheme2>h1>a {
+    background-color:  #99FF99 !important;
+    background-image:  none;
+}
+
+/* third level */
+div.clRouteLogs.scheme2>div.ui-collapsible-content>div.ui-collapsible>div.ui-collapsible-content>div.ui-collapsible>h3.ui-collapsible-heading>a.ui-collapsible-heading-toggle {
+    background-image: none;
+    background-color: #B3FFB3 !important;
+}
+
+
+
+/* first level */
+div.clRouteLogs.scheme3>h3.ui-collapsible-heading>a.ui-collapsible-heading-toggle {
+    background-color: #8080FF !important;
+}
+/* second level */
+div.clRouteLogs.scheme3>div.ui-collapsible-content>div.ui-collapsible>h3.ui-collapsible-heading>a.ui-collapsible-heading-toggle {
+    background-image: none;
+    background-color: #9999FF !important;
+}
+div.clRouteLogs.scheme3>div.ui-collapsible-content>div.ui-collapsible>div.ui-collapsible-content {
+    background-image: none;
+    background-color: #CCCCFF !important;
+}
+.addMore.ui-collapsible.scheme3>h1>a
+,.addMore2.ui-collapsible.scheme3>h1>a {
+    background-color:  #9999FF !important;
+    background-image:  none;
+}
+
+/* third level */
+div.clRouteLogs.scheme3>div.ui-collapsible-content>div.ui-collapsible>div.ui-collapsible-content>div.ui-collapsible>h3.ui-collapsible-heading>a.ui-collapsible-heading-toggle {
+    background-image: none;
+    background-color: #B3B3FF !important;
+}
+
+
+
+
+
+#astats_allRouteLogs .ui-collapsible-heading>.ui-btn{
 	background-color: #c3b4b4 !important; /*#e1d9d9 !important;*/
+}
+
+
+
+div.clButton.clSmall.clIconOnly>div{
+    padding: 4px;
+    height: 31px;
+}
+div.clButton.clSmall.clIconOnly{
+	padding: 3px; 
+	box-shadow: none; 
+	margin: 5px 0px 5px 0px !important;
+	margin-bottom: 5px !important; 
+	float:left; 
+	width: 40px; 
+	font-size: 0.68em;
+}
+
+.clButton.clSmall.clIconOnly > div > a {
+	float: left;
+	height: 34px;
+	width: 34px;
+}
+.clButton.clSmall.clIconOnly > div > a > div {
+	height: 26px;
+	left: 4px;
+	top: 4px;
+	width: 26px;
+}
+.clButton.clSmall.clIconOnly > div > a > div > img {
+	height: 13px;
+	width: 13px;
+}
+.clButton.clSmall.clIconOnly > div > span {
+	padding-left: 8px;
+	padding-top: 12px;
 }
 
 
@@ -1034,7 +1167,7 @@ div.clButton.clSmall.clInline {
 	margin: 5px 0px 5px 0px !important;
 	margin-bottom: 5px !important; 
 	float:left; 
-	width: 50%; 
+	width: 45%; 
 	font-size: 0.68em;
 }
 
