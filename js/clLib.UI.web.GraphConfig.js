@@ -53,7 +53,7 @@ clLib.graphConfig = {
                 alert("encountered error >" + e + "<(" + JSON.stringify(e) + ")");
             }
             ,getGraphData : function(options, successFunc, errorFunc) {
-                //alert("getGraphData for options >" + JSON.stringify(options) + "<");
+                console.log("getGraphData for options >" + JSON.stringify(options) + "<");
                 //var statsOptions = $.extend(this.config["statsOptions"], options);
                 options["statsOptions"] = this.config["statsOptions"];
                 console.log("stats options is >" + JSON.stringify(options) + "<");
@@ -157,7 +157,7 @@ clLib.graphConfig = {
                             var allUsers = Object.keys(resultObj);
                             $.each(resultObj, function(username, userResults) {
                                 $.each(userResults, function(key, values) {
-                                    util.log("at >" + username + "< >" + key + "< >" + values + "<");
+                                    console.log("at >" + username + "< >" + key + "< >" + JSON.stringify(values) + "<");
 
                                     if(!allData[key]) {
                                         allData[key] = {};

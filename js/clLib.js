@@ -1002,22 +1002,24 @@ clLib.getGeoLocation = function(successFunc, errorFunc, options) {
 	
 	if (navigator.geolocation) {
 		//alert("getting current position..");
-		clLib.UI.showLoading({"text" : "getting location"});
-		options = $.extend(options, {
-			timeout: 5000
-			,maximumAge: 300000
-			,enableHighAccuracy:true
-		});
+        return clLib.UI.execWithMsg(function() {
+            options = $.extend(options, {
+                timeout: 5000
+                ,maximumAge: 300000
+                ,enableHighAccuracy:true
+            });
 
-		return navigator.geolocation.getCurrentPosition(function(position) {
-			clLib.lastGeoPosition = position;
-			clLib.lastGeoDate = Date.now();
-			console.log("setting lastGeoDate to " + clLib.lastGeoDate);
-			return successFunc(position);
-		}
-		,errorFunc
-		,options);
-	}
+            return navigator.geolocation.getCurrentPosition(function(position) {
+                clLib.lastGeoPosition = position;
+                clLib.lastGeoDate = Date.now();
+                console.log("setting lastGeoDate to " + clLib.lastGeoDate);
+                return successFunc(position);
+            }
+            ,errorFunc
+            ,options);
+        }, {text: "Getting location.."});
+
+    }
 	else {
 		return errorFunc("Geolocation is not supported by this browser.");
 	}

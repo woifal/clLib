@@ -1403,14 +1403,17 @@ clLib.UI.elements = {
 	, "currentTotalScore" : {
 		"refreshHandler" : function($this) { 
             var where;
-			where = clLib.getCurrentUserWhere();
 
             var totalScore = 0;
             var successHandler = function(statsResults) {
                 statsResults = JSON.parse(statsResults);
-				console.log("results is >" + JSON.stringify(statsResults)  + "<");
-                statsResults = statsResults[clLib.getUserInfo()["username"]];
+				console.error("results is >" + JSON.stringify(statsResults)  + "<");
                 
+                statsResults = statsResults[clLib.getUserInfo()["username"]];
+                if(!statsResults) {
+                    alert("could not retrieve top score..");
+                    return;
+                }
                 $.each(statsResults, function(idx, statsResult) {
                     console.log("working on >" + idx + "< with score >" + statsResult["score"] + "<");
                     totalScore += statsResult["score"];
@@ -1430,6 +1433,7 @@ clLib.UI.elements = {
                     ,startIdx:                 0
                     ,endIdx:                   10
                 }
+                ,users: clLib.getUserInfo()["username"]
                 ,where: where
             }
             clLib.REST.requestStatsNew(

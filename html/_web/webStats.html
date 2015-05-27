@@ -142,17 +142,22 @@
             }
         });
 
+        
         var drawCurrentGraph = function() {
             console.log("getting stats >" + window.currentStat + "<");
             $( "#spinnerDialog" ).dialog( "open" );
             setTimeout(
                 function() { 
+                    var usersToFetchFor = [];
+                    usersToFetchFor.push(clLib.getUserInfo()["username"]);
+                    usersToFetchFor = usersToFetchFor.concat(getSelectedBuddies());
+                    
                     clLib.graphConfig["_routeLogConfig"].get(window.currentStat).draw({
                         where: {
 //                            username: $("#usernameSelector").val()
-                            username: clLib.getUserInfo()["username"]
+//                            username: clLib.getUserInfo()["username"]
                         }
-                        ,buddies: function() { return getSelectedBuddies(); }()
+                        ,users: usersToFetchFor.join(",")
                     });
                     $( "#spinnerDialog" ).dialog( "close" );
                 },
@@ -176,7 +181,8 @@
             });
             selected = $.unique(selected);
             console.log("got selected buddies >" + JSON.stringify(selected) + "<");
-            return selected.join(",");
+  //          return selected.join(",");
+            return selected;
         };
         
 
