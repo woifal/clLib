@@ -2182,7 +2182,9 @@ clLib.UI.elements = {
             var options = {
                 statsOptions: {
                     entity: "RouteLog"
-                    ,datePortionFuncName : "localDayPortion"
+                    ,datePortion : {
+                        funcName : "localDayPortion"
+                    }
                     ,aggFuncName: "aggregateScoresByDatePortion"
                     ,sortByFuncName: "sort_localDayAndScore"
                     ,aggTopX: 10
@@ -2204,7 +2206,7 @@ clLib.UI.elements = {
                 }
             );
 		
-			alert("done, triggering crate.."),
+			//alert("done, triggering crate.."),
             $allContainer.trigger("create");
         }, {text: "Loading ALL routelogs.."});
             
