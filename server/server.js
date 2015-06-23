@@ -805,10 +805,10 @@ server.get('/stats',
 {
 	var errHandler = function(errorObj) {
 		util.log("ERROR CAUGHT:\n>>>\n" + JSON.stringify(errorObj) + "\n<<<<<\n\n");
-        //return clLib.server.defaults.errorFunc(errorObj, res);
+        return clLib.server.defaults.errorFunc(errorObj, res);
 	}
 
-//	try {
+	try {
 		
 		util.log("2getting.." + JSON.stringify(req.params));
 		var options = req.params;
@@ -839,9 +839,9 @@ server.get('/stats',
             }
             , errHandler
 		);
-//	} catch(e) {
-//		errHandler(new Error("UNHANDLED SERVER ERROR "  + e.name + " IS " + e.message + " !!!"));
-//	}
+	} catch(e) {
+		errHandler(new Error("UNHANDLED SERVER ERROR "  + e.name + " IS " + e.message + " !!!"));
+	}
 
 
 });
