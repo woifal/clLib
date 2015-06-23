@@ -358,6 +358,28 @@ clLib.dateToStr = function(dateObj) {
 	return dateStr;
 };
 
+                        
+clLib.dateStrFromObj = function(dateObj) {
+    console.log("Getting str from date >" + dateObj + "<("+ typeof(dateObj) + ")");
+    var dateStr = "";
+    dateStr = "" + 
+        dateObj.getFullYear() + 
+        "-" + 
+        clLib.lpad((dateObj.getMonth() +1),"0",  2) + 
+        "-" + 
+        clLib.lpad(dateObj.getDate(), "0", 2)
+    ;
+    return dateStr;
+};
+
+
+clLib.formatISODateToDateObj = function (ISOstr, format) {
+	var x = new Date(ISOstr);
+	return x;
+    
+    
+};
+
 /*
 *   Returns a "BETWEEN startDate and endDate" where condition in JSON notation.
 */
