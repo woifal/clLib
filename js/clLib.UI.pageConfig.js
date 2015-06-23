@@ -2012,6 +2012,11 @@ clLib.UI.elements = {
                 //resultObj, itemCount, startFrom) {
 				var i;
 				startFrom = startFrom || 0;
+                if(!items) {
+                    alert("no items.");
+                    console.error("no items in >" + JSON.stringify(options) + "<");
+                    return false;
+                }
 				var aggResultKeys = Object.keys(items);
                 clLib.loggi("building dayroutes >" + JSON.stringify(items) +  "<");
 				
@@ -2158,8 +2163,7 @@ clLib.UI.elements = {
                 clLib.loggi("allContainer was >" + $allContainer[0].outerHTML + "<");
                 clLib.loggi("resultObj >" + JSON.stringify(resultObj) + "<");
                 $.each(resultObj, function(username, routeStats) {
-                    clLib.loggi("success!!" + typeof(routeStats) + "-" + JSON.stringify(routeStats));
-                    //buildDaysRouteLogs(resultObj, daysToShow);
+                    console.error("success!!" + typeof(routeStats) + "-" + JSON.stringify(routeStats));
                     buildUserRouteLogs({
                         username: username
                         ,items: routeStats
@@ -2200,7 +2204,8 @@ clLib.UI.elements = {
                 }
             );
 		
-			$allContainer.trigger("create");
+			alert("done, triggering crate.."),
+            $allContainer.trigger("create");
         }, {text: "Loading ALL routelogs.."});
             
 	
