@@ -121,7 +121,8 @@ clLib.UI.saveHandlers= {
                     ,username: clLib.getUserInfo()["username"]
                     ,text: ">" + clLib.getUserInfo()["username"] + "< saved a route with >" + clLib.computeScore(resultObj) + "< points."
                 };
-                alert("sending msg >" + JSON.stringify(msgOptions) + "< to buddies");
+                
+                //alert("sending msg >" + JSON.stringify(msgOptions) + "< to buddies");
                 
                 return clLib.REST.notifyBuddies(
                     msgOptions
@@ -2027,6 +2028,7 @@ clLib.UI.elements = {
                         items: items
                         ,key: aggResultKeys[i]
                         ,container: $daysContainer
+                        ,level: (options["level"] + 1)
                     });
 				}
                 
@@ -2074,6 +2076,7 @@ clLib.UI.elements = {
 //                            ,itemsShown: itemsShown
                             ,container: $daysContainer
                             ,classes: options["classes"]
+                            ,level: options["level"]
                         });
 		
 						$daysContainer.trigger("create");
@@ -2108,7 +2111,7 @@ clLib.UI.elements = {
                     id: "ID_" + titleText
                     ,container: $allContainer
                     ,title:  titleText
-                    ,classes: ["clRouteLogs", "clIconCollapsible", "clIconBlue"]
+                    ,classes: ["clRouteLogs", "clIconCollapsible", "clIconBlue", "LEVEL" + options["level"]]
                 });
 
                 $dayRouteContainer.trigger("create");
@@ -2118,6 +2121,7 @@ clLib.UI.elements = {
 					,items : resultObj[key].items
 					,clearCurrentItems : true
                     ,createItemFunc: clLib.UI.collapsible.formatRouteLogRow
+                    ,classes: ["LEVEL" + (options["level"] +1) ]
 				});
 				console.log(">>>>" + JSON.stringify(resultObj[key]));
 
@@ -2143,6 +2147,7 @@ clLib.UI.elements = {
                     ,classes: [
                         "clRouteLogs", "clIconCollapsible", "clIconBlue"
                         ,"scheme" + i
+                        ,"LEVEL" + (options["level"] + 0)
                     ]
                 });
 
@@ -2152,6 +2157,7 @@ clLib.UI.elements = {
                     ,daysToShow: options["daysToShow"]
                     ,container: $daysContainer
                     ,classes: ["scheme" + i]
+                    ,level: (options["level"] + 0)
                 });
                 
                 i++;
@@ -2163,12 +2169,13 @@ clLib.UI.elements = {
                 clLib.loggi("allContainer was >" + $allContainer[0].outerHTML + "<");
                 clLib.loggi("resultObj >" + JSON.stringify(resultObj) + "<");
                 $.each(resultObj, function(username, routeStats) {
-                    console.error("success!!" + typeof(routeStats) + "-" + JSON.stringify(routeStats));
+                    console.log("success!!" + typeof(routeStats) + "-" + JSON.stringify(routeStats));
                     buildUserRouteLogs({
                         username: username
                         ,items: routeStats
                         ,daysToShow: daysToShow
                         ,container: $allContainer
+                        ,level: 1
                     });
 
                 });
@@ -2293,7 +2300,7 @@ clLib.UI.elements = {
 clLib.UI["pageConfig"] = {};
 clLib.UI.pageConfig.buildTopRouteLogs = function(topRouteLogs, $container) {
     topRouteLogs = JSON.parse(topRouteLogs);
-    console.error("Todays routes is: " + JSON.stringify(topRouteLogs).substring(0, 100));
+    console.log("Todays routes is: " + JSON.stringify(topRouteLogs).substring(0, 100));
 
     // calculate today's score
     var todaysTopScore = clLib.calculateScore(topRouteLogs);
@@ -2336,6 +2343,7 @@ clLib.UI.pageConfig.buildTopRouteLogs = function(topRouteLogs, $container) {
             ,classes: [
                 "clRouteLogs", "clIconCollapsible", "clIconBlue"
                 ,"scheme" + i
+                ,"LEVEL" + 1
             ]
             ,bubble: bubbleScore
         });
@@ -2345,7 +2353,11 @@ clLib.UI.pageConfig.buildTopRouteLogs = function(topRouteLogs, $container) {
             ,items : routeLogs
             ,clearCurrentItems : true
             ,createItemFunc: clLib.UI.collapsible.formatRouteLogRow
-            ,classes: ["scheme" + i]
+            ,classes: [
+                "scheme" + i
+                ,"LEVEL" + 2
+            ]
+            ,itemsShown: 10
         });
         i++;
     });
@@ -2361,7 +2373,7 @@ clLib.UI.pageConfig.getUsersToFetchFor = function() {
     }
                 
     usersToFetchFor.push(clLib.getUserInfo()["username"]);
-    console.error("usersToFetchForStr is >" + usersToFetchFor.join(",") + "<");
+    console.log("usersToFetchForStr is >" + usersToFetchFor.join(",") + "<");
     
     return usersToFetchFor;
 

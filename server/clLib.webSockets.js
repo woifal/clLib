@@ -31,7 +31,10 @@ clWebSockets.prototype.connect = function(io) {
     io.sockets.on('connection', function (socket) {
         // der Client ist verbunden
         util.log("connected id >" + socket.id + "<- sending welcome message..");
-        socket.emit('chat', { zeit: new Date(), text: 'Connected to server.' });
+        
+        // [2015-07-07 WD] don't spam user with messages.. :)
+        //socket.emit('chat', { zeit: new Date(), text: 'Connected to server.' });
+        
         // wenn ein Benutzer einen Text senden
         socket.on('chat', function (data) {
             util.log("message received from >" + socket.id + "<, >" + JSON.stringify(data) + "<");
@@ -103,7 +106,8 @@ clWebSockets.prototype.connect = function(io) {
             server.runtime.connectedUsers[userInfoObj._id]["socketId"] = socket.id;
             util.log("connectedUsers: \n>" + JSON.stringify(server.runtime.connectedUsers) + "<");
             // so wird dieser Text an alle anderen Benutzer gesendet
-            io.sockets.emit('chat', { zeit: new Date(), name: 'newUser', text: userInfoObj.username });
+            // [2015-07-07 WD] Don'T spam user..
+            //io.sockets.emit('chat', { zeit: new Date(), name: 'newUser', text: userInfoObj.username });
         });
     });
 

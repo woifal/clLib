@@ -45,8 +45,9 @@ var googlechartsGraphHandler = {
             var keyValue = aValue;
             //alert(graphConfig["displayOptions"]["keyType"]);
             if(graphConfig["displayOptions"]["keyType"] == "date") {
-                //alert("yes, convert key to date..");
+                //alert("yes, convert key to date..>" + aValue + "<");
                 keyValue = new Date(aValue);
+                //alert("keyValue is now >" + keyValue + "<");
             }
             else if(graphConfig["displayOptions"]["keyType"] == "number") {
                 //alert("yes, convert key to date..");
@@ -77,22 +78,121 @@ var googlechartsGraphHandler = {
                             
                             
                             
-                            
+        var getMinValue = function(graphData) {
+            var minVal = 100000;
+            $.each(graphData, function(idx, dataRow) {
+                for(var i = 1; i < dataRow.length; i++) {
+                    if(dataRow[i] > 0) {
+                        minVal = Math.min(minVal, dataRow[i]);
+                    }
+                }
+            });
+            return minVal;
+        }
+        var getMaxValue = function(graphData) {
+            var minVal = 0;
+            $.each(graphData, function(idx, dataRow) {
+                for(var i = 1; i < dataRow.length; i++) {
+                    minVal = Math.max(minVal, dataRow[i]);
+                }
+            });
+            return minVal;
+        }
                             
         function drawChart() {
             console.log(3);
             var dataTable = graphData;
             
+            var minValue = getMinValue(graphData);
+            var maxValue = getMaxValue(graphData);
+            console.log("minValue is >" + minValue + "<");
+            console.log("maxValue is >" + maxValue + "<");
+            
             console.log("dataTable is >" + JSON.stringify(dataTable) + "<");
-                
+            
             var gDataTable = new google.visualization.DataTable();
+/*
+            if(graphConfig["displayOptions"]["showAllRoutesOnLegendClick"]) {
+                // Add custom tooltips for links to datatables displayed below..
+                var dataTable2 = [];
+                $.each(dataTable, function(idx, values) {
+                    var newIdx2 = 0;
+                    dataTable2[idx] = [];
+                    $.each(values, function(idx2, values2) {
+
+                        dataTable2[idx][newIdx2] = dataTable[idx][idx2];
+                        if(idx2 > 0) {
+                            newIdx2++;
+                            // Use custom HTML content for the domain tooltip.
+                            dataTable2[idx][newIdx2] =  function() { 
+                                    //alert("allUsers >" + JSON.stringify(allUsers) + "<");
+
+                                var $tooltip = $("<div>");
+                                $tooltip.append($("<p>")
+                                    .append(
+                                        "user:" + allUsers[idx2-1]
+                                    )
+                                    .append(
+                                        "points:" + dataTable[idx][idx2]
+                                    )
+                                );
+                                $tooltip.click(function(e) {
+                                    var resultItems = [];
+                                    var series = idx2 - 1;
+                                    $.each(resultObj[series], function(idx, anX) {
+                                        $.each(resultObj[series][idx]["items"], function(idx2, item) {
+                                            console.log(">" + idx + "< >" + idx2+ "<>" + JSON.stringify(item) + "<");
+                                            resultItems.push(item);
+                                        });
+                                    });
+                                                            
+                                    
+                                    
+                                    var $tableContainer = $("#tableContainer");
+                                    $tableContainer.empty();
+                                    clLib.UI.web.createTable(
+                                    $tableContainer
+                                    ,{
+                                        entity: "RouteLog"
+                                        ,items: {"RouteLog": resultItems}
+                                        ,where : null //{"username": "foo6@gmail.com"}
+                                        ,readonly: true
+                                    }
+                                    ,function() {
+                                        console.log("table builtttttttttttt!");
+                                    }
+                                    ,function(e) {
+                                        alert("table build error >" + JSON.stringify(e) + "<");
+                                    }
+                                    );  
+                                    
+                                                                        
+                                });
+                                
+                                return $tooltip.;
+                            }(); 
+                        }
+                        newIdx2++;
+                    });
+                });
+                dataTable = dataTable2;
+            }
+*/
+            
+            //console.error("2dataTable is >" + JSON.stringify(dataTable) + "<");
+//            alert("typeof  is >" + typeof(dataTable[0][0]) + "<");
+            
             var keyType = graphConfig["displayOptions"]["keyType"];
             var keyName = graphConfig["displayOptions"]["keyName"];
             //alert("keyType is >" + keyType + "<, keyName is >" + keyName + "<");        
             gDataTable.addColumn(keyType, "when");
+
+            
             $.each(allUsers, function(idx, username) {
                 gDataTable.addColumn('number', username);
+//                gDataTable.addColumn({'type': 'string', 'role': 'tooltip'}); //, 'p': {'html': true}});
             });
+            
             
             gDataTable.addRows(dataTable);
       
@@ -103,26 +203,49 @@ var googlechartsGraphHandler = {
             
             //var data = google.visualization.arrayToDataTable(gDataTable);
             var data = gDataTable;
-            
-                
+
+
+
             var options = {
                 title: graphConfig["displayName"] //'some foo graphs'
+                 // This line makes the entire category's tooltip active.
+                ,focusTarget: 'datum'
+                ,tooltip: { isHtml: true }
+                ,pointSize: 1 //7
+                ,legend: 'right'
+                ,chartArea: {width: '60%'}
                 ,hAxis: {
+ //                   textPosition : 'in'  
+//                    ,
                     title: graphConfig["displayOptions"]["hAxisLabel"] || ''  
                     ,titleTextStyle: {color: '#FF0000'}
-                    ,gridlines: {
+/*                    ,gridlines: {
                         count: graphConfig["displayOptions"]["keyGridCount"]
-                    }
-              //  ,ticks: [5,10,15,20]
+                    }*/
+                    ,ticks: graphConfig["displayOptions"]["hAxisTicks"] || []
+                    ,slantedText: true
+                    ,slantedTextAngle: 30
+                    ,format: graphConfig["displayOptions"]["hAxisFormat"] || null
                 }
                 ,vAxis: {
                     minValue: 0
+                    ,viewWindow: {
+                        min: minValue - 500
+                    }
                     ,gridlines: {
-                        count: 10
+                        count: graphConfig["displayOptions"]["vAxisGridLines"] || 10
                     }
                 }
                 ,interpolateNulls: true
+                ,tooltip: { trigger: 'both' }
+                ,series: {
+                    0: { color: '#FF8080' },
+                    1: { color: '#80FF80' },
+                    2: { color: '#8080FF' }
+                }
+    
             };
+
             var chartDiv = $(graphConfig.collection.containerSelector)[0];
             console.log("chartDiv is " + chartDiv.outerHTML);
             
@@ -135,6 +258,69 @@ var googlechartsGraphHandler = {
             if(graphConfig.graphType.indexOf("bar") > -1) {
                 chart = new google.visualization.BarChart(chartDiv);
             }
+
+
+            chart.setAction({
+                id: 'details',
+                text: 'Show details',
+                action: function() {
+                    data.setCell(chart.getSelection()[0].row, 1,
+                        data.getValue(chart.getSelection()[0].row, 1) + 20);
+                    chart.draw(data, options);
+
+
+                                    var resultItems = [];
+                                    var series = chart.getSelection()[0].row;
+                                    var seriesAt = chart.getSelection()[0].column;
+                                    alert("clicked series at >" + seriesAt + "<");
+                                    
+                                    $.each(resultObj[series], function(idx, anX) {
+                                        $.each(resultObj[series][idx]["items"], function(idx2, item) {
+                                            console.log(">" + idx + "< >" + idx2+ "<>" + JSON.stringify(item) + "<");
+                                            resultItems.push(item);
+                                        });
+                                    });
+                                                            
+                                    
+                                    
+                                    var $tableContainer = $("#tableContainer");
+                                    $tableContainer.empty();
+                                    clLib.UI.web.createTable(
+                                    $tableContainer
+                                    ,{
+                                        entity: "RouteLog"
+                                        ,items: {"RouteLog": resultItems}
+                                        ,where : null //{"username": "foo6@gmail.com"}
+                                        ,readonly: true
+                                    }
+                                    ,function() {
+                                        console.log("table builtttttttttttt!");
+                                    }
+                                    ,function(e) {
+                                        alert("table build error >" + JSON.stringify(e) + "<");
+                                    }
+                                    );  
+
+
+
+
+
+
+
+
+
+                }
+            });
+
+
+
+
+
+
+
+
+
+
             function selectHandler() {
                 //alert("selected!");
                 if(!(
@@ -154,35 +340,7 @@ var googlechartsGraphHandler = {
                         //Series Label
                         var series = data.getColumnLabel(chart.getSelection()[0].column);
                 
-                          var resultItems = [];
-                            $.each(resultObj[series], function(idx, anX) {
-                                $.each(resultObj[series][idx]["items"], function(idx2, item) {
-                                    console.log(">" + idx + "< >" + idx2+ "<>" + JSON.stringify(item) + "<");
-                                    resultItems.push(item);
-                                });
-                            });
-                                                    
-                            
-                            
-                            var $tableContainer = $("#tableContainer");
-                            $tableContainer.empty();
-                            clLib.UI.web.createTable(
-                            $tableContainer
-                            ,{
-                                entity: "RouteLog"
-                                ,items: {"RouteLog": resultItems}
-                                ,where : null /*{"username": "foo6@gmail.com"}*/
-                                ,readonly: true
-                            }
-                            ,function() {
-                                console.log("table builtttttttttttt!");
-                            }
-                            ,function(e) {
-                                alert("table build error >" + JSON.stringify(e) + "<");
-                            }
-                            );  
-                            
-                            
+
                             
                             
                         
@@ -229,7 +387,7 @@ var googlechartsGraphHandler = {
                     ,readonly: true
                 }
                 ,function() {
-                    console.log("table builtttttttttttt!");
+                    console.log("table built!");
                 }
                 ,function(e) {
                     alert("table build error >" + JSON.stringify(e) + "<");
@@ -241,6 +399,7 @@ var googlechartsGraphHandler = {
             if(graphConfig["displayOptions"]["showRoutesOnClick"]) {
                 google.visualization.events.addListener(chart, 'select', selectHandler);  
             }
+            console.error("options are >" + JSON.stringify(options) + "<");
             chart.draw(data, options);
         }
               

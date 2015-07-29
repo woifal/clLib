@@ -133,8 +133,7 @@ clLib.REST.executeRetrieve = function (uri, method, whereObj, successFunc, error
 	}
     
     console.log("reqOptions is >" + JSON.stringify(reqOptions) + "<");
-	
-	clLib.REST.execAJAXRequest(reqOptions, successFunc, errorFunc);
+    clLib.REST.execAJAXRequest(reqOptions, successFunc, errorFunc);
 }
 	
 
@@ -344,10 +343,12 @@ clLib.REST.requestVerification = function(userInstance, successFunc, errorFunc) 
 
 clLib.REST.requestStatsNew = function(options, successFunc, errorFunc) {
     var reqOptions = {};
-    if(options["where"]) {
+/*    if(options["where"]) {
        options["where"] = JSON.stringify(options["where"]);
     }
-	reqOptions["uri"] = clLib.REST.clLibServerURI + "/stats";
+*/
+    console.log("requesting with where clause >" + JSON.stringify(options["where"]) + "<");
+    reqOptions["uri"] = clLib.REST.clLibServerURI + "/stats";
 	reqOptions["method"] = "GET";
 	reqOptions["params"] = options;
 	reqOptions["allowNoSessionToken"] = true;
@@ -355,7 +356,7 @@ clLib.REST.requestStatsNew = function(options, successFunc, errorFunc) {
     /* if(whereObj) {
 		whereObj = "where=" + encodeURIComponent(JSON.stringify(whereObj));
 	}
-*/
+    */
 	return clLib.REST.execAJAXRequest(reqOptions, successFunc, errorFunc);
 };
 

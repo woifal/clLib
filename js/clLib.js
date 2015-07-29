@@ -395,6 +395,48 @@ clLib.colBetweenDate = function(colName, startDate, endDate) {
 	//alert(JSON.stringify(whereObj));
 	return whereObj;
 };
+clLib.colBetweenDate2 = function(colName, startDate, endDate) {
+	//alert("getting between date " + JSON.stringify(startDate) + " and " + JSON.stringify(endDate));
+	var whereObj = {};
+	whereObj[colName] = {
+		"$gte": "_DATE_" + clLib.dateToStr(startDate), 
+		"$lt": "_DATE_" + clLib.dateToStr(endDate)
+	};
+	1;
+	
+	//alert(JSON.stringify(whereObj));
+	return whereObj;
+};
+
+clLib.forAllValues = function(obj, aFunc) {
+    $.each(obj, function(key, value) {
+        if(obj[key] instanceof Object) {
+            clLib.forAllValues(obj[key], aFunc);
+        }
+        else {
+            obj[key] = aFunc(value);
+        }
+    });
+}
+;
+
+clLib.computeJSONClientDates = function(x) {
+  console.error("indexOf(" + typeof(x) + ")" + x + "<");
+  
+  if(typeof(x) == "string" && x.indexOf("_DATE_") > -1) {
+    var y = x.substring(x.indexOf("_DATE_") +6);
+    console.error("y is >" + y + "<");
+    return new Date(y);
+  }
+  else {
+    return x;
+  }
+};
+
+clLib.preProcess = function(whereObj) {
+    clLib.forAllValues(whereObj, clLib.computeJSONClientDates);
+};
+
 
 /*
 * Builds a mongodb WHERE clause to use for "Routes" collection queries based on

@@ -65,6 +65,7 @@ clLib.graphConfig = {
                 console.log("getGraphData for options >" + JSON.stringify(options) + "<");
                 //var statsOptions = $.extend(this.config["statsOptions"], options);
                 options["statsOptions"] = this.config["statsOptions"];
+                options["where"] = options["statsOptions"]["where"];
                 console.error("stats options is >" + JSON.stringify(options) + "<");
                 return clLib.REST.requestStatsNew(
                     options
@@ -203,21 +204,58 @@ routeLogConfig.add(new GraphConfig({
         ,sortDescFlag:          true
     }
 }));
+
+
+clLib.date = {};
+clLib.date.getLastMonths = function(baseDate, numOfMonths, includeBaseDate) {
+  var dateArr = [];
+  var x = baseDate;
+  for(var i = 0; i < numOfMonths; i++) {
+    var y = new Date(x);
+    y.setMonth(x.getMonth() -i);
+    y.setDate(1);
+    y.setHours(0);
+    y.setMinutes(0);
+    y.setSeconds(0);
+    dateArr.push(y);
+  }
+  
+  if(includeBaseDate) {
+    dateArr.unshift({v: baseDate, f: 'now'});
+  }
+  return dateArr;
+}
+
 routeLogConfig.add(new GraphConfig({
     graphName : "highScoreByDay"
     ,displayName: "High Score (by day)"
     ,graphType: "line"
+    ,displayOptions: {
+        keyGridCount: 10
+        //,hAxisLabel: "XXXXXXX"
+        ,keyType: "date"
+        ,hAxisTicks : clLib.date.getLastMonths(new Date(), 3, true)
+        ,hAxisFormat: 'MMM'
+    }
     ,statsOptions: {
-        entity:                 "RouteLog"
+        entity: "RouteLog"
         ,datePortion : {
             funcName : "localDayPortion"
         }
         ,aggFuncName:           "aggregateHighScoreByDatePortion"
         ,sortByFuncName:        "sort_localScoreAndDay"
-        ,aggTopX:               10
         ,sortDescFlag:          true
-        ,nrOfEligibleDays:      365
+        ,aggTopX:               10 // use top 10 results before day X 
+        ,nrOfEligibleDays:      365 // use top 10 results "nrOfEligibleDays" before day X
+        ,baseDate:              new Date()
+        ,firstDate:             function() {
+            var x = new Date();
+            x.setMonth(x.getMonth() -3);
+            return x;
+        } ()
+//        ,where: clLib.colBetweenDate("DateISO", new Date(2001,4,1), new Date(2015,7,1))
     }
+
 }));
 routeLogConfig.add(new GraphConfig({
     graphName : "top10AllTimes"

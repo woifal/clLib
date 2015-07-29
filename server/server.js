@@ -815,12 +815,12 @@ server.get('/stats',
         util.log("got options >" + JSON.stringify(options) + "<");
         
         //options = JSON.parse(options);
-		var whereObj = options["where"] || "{}";
-        whereObj = JSON.parse(whereObj);
+		var whereObj = options["where"] || {};
+//        whereObj = JSON.parse(whereObj);
 
-        util.log("OLD WHERE >>>" + JSON.stringify(whereObj) + "<<<<");
-		whereObj = $.extend(whereObj, clLib.mongoNe("deleted",1));;
-        util.log("NEW WHERE >>>" + JSON.stringify(whereObj) + "<<<<");
+        //util.log("OLD WHERE >>>" + JSON.stringify(whereObj) + "<<<<");
+		//whereObj = $.extend(whereObj, clLib.mongoNe("deleted",1));;
+        //util.log("NEW WHERE >>>" + JSON.stringify(whereObj) + "<<<<");
         options["where"] = whereObj;
 
         

@@ -1940,7 +1940,7 @@ clLib.UI.addCollapsiblesNEW = function(options) {
 	}
 	
 	clLib.loggi("adding collapsible children..>" + JSON.stringify(items));
-	clLib.UI.addCollapsiblesChildren($containerContent, items, options["createItemFunc"], 2, false, options); //true);
+	clLib.UI.addCollapsiblesChildren($containerContent, items, options["createItemFunc"], options["itemsShown"] || 2, false, options); //true);
 	clLib.loggi("added coll children");
     clLib.loggi("containerContent iiiiiiiiiiiiiiis" + $containerContent[0].outerHTML);
 	if(needToAppendContent) {
@@ -1960,6 +1960,7 @@ clLib.UI.addCollapsiblesNEW = function(options) {
 				,items : items
 				,clearCurrentItems : false
                 ,createItemFunc: options["createItemFunc"]
+                ,classes: options["classes"]
 			});
 			
 			// Scroll down so that collapsible header in on top of viewport..
@@ -2002,6 +2003,10 @@ clLib.UI.addCollapsiblesChildren = function($containerEl, dataObj, createItemFun
 	if(!dataObj || Object.keys(dataObj).length == 0) {
 		dataObj = [];
 	}
+
+//    alert("adding classes " + options["classes"].join(" ") + "<");
+    var classes = options["classes"] || [];
+
 	console.log("adding >" + count + "< items (now: >" + itemsShown + "< from >" + JSON.stringify(dataObj.length) + "<");
 	$.each(dataObj.slice(itemsShown, itemsShown + count), function(index, dataRow) {
 		var $itemsToAdd = createItemFunc(dataRow);
@@ -2011,16 +2016,17 @@ clLib.UI.addCollapsiblesChildren = function($containerEl, dataObj, createItemFun
 		*/
 		if($itemsToAdd instanceof Array) {
 			$.each($itemsToAdd, function(index, $item) {
-				$containerEl.append($item);
+				$item.addClass(classes.join(" "))
+
+                $containerEl.append($item);
 			});
 		} else {
-			$containerEl.append($itemsToAdd);
+            $itemsToAdd.addClass(classes.join(" "))
+            $containerEl.append($itemsToAdd);
 		}
 	});
 
 	var $addMoreElement = $containerEl.find(".addMore").remove();
-//    alert("adding classes " + options["classes"].join(" ") + "<");
-    var classes = options["classes"] || [];
     
 	$addMoreElement = $("<div>")
 		.addClass("addMore")

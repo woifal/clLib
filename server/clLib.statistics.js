@@ -71,6 +71,11 @@ clStats.prototype.getEntityStats = function(options, callbackFunc, errorFunc) {
     var finalStatsResults = {};
     var currentUser = "";
     
+    
+    util.log("where clause BEFORE PREPROCESSING >" + JSON.stringify(options["where"]) + "<");
+//    clLib.preProcess(options["where"]);
+    util.log("where clause AFTER PREPROCESSING >" + JSON.stringify(options["where"]) + "<");
+    
     var getEntityStatsInnerFunc = function() {
         util.log("GETENTITYSTATSINNFERFUNC >>" + currentUser + "<<");
         // fetch routes for currently iterated user(and keep other where clauses)..
@@ -82,6 +87,9 @@ clStats.prototype.getEntityStats = function(options, callbackFunc, errorFunc) {
                 }
             ]
         };
+        
+        util.log("WHERE Is >" + JSON.stringify(myWhere) + "<");
+        //process.exit();
 //        options["where"]["username"] = currentUser;
         return DBHandler.getEntities({
             entity : options.statsOptions.entity 
@@ -349,40 +357,53 @@ clStats.aggregateHighScoreByDatePortion = function(routeLogArr, options) {
                 datePortions[datePortion] = true;
             }
         }
-        clLib.loggi("Found discint date portions >" + JSON.stringify(datePortions) + "<");
+        clLib.loggi("Found distinct date portions >" + JSON.stringify(datePortions) + "<");
         var datePortionsArr = Object.keys(datePortions);
         //datePortionsArr = ["2015-07-26", "2015-03-15"];
         for(var i = 0; i < datePortionsArr.sort().length; i++) {
+            
             var datePortion = datePortionsArr[i];
-            
-            clLib.loggi("datePortion is>" + datePortion + "<");
-            if(!(datePortion in aggResultObj)) {
-                aggResultObj[datePortion] = {
-                    count : 0
-                    ,score : 0
-                    ,items : []
-                };
+
+            console.log(">>>>> " + JSON.stringify(options.statsOptions.firstDate));
+            console.log(">>>>> " + JSON.stringify(datePortion) + " <-> " + JSON.stringify(datePortionFunc(options.statsOptions.firstDate)));
+            if(
+                datePortion > datePortionFunc(options.statsOptions.baseDate) || 
+                datePortion < datePortionFunc(options.statsOptions.firstDate)
+            ) {
+                console.log("ignoring date >" + datePortion + "<");
+                1;
             }
-            
-            clLib.loggi("--------------------------------");
-            clLib.loggi("--------------------------------");
-            clLib.loggi("--------------------------------");
-            clLib.loggi("--------------------------------");
-            clLib.loggi("Computing high score...");
-            // Compute high score in all given routes max 365 in the past to the 
-            // currently processed date...
-            var fooOptions = options;
-            fooOptions["day"] = datePortion;
-            fooOptions["daysBack"] = options.statsOptions["nrOfEligibleDays"];
-            $.extend
-            var highScore = clStats.computeHighScore(
-                routeLogArr
-                ,fooOptions
-            );
-            
-            aggResultObj[datePortion] = highScore;
+            else {
+                
+                console.log("datePortion is>" + datePortion + "<");
+                if(!(datePortion in aggResultObj)) {
+                    aggResultObj[datePortion] = {
+                        count : 0
+                        ,score : 0
+                        ,items : []
+                    };
+                }
+                
+                clLib.loggi("--------------------------------");
+                clLib.loggi("--------------------------------");
+                clLib.loggi("--------------------------------");
+                clLib.loggi("--------------------------------");
+                clLib.loggi("Computing high score...");
+                // Compute high score in all given routes max 365 in the past to the 
+                // currently processed date...
+                var fooOptions = options;
+                fooOptions["day"] = datePortion;
+                fooOptions["daysBack"] = options.statsOptions["nrOfEligibleDays"];
+                $.extend
+                var highScore = clStats.computeHighScore(
+                    routeLogArr
+                    ,fooOptions
+                );
+                
+                aggResultObj[datePortion] = highScore;
+            }
         }
-        JSON.stringify("XXXXXXXXXXXXX" + aggResultObj);
+        clLib.loggi("XXXXXXXXXXXXX" + JSON.stringify(aggResultObj));
         return aggResultObj;
     } catch(e)  {
         util.log("EXCEPTION!!!!!");
