@@ -2280,9 +2280,9 @@ clLib.UI.createCollapsible = function(options) {
     ;
     
     if(options["containerJQMOptions"]) {
-        alert(typeof(options["containerJQMOptions"]) + "->" + JSON.stringify(options["containerJQMOptions"]));
+        console.log(typeof(options["containerJQMOptions"]) + "->" + JSON.stringify(options["containerJQMOptions"]));
         $.each(options["containerJQMOptions"], function(key, value) {
-            alert(">" + options["title"]  + "< setting container content for >" + key + "< to >" + value + "<");
+            console.log(">" + options["title"]  + "< setting container content for >" + key + "< to >" + value + "<");
             $containerContent.attr(key, value);
         });
     }

@@ -1689,6 +1689,10 @@ clLib.UI.elements = {
 
             var containerOptions= {
                 container: $container
+                ,containerJQMOptions: {
+                    "data-collapsed": false
+                }
+
             };
             clLib.REST.requestStatsNew(
                 options
@@ -2347,9 +2351,7 @@ clLib.UI.pageConfig.buildTopRouteLogs = function(topRouteLogs, $containerOptions
         
         var $userCollapsible = clLib.UI.createCollapsible({
             container: $buddyRouteLogsSet
-            ,containerJQMOptions: {
-                "data-collapsed": false
-            }
+            ,containerJQMOptions: $containerOptions["containerJQMOptions"]
             ,title: username
             ,classes: [
                 "clRouteLogs", "clIconCollapsible", "clIconBlue"
