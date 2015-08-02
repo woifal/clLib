@@ -1636,10 +1636,13 @@ clLib.UI.elements = {
                 ,where: where
             }
             console.log("getting new stats..");
+            var containerOptions = {
+                container: $container
+            };
             clLib.REST.requestStatsNew(
                 options
                 ,function(resultObj) {
-                    return clLib.UI.pageConfig.buildTopRouteLogs(resultObj, $container);
+                    return clLib.UI.pageConfig.buildTopRouteLogs(resultObj, containerOptions);
                 }
                 ,function(e) {
                     alert("error!");
@@ -1683,10 +1686,14 @@ clLib.UI.elements = {
                 ,where: {}
             }
             console.log("getting new stats..");
+
+            var containerOptions= {
+                container: $container
+            };
             clLib.REST.requestStatsNew(
                 options
                 ,function(resultObj) {
-                    return clLib.UI.pageConfig.buildTopRouteLogs(resultObj, $container);
+                    return clLib.UI.pageConfig.buildTopRouteLogs(resultObj, containerOptions);
                 }
                 ,function(e) {
                     alert("error!");
