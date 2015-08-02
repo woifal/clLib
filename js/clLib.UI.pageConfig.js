@@ -2298,7 +2298,7 @@ clLib.UI.elements = {
 
             
 clLib.UI["pageConfig"] = {};
-clLib.UI.pageConfig.buildTopRouteLogs = function(topRouteLogs, $container) {
+clLib.UI.pageConfig.buildTopRouteLogs = function(topRouteLogs, $containerOptions) {
     topRouteLogs = JSON.parse(topRouteLogs);
     console.log("Todays routes is: " + JSON.stringify(topRouteLogs).substring(0, 100));
 
@@ -2316,7 +2316,7 @@ clLib.UI.pageConfig.buildTopRouteLogs = function(topRouteLogs, $container) {
     
     clLib.loggi("getting today's route logs..");
     var $buddyRouteLogsSet = clLib.UI.createCollapsibleSet({
-        container: $container
+        container: $containerOptions["container"]
     });
 
     clLib.loggi("todaysRouteLogs >" + JSON.stringify(topRouteLogs) + "<");
@@ -2336,9 +2336,13 @@ clLib.UI.pageConfig.buildTopRouteLogs = function(topRouteLogs, $container) {
         if(!bubbleScore) {
             bubbleScore = '-';
         }
-            
+        
+        
         var $userCollapsible = clLib.UI.createCollapsible({
             container: $buddyRouteLogsSet
+            ,containerJQMOptions: {
+                "data-collapsed": false
+            }
             ,title: username
             ,classes: [
                 "clRouteLogs", "clIconCollapsible", "clIconBlue"

@@ -2279,6 +2279,16 @@ clLib.UI.createCollapsible = function(options) {
         .addClass(classes.join(" "))
     ;
     
+    if(options["containerJQMOptions"]) {
+        alert(typeof(options["containerJQMOptions"]) + "->" + JSON.stringify(options["containerJQMOptions"]));
+        $.each(options["containerJQMOptions"], function(key, value) {
+            alert(">" + options["title"]  + "< setting container content for >" + key + "< to >" + value + "<");
+            $containerContent.attr(key, value);
+        });
+    }
+    
+    
+    
     var $title = $("<h3>" + options["title"] + "</h3>");
     
     if(options["bubble"]) {
@@ -2318,6 +2328,7 @@ clLib.UI.createCollapsibleSet = function(options) {
         .attr("data-inset", "false")
         .addClass(classes.join(" "))
     ;
+    
     $setContainer.append($containerContent);
     $setContainer.trigger("create");
 

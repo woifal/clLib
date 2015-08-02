@@ -35,7 +35,13 @@ var googlechartsGraphHandler = {
         var sortFunction;
         if(graphConfig["displayOptions"]["keyType"] == "number") {
             sortFunction = function compareNumbers(a, b) {
-                return a - b;
+//                if(graphConfig["statsOptions"]["sortDescFlag"] == true) {
+//                    alert("yes, sort descending..");
+//                    return a - b;
+//                }
+//                else {
+                    return a-b;
+//                }
             }
         }
             
@@ -87,16 +93,18 @@ var googlechartsGraphHandler = {
                     }
                 }
             });
+            console.log("minVal is >" + minVal + "<");
             return minVal;
         }
         var getMaxValue = function(graphData) {
-            var minVal = 0;
+            var maxVal = 0;
             $.each(graphData, function(idx, dataRow) {
                 for(var i = 1; i < dataRow.length; i++) {
-                    minVal = Math.max(minVal, dataRow[i]);
+                    maxVal = Math.max(maxVal, dataRow[i]);
                 }
             });
-            return minVal;
+            console.log("maxVal is >" + maxVal + "<");
+            return maxVal;
         }
                             
         function drawChart() {
@@ -222,16 +230,13 @@ var googlechartsGraphHandler = {
 /*                    ,gridlines: {
                         count: graphConfig["displayOptions"]["keyGridCount"]
                     }*/
-                    ,ticks: graphConfig["displayOptions"]["hAxisTicks"] || []
+                    ,ticks: graphConfig["displayOptions"]["hAxisTicks"] || null
                     ,slantedText: true
                     ,slantedTextAngle: 30
                     ,format: graphConfig["displayOptions"]["hAxisFormat"] || null
                 }
                 ,vAxis: {
                     minValue: 0
-                    ,viewWindow: {
-                        min: minValue - 500
-                    }
                     ,gridlines: {
                         count: graphConfig["displayOptions"]["vAxisGridLines"] || 10
                     }
@@ -246,6 +251,12 @@ var googlechartsGraphHandler = {
     
             };
 
+            if(graphConfig.graphType.indexOf("line") > -1) {
+                options["vAxis"]["viewWindow"] = {
+                    min: minValue // - 500
+                };
+            }
+            
             var chartDiv = $(graphConfig.collection.containerSelector)[0];
             console.log("chartDiv is " + chartDiv.outerHTML);
             
@@ -258,14 +269,15 @@ var googlechartsGraphHandler = {
             if(graphConfig.graphType.indexOf("bar") > -1) {
                 chart = new google.visualization.BarChart(chartDiv);
             }
-
+/*
 
             chart.setAction({
                 id: 'details',
-                text: 'Show details',
+                //text: '',
                 action: function() {
-                    data.setCell(chart.getSelection()[0].row, 1,
-                        data.getValue(chart.getSelection()[0].row, 1) + 20);
+alert(111);                   
+                   data.setCell(chart.getSelection()[0].row, 1,
+                        data.getValue(chart.getSelection()[0].row, 1)); // + 20);
                     chart.draw(data, options);
 
 
@@ -313,7 +325,7 @@ var googlechartsGraphHandler = {
             });
 
 
-
+*/
 
 
 

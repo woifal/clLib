@@ -221,7 +221,7 @@ clLib.date.getLastMonths = function(baseDate, numOfMonths, includeBaseDate) {
   }
   
   if(includeBaseDate) {
-    dateArr.unshift({v: baseDate, f: 'now'});
+    dateArr.unshift({v: baseDate, f: ''});
   }
   return dateArr;
 }
