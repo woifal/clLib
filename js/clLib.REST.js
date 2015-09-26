@@ -151,7 +151,8 @@ clLib.REST.executeInsert = function(uri, method, objData, successFunc, errorFunc
 		
 //clLib.REST.execAJAXRequest = function (uri, method, params, allowNoSessionToken) {
 clLib.REST.execAJAXRequest = function (options, successFunc, errorFunc) {
-	var request = clLib.REST.buildAJAXRequest(
+	//alert("AJAX executing >" + JSON.stringify(options) + "<");
+    var request = clLib.REST.buildAJAXRequest(
 		options
 		, successFunc
 		, errorFunc
@@ -343,10 +344,10 @@ clLib.REST.requestVerification = function(userInstance, successFunc, errorFunc) 
 
 clLib.REST.requestStatsNew = function(options, successFunc, errorFunc) {
     var reqOptions = {};
-/*    if(options["where"]) {
+    if(options["where"]) {
        options["where"] = JSON.stringify(options["where"]);
     }
-*/
+
     console.log("requesting with where clause >" + JSON.stringify(options["where"]) + "<");
     reqOptions["uri"] = clLib.REST.clLibServerURI + "/stats";
 	reqOptions["method"] = "GET";
@@ -357,6 +358,7 @@ clLib.REST.requestStatsNew = function(options, successFunc, errorFunc) {
 		whereObj = "where=" + encodeURIComponent(JSON.stringify(whereObj));
 	}
     */
+    //alert("requesting >" + JSON.stringify(options) + "<");
 	return clLib.REST.execAJAXRequest(reqOptions, successFunc, errorFunc);
 };
 
