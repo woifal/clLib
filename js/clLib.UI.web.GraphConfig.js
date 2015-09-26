@@ -278,6 +278,8 @@ routeLogConfig.add(new GraphConfig({
         ,nrOfEligibleDays:      9999
         ,startIdx:                 0
         ,endIdx:                   10
+//        ,where: clLib.colBetweenDate("DateISO", new Date(2001,4,1), new Date(2015,7,1))
+
     }
 }));
 routeLogConfig.add(new GraphConfig({
