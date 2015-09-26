@@ -1158,11 +1158,12 @@ clLib.mongoNe = function(colName,colValue) {
     '                        "$exists" : true             \n' + 
     '                    }                                \n' + 
     '                },                                   \n' + 
-    '                {                                    \n' + 
-    '                    "' + colName + '": {             \n' + 
+    '                      {"' + colName + '": {             \n' + 
     '                        "$ne" : ' + JSON.stringify(colValue) + '   \n' + 
-    '                    }                                \n' + 
-    '                }                                    \n' + 
+    '                      }}    \n' + 
+    '                      ,{"' + colName + '": {             \n' + 
+    '                        "$ne" : "' + JSON.stringify(colValue) + '"   \n' + 
+    '                      }}                                \n' + 
     '            ]                                        \n' + 
     '        }                                            \n' + 
     '        ,                                            \n' + 
@@ -1174,9 +1175,67 @@ clLib.mongoNe = function(colName,colValue) {
     '    ]                                                \n' + 
     '}                                                    \n' + 
     '';
+    console.error(mongoClauseStr);
     var mongoClause = JSON.parse(mongoClauseStr);
     return mongoClause;
 }
+
+clLib.isArray = function(foo) {
+    return (Object.prototype.toString.call( foo ) === '[object Array]' );
+};
+clLib.isObject = function(foo) {
+    return typeof(foo) == 'object';
+};
+clLib.removeNullArrElements = function(object) {
+    var clEach = function(object, callback) {
+        util.log("eaching >" + JSON.stringify(object) + "<");
+        if(isObject(object)) {
+            var objKeys = Object.keys(object);
+            var i;
+            for(i = 0; i < objKeys.length; i++) {
+                callback(objKeys[i], object[objKeys[i]]);
+            }
+        }
+        else if(isArray(object)) {
+            for(i = 0; i < object.length; i++) {
+                callback(i, object[i]);
+            }
+            
+        }
+     };
+
+
+
+    if(clLib.isArray(object)) {
+        console.log("yes, array: " + JSON.stringify(object));
+        var newArr = [];    
+        clEach(object, function(idx, value) {
+            //if (object.hasOwnProperty(value)) {
+                console.log("checking >" + value + "<(" + typeof(value) + ")   ");
+                if(typeof(value) != 'undefined' && value !== null) {
+                    newArr.push(clLib.removeNullArrElements(value));
+                }
+            //}
+        });
+        return newArr;
+    }
+    else if(clLib.isObject(object)) {
+      console.log("yes, object: " + JSON.stringify(object));
+        
+      var newObj = {};
+      clEach(object, function(key, value) {
+        newObj[key] = clLib.removeNullArrElements(object[key]);
+        
+      });
+      return newObj;
+    }
+    else {
+        return object;
+    }
+};
+
+
+
 
 clLib.foo = "blerl";
 //exports.clLib = clLib;
