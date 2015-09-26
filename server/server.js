@@ -799,6 +799,8 @@ server.get('/setPassword', function(req, res) {
 
 });
 	
+
+    
 server.get('/stats', 
 		//authHandler.requiredAuthentication, 
 		function(req, res) 
@@ -807,20 +809,27 @@ server.get('/stats',
 		util.log("ERROR CAUGHT:\n>>>\n" + JSON.stringify(errorObj) + "\n<<<<<\n\n");
         return clLib.server.defaults.errorFunc(errorObj, res);
 	}
+    
+    try {
 
-	try {
-		
-		util.log("2getting.." + JSON.stringify(req.params));
-		var options = req.params;
+
+       util.log("2getting.." + JSON.stringify(req.params));
+       var options = req.params;
         util.log("got options >" + JSON.stringify(options) + "<");
-        
-        //options = JSON.parse(options);
-		var whereObj = options["where"] || {};
-//        whereObj = JSON.parse(whereObj);
+        var whereObj = options["where"] || "{}";
+        whereObj = JSON.parse(whereObj);
+        util.log("WHEREEEE 1>" + JSON.stringify(whereObj) + "<");
 
-        //util.log("OLD WHERE >>>" + JSON.stringify(whereObj) + "<<<<");
-		//whereObj = $.extend(whereObj, clLib.mongoNe("deleted",1));;
-        //util.log("NEW WHERE >>>" + JSON.stringify(whereObj) + "<<<<");
+
+        //whereObj = removeNullArrElements(whereObj);
+        //util.log("WHEREEEE 2>" + JSON.stringify(whereObj) + "<");
+
+        
+        
+        
+        util.log("OLD WHERE >>>" + JSON.stringify(whereObj) + "<<<<");
+		whereObj = $.extend(whereObj, clLib.mongoNe("deleted",1));;
+        util.log("NEW WHERE >>>" + JSON.stringify(whereObj) + "<<<<");
         options["where"] = whereObj;
 
         
@@ -839,6 +848,50 @@ server.get('/stats',
             }
             , errHandler
 		);
+	} catch(e) {
+		errHandler(new Error("UNHANDLED SERVER ERROR "  + e.name + " IS " + e.message + " !!!"));
+	}
+
+
+});
+
+var foo = {
+    a: [1,2,"null", 4]
+  ,b: [4,5,6]
+  ,c: {
+    c1: "foo"
+    ,c2: [
+        7,8,"null", 9
+    ]
+    ,c3: [
+      10,,,11,{
+      "a":  [45,46,"null", 47]
+    }
+    ]
+  }
+};
+
+
+server.get('/testparams', 
+		//authHandler.requiredAuthentication, 
+		function(req, res) 
+{
+	var errHandler = function(errorObj) {
+		util.log("ERROR CAUGHT:\n>>>\n" + JSON.stringify(errorObj) + "\n<<<<<\n\n");
+        return clLib.server.defaults.errorFunc(errorObj, res);
+	}
+
+	try {
+        util.log("PARAMS: >" + JSON.stringify(req.params) + "<");
+        var testJSON = req.params["testJSON"];
+        util.log("TESTJSON(as str): >" + testJSON + "<");
+
+        testJSON = JSON.parse(testJSON);
+        util.log("TESTJSON(as obj): >" + JSON.stringify(testJSON) + "<");
+        
+        
+                util.log("sending response..");
+                res.send("ok");
 	} catch(e) {
 		errHandler(new Error("UNHANDLED SERVER ERROR "  + e.name + " IS " + e.message + " !!!"));
 	}
