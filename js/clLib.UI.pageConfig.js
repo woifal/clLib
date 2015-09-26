@@ -1668,7 +1668,9 @@ clLib.UI.elements = {
             }
 			
             clLib.loggi("getting today's top route logs..");
-
+            //var where = $.extend({}, clLib.mongoNe("deleted",1));
+            var where = {};
+            //alert("FOR WHERE >" + JSON.stringify(where) + "<");
             var options = {
                 statsOptions: {
                     entity:                 "RouteLog"
@@ -1683,7 +1685,8 @@ clLib.UI.elements = {
                 }
                 ,pagingStart:               0
                 ,users: clLib.UI.pageConfig.getUsersToFetchFor().join(",")
-                ,where: {}
+                    ,where: where
+            
             }
             console.log("getting new stats..");
 
