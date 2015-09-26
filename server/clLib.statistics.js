@@ -78,9 +78,15 @@ clStats.prototype.getEntityStats = function(options, callbackFunc, errorFunc) {
     
     var getEntityStatsInnerFunc = function() {
         util.log("GETENTITYSTATSINNFERFUNC >>" + currentUser + "<<");
+        if(!options["statsOptions"]["where"]) {
+            options["statsOptions"]["where"] = {};
+        }
+        util.log("\n\nXXXXXXXXXXXXXXXX\n\n >>" + JSON.stringify(options["where"])  + "<<");
+        util.log("\n\nYYYYYYYYYYYYYYYY\n\n >>" + JSON.stringify(options["statsOptions"]["where"])  + "<<");
         // fetch routes for currently iterated user(and keep other where clauses)..
         var myWhere = {
             "$and": [
+//                options["statsOptions"]["where"]
                 options["where"]
                 ,{
                     "username": currentUser
