@@ -119,7 +119,9 @@ clLib.UI.saveHandlers= {
                 var msgOptions = { 
                     name: "notifyBuddies"
                     ,username: clLib.getUserInfo()["username"]
-                    ,text: ">" + clLib.getUserInfo()["username"] + "< saved a route with >" + clLib.computeScore(resultObj) + "< points."
+                    // Issue #237: Use yet computed score instead of recalculating..
+                    //,text: ">" + clLib.getUserInfo()["username"] + "< saved a route with >" + clLib.computeScore(resultObj) + "< points."
+                    ,text: ">" + clLib.getUserInfo()["username"] + "< saved a route with >" + resultObj["Score"] + "< points."
                 };
                 
                 //alert("sending msg >" + JSON.stringify(msgOptions) + "< to buddies");
@@ -142,7 +144,9 @@ clLib.UI.saveHandlers= {
                 var msg = { 
                     name: "notifyBuddies"
                     ,username: clLib.getUserInfo()["username"]
-                    ,text: ">" + clLib.getUserInfo()["username"] + "< saved a route with >" + clLib.computeScore(resultObj) + "< points."
+                    // Issue #237: Use yet computed score instead of recalculating..
+                    //,text: ">" + clLib.getUserInfo()["username"] + "< saved a route with >" + clLib.computeScore(resultObj) + "< points."
+                    ,text: ">" + clLib.getUserInfo()["username"] + "< saved a route with >" + resultObj["Score"] + "< points."
                 };
                 //alert("sending msg >" + JSON.stringify(msg) + "< to buddies");
                 clLib.webSocketClient.send(msg);
