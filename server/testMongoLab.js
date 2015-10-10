@@ -13,6 +13,7 @@ var args = process.argv.splice(2);
 var tableName = args[0];
 var whereObj = JSON.parse(args[1]);
 util.log("old where: >" + JSON.stringify(whereObj) + "<");
+/*
 whereObj = {
         "$and" : [
             { username: { "$eq": "gere@chello.at" } }
@@ -51,46 +52,32 @@ whereObj = {
 //                ,"$lt": new Date("2015-07-31T22:00:00.000Z")
              }
         }
-/*        ,
-        {"username":"gere@chello.at"}
-*/
     ]
 };
 whereObj = {
-"$and" : [
- { Grade: { "$eq": "X" } }
- ,{ username: { "$eq": "gere@chello.at" } }
-/*
- ,          
-{                                                    
     "$or": [                                         
-    {                                                
+        {                                                
             "$and": [                                
                 {                                    
-                    "deleted": {             
+                    "Score": {             
                         "$exists" : true             
                     }                                
                 },                                   
-                      {"deleted": {             
-                        "$ne" : 1   
-                      }}    
-                      ,{"deleted": {             
-                        "$ne" : "1"   
-                      }}                                
+                      {"Score": {             
+                        "$eq" : 0   
+                      }}                           
             ]                                        
         }                                            
         ,                                            
         {                                            
-            "deleted": {                     
+            "Score": {                     
                 "$exists" : false                    
             }                                        
         }                                            
     ]                                                
-}
-*/
-]
-}
-;
+
+};
+*/  
 util.log("new where: >" + JSON.stringify(whereObj) + "<");
            
 var distinctColName = args[2];
@@ -116,9 +103,29 @@ function testQuery(nextFunc) {
 		}
 		
 		util.log("length" + JSON.stringify(items.length));
-		util.log("items" + JSON.stringify(items));
+		//util.log("items" + JSON.stringify(items));
 	});
 
+};
+
+function testAggregate(nextFunc) {
+	var coll = conn.collection(tableName);
+	if(!coll) {
+		util.log("NO coll " + tableName + "found..");
+	}
+    var aggClause = [
+        { $match: whereObj },
+        { $group: { _id: "$username",
+                    maxDate: { $max: "$DateISO" } } }
+    ] ;
+    util.log(JSON.stringify(aggClause));
+    coll.aggregate( 
+    aggClause
+    ,function(x,y) {
+        util.log("XXXXXXXXXXXX >" + JSON.stringify(x) + "<>" + JSON.stringify(y) + "<");
+    }
+    );
+    
 };
 
 
@@ -210,6 +217,7 @@ function testDistinct(nextFunc) {
 //})
 //return testQuerySortLimit()
 return testQuery()
+//return testAggregate()
 ;
 //testUpdate(1);
 
