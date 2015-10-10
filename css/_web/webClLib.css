@@ -99,6 +99,9 @@ table.dataTable.display tbody tr td {
 	padding-top: 4px;
 	padding-bottom: 4px;
 }
+table.dataTable.display tbody tr td.Comment {
+	text-align: left; 
+}
 
 table.dataTable.display tbody tr.even {
 	abackground-color: #0954a8; /* dropdown-blue */
