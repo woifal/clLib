@@ -128,7 +128,9 @@ clLib.calculateScore = function(routeLogs) {
 	var totalScore = 0;
 	for (var i = 0; routeLogs && (i < routeLogs.length); i++) {
 		var routeLog = routeLogs[i];
-		totalScore += clLib.computeScore(routeLog);
+		// Issue #237: Use yet computed score instead of recalculating..
+        //totalScore += clLib.computeScore(routeLog);
+        totalScore += routeLog["Score"];
 	}
 	clLib.loggi("Total score is " + totalScore);
     return totalScore;
@@ -688,7 +690,9 @@ clLib.addObjKey = function(anObj, pathArr) {
 
 clLib.sortByScoreFunc = function(routeLog) {
 	//alert("functon called!" + JSON.stringify(routeLog));
-	return clLib.computeScore(routeLog);
+	// Issue #237: Use yet computed score instead of recalculating..
+    //return clLib.computeScore(routeLog);
+    return routeLog["Score"];
 };
 
 
