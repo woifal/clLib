@@ -163,122 +163,6 @@ clLib.tickTypeSymbol = function(tickTypeName, tickTypeValue, dataRow) {
 };
 
 
-/*
-clLib.UI.list.formatRouteLogRow = function(dataRow) {
-	var dataFormat = {
-		header: {
-			"Colour": clLib.tickTypeSymbol
-			,"Grade": null
-			, "tickType_redpoint" : clLib.tickTypeSymbol 
-			, "tickType_flash" : clLib.tickTypeSymbol 
-			, "tickType_attempt" : clLib.tickTypeSymbol 
-			, "tickType_toprope" : clLib.tickTypeSymbol 
-		}
-		,bubble: {
-			"Score" : null
-			, "tickType_delete" : clLib.tickTypeSymbol 
-		,
-		}
-		,body: {
-			header: "RouteName",
-			items: {
-				"DateISO" : clLib.ISOStrToDate
-				,"Sector" : false
-				,"Line" : false 
-				,"Colour" : false 
-				,"Comment" : false
-			}
-		}
-	};
-	
-	// compute score
-	dataRow.Score = clLib.computeScore(dataRow);
-	
-	//alert(JSON.stringify(dataRow));
-	var headerText = $("<div></div>");
-	var $bubble, $headerItem, $bodyItem, $bodyHeader;
-	var listItems = [];
-
-	$.each(dataFormat["header"], function(headerName, headerFunc) {
-		if(headerFunc) {
-			headerText.append(
-				headerFunc(headerName, dataRow[headerName], dataRow)
-			);
-		} else {
-			//alert("no headerfunc foc " + headerName);
-			headerText.append(dataRow[headerName]);
-		}
-	});
-
-//	headerText = headerText.join(" ", headerText);
-	
-	$bubble = $("<span>")
-		.addClass("ui-li-count")
-//		.append(dataRow[dataFormat["bubble"]])
-	;
-	
-	$.each(dataFormat["bubble"], function(headerName, headerFunc) {
-		if(headerFunc) {
-			$bubble.append(
-				headerFunc(headerName, dataRow[headerName], dataRow)
-			);
-		} else {
-			//alert("no headerfunc foc " + headerName);
-			$bubble.append(dataRow[headerName]);
-		}
-	});	
-
-	$headerItem = $("<li>")
-		.attr("data-role", "list-divider")
-		.append(headerText)
-		.append($bubble)
-	;
-	listItems.push($headerItem);
-
-	$bodyHeader = $("<h1>")
-		.html(dataRow[dataFormat["body"]["header"]])
-	;
-
-	$bodyItem = $("<li>")
-		.append($bodyHeader);
-	;
-
-	$.each(dataFormat["body"]["items"], function(keyName, keyFunc) {
-		var $someStrong = $("<strong>")
-			.html(keyName + ": ");
-		var $someP = $("<p>")
-			.append($someStrong)
-		;
-		alert(1);
-		alert(typeof(dataRow[keyName]));
-		if(typeof(dataRow[keyName]) == "function") {
-			$someP.append(dataRow[keyName](dataFormat["body"]["items"][keyName]));
-		} else {
-			$someP.append(dataRow[keyName])
-		}
-		;
-		$bodyItem
-			.append($someP)
-		;
-
-	});
-
-
-	// Hide body initially
-	$bodyItem.hide();
-	
-	// Show body on header click
-	$headerItem.click(function() {
-		$bodyItem.toggle();
-	});
-	
-	listItems.push($bodyItem);
-	
-	return listItems;
-
-};
-*/
-
 clLib.createRadioButtons = function(options) {
 	// disable current onChange handler
 	var elementName = clLib.UI.elementNameFromId(options.selectBoxElement.attr("id"));
@@ -1479,6 +1363,11 @@ clLib.UI.RESTSaveHandler = function (options, successFunc, errorFunc) {
             saveObj[dbField] = clLib.UI.getVal(elementName);
         }
     });
+    
+    // Issue #237: Compute score when saving...
+    saveObj["Score"] = clLib.computeScore(saveObj);
+    
+    
     console.log("saveObj is " + JSON.stringify(saveObj));
 	var dbEntity = "RouteLog";
 	//alert("options " + JSON.stringify(options));
@@ -2122,7 +2011,9 @@ clLib.UI.collapsible.formatRouteLogRow = function(dataRow) {
 	
 	
 	// compute score
-	dataRow.Score = clLib.computeScore(dataRow);
+    // Issue #237: Use yet computed score..
+	//dataRow.Score = clLib.computeScore(dataRow);
+	dataRow.Score = dataRow["Score"];
 	
 	//alert(JSON.stringify(dataRow));
 	var headerText = $('<div></div>');
