@@ -383,7 +383,7 @@ clLib.webFieldConfig = {
 			fieldName : "clControls"
 			,displayName: function() {
 				var $ctlEl = $("<span>");
-				$ctlEl.append($("<img src='/KURT/files/views/assets/image/dummy.png' class='clAdd'>")
+				$ctlEl.append($("<img src='/KURT/files/views/assets/image/dummy.png' class='clAdd' title='Add new route'>")
 				);
 				return $ctlEl[0].outerHTML;
 			}()
@@ -710,9 +710,7 @@ clLib.webFieldConfig = {
 			}
 			,renderFunc : function(colData, rowData) { 
                 var tickTypeFound = colData;
-                
                 console.log("getting ticktype for >" + tickTypeFound + "<");
-
                 var $tickType = clLib.tickTypeSymbol(tickTypeFound, 1);
                 var $tickTypeDiv = $("<div>")
                     .addClass("clTicktypes")
@@ -735,12 +733,17 @@ clLib.webFieldConfig = {
 					var fieldConfig = this.config;
 					
 					var $colourDisplay; 
-					$colourDisplay = fieldConfig.renderFunc(currentValue);
+					// [2015-10-10 WD] Set repoint as default value(mainly for new route logs...)
+                    if(currentValue == "") {
+                        currentValue = "redpoint";
+                    }
+                    $colourDisplay = fieldConfig.renderFunc(currentValue);
 					console.log("1" + $colourDisplay);
                     $colourDisplay = $($colourDisplay);
 					console.log("2" + $colourDisplay.html());
-					$colourDisplay.data("clValue", currentValue);
 					
+
+					$colourDisplay.data("clValue", currentValue);
 					this.config.getAvailableItems(
 						null
 						,null
@@ -807,7 +810,9 @@ clLib.webFieldConfig = {
 			,visible: true
 			,dummyField: true
 			,renderFunc : function(colValue, rowValue) {
-                var score = clLib.computeScore(rowValue);
+                // Issue #237: Use yet computed score instead of recalculating..
+                //var score = clLib.computeScore(rowValue);
+				var score = rowValue["Score"];
 				console.log("returning score of >" + score + "<");
 				return score;
 			}
