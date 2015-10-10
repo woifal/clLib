@@ -201,15 +201,19 @@ clStats.sort_localDayAndScore = function(routeLog, options) {
         util.log("error while getting datePortionFunc >" + e + "<");
         return "X";
     }
-    var evalResult = datePortionFunc(routeLog["DateISO"]) + "_" + clLib.lpad(clLib.computeScore(routeLog), '0', 6);
+    // Issue #237: Use yet computed score instead of recalculating..
+    //var evalResult = datePortionFunc(routeLog["DateISO"]) + "_" + clLib.lpad(clLib.computeScore(routeLog), '0', 6);
+    var evalResult = datePortionFunc(routeLog["DateISO"]) + "_" + clLib.lpad(routeLog["Score"], '0', 6);
     clLib.loggi("got evalResult >" + evalResult + "<");
     return evalResult;
 };
 clStats.sort_score = function(routeLog, options) {
     clLib.loggi("sort_score " + JSON.stringify(routeLog));
     clLib.loggi("2sort_score " + JSON.stringify(options));
-    
-    var evalResult = clLib.lpad(clLib.computeScore(routeLog), '0', 6);
+
+    // Issue #237: Use yet computed score instead of recalculating..
+    //var evalResult = clLib.lpad(clLib.computeScore(routeLog), '0', 6);
+    var evalResult = clLib.lpad(routeLog["Score"], '0', 6);
     clLib.loggi("got evalResult >" + evalResult + "<");
     return evalResult;
 };
@@ -217,7 +221,9 @@ clStats.sort_localScoreAndDay = function(routeLog, options) {
     clLib.loggi("sort_locaDayAndScore " + JSON.stringify(routeLog));
     clLib.loggi("2sort_locaDayAndScore " + JSON.stringify(options));
     var datePortionFunc = clStats.getDatePortionFunc(options.statsOptions);
-    var evalResult = clLib.lpad(clLib.computeScore(routeLog), '0', 6) + "_" + datePortionFunc(routeLog["DateISO"]);
+    // Issue #237: Use yet computed score instead of recalculating..
+    //var evalResult = clLib.lpad(clLib.computeScore(routeLog), '0', 6) + "_" + datePortionFunc(routeLog["DateISO"]);
+    var evalResult = clLib.lpad(routeLog["Score"], '0', 6) + "_" + datePortionFunc(routeLog["DateISO"]);
     clLib.loggi("got evalResult >" + evalResult + "<");
     return evalResult;
 };
@@ -266,8 +272,11 @@ var datePortion = datePortionFunc(routeLog["DateISO"]);
             }
             
             if(aggResultObj[datePortion].count < options.statsOptions.aggTopX) {
-                clLib.loggi("Adding score of >" + clLib.computeScore(routeLog) + "<");
-                aggResultObj[datePortion].score += clLib.computeScore(routeLog);
+                // Issue #237: Use yet computed score instead of recalculating..
+                //clLib.loggi("Adding score of >" + clLib.computeScore(routeLog) + "<");
+                //aggResultObj[datePortion].score += clLib.computeScore(routeLog);
+                clLib.loggi("Adding score of >" + routeLog["Score"] + "<");
+                aggResultObj[datePortion].score += routeLog["Score"];
                 aggResultObj[datePortion].count++;
                 aggResultObj[datePortion].items.push(routeLog);
             }
@@ -292,7 +301,9 @@ clStats.aggregateById= function(routeLogArr, options) {
             var routeLog = routeLogArr[i];
             var aggKey = 
                 "" + 
-                clLib.lpad(clLib.computeScore(routeLog), '0', 6)
+                // Issue #237: Use yet computed score instead of recalculating..
+                //clLib.lpad(clLib.computeScore(routeLog), '0', 6)
+                clLib.lpad(routeLog["Score"], '0', 6)
                 + "@"
                 + routeLog["DateISO"];
             foundCount++;
@@ -308,8 +319,11 @@ clStats.aggregateById= function(routeLogArr, options) {
                     }
                     
                     if(aggResultObj[aggKey].count < options.statsOptions.aggTopX) {
-                        clLib.loggi("Adding score of >" + clLib.computeScore(routeLog) + "<");
-                        aggResultObj[aggKey].score += clLib.computeScore(routeLog);
+                        // Issue #237: Use yet computed score instead of recalculating..
+                        //clLib.loggi("Adding score of >" + clLib.computeScore(routeLog) + "<");
+                        //aggResultObj[aggKey].score += clLib.computeScore(routeLog);
+                        clLib.loggi("Adding score of >" + routeLog["Score"] + "<");
+                        aggResultObj[aggKey].score += routeLog["Score"];
                         aggResultObj[aggKey].count++;
                         aggResultObj[aggKey].items.push(routeLog);
                     }
@@ -366,17 +380,19 @@ clStats.aggregateHighScoreByDatePortion = function(routeLogArr, options) {
         clLib.loggi("Found distinct date portions >" + JSON.stringify(datePortions) + "<");
         var datePortionsArr = Object.keys(datePortions);
         //datePortionsArr = ["2015-07-26", "2015-03-15"];
+        console.log(">>>>> working with dates >" + JSON.stringify(datePortionsArr.sort()) + "<");
+
         for(var i = 0; i < datePortionsArr.sort().length; i++) {
             
             var datePortion = datePortionsArr[i];
 
-            console.log(">>>>> " + JSON.stringify(options.statsOptions.firstDate));
-            console.log(">>>>> " + JSON.stringify(datePortion) + " <-> " + JSON.stringify(datePortionFunc(options.statsOptions.firstDate)));
+//            console.log(">>>>> " + JSON.stringify(options.statsOptions.firstDate));
+//            console.log(">>>>> " + JSON.stringify(datePortion) + " <-> " + JSON.stringify(datePortionFunc(options.statsOptions.firstDate)));
             if(
                 datePortion > datePortionFunc(options.statsOptions.baseDate) || 
                 datePortion < datePortionFunc(options.statsOptions.firstDate)
             ) {
-                console.log("ignoring date >" + datePortion + "<");
+                //console.log("ignoring date >" + datePortion + "<");
                 1;
             }
             else {
@@ -409,6 +425,81 @@ clStats.aggregateHighScoreByDatePortion = function(routeLogArr, options) {
                 aggResultObj[datePortion] = highScore;
             }
         }
+        
+        
+        
+        
+        /*
+        *   [2015-10-10 WD] Calculate score for first day in date range - to have a starting point in the graph.
+        */
+        datePortion = datePortionFunc(options.statsOptions.firstDate);
+        console.log("datePortion is>" + datePortion + "<");
+        if(!(datePortion in aggResultObj)) {
+            aggResultObj[datePortion] = {
+                count : 0
+                ,score : 0
+                ,items : []
+            };
+        }
+        
+        clLib.loggi("--------------------------------");
+        clLib.loggi("--------------------------------");
+        clLib.loggi("--------------------------------");
+        clLib.loggi("--------------------------------");
+        clLib.loggi("Computing high score...");
+        // Compute high score in all given routes max 365 in the past to the 
+        // currently processed date...
+        var fooOptions = options;
+        fooOptions["day"] = datePortion;
+        fooOptions["daysBack"] = options.statsOptions["nrOfEligibleDays"];
+        var highScore = clStats.computeHighScore(
+            routeLogArr
+            ,fooOptions
+        );
+        
+        aggResultObj[datePortion] = highScore;        
+
+        /*
+        *   [2015-10-10 WD] Calculate score for first day in date range - to have a starting point in the graph.
+        */
+        datePortion = datePortionFunc(options.statsOptions.baseDate);
+        console.log("datePortion is>" + datePortion + "<");
+        if(!(datePortion in aggResultObj)) {
+            aggResultObj[datePortion] = {
+                count : 0
+                ,score : 0
+                ,items : []
+            };
+        }
+        
+        clLib.loggi("--------------------------------");
+        clLib.loggi("--------------------------------");
+        clLib.loggi("--------------------------------");
+        clLib.loggi("--------------------------------");
+        clLib.loggi("Computing high score...");
+        // Compute high score in all given routes max 365 in the past to the 
+        // currently processed date...
+        var fooOptions = options;
+        fooOptions["day"] = datePortion;
+        fooOptions["daysBack"] = options.statsOptions["nrOfEligibleDays"];
+        var highScore = clStats.computeHighScore(
+            routeLogArr
+            ,fooOptions
+        );
+        
+        aggResultObj[datePortion] = highScore;        
+
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
         clLib.loggi("XXXXXXXXXXXXX" + JSON.stringify(aggResultObj));
         return aggResultObj;
     } catch(e)  {
@@ -425,6 +516,7 @@ clStats.computeHighScore = function(routeLogArr, options) {
     var aggScores = 0;
     var eligRouteLogs = [];
     
+    console.log("Working at date >" + day + "<");
     for(var i = 0; i < routeLogArr.length; i++) {
         var routeLog = routeLogArr[i];
 		if(clStats.dateOlderThanDays(
@@ -433,8 +525,11 @@ clStats.computeHighScore = function(routeLogArr, options) {
             ,daysBack
         )) {
             if(count < options.statsOptions.aggTopX) {
-                clLib.loggi("Adding score of >" + clLib.computeScore(routeLog) + "<");
-                aggScores += clLib.computeScore(routeLog);
+                // Issue #237: Use yet computed score instead of recalculating..
+                //clLib.loggi("Adding score of >" + clLib.computeScore(routeLog) + "<");
+                //aggScores += clLib.computeScore(routeLog);
+                console.log("Adding score of >" + routeLog["Score"] + "<");
+                aggScores += routeLog["Score"];
                 eligRouteLogs.push(routeLog);
                 count++
             } else {
