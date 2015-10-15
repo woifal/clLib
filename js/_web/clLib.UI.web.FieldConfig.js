@@ -390,8 +390,8 @@ clLib.webFieldConfig = {
 			,orderable: false
 			,renderFunc : function(x) {
 				var $ctlEl = $("<div>");
-				$ctlEl.append($("<img src='/KURT/files/views/assets/image/dummy.png' class='clEdit'>"));
-				$ctlEl.append($("<img src='/KURT/files/views/assets/image/dummy.png' class='clDelete'>"));
+				$ctlEl.append($("<img src='/KURT/files/views/assets/image/dummy.png' class='clEdit' title='Edit route'>"));
+				$ctlEl.append($("<img src='/KURT/files/views/assets/image/dummy.png' class='clDelete' title='Delete route'>"));
 				return $ctlEl[0].outerHTML;
 			}
 			,editElement : {
@@ -688,6 +688,7 @@ clLib.webFieldConfig = {
         }));
         routeLogConfig.add(new FieldConfig({
 			fieldName : "tickType"
+			,displayName : "Tick Type"
             ,refreshOnUpdate: [
                 "score"
             ]
@@ -713,7 +714,7 @@ clLib.webFieldConfig = {
                 console.log("getting ticktype for >" + tickTypeFound + "<");
                 var $tickType = clLib.tickTypeSymbol(tickTypeFound, 1);
                 var $tickTypeDiv = $("<div>")
-                    .addClass("clTicktypes")
+                    .addClass("clTicktypes clDtCenteredDiv")
                 ;
                 $tickTypeDiv.append($tickType);
 
@@ -723,6 +724,7 @@ clLib.webFieldConfig = {
                 $tickTypeDiv.addClass("clValueX" + tickTypeFound + "X");
 											
                 console.log("tickType = " + JSON.stringify($tickTypeDiv.html()));
+                $tickTypeDiv.find("img").addClass("clDtCenteredImg");
                 return $tickTypeDiv[0].outerHTML;
                 //return $tickTypeDiv;
             }
@@ -811,8 +813,15 @@ clLib.webFieldConfig = {
 			,dummyField: true
 			,renderFunc : function(colValue, rowValue) {
                 // Issue #237: Use yet computed score instead of recalculating..
-                //var score = clLib.computeScore(rowValue);
-				var score = rowValue["Score"];
+                // Issue #XXXX: Score not refreshed on routelog edit
+                var score;
+                if(rowValue["Score"]) {
+                    score = rowValue["Score"];
+                }
+                else {
+                    score = clLib.computeScore(rowValue);
+                }
+
 				console.log("returning score of >" + score + "<");
 				return score;
 			}
@@ -980,7 +989,23 @@ clLib.webFieldConfig = {
 				}
 			}			
 		}));
-	
+
+		routeLogConfig.add(new FieldConfig({
+			fieldName : "character"
+            ,displayName: "Style"
+            //	,renderFunc : clLib.getIconImg
+            ,getAvailableItems : function(column, api, successFunc) {
+                return successFunc([
+                    "?",
+                    "slab",
+                    "vertical",
+                    "overhang",
+                    "roof"
+                ]);
+			}
+
+		}));
+        
 		routeLogConfig.add(new FieldConfig({
 			fieldName : "Comment"
             ,displayName : "Comments"
@@ -1008,19 +1033,6 @@ clLib.webFieldConfig = {
 			}			
 		}));
 		
-		routeLogConfig.add(new FieldConfig({
-			fieldName : "character"
-		//	,renderFunc : clLib.getIconImg
-            ,getAvailableItems : function(column, api, successFunc) {
-                return successFunc([
-                    "slab",
-                    "vertical",
-                    "overhang",
-                    "roof"
-                ]);
-			}
-
-		}));
 		
 		routeLogConfig.add(new FieldConfig({
 			fieldName : "deleted"
