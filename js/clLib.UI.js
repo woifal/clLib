@@ -716,7 +716,8 @@ clLib.UI.showUIElement = function($element) {
 *
 */
 clLib.UI.fillUIelements = function() {
-	var pageName = clLib.UI.currentPage();
+    var pageName = clLib.UI.currentPage();
+	//alert("filling ui elements for >" + pageName + "<..");
 		
 	// no special layout to apply? use default layout..
 	var layout = localStorage.getItem("currentLayout") || "default";
@@ -756,7 +757,7 @@ clLib.UI.fillUIelements = function() {
 	clLib.UI.autoloadElements(curPageAutoload);
 	
 //	curPageAutoload.push.apply(curPageAutoload, clLib.UI.autoLoad["_COMMON_"][layout]);
-
+    //alert("loaded ui elements...");
 };
 
 
@@ -891,6 +892,7 @@ clLib.UI.showLoading = function(spinnerParams) {
 clLib.UI.hideLoading = function(spinnerParams) {
 	if(spinnerParams["timestamp"]) {
         delete clLib.UI.processQueue[spinnerParams["timestamp"]]; 
+        //alert("removing >" + spinnerParams["timestamp"] + "<");
         $("span#" + spinnerParams["timestamp"]).remove();
     }
     

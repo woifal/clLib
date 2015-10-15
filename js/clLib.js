@@ -6,6 +6,23 @@ try {
 } catch(e) {
     util = console;
 }
+
+var numbConsole=true;
+
+if(numbConsole) {
+    try {
+        console = {
+            log: function(txt) {
+            }
+            ,info: function(text) {
+            }
+            ,error: function(text) {
+            }
+        };
+    } catch(e) {
+        console.log("could not override console...wtf..");
+    }
+}
  
  
  function ClInfo(message, infoType) {

@@ -566,13 +566,14 @@ clLib.PAGES.handlers = {
 			$("#stats_allDiagram").on("click", function () {
                 clLib.PAGES.changeTo("clLib_diagram.html");
             });
-            $("#stats_statsBuddiesButton").on("click", function () {
-                $("#stats_statsBuddiesPopup").on( "popupafterclose", function( event, ui ) {
+            $("#stats_statsBuddiesButton").off("click").on("click", function () {
+                //alert("clicked");
+                $("#stats_statsBuddiesPopup").off("popupafterclose").on( "popupafterclose", function( event, ui ) {
+                    //alert("popup closed..");
                     clLib.UI.fillUIelements();
                 } );
                 $("#stats_statsBuddiesPopup").popup( "open");
 			});
-
 		}
         , "pagebeforeshow": function () {
 			//alert("show!");
