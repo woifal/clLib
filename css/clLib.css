@@ -128,23 +128,20 @@ input.ui-input-text, textarea.ui-input-text {
 	z-index: 100000000;
 	position: fixed;
 	top: 50px;
-	left: 50%;
-	margin-left: -120px;
-	amargin-top: -100px;
-	width: 50%;
-    max-width: 400px;
-	aheight: 200px;
+	left: 5%;
+	width: 90%;
+    amax-width: 400px;
 	border-radius: 10px;
-	abox-shadow: inset 0px 2px 2px 1px #DDD;
 	border: 0px solid red; /*#073E78;*/
 	background-color: #000000; /*#073E78; *//*#2A2A2A;*/
 	color: #FFFFFF;
-	padding: 20px;
-	padding-top: 100px;
-	background-image: url(../files/views/assets/image/ajax-loader.gif);
+	apadding: 20px;
+	padding-top: 85px;
+	padding-bottom: 20px;
+    background-image: url(../files/views/assets/image/ajax-loader.gif);
 	background-repeat: no-repeat;
 	background-position: 50% 25px;
-	font-weight: bold;
+	font-weight: normal; 
 	text-align: center;	
 }
 
