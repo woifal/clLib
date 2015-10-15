@@ -472,3 +472,17 @@ ul.clLink li a  {
 	border-bottom: 2px solid #073E78 !important;
 	padding: 10px 0px;
 }
+
+
+
+.clDtCenteredDiv {
+    width: 90%;
+    text-align: center;
+}
+.clDtCenteredDiv>.clTicktypesSmall {
+    float: none;
+}
+.clDtCenteredDiv>.clTicktypesSmall>img {
+    display: block;
+    margin: 0 auto;
+}
