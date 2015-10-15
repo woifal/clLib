@@ -3,6 +3,33 @@ var util = require("util");
 var mongo = require('mongoskin');
 var BSON = mongo.BSONPure;
 
+
+var numbConsole=false;
+
+if(numbConsole) {
+    try {
+        console = {
+            log: function(txt) {
+            }
+            ,info: function(text) {
+            }
+            ,error: function(text) {
+            }
+        };
+        util = {
+            log: function(txt) {
+            }
+            ,info: function(text) {
+            }
+            ,error: function(text) {
+            }
+        };
+    } catch(e) {
+        util.log("could not override console...wtf..");
+    }
+}
+ 
+
 /*
 *
 * Global client/server shared .js files..
@@ -590,7 +617,7 @@ server.put('/db/:entityName/:entityId',
 		// verify user.
 		DBHandler.updateEntity({
 			entity : entityName, 
-			id : entityId,
+			_id : entityId,
 			data : req.body
 		},
 		function(resultObj) { 
