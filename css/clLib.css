@@ -707,8 +707,9 @@ border: 1px solid red;
 .clFieldset.clTicktypes  .ui-controlgroup-controls .ui-checkbox 
 ,.clFieldset.clTicktypes  .ui-controlgroup-controls .ui-radio {
 	border: 1px solid #cccccc;
-	width: 24.35% !important;
-	/*border: 1px solid red !important;*/
+	width: 25% !important;
+	width: 25% !important;
+    box-sizing: border-box !important; /* don't add border to (percentage width).. */
 }
 .clFieldset.clTicktypes.items3 .ui-controlgroup-controls .ui-checkbox 
 ,.clFieldset.clTicktypes.items3 .ui-controlgroup-controls .ui-radio {
