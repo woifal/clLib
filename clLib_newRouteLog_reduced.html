@@ -22,18 +22,34 @@
 									data-native-menu="true" tabindex="2"
 							></select>
 						</div>
-						<div class="clRouteDropdown">
-							<label class="clUIElement" for="newRouteLog_reduced_colourSelect">Colour</label>
+						<div class="clRouteDropdown" >
+							<label class="clUIElement" for="newRouteLog_reduced_colourSelect"  >Colour</label>
 							<select id="newRouteLog_reduced_colourSelect" name="newRouteLog_reduced_colourSelect" 
 									data-theme="a"
 									data-inline="false" data-mini="false" data-icon="clRouteDropdownIcon" data-iconpos="right" 
-									data-native-menu="false" tabindex="6">
+									data-native-menu="false" tabindex="6"
+                                    data-history="false" 
+                            >
 								<option value="" rerender="colourSelect" selected="selected">
 									Colour
 								</option>
 							</select>
 						</div>
-					</div>
+
+                        <a id="newRouteLog_reduced_colourButton_a" style="display: none" data-rel="popup" href="#newRouteLog_reduced_colourPopup">b</a>
+                        <div id="newRouteLog_reduced_colourPopup" data-history="false" data-overlay-theme="a" data-role="popup" data-dismissible="false" class="clExtra" >
+                            <div data-role="header">
+                                <h1>Select Colourrr!</h1>
+                            </div>
+                            <div data-role="content">
+                                <ul data-role="listview">
+                                    <li><a href="#">blue</a></li>
+                                    <li><a href="#">yellow</a></li>
+                                </ul>
+                            </div>
+                        </div>	
+
+                    </div>
 
 				<div style="clear: both"></div>
 				<!-- Tick types... -->
@@ -75,7 +91,7 @@
 		
 
 				<a id="newRouteLog_reduced_extraButton_a" style="display: none" data-rel="popup" href="#newRouteLog_reduced_extraPopup">b</a>
-				<div id="newRouteLog_reduced_extraPopup" data-overlay-theme="a" data-role="popup" data-dismissible="false" class="clExtra" >
+				<div id="newRouteLog_reduced_extraPopup" data-history="false" data-overlay-theme="a" data-role="popup" data-dismissible="false" class="clExtra" >
 					<div data-role="header">
 						<h1>Additional Details</h1>
 					</div>

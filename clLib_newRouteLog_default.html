@@ -25,17 +25,39 @@
 									data-native-menu="true" tabindex="2"
 							></select>
 						</div>
-						<div class="clRouteDropdown">
-							<!-- colourSelect -->
-							<label class="clUIElement" for="newRouteLog_default_colourSelect">Colour</label>
-							<select id="newRouteLog_default_colourSelect" name="newRouteLog_default_colourSelect" data-theme="a"
-									data-inline="false" data-mini="false" data-icon="clRouteDropdownIcon" data-iconpos="right" 
-									data-native-menu="false" tabindex="6">
+						<!-- colour -->
+                        <div class="clRouteDropdown" data-history="false" >
+							<label class="clUIElement" for="newRouteLog_default_colourSelect" data-history="false" >Colour</label>
+							<select id="newRouteLog_default_colourSelect" name="newRouteLog_default_colourSelect" 
+                                tabindex="6"
+                                data-theme="a"
+                                data-inline="false" 
+                                data-mini="false" 
+                                data-icon="clRouteDropdownIcon" 
+                                data-iconpos="right" 
+                                data-history="false" 
+                                data-native-menu="true"
+                            >
 								<option value="" rerender="colourSelect" selected="selected">
 									Colour
 								</option>
 							</select>
 						</div>
+                        
+
+                        <a id="newRouteLog_default_colourButton_a" style="display: none" data-rel="popup" href="#newRouteLog_default_colourPopup">b</a>
+                        <div id="newRouteLog_default_colourPopup" data-history="false" data-overlay-theme="a" data-role="popup" data-dismissible="false" class="clExtra" >
+                            <div data-role="header">
+                                <h1>Select Colourrr!</h1>
+                            </div>
+                            <div data-role="content">
+                                <ul data-role="listview">
+                                    <li><a href="#">blue</a></li>
+                                    <li><a href="#">yellow</a></li>
+                                </ul>
+                            </div>
+                        </div>	
+                        
 						<div class="clRouteDropdown">
 							<!-- sectorSelect -->
 							<label class="clUIElement" for="newRouteLog_default_sectorSelect">Sector</label>
@@ -128,14 +150,14 @@
 		
 
 				<a id="newRouteLog_default_extraButton_a" style="display: none" data-rel="popup" href="#newRouteLog_default_extraPopup">b</a>
-				<div id="newRouteLog_default_extraPopup" data-overlay-theme="a" data-role="popup" data-dismissible="false" class="clExtra" >
+				<div id="newRouteLog_default_extraPopup" data-history="false" data-overlay-theme="a" data-role="popup" data-dismissible="false" class="clExtra" >
 					<div data-role="header">
 						<h1>Additional Details</h1>
 					</div>
 					<div data-role="content">
 						<ul data-role="listview">
-							<li>
-							<!-- characterSelect -->
+                        <!-- characterSelect -->
+                            <li>
 							<div class="clRouteDropdown clFullWidth">
 								<label class="clUIElement" for="newRouteLog_default_characterSelect">Character</label>
 								<select id="newRouteLog_default_characterSelect" name="newRouteLog_default_characterSelect" 
@@ -153,7 +175,6 @@
 								<textarea style="padding-left:0px; margin-left: 0px; resize: none; height: 30px" id="newRouteLog_default_commentText" name="newRouteLog_default_commentText" tabindex="9" placeholder="comments?"></textarea>
 							</li>
 						</ul>
-						
 						<a href="#" style="margin-top: 20px;" data-rel="back" class="ui-btn ui-btn-center ui-corner-all">Done!</a>
 					</div>
 				</div>				
