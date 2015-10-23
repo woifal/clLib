@@ -4,28 +4,37 @@
     background-size: 100%;
 
 	padding-left: 0px; 
-	/*
-	padding-left: 25px; 
-	margin-left: 10px !important; 
-	margin-right: 10px !important;
-	margin-bottom: 5px !important;
-	border-radius: 8px; 
-	border: 0px solid yellow !important; 
-	height: 20px;
-	
-	text-align: center;
-	*/
 }
 
 .clColourBg {
 	background-color: #AAA;
 }
 
+
+#newRouteLog_reduced_colourPopup-popup {
+    background-color:  #073e78;
+}
+
+#newRouteLog_reduced_colourPopup li {
+    margin: 0;
+    padding: 0;
+    float: left; 
+    width: 50%;
+    background-color: #073e78;
+}
+#newRouteLog_reduced_colourPopup li>a {
+    padding-left: 20px;
+    border: 3px solid #073e78;
+    border-radius: 5px;
+    text-align: center;
+}
+
+/*
 #newRouteLog_default_colourSelect-listbox-popup,
 #newRouteLog_reduced_colourSelect-listbox-popup 
 {
 	border: 0px solid blue;
-	background-color: #073d75; /*#3388CC*//*#092E56*/;
+	background-color: #073d75;
 }
 #newRouteLog_default_colourSelect-menu li ,
 #newRouteLog_reduced_colourSelect-menu li 
@@ -33,7 +42,7 @@
 	border: 1px solid #CCC;
 	float:left;
 	width: 49%;
-	background-color: #073d75; /*#3388CC*//*#092E56*/;
+	background-color: #073d75;
 }
 #newRouteLog_default_colourSelect-menu li a,
 #newRouteLog_reduced_colourSelect-menu li a
@@ -46,7 +55,7 @@
 	border-radius: 8px; 
 	text-align: center;
 }
-
+*/
 .clCSSBg.clTicktypesSmall {
 	margin-left: 22px; 
 	margin-top: 2px; 
