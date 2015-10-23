@@ -48,7 +48,7 @@ mongolab.prototype.getEntities = function(options, callbackFunc, errorFunc) {
 
 	// geospatial query?
 	if(geoPos) {
-		db.executeDbCommand({ 
+		db.command({ 
 			geoNear : entityName
 			,near : {
 				type: "Point" ,
@@ -72,25 +72,25 @@ mongolab.prototype.getEntities = function(options, callbackFunc, errorFunc) {
 				resultObj["error"] = JSON.stringify(err);
 				return errorFunc(resultObj);
 			}
-			if (items.documents[0].errmsg) {
-				util.log("ERROR:" + JSON.stringify(items.documents[0].errmsg) + "\n" + err);
-				resultObj["error"] = JSON.stringify(items.documents[0].errmsg);
+			if (items.results[0].errmsg) {
+				util.log("ERROR:" + JSON.stringify(items.results[0].errmsg) + "\n" + err);
+				resultObj["error"] = JSON.stringify(items.results[0].errmsg);
 				return errorFunc(resultObj);
 			}
 
-			if(options["requireResult"] && (!items.documents || items.documents[0].results.length == 0)) {
+			if(options["requireResult"] && (!items.results || items.results.length == 0)) {
 				err = "no items found";
 				resultObj["error"] = JSON.stringify(err);
 				return errorFunc(resultObj);
 			}
 			
-			util.log("mongo results received.." + JSON.stringify(items.documents[0].results.length));
+			util.log("mongo results received.." + JSON.stringify(items.results.length));
 			
 			var resultArr = [];
-			for(var i = 0; i < items.documents[0].results.length; i++) {
-				util.log(">" + i + "<: >" + items.documents[0].results[i].obj.Name + "< @ >" + items.documents[0].results[i].dis + "<");
-				items.documents[0].results[i].obj["dis"] = items.documents[0].results[i].dis
-				resultArr[i] = items.documents[0].results[i].obj;
+			for(var i = 0; i < items.results.length; i++) {
+				util.log(">" + i + "<: >" + items.results[i].obj.Name + "< @ >" + items.results[i].dis + "<");
+				items.results[i].obj["dis"] = items.results[i].dis
+				resultArr[i] = items.results[i].obj;
 			}
 			
 			return callbackFunc(resultArr);
