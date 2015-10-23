@@ -1080,24 +1080,25 @@ clLib.secondsPassed = function(sinceDate, secondsPassed) {
 	
 }
 clLib.getGeoLocation = function(successFunc, errorFunc, options) {
-
-	if(clLib.lastGeoPosition && !clLib.secondsPassed(clLib.lastGeoDate, clLib.geoLocationValidity)) {
-		return successFunc(clLib.lastGeoPosition);
-	}
+//    alert("getting geolocation..");
+//	if(clLib.lastGeoPosition && !clLib.secondsPassed(clLib.lastGeoDate, clLib.geoLocationValidity)) {
+//		return successFunc(clLib.lastGeoPosition);
+//	}
 	
 	if (navigator.geolocation) {
 		//alert("getting current position..");
         return clLib.UI.execWithMsg(function() {
             options = $.extend(options, {
-                timeout: 5000
-                ,maximumAge: 300000
+                timeout: 10000,
+                maximumAge: 300000
                 ,enableHighAccuracy:true
             });
 
+//            alert("getting location from navigator.geolocation..");
             return navigator.geolocation.getCurrentPosition(function(position) {
                 clLib.lastGeoPosition = position;
                 clLib.lastGeoDate = Date.now();
-                console.log("setting lastGeoDate to " + clLib.lastGeoDate);
+//                alert("setting lastGeoDate to " + clLib.lastGeoDate);
                 return successFunc(position);
             }
             ,errorFunc
