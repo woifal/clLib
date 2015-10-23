@@ -436,6 +436,7 @@ clLib.PAGES.handlers = {
 			
 			if (!prevId || !prevId.endsWith("-dialog")) {
 */
+//            alert("filling elemnts for areashearch..");
             clLib.UI.fillUIelements();
 /*
 			}
@@ -513,8 +514,41 @@ clLib.PAGES.handlers = {
 	        $("#newRouteLog_reduced_layoutSelect").val(localStorage.getItem("currentLayout"));
 	        $("#newRouteLog_reduced_layoutSelect").selectmenu("refresh");
 
+            $("#newRouteLog_reduced_colourSelect-button").on("click", function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                $("newRouteLog_reduced_colourPopup").listview('refresh', true);
+
+                //alert("colourSelect (select) clicked!!!");
+                $("#newRouteLog_reduced_colourButton_a").click();
+                clLib.addCSSBackground("newRouteLog_reduced_colourPopup", {addClasses: "clColourBg"});
+
+                $("#newRouteLog_reduced_colourPopup a").off("click").on("click", function (e) {
+                    //alert("colour clicked >" + $(this).html() + "<");
+                    $("#newRouteLog_reduced_colourSelect-button span").html($(this).html());
+                    $("#newRouteLog_reduced_colourSelect-button span").removeClass().addClass("clCSSBg " + $(this).html());
+                    $("#newRouteLog_reduced_colourSelect").trigger("setSelectedValue.clLib", 
+                        { "value": $(this).html() }
+                    );
+                    $("#newRouteLog_reduced_colourPopup").popup("close");
+                });
+                
+            });
 	        $("#newRouteLog_reduced_extraButton").on("click", function () {
 				$("#newRouteLog_reduced_extraButton_a").click();
+			});
+			$("#newRouteLog_reduced_colourButton").on("click", function () {
+				$("#newRouteLog_reduced_colourButton_a").click();
+                clLib.addCSSBackground("newRouteLog_reduced_colourPopup", {addClasses: "clColourBg"});
+                $("#" + clLib.UI.currentPage() + "_colourSelect-listbox-popup")
+                    .find(".ui-btn.clCSSBg.more.clColourBg").click(function(e) {
+                        $("#" + clLib.UI.currentPage() + "_colourSelect")
+                            .trigger("refresh.clLib", 
+                            {
+                                dependingOnOverride:1
+                            })
+                            ;
+                    });
 			});
 			
 
