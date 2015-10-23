@@ -966,6 +966,18 @@ clLib.localStorage.refreshAllData = function (callbackFunc, errorFunc) {
 			clLib.loggi("GOT: " + JSON.stringify(areas));
 			$.extend(storageObjects, areas);
 
+			var areas3;
+			clLib.REST.getEntities("AreaRaw3", {}
+			, function(resultObj) {
+				areas3 = resultObj;
+			}
+			,function(e) {
+				warnings += "error while retrieving Area.." + e;
+			}
+			);
+			clLib.loggi("GOT: " + JSON.stringify(areas));
+			$.extend(storageObjects, areas3);
+
 			//
 			// compile grade config for DB-like use in clLib.localStorage...
 			//
