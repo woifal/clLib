@@ -4,6 +4,10 @@ clLib.UI.cssBackgrounds = {
         "white/green/blue" : "white-green-blue"
         , "white/yellow/black" : "white-yellow-black"
     }
+    ,"colourPopup": {
+        "white/green/blue" : "white-green-blue"
+        , "white/yellow/black" : "white-yellow-black"
+    }
     , "characterSelect": {
         //"Ueberhaengend": "Ueberhaengend"
 		"slab": "Platte",
@@ -198,6 +202,7 @@ clLib.UI.autoLoad = {
 			, "tickType_attempt"
 			, "tickType_toprope"
 			, "colourSelect"
+			, "colourPopup"
 			, "characterSelect"
 			, "routeLogContainer"
 		]
@@ -287,6 +292,7 @@ clLib.UI.elementsToReset = {
 		"lineSelect",
 		"sectorSelect",
 		"colourSelect",
+		"colourPopup",
 		"ratingSelect",
 		"searchRouteResults",
 		"searchRoute",
@@ -303,6 +309,7 @@ clLib.UI.elementsToReset = {
 		"lineSelect",
 		"sectorSelect",
 		"colourSelect",
+		"colourPopup",
 		"ratingSelect",
 		"searchRouteResults",
 		"searchRoute",
@@ -383,6 +390,7 @@ clLib.UI.pageElements = {
 			, "gradeSelect"
 			, "sectorSelect"
 			, "colourSelect"
+			, "colourPopup"
 			, "lineSelect"
 			, "searchRouteResults"
 			, "searchRoute"
@@ -414,6 +422,7 @@ clLib.UI.pageElements = {
             , "gradeSystemSelect"
 			, "gradeSelect"
 			, "colourSelect"
+			, "colourPopup"
 			, "ratingSelect"
 			, "tickType"
 			, "tickType_redpoint"
@@ -911,7 +920,10 @@ clLib.UI.elements = {
 	}
 	,"searchAreaResults" : {
 		"refreshHandler" : function($this, options) { 
-		    options = options || {};
+		    //if(window.refreshed) return;
+//            alert("refreshing searchAreaResult..");
+            //window.refreshed = 1;
+            options = options || {};
 			var $inElement = $this;
 			;
 			var results;
@@ -922,11 +934,11 @@ clLib.UI.elements = {
 
 				console.log("Searching areas...");
 				results= clLib.UI.defaultEntitySearch(
-					"Area",
-					"AreaName", 
+					"AreaRaw3",
+					"Name", 
 					[], 
 					true, 
-					{"AreaName": { "$like" : clLib.UI.byId$("searchArea").val() }}
+					{"Name": { "$like" : clLib.UI.byId$("searchArea").val() }}
 					,true
 				);
 				console.log("Found areas >" + JSON.stringify(results) + "<");
@@ -943,7 +955,7 @@ clLib.UI.elements = {
 				);
 				
 				clLib.getGeoLocation(function(position) {
-					//alert("GOT current position..");
+//					alert("GOT current position.." + JSON.stringify(position.coords.latitude));
 
 					var additionalParams = {
 						geoPos : {
@@ -982,7 +994,8 @@ clLib.UI.elements = {
 					,additionalParams);
 				}
 				,function(e) {
-					clLib.UI.hideLoading();
+					alert("EEEEE" + e);
+                    clLib.UI.hideLoading();
 
 					$inElement.empty()
 						.append(
@@ -1193,8 +1206,9 @@ clLib.UI.elements = {
 			}
 		}
 	},
-	"colourSelect": {
+	"colourPopup": {
 		"dbField" : "Colour"
+        ,"jqmType": "list"
 		,"dependingOn" : {
 		    default: [
 				"gradeSystemSelect", "gradeSelect", "selectedArea", "sectorSelect", "colourSelect"
@@ -1211,6 +1225,7 @@ clLib.UI.elements = {
                 })
 			);
 		    clLib.addCSSBackground($this.attr("id"), {addClasses: "clColourBg"});
+/*
 			$("#" + clLib.UI.currentPage() + "_colourSelect-listbox-popup")
 				.find(".ui-btn.clCSSBg.more.clColourBg").click(function(e) {
 					$("#" + clLib.UI.currentPage() + "_colourSelect")
@@ -1219,11 +1234,12 @@ clLib.UI.elements = {
 							dependingOnOverride:1
 						})
 						;
-				});
-	
+				}
+             );
+*/	
 		}
 		,"setSelectedValueHandler" : function($this, changeOptions) { 
-			//alert("Setting selected value..");
+			//alert("Setting selected value..>" + JSON.stringify(changeOptions) + "<");
 			clLib.UI.setSelectedValueOnlyHandler($this, changeOptions);
 			clLib.addCSSBackground($this.attr("id"));
 		}
@@ -1237,6 +1253,61 @@ clLib.UI.elements = {
 		    }
         }
 		,"changeHandler" : function($this, changeOptions) {
+		    var $forElement = clLib.UI.byId$("searchRoute");
+			$forElement.val("");
+			clLib.UI.defaultChangeHandler($this, changeOptions);
+		}
+	},
+	"colourSelect": {
+		"dbField" : "Colour"
+        ,"jqmType": "list"
+		,"dependingOn" : {
+		    default: [
+				"gradeSystemSelect", "gradeSelect", "selectedArea", "sectorSelect", "colourSelect"
+		    ]
+			, reduced: []
+		}
+		,"refreshHandler" : function($this, additionalOptions) { 
+           return 1;
+           //alert("refreshing colours with >" + JSON.stringify(additionalOptions) + "<");
+			clLib.UI.defaultRefreshHandler(
+				$this
+				,$.extend(additionalOptions, { 
+                    preserveCurrentValue: false 
+                    ,showMoreButton: true
+                })
+			);
+		    clLib.addCSSBackground($this.attr("id"), {addClasses: "clColourBg"});
+/*
+			$("#" + clLib.UI.currentPage() + "_colourSelect-listbox-popup")
+				.find(".ui-btn.clCSSBg.more.clColourBg").click(function(e) {
+					$("#" + clLib.UI.currentPage() + "_colourSelect")
+						.trigger("refresh.clLib", 
+						{
+							dependingOnOverride:1
+						})
+						;
+				}
+             );
+*/	
+		}
+		,"setSelectedValueHandler" : function($this, changeOptions) { 
+            return 1;
+			//alert("Setting selected value..>" + JSON.stringify(changeOptions) + "<");
+			clLib.UI.setSelectedValueOnlyHandler($this, changeOptions);
+			clLib.addCSSBackground($this.attr("id"));
+		}
+		,"refreshOnUpdate" : {
+		    default: {
+		        "searchRouteResults": {
+		            // 2013-12-20 WD: don't hide single result - causes select boxes to never be able to get "unselected" again.
+					//hideOnSingleResult: true
+					hideOnSingleResult: false
+		        }
+		    }
+        }
+		,"changeHandler" : function($this, changeOptions) {
+            return 1;
 		    var $forElement = clLib.UI.byId$("searchRoute");
 			$forElement.val("");
 			clLib.UI.defaultChangeHandler($this, changeOptions);
@@ -1654,7 +1725,7 @@ clLib.UI.elements = {
                 }
             );            
             
-        }, {text: "Loading todays routelogs.."});
+        }, {text: "today.."});
             
 		}
 	}	
@@ -1712,7 +1783,7 @@ clLib.UI.elements = {
                 }
             );            
             
-        }, {text: "Loading top routelogs.."});
+        }, {text: "top.."});
             
             
 		}
@@ -2005,7 +2076,7 @@ clLib.UI.elements = {
 
             }, 1);
      
-        }, {text: "Loading statistics.."});
+        }, {text: "statistics.."});
             
 		}
 	}		
@@ -2233,7 +2304,7 @@ clLib.UI.elements = {
 		
 			//alert("done, triggering crate.."),
             $allContainer.trigger("create");
-        }, {text: "Loading ALL routelogs.."});
+        }, {text: "all routes.."});
             
 	
 		}
