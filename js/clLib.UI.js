@@ -419,6 +419,7 @@ clLib.populateRadioButtons_plain = function($selectBox, dataObj, selectedValue, 
 };
 
 clLib.populateSelectBox = function(options) {
+    //alert("popping select box for >" + options.selectBoxElement.attr("id") + "<");
 	var defaultOptions = {
 		preserveCurrentValue : false
 	};
@@ -429,13 +430,16 @@ clLib.populateSelectBox = function(options) {
 	clLib.loggi("killing event handlers for  " + elementName + "," + options.selectBoxElement.attr("id"), 2);
 	clLib.UI.killEventHandlers(options.selectBoxElement, "change.clLib");
 
+     //alert("populating plain..");
 	var needRefresh = clLib.populateSelectBox_plain(
-		options.selectBoxElement,
-		options.dataObj,
-		options.selectedValue,
-		options.preserveCurrentValue,
-		options.additionalValue
+		options.selectBoxElement
+		,options.dataObj
+		,options.selectedValue
+		,options.preserveCurrentValue
+		,options.additionalValue
+        ,options["jqmType"]
 	);
+     //alert("populated plain..");
 
 	var customChangeHandler = clLib.UI.elements[elementName]["changeHandler"];
 	if(customChangeHandler) {
@@ -449,13 +453,14 @@ clLib.populateSelectBox = function(options) {
 
 	
 	if(needRefresh) {
-		clLib.loggi("trigger change on " + options.selectBoxElement.attr("id"));
 		options.selectBoxElement.trigger("change.clLib", options.changeOptions);
-	}
+
+    }
+    
 
 };
 
-clLib.populateSelectBox_plain = function($selectBox, dataObj, selectedValue, preserveCurrentValue, additionalValue){
+clLib.populateSelectBox_plain = function($selectBox, dataObj, selectedValue, preserveCurrentValue, additionalValue, jqmType){
 	var oldValue = $selectBox.val();
 	var oldValueFound = true;
 	if(preserveCurrentValue && oldValue) {
@@ -464,20 +469,46 @@ clLib.populateSelectBox_plain = function($selectBox, dataObj, selectedValue, pre
 		oldValueFound = false;
 	}
 	
-	$selectBox.empty();
-	if(additionalValue) {
-		var $option = $('<option></option>');
-		if(additionalValue instanceof Object) {
-			$option
-				.val(additionalValue["value"])
-				.html(additionalValue["text"]);
-		} else {
-			$option
-				.val(additionalValue)
-				.html(additionalValue);
-		}
-		$selectBox.append($option);
-	}
+	
+    if(jqmType == "list") {
+        $selectBox.find(".ui-content>.ui-listview").empty();
+    } else {
+        $selectBox.empty();
+    }
+    
+    
+    
+	if(additionalValue && typeof(additionalValue) != "undefined") {
+        if(jqmType == "list") {
+            if(additionalValue["value"] != "__UNKNOWN__") {
+                alert("additionalValue " + additionalValue);
+                alert("typeof additionalValue " + typeof(additionalValue));
+                alert("json additionalValue " + JSON.stringify(additionalValue));
+                var $li = $('<li></li>');
+                if(additionalValue instanceof Object) {
+                    $li
+                        .html(additionalValue["text"]);
+                } else {
+                    $li
+                        .html(additionalValue);
+                }
+                $selectBox.append($li);
+            }   
+        }
+        else {
+            var $option = $('<option></option>');
+            if(additionalValue instanceof Object) {
+                $option
+                    .val(additionalValue["value"])
+                    .html(additionalValue["text"]);
+            } else {
+                $option
+                    .val(additionalValue)
+                    .html(additionalValue);
+            }
+            $selectBox.append($option);
+        }
+    }
 	
 	if(dataObj instanceof Array && dataObj.length == 1) {
 		clLib.loggi("Yes, array...take first element.." + JSON.stringify(dataObj));
@@ -490,33 +521,54 @@ clLib.populateSelectBox_plain = function($selectBox, dataObj, selectedValue, pre
 	//alert("??? dataObj to each >" + JSON.stringify(dataObj) + "<");
 	var i = 0;
 	$.each(dataObj, function(index, value) {
-		//clLib.loggi("adding option " + value);
-		var $option = $('<option></option>')
-                .val(dataObj instanceof Array ? value : index)
-                .html(value);
-		//clLib.loggi("comp " + value + " + against " + selectedValue);
-		if(value == selectedValue) {
-			clLib.loggi("Found old value..");
-			$option.attr("selected", "selected");
-			oldValueFound = true;
-		}
-		$selectBox.append($option);
+        if(jqmType != "list") {
+            //clLib.loggi("adding option " + value);
+            var $option = $('<option></option>')
+                    .val(dataObj instanceof Array ? value : index)
+                    .html(value);
+            //clLib.loggi("comp " + value + " + against " + selectedValue);
+            if(value == selectedValue) {
+                clLib.loggi("Found old value..");
+                $option.attr("selected", "selected");
+                oldValueFound = true;
+            }
+            $selectBox.append($option);
+        }
+        else {
+            //clLib.loggi("adding option " + value);
+            var $li2 = $('<li></li>');
+            var $a2 = $("<a></a>");
+            $a2.addClass("ui-btn");
+            $a2.html(value);
+            $li2.append($a2);
+                
+            $selectBox.find(".ui-content>.ui-listview").append($li2);
+        
+        }
 	});
 
 	if(
-		$selectBox.attr("id") == "newRouteLog_default_colourSelect" ||
-		$selectBox.attr("id") == "newRouteLog_reduced_colourSelect"
+		$selectBox.attr("id") == "newRouteLog_default_colourPopup" ||
+		$selectBox.attr("id") == "newRouteLog_reduced_colourPopup"
 	) {
-		var $option = $('<option></option>');
-		$option
-			.val("more")
-			.html("more");
-		$selectBox.append($option);
-		
+		var $li = $('<li></li>');
+        var $a2 = $("<a></a>");
+        $a2.addClass("ui-btn");
+        $a2.html("more");
+        $li.append($a2);
+
+        $selectBox.find(".ui-content>.ui-listview").append($li);
 	}
 	
 	//alert("refreshing " + $selectBox.attr("id"));
-	$selectBox.selectmenu('refresh', true);
+    
+    //alert("jqmType >" + jqmType + "<");
+    if(jqmType != "list") {
+        $selectBox.selectmenu('refresh', true);
+    } 
+    else {
+        //$selectBox.listview('refresh', true);
+    }
 	//alert("refreshed " + $selectBox.attr("id"));
 	
 	clLib.loggi("oldValueFound? " + oldValueFound);
@@ -656,7 +708,12 @@ clLib.UI.setSelectedValueOnlyHandler = function($element, changeOptions) {
 	// set desired value
 	//alert("setting element " + $element.attr("id") + " to " + JSON.stringify(newValue));
 	$element.val(newValue);
-	$element.selectmenu('refresh', true);
+	try {
+        $element.selectmenu('refresh', true);
+    }
+    catch(e) {
+        console.error("FUCK REFRESH ON SLECTMENU");
+    }
 	// restore onChange handler for further changes..
 	var customChangeHandler = clLib.UI.elements[clLib.UI.elementNameFromId($element.attr("id"))]["changeHandler"];
 	var changeHandler = customChangeHandler || clLib.UI.defaultChangeHandler;
@@ -890,7 +947,7 @@ clLib.UI.showLoading = function(spinnerParams) {
 };
 
 clLib.UI.hideLoading = function(spinnerParams) {
-	if(spinnerParams["timestamp"]) {
+	if(spinnerParams && spinnerParams["timestamp"]) {
         delete clLib.UI.processQueue[spinnerParams["timestamp"]]; 
         //alert("removing >" + spinnerParams["timestamp"] + "<");
         $("span#" + spinnerParams["timestamp"]).remove();
@@ -1226,7 +1283,8 @@ clLib.UI.defaultRefreshHandler = function($element, additionalOptions) {
 	
 	
 
-	// Assume controlgroups consist of radio buttons..
+	//alert("def.refresh handler for >" + $element.attr("id") +"<>" + $element.attr("data-role") + "<>" + $element[0].outerHTML+ "<");
+    // Assume controlgroups consist of radio buttons..
 	if($element.attr("data-role") == 'controlgroup') {
 		//alert("cl-data-type ="+ $element.attr("cl-data-type"));
 		if($element.attr("cl-data-type") == 'checkbox') {
@@ -1238,7 +1296,13 @@ clLib.UI.defaultRefreshHandler = function($element, additionalOptions) {
 		}
 	} 
 	else {
-		clLib.populateSelectBox(elContentOptions);
+        if(elementConfig["jqmType"] == "list") {
+            elContentOptions["jqmType"] = "list";
+            clLib.populateSelectBox(elContentOptions);
+        }
+        else {
+            clLib.populateSelectBox(elContentOptions);
+        }
 	}
 }
 
@@ -1513,7 +1577,7 @@ clLib.UI.userHandler = function (options, successFunc, errorFunc) {
 *
 */
 clLib.addCSSBackground = function(targetId, options) {
-	//alert("adding CSS bg to " + targetId);
+	//alert("adding CSS bg to >" + targetId + "<");
 	var $targetEl = $('#' + targetId);
 	clLib.UI.killEventHandlers($targetEl, "change.clLibCSSBackground");
 
@@ -1529,7 +1593,35 @@ clLib.addCSSBackground = function(targetId, options) {
 	    });
 	}
 
+	// Add css class named option.value for every entry in #targetId
+    $('li', $targetEl).each(function (idx, item) {
+        var entry = $(item);
+        //alert("working at >" + $(item).html() + "<");
+        // set corresponding css class
+        //clLib.loggi("adding class" + entry.find("a").html());
+        var className = entry.find("a").html();
+        //alert("checking for class for text " + entry.find("a").html());
 
+        if (classForText && classForText[entry.find("a").html()]) {
+            className = classForText[entry.find("a").html()];
+        }
+        entry
+			.find("a")
+            .addClass("clCSSBg")
+            .addClass(className)
+			.addClass(addClasses);
+			
+		//entry.find("a").css("background-color", "red");
+		if(options && options["iconOnly"]) {
+//			if($(this).val() != clLib.UI.NOTSELECTED.value) {
+				//alert($(this).val());
+				entry
+					.find("a")
+					.addClass("clCSSBgIconOnly");
+//			}
+		}
+	});
+	
 	// Add css class named option.value for every entry in #targetId
     $('option', $targetEl).each(function () {
         var ind = $(this).index();
@@ -2152,6 +2244,16 @@ clLib.UI.collapsible.formatRouteLogRow = function(dataRow) {
 clLib.UI.currentPage = function() {
     //alert("getting current page..");
 	var currentPage = $.mobile.activePage.attr("id");
+
+    if(currentPage.indexOf("-dialog") == currentPage.length - 7) {
+        console.log("yes, at the end...");
+        currentPage = currentPage.substr(0, currentPage.lastIndexOf("_"));
+    }
+    else {
+        console.log("no, not at the end..");
+    }
+    console.log("X is >" + currentPage + "<");
+
     //alert("returning currentPage >" + currentPage);
     return currentPage;
 }
