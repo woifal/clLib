@@ -452,8 +452,43 @@ clLib.PAGES.handlers = {
 	        $("#newRouteLog_default_layoutSelect").val(localStorage.getItem("currentLayout"));
 	        $("#newRouteLog_default_layoutSelect").selectmenu("refresh");
 
-			$("#newRouteLog_default_extraButton").on("click", function () {
+            $("#newRouteLog_default_colourSelect-button").on("click", function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                $("newRouteLog_default_colourPopup").listview('refresh', true);
+
+                //alert("colourSelect (select) clicked!!!");
+                $("#newRouteLog_default_colourButton_a").click();
+                clLib.addCSSBackground("newRouteLog_default_colourPopup", {addClasses: "clColourBg"});
+
+                $("#newRouteLog_default_colourPopup a").off("click").on("click", function (e) {
+                    //alert("colour clicked >" + $(this).html() + "<");
+                    $("#newRouteLog_default_colourSelect-button span").html($(this).html());
+                    $("#newRouteLog_default_colourSelect-button span").removeClass().addClass("clCSSBg " + $(this).html());
+                    $("#newRouteLog_default_colourSelect").trigger("setSelectedValue.clLib", 
+                        { "value": $(this).html() }
+                    );
+                    clLib.UI.setSelectedValue(clLib.UI.byId$("colourSelect"), $(this).html());
+
+                    $("#newRouteLog_default_colourPopup").popup("close");
+                });
+                
+            });
+	        $("#newRouteLog_default_extraButton").on("click", function () {
 				$("#newRouteLog_default_extraButton_a").click();
+			});
+			$("#newRouteLog_default_colourButton").on("click", function () {
+				$("#newRouteLog_default_colourButton_a").click();
+                clLib.addCSSBackground("newRouteLog_default_colourPopup", {addClasses: "clColourBg"});
+                $("#" + clLib.UI.currentPage() + "_colourSelect-listbox-popup")
+                    .find(".ui-btn.clCSSBg.more.clColourBg").click(function(e) {
+                        $("#" + clLib.UI.currentPage() + "_colourSelect")
+                            .trigger("refresh.clLib", 
+                            {
+                                dependingOnOverride:1
+                            })
+                            ;
+                    });
 			});
 			
 		   //alert("444isave handler..");

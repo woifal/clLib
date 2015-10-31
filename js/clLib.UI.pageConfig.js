@@ -188,6 +188,8 @@ clLib.UI.autoLoad = {
 			, "tickType_flash"
 			, "tickType_attempt"
 			, "tickType_toprope"
+			, "colourSelect"
+			, "colourPopup"
 			, "characterSelect"
 			, "routeLogContainer"
 		]
@@ -1165,6 +1167,7 @@ clLib.UI.elements = {
 		,"refreshOnUpdate" : {
 			default: {
 				"colourSelect" : {}
+				,"colourPopup" : {}
 				,"lineSelect" : {}
 			}
 		}
@@ -1203,11 +1206,13 @@ clLib.UI.elements = {
 		,"refreshOnUpdate" : {
 			default: {
 				"colourSelect" : {}
+				,"colourPopup" : {}
 			}
 		}
 	},
 	"colourPopup": {
 		"dbField" : "Colour"
+        
         ,"jqmType": "list"
 		,"dependingOn" : {
 		    default: [
@@ -1216,7 +1221,7 @@ clLib.UI.elements = {
 			, reduced: []
 		}
 		,"refreshHandler" : function($this, additionalOptions) { 
-		    //alert("refreshing colours with >" + JSON.stringify(additionalOptions) + "<");
+//		    alert("refreshing colours with >" + JSON.stringify(additionalOptions) + "<");
 			clLib.UI.defaultRefreshHandler(
 				$this
 				,$.extend(additionalOptions, { 
@@ -1225,18 +1230,7 @@ clLib.UI.elements = {
                 })
 			);
 		    clLib.addCSSBackground($this.attr("id"), {addClasses: "clColourBg"});
-/*
-			$("#" + clLib.UI.currentPage() + "_colourSelect-listbox-popup")
-				.find(".ui-btn.clCSSBg.more.clColourBg").click(function(e) {
-					$("#" + clLib.UI.currentPage() + "_colourSelect")
-						.trigger("refresh.clLib", 
-						{
-							dependingOnOverride:1
-						})
-						;
-				}
-             );
-*/	
+
 		}
 		,"setSelectedValueHandler" : function($this, changeOptions) { 
 			//alert("Setting selected value..>" + JSON.stringify(changeOptions) + "<");
@@ -1260,7 +1254,6 @@ clLib.UI.elements = {
 	},
 	"colourSelect": {
 		"dbField" : "Colour"
-        ,"jqmType": "list"
 		,"dependingOn" : {
 		    default: [
 				"gradeSystemSelect", "gradeSelect", "selectedArea", "sectorSelect", "colourSelect"
@@ -1268,8 +1261,7 @@ clLib.UI.elements = {
 			, reduced: []
 		}
 		,"refreshHandler" : function($this, additionalOptions) { 
-           return 1;
-           //alert("refreshing colours with >" + JSON.stringify(additionalOptions) + "<");
+//           alert("refreshing colours with >" + JSON.stringify(additionalOptions) + "<");
 			clLib.UI.defaultRefreshHandler(
 				$this
 				,$.extend(additionalOptions, { 
@@ -1292,10 +1284,8 @@ clLib.UI.elements = {
 */	
 		}
 		,"setSelectedValueHandler" : function($this, changeOptions) { 
-            return 1;
-			//alert("Setting selected value..>" + JSON.stringify(changeOptions) + "<");
-			clLib.UI.setSelectedValueOnlyHandler($this, changeOptions);
-			clLib.addCSSBackground($this.attr("id"));
+            clLib.UI.setSelectedValueOnlyHandler($this, changeOptions); 
+            clLib.addCSSBackground($this.attr("id"));
 		}
 		,"refreshOnUpdate" : {
 		    default: {
@@ -1307,7 +1297,6 @@ clLib.UI.elements = {
 		    }
         }
 		,"changeHandler" : function($this, changeOptions) {
-            return 1;
 		    var $forElement = clLib.UI.byId$("searchRoute");
 			$forElement.val("");
 			clLib.UI.defaultChangeHandler($this, changeOptions);

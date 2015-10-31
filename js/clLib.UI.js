@@ -16,9 +16,6 @@ clLib.UI.varDefaults["allGradeSystems"] = Object.keys(clLib.gradeConfig).join(',
 clLib.UI.varDefaults["defaultGradeSystem"] = "UIAA";
 clLib.UI.varDefaults["defaultGrade"] = "VI";
 
-
-
-
 clLib.UI.killEventHandlers = function($element, eventName) {
 	$element.die(eventName);
 	$element.off(eventName);
@@ -480,10 +477,11 @@ clLib.populateSelectBox_plain = function($selectBox, dataObj, selectedValue, pre
     
 	if(additionalValue && typeof(additionalValue) != "undefined") {
         if(jqmType == "list") {
-            if(additionalValue["value"] != "__UNKNOWN__") {
-                alert("additionalValue " + additionalValue);
-                alert("typeof additionalValue " + typeof(additionalValue));
-                alert("json additionalValue " + JSON.stringify(additionalValue));
+        //            if(additionalValue["value"] != "__UNKNOWN__") {
+//                alert("additionalValue " + additionalValue);
+//                alert("typeof additionalValue " + typeof(additionalValue));
+//                alert("json additionalValue " + JSON.stringify(additionalValue));
+/*
                 var $li = $('<li></li>');
                 if(additionalValue instanceof Object) {
                     $li
@@ -493,7 +491,8 @@ clLib.populateSelectBox_plain = function($selectBox, dataObj, selectedValue, pre
                         .html(additionalValue);
                 }
                 $selectBox.append($li);
-            }   
+*/
+//            }   
         }
         else {
             var $option = $('<option></option>');
@@ -548,8 +547,11 @@ clLib.populateSelectBox_plain = function($selectBox, dataObj, selectedValue, pre
 	});
 
 	if(
-		$selectBox.attr("id") == "newRouteLog_default_colourPopup" ||
-		$selectBox.attr("id") == "newRouteLog_reduced_colourPopup"
+		(
+            $selectBox.attr("id") == clLib.UI.byId$("colourPopup").attr("id")
+        ) && (
+            $selectBox.attr("allShown") != "true"
+        )
 	) {
 		var $li = $('<li></li>');
         var $a2 = $("<a></a>");
@@ -557,7 +559,19 @@ clLib.populateSelectBox_plain = function($selectBox, dataObj, selectedValue, pre
         $a2.html("more");
         $li.append($a2);
 
+        //alert("need to find ALL colours...");
         $selectBox.find(".ui-content>.ui-listview").append($li);
+		
+        $li.on("click", function(e) {
+            //alert("refreshing ALL colours..");
+            $selectBox.attr("allShown", "true");
+            $selectBox.trigger("refresh.clLib", {dependingOnOverride: true});
+            clLib.UI.byId$("colourSelect").trigger("refresh.clLib", {dependingOnOverride: true});
+            clLib.UI.byId$("colourSelect-button").trigger("click");
+
+        });
+
+        
 	}
 	
 	//alert("refreshing " + $selectBox.attr("id"));
@@ -1223,7 +1237,7 @@ clLib.UI.localStorageRefreshHandler = function($element, additionalOptions) {
 
 
 clLib.UI.defaultRefreshHandler = function($element, additionalOptions) {
-	clLib.loggi("refreshing " + $element.attr("id"));
+	//alert("refreshing " + $element.attr("id"));
 	var currentLayout = localStorage.getItem("currentLayout") || localStorage.getItem("defaultLayout") || "default";
 	var elementConfig = clLib.UI.elements[clLib.UI.elementNameFromId($element.attr("id"))];
 
@@ -1247,7 +1261,10 @@ clLib.UI.defaultRefreshHandler = function($element, additionalOptions) {
     else {
         results = clLib.UI.defaultEntitySearch(entityName, resultColName, dependingPageElements, true, null);
 	}
-    console.log("got results: " + JSON.stringify(results));
+    if($element.attr("id") == "newRouteLog_default_colourPopup") {
+//        alert("got results: " + JSON.stringify(results));
+        console.log("got results: " + JSON.stringify(results));
+    }
 
 	var elContentOptions = {
 		selectBoxElement : $element,
@@ -1277,8 +1294,8 @@ clLib.UI.defaultRefreshHandler = function($element, additionalOptions) {
         results = clLib.UI.defaultEntitySearch(entityName, resultColName, dependingPageElements, true, null);
         console.log("new results is >" + results.length + "<");
         elContentOptions["dataObj"] = results;  
-
-        }
+    }
+    
     $.extend(elContentOptions, additionalOptions);
 	
 	
@@ -1298,6 +1315,7 @@ clLib.UI.defaultRefreshHandler = function($element, additionalOptions) {
 	else {
         if(elementConfig["jqmType"] == "list") {
             elContentOptions["jqmType"] = "list";
+            
             clLib.populateSelectBox(elContentOptions);
         }
         else {
@@ -1307,6 +1325,7 @@ clLib.UI.defaultRefreshHandler = function($element, additionalOptions) {
 }
 
 clLib.UI.getLabelForElement = function($element) {
+    console.error("getting lable for leemtn >" + $element.attr("id") + "<");
 	return $element.parents(".ui-select").first().siblings("label[for=" + $element.attr("id") + "]").html();
 	//return $element.parents("td").find("label[for=" + $element.attr("id") + "]").html();
 };
@@ -1420,12 +1439,17 @@ clLib.UI.RESTSaveHandler = function (options, successFunc, errorFunc) {
     }
 
     $.each(clLib.UI.pageElements[pageId][currentLayout], function (idx, elementName) {
-		console.log("eaching " + idx + " and " + elementName);
+		//alert("eaching " + idx + " and " + elementName);
         var elementConfig = clLib.UI.elements[elementName];
 		var dbField = elementConfig["dbField"] || elementName;
+
+        if(elementName == "colourPopup") {
+            return;
+        }
         if (!elementConfig) {
             alert("will not save " + elementName + ", no config found!");
         } else {
+            //alert("setting >" + dbField + "< to >" +clLib.UI.getVal(elementName) +  "<");
             saveObj[dbField] = clLib.UI.getVal(elementName);
         }
     });
