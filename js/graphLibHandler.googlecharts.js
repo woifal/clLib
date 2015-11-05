@@ -220,12 +220,12 @@ var googlechartsGraphHandler = {
                 ,focusTarget: 'datum'
                 ,tooltip: { isHtml: true }
                 ,pointSize: 1 //7
-                ,legend: 'right'
-                ,chartArea: {width: '60%'}
+                ,legend: 'right' // none
+                ,chartArea: {width: '60%'} // 70% => if legend==none
                 ,hAxis: {
  //                   textPosition : 'in'  
 //                    ,
-                    title: graphConfig["displayOptions"]["hAxisLabel"] || ''  
+                    title: (graphConfig["displayOptions"]["hAxisLabel"]) || ''  
                     ,titleTextStyle: {color: '#FF0000'}
 /*                    ,gridlines: {
                         count: graphConfig["displayOptions"]["keyGridCount"]
@@ -236,7 +236,8 @@ var googlechartsGraphHandler = {
                     ,format: graphConfig["displayOptions"]["hAxisFormat"] || null
                 }
                 ,vAxis: {
-                    minValue: 0
+                    minValue: minValue
+                    ,maxValue: maxValue + 500
                     ,gridlines: {
                         count: graphConfig["displayOptions"]["vAxisGridLines"] || 10
                     }
