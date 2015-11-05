@@ -15,6 +15,7 @@
 						class="clFieldset clGradeSystem"
 					>
 					</fieldset>
+<div style="border: 2px solid rgb(204, 204, 204); padding: 0px; margin: -1px 1px;">
 					<div style="margin-top: 0px; padding-top: 0px">
 					<!-- Dropdowns.. -->
 						<div class="clRouteDropdown">
@@ -107,34 +108,11 @@
 					</fieldset>
 				</div>
 				
-				<!-- searchRoute -->
-				<div>
-                    <div>
-                        <label class="clUIElement select" for="newRouteLog_default_searchRoute">Route Name</label>
-                        <input data-role="search" class="clTextInput" type="search" data-iconpos="left" data-iconpos="arrow-d" 
-								id="newRouteLog_default_searchRoute" name="newRouteLog_default_searchRoute"
-                               value="" placeholder="Route Name?" data-theme="a" tabindex="7" />
-                    </div>
-				</div>
-				<div>
-                    <!-- searchRouteResults -->
-                    <ul data-role="listview" id="newRouteLog_default_searchRouteResults"
-                        data-inset="true" data-theme="a"
-                        data-divider-theme="a" data-count-theme="a">
-                        <!-- searchRouteResult -->
-<!--                        <li>
-                            <a id="newRouteLog_default_searchRouteResult"
-                               tabindex="18">
-                                <h3>Item 1</h3>
-                            </a>
-                        </li>
--->
-					</ul>
-				</div>
+
 
 				<div style="clear:both"></div>
 				
-                <div style="float: left; width: 48%;margin-top: 18px;" data-role="none" id="newRouteLog_default_ratingSelectWrapper">
+                <div style="float: left; width: 50%; margin-top: 18px;" data-role="none" id="newRouteLog_default_ratingSelectWrapper">
 				</div>
                 
 				<div id="newRouteLog_default_extraButton" class="clButton clSmall clInline">
@@ -178,6 +156,33 @@
 						<a href="#" style="margin-top: 20px;" data-rel="back" class="ui-btn ui-btn-center ui-corner-all">Done!</a>
 					</div>
 				</div>				
+
+                <div style="clear:both"></div>
+				
+				<!-- searchRoute -->
+				<div>
+                    <div>
+                        <label class="clUIElement select" for="newRouteLog_default_searchRoute">Route Name</label>
+                        <input data-role="search" class="clTextInput" type="search" data-iconpos="left" data-iconpos="arrow-d" 
+								id="newRouteLog_default_searchRoute" name="newRouteLog_default_searchRoute"
+                               value="" placeholder="Route Name?" data-theme="a" tabindex="7" />
+                    </div>
+				</div>
+				<div>
+                    <!-- searchRouteResults -->
+                    <ul data-role="listview" id="newRouteLog_default_searchRouteResults"
+                        data-inset="true" data-theme="a"
+                        data-divider-theme="a" data-count-theme="a">
+                        <!-- searchRouteResult -->
+<!--                        <li>
+                            <a id="newRouteLog_default_searchRouteResult"
+                               tabindex="18">
+                                <h3>Item 1</h3>
+                            </a>
+                        </li>
+-->
+					</ul>
+				</div>
 				
 				<div style="clear:both"></div>
 				<div id="newRouteLog_default_save_tick" class="clButton clFullWidth clNewRouteLog">
@@ -190,7 +195,8 @@
 					<span>Save Tick!</span>
 					</div>
 				</div>
-				
+</div>
+				<div style="clear: both"></div>
 
 				<!-- Today's route logs -->
 				<div id="newRouteLog_default_routeLogContainer" data-role="collapsibleset">
