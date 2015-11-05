@@ -649,7 +649,12 @@ clLib.PAGES.handlers = {
 	        //clLib.UI.fillUIelements();
         }
         , "pageshow": function () {
-			//alert("shown!");
+			clLib.UI.execWithMsg(
+                function() {}
+                ,{text: "loading.."}
+            );
+
+            //alert("shown!");
 	        clLib.UI.fillUIelements();
         }
 	}
