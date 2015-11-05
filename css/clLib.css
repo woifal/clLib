@@ -208,7 +208,7 @@ input.ui-input-text, textarea.ui-input-text {
 /* outer button outline.. */
 .clButton {
     width: 280px;
-	padding: 9px;
+	padding: 0px;
     border-radius: 8px;
 	box-shadow: inset 0px 2px 2px 1px #DDD;
 	margin: 0 auto;
@@ -219,7 +219,7 @@ input.ui-input-text, textarea.ui-input-text {
 .clButton.clButton50 {
     afloat: left;
     width: 151px;
-	padding: 9px;
+	adfpadding: 9px;
     border-radius: 8px;
 	box-shadow: inset 0px 2px 2px 1px #DDD;
 	margin: 0 auto;
@@ -268,12 +268,12 @@ input.ui-input-text, textarea.ui-input-text {
 
 
 .clButton.clFullWidth {
-	width: 98%;
+	width: 100%;
     margin: 0 auto;
 	border-radius: 0px;
 	abackground: red; /*#C3cbd6;*/
-	box-shadow: inset 0px 4px 4px -3px #RED;
-	padding-left: 10px;
+	asdfbox-shadow: inset 0px 4px 4px -3px #RED;
+	asdfpadding-left: 10px;
     display: block;
 }
 
@@ -297,7 +297,8 @@ input.ui-input-text, textarea.ui-input-text {
     border-radius: 5px;
 	font-size: 1.4em;
 	line-height: 1em;
-	box-shadow: 0px 1px 2px #888;
+	asdfbox-shadow: 0px 1px 2px #888;
+    box-shadow: 0px 0px 2px 1px #888;
 }
 
 /* outer image ring.. */
@@ -714,7 +715,7 @@ border: 1px solid red;
 .clFieldset.clTicktypes.items3 .ui-controlgroup-controls .ui-checkbox 
 ,.clFieldset.clTicktypes.items3 .ui-controlgroup-controls .ui-radio {
 	border: 1px solid #cccccc;
-	width: 32% !important;
+	width: 33.333333% !important;
 	/*border: 1px solid red !important;*/
 }
 
@@ -802,13 +803,13 @@ border: 1px solid red;
 .clRouteDropdown {
 	margin-top: 0px !important;
 	margin-bottom: 0px  !important;
-	padding-top: 1px  !important;
-	padding-bottom: 1px  !important;
+	padding-top: 0px  !important;
+	padding-bottom: 0px  !important;
 	background-color: #AAA;
 	width: 50%;
 	float:left;
 	border: 0px solid red;
-	border-bottom: 1px solid #CCC;
+	border-bottom: 0px solid #CCC;
 	box-shadow: 0px 0px 1px 1px #CCC;
 }
 
@@ -1186,12 +1187,12 @@ div.clButton.clSmall.clIconOnly{
 
 
 div.clButton.clSmall.clInline {
-	padding: 3px; 
+	padding: 0px; 
 	box-shadow: none; 
 	margin: 5px 0px 5px 0px !important;
 	margin-bottom: 5px !important; 
 	float:left; 
-	width: 45%; 
+	width: 50%; 
 	font-size: 0.68em;
 }
 
@@ -1235,11 +1236,11 @@ div.clButton.clSmall.clInline {
     width: 200px;
     height: 200px;
     display: block;
-    margin: 0 auto;
+    margin: 5px auto;
 }
 
 #clLib_areaSelectionContainer {
-    padding: 0px 0px 40px 0px;
+    padding: 0px 0px 20px 0px;
     text-align: center;
     width: 100%;
 }
@@ -1271,4 +1272,9 @@ div.clButton.clSmall.clInline {
     border: 0px solid yellow;
     width: 100%;	
     text-align: center;
+}
+
+
+.clScoreLabel {
+    padding: 7px 0px !important;
 }
