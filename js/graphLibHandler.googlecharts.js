@@ -212,7 +212,12 @@ var googlechartsGraphHandler = {
             //var data = google.visualization.arrayToDataTable(gDataTable);
             var data = gDataTable;
 
-
+            
+            var statsOverflow = Math.max(
+                (maxValue - minValue) / 10,
+                10
+            );
+            
 
             var options = {
                 title: graphConfig["displayName"] //'some foo graphs'
@@ -236,11 +241,10 @@ var googlechartsGraphHandler = {
                     ,format: graphConfig["displayOptions"]["hAxisFormat"] || null
                 }
                 ,vAxis: {
-                    minValue: minValue
-                    ,maxValue: maxValue + 500
-                    ,gridlines: {
-                        count: graphConfig["displayOptions"]["vAxisGridLines"] || 10
+                    gridlines: {
+                        count: graphConfig["displayOptions"]["vAxisGridLines"] || 10 // 5 XXXXXX
                     }
+ 
                 }
                 ,interpolateNulls: true
                 ,tooltip: { trigger: 'both' }
@@ -251,13 +255,29 @@ var googlechartsGraphHandler = {
                 }
     
             };
-
+            //alert("graphtype >"+ graphConfig.graphType + "<");
             if(graphConfig.graphType.indexOf("line") > -1) {
-                options["vAxis"]["viewWindow"] = {
-                    min: minValue // - 500
+
+                maxValue = maxValue + statsOverflow;
+                minValue = minValue - statsOverflow;
+                console.log("minValue >" + minValue + "<, maxValue >" + maxValue + "<, plus >" + statsOverflow + "<");
+
+                options["vAxis"]= {
+                    format: '0'
+                    ,"minValue": minValue
+                    ,"maxValue": maxValue
+                    ,viewWindowMode:'explicit'
+                    ,viewWindow:{
+                        "max":maxValue,
+                        "min":minValue
+                    }
+                    ,gridlines: {
+                        count: graphConfig["displayOptions"]["vAxisGridLines"] || 10 // 5 XXXXXX
+                    }
                 };
             }
             
+            //alert("options is >"  +JSON.stringify(options) + "<");
             var chartDiv = $(graphConfig.collection.containerSelector)[0];
             console.log("chartDiv is " + chartDiv.outerHTML);
             
