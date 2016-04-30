@@ -9,6 +9,8 @@ grunt.initConfig({
 							NOWW: "xxxxx"
 							,"clLib.REST.baseURI" : "http://localhost:1983/db"
 							,"clLib.REST.clLibServerURI" : "http://localhost:1983"
+                            ,DEBUG_OUTPUT: "false"
+							,ENABLE_DEBUG_VISIBILITY: "visible" 
 						}
 					// Task-specific options go here.
 					},
@@ -31,9 +33,8 @@ grunt.initConfig({
 							NOWW: new Date().toISOString()
 							,"clLib.REST.baseURI" : "http://cllibserver.herokuapp.com/db"
 							,"clLib.REST.clLibServerURI" : "http://cllibserver.herokuapp.com"
-/*							,"clLib.REST.baseURI" : "http://localhost:1983/db"
-							,"clLib.REST.clLibServerURI" : "http://localhost:1983"*/
-							
+                            ,DEBUG_OUTPUT: "false"
+							,ENABLE_DEBUG_VISIBILITY: "hidden" 
 						}
 					// Task-specific options go here.
 					},
@@ -55,6 +56,9 @@ grunt.initConfig({
 							NOWW: new Date().toISOString()
 							,"clLib.REST.baseURI" : "http://cllibserver.herokuapp.com/db"
 							,"clLib.REST.clLibServerURI" : "http://cllibserver.herokuapp.com"
+                            ,DEBUG_OUTPUT: "false"
+							,ENABLE_DEBUG_VISIBILITY: "hidden" 
+
 						}
 					// Task-specific options go here.
 					},
@@ -70,12 +74,16 @@ grunt.initConfig({
 					]
 				}
 				,web_dev: {
+                    //expand: true,
 					options: {
 						flatten: true
 						,globals: {
 							NOWW: new Date().toISOString()
 							,"clLib.REST.baseURI" : "http://localhost:1983/db"
 							,"clLib.REST.clLibServerURI" : "http://localhost:1983"
+                            ,DEBUG_OUTPUT: "true"
+							,ENABLE_DEBUG_VISIBILITY: "visible" 
+
 						}
 					// Task-specific options go here.
 					},
@@ -85,9 +93,66 @@ grunt.initConfig({
 							dest: 'dist/tmp/web/'
 						}
 						,{ 
-							src: ['js/*'],
+                            src: ['js/*'],
 							dest: 'dist/tmp/web/'
 						}
+					]
+				}
+				,server_dev: {
+					options: {
+						flatten: true
+						,globals: {
+							NOWW: "xxxxx"
+							,"clLib.REST.baseURI" : "http://localhost:1983/db"
+							,"clLib.REST.clLibServerURI" : "http://localhost:1983"
+                            ,DEBUG_OUTPUT: "false"
+							,mongodbUser :  "clAdmin"
+							,mongodbPwd  : "blerl1la"
+							,mongodbHost : "ds023520.mlab.com"
+							,mongodbPort : "23520"
+							,mongodbDBName: "climbinglog_dev"
+							}
+					// Task-specific options go here.
+					},
+					files : [
+						{ 
+                            src: ['server/*'],
+							dest: 'dist/tmp/server/'
+						}
+						,{
+							src: ['js/*'],
+							dest: 'dist/tmp/server/'
+						}
+
+					]
+
+				}
+				,server_prod: {
+					options: {
+						flatten: true
+						,globals: {
+							NOWW: "xxxxx"
+							,"clLib.REST.baseURI" : "http://localhost:1983/db"
+							,"clLib.REST.clLibServerURI" : "http://localhost:1983"
+                            ,DEBUG_OUTPUT: "true"
+							,mongodbUser :  "clAdmin"
+							,mongodbPwd  : "blerl1la"
+							,mongodbHost : "ds053438.mongolab.com"
+							,mongodbPort : "53438"
+							,mongodbDBName: "climbinglog"
+						}
+					// Task-specific options go here.
+					},
+					files : [
+						{ 
+                            src: ['server/*'],
+							dest: 'dist/tmp/server/'
+						}
+						,{
+							src: ['js/*'],
+							dest: 'dist/tmp/server/'
+						}
+
 					]
 				}
          },
@@ -148,8 +213,6 @@ grunt.initConfig({
 							]
 							,dest:"dist/app/js" 
 						}
-						,
-						
 					]
 				}
 				,web_prod: {
@@ -242,44 +305,39 @@ grunt.initConfig({
 							,dest:"dist/web/php" 
 						}						
 						,{ src: ["files/*", "files/**/*"] , dest:"dist/web/" }
+						,{ src: ["js/lightbox/*", "js/lightbox/**/*"] , dest:"dist/web/" }
 					]
 				}
 				,server_prod: {
 					expand: true,
-//					flatten: true,
 					files: [
-                        { 
+						{ 
 							flatten: true
-                            ,expand: true
+							,expand: true
+							,cwd: "dist/tmp/server/server"
 							,src: [
-								"js/clLib.js", "js/clLib.gradeConfig.js", "!js/_web"
-							]
-							,dest:"dist/server" 
-                        }
-                        ,
-                        { 
-							flatten: true
-                            ,expand: true
-							,src: [
-								"server/*"
+								"*"
 							]
 							,dest:"dist/server" 
 						}
 						,
-                        { 
-							//flatten: true
-							//,
-                            expand: true
-							//,cwd: "server"
-                            ,src: ["server/node_modules/*", "server/node_modules/**/*"] 
-                            ,dest:"dist" 
+						{ 
+							flatten: true
+                            ,expand: true
+							,src: [
+								"dist/tmp/server/js/clLib.js", "dist/tmp/server/js/clLib.gradeConfig.js", "!dist/tmp/server/js/_web"
+							]
+							,dest:"dist/server" 
                         }
+						,
+					{ 
+                          expand: true
+                          ,src: ["server/node_modules/*", "server/node_modules/**/*"] 
+                          ,dest:"dist" 
+                      }
                         ,
                         { 
-							//flatten: true
-							//,
                             expand: true
-							//,cwd: "server"
                             ,src: ["server/appCertificates/*", "server/appCertificates/**/*"] 
                             ,dest:"dist" 
                         }
@@ -287,40 +345,34 @@ grunt.initConfig({
 				}
 				,server_dev: {
 					expand: true,
-//					flatten: true,
 					files: [
-                        { 
+						{ 
 							flatten: true
-                            ,expand: true
+							,expand: true
+							,cwd: "dist/tmp/server/server"
 							,src: [
-								"js/clLib.js", "js/clLib.gradeConfig.js", "!js/_web"
-							]
-							,dest:"dist/server" 
-                        }
-                        ,
-                        { 
-							flatten: true
-                            ,expand: true
-							,src: [
-								"server/*"
+								"*"
 							]
 							,dest:"dist/server" 
 						}
 						,
-//                      { 
-//						//flatten: true
-//						//,
-//                          expand: true
-//						//,cwd: "server"
-//                          ,src: ["server/node_modules/*", "server/node_modules/**/*"] 
-//                          ,dest:"dist" 
-//                      }
-//                        ,
+						{ 
+							flatten: true
+                            ,expand: true
+							,src: [
+								"dist/tmp/server/js/clLib.js", "dist/tmp/server/js/clLib.gradeConfig.js", "!dist/tmp/server/js/_web"
+							]
+							,dest:"dist/server" 
+                        }
+						,
+					{ 
+                          expand: true
+                          ,src: ["server/node_modules/*", "server/node_modules/**/*"] 
+                          ,dest:"dist" 
+                      }
+                        ,
                         { 
-							//flatten: true
-							//,
                             expand: true
-							//,cwd: "server"
                             ,src: ["server/appCertificates/*", "server/appCertificates/**/*"] 
                             ,dest:"dist" 
                         }
@@ -376,7 +428,7 @@ grunt.initConfig({
     grunt.registerTask('appprod', ['includereplace:app_prod', 'copy:app_prod', 'compress:app_prod']);
     grunt.registerTask('webprod', ['includereplace:web_prod', 'copy:web_prod']);
     grunt.registerTask('webdev', ['includereplace:web_dev', 'copy:web_prod']);
-    grunt.registerTask('serverprod', ['copy:server_prod']);
-    grunt.registerTask('serverdev', ['copy:server_dev']);
+    grunt.registerTask('serverprod', ['includereplace:server_prod', 'copy:server_prod']);
+    grunt.registerTask('serverdev', ['includereplace:server_dev', 'copy:server_dev']);
 
 };
