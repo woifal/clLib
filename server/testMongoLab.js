@@ -208,6 +208,25 @@ function testDistinct(nextFunc) {
 
 };
 
+function testMax(nextFunc) {
+	var coll = conn.collection(tableName);
+	util.log("where :" + JSON.stringify(whereObj));
+	if(!coll) {
+		util.log("NO coll " + tableName + "found..");
+	}
+    
+    var sortObj = {};
+    sortObj[distinctColName] = -1;
+    coll.find(whereObj, null, {sort: sortObj, limit: 1}).toArray(function(err, items) {
+		if (err) {
+			util.log("ERROR:" + JSON.stringify(err));
+		}
+		
+		util.log("length " + JSON.stringify(items.length));
+		util.log("items " + JSON.stringify(items));
+	});
+};
+
 
 
 //testInsert(function() {
@@ -216,9 +235,10 @@ function testDistinct(nextFunc) {
 //	})
 //})
 //return testQuerySortLimit()
-return testQuery()
+//return testQuery()
 //return testAggregate()
 ;
 //testUpdate(1);
+return testMax();
 
 util.log("Done");
