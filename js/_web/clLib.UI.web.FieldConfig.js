@@ -1,7 +1,10 @@
 "use strict";
 
 
+var imgFolderURL= "@@DEBUG_OUTPUT";
 
+// "http://localhost:8082/files/views/assets/image";
+//'/KURT/files/views/assets/image/dummy.png' class='clCancel'>")
 
 clLib.webFieldConfig = {
 	FieldConfigError: function (message) {
@@ -383,22 +386,22 @@ clLib.webFieldConfig = {
 			fieldName : "clControls"
 			,displayName: function() {
 				var $ctlEl = $("<span>");
-				$ctlEl.append($("<img src='/KURT/files/views/assets/image/dummy.png' class='clAdd' title='Add new route'>")
+				$ctlEl.append($("<img src='" + imgFolderURL + "/dummy.png' class='clAdd' title='Add new route'>")
 				);
 				return $ctlEl[0].outerHTML;
 			}()
 			,orderable: false
 			,renderFunc : function(x) {
 				var $ctlEl = $("<div>");
-				$ctlEl.append($("<img src='/KURT/files/views/assets/image/dummy.png' class='clEdit' title='Edit route'>"));
-				$ctlEl.append($("<img src='/KURT/files/views/assets/image/dummy.png' class='clDelete' title='Delete route'>"));
+				$ctlEl.append($("<img src='" + imgFolderURL + "/dummy.png' class='clEdit' title='Edit route'>"));
+				$ctlEl.append($("<img src='" + imgFolderURL + "/dummy.png' class='clDelete' title='Delete route'>"));
 				return $ctlEl[0].outerHTML;
 			}
 			,editElement : {
 				create: function(colName, currentValue) {
 					var $ctlEl = $("<span>");
 
-					$ctlEl.append($("<img src='/KURT/files/views/assets/image/dummy.png' class='clSave'>")
+					$ctlEl.append($("<img src='" + imgFolderURL + "/dummy.png' class='clSave'>")
 						.on("click", function(evt) {
 							var serRow  = {};
 							var newRow = false;
@@ -511,7 +514,7 @@ clLib.webFieldConfig = {
 					)
 					;
 
-					$ctlEl.append($("<img src='/KURT/files/views/assets/image/dummy.png' class='clCancel'>")
+					$ctlEl.append($("<img src='" + imgFolderURL + "/dummy.png' class='clCancel'>")
 						.on("click", function() {
 							var $tr = $(this).closest('tr');
 							
@@ -549,6 +552,155 @@ clLib.webFieldConfig = {
 			,visible: false
 		}));
 
+       routeLogConfig.add(new FieldConfig({
+			fieldName : "imgURL"
+			,displayName : "Route Image"
+			,visible: true
+            ,getAvailableItems : function(column, api, successFunc) {
+                return successFunc([]);
+			}
+			,filterElement: function(column, api, i) {
+			}
+			,orderable : false
+			,renderFunc : function(colData, rowData) { 
+				var setImgElSrc = function($imgEl, src) {
+                        $imgEl.attr("href", src);
+                        $imgEl.find("img").attr("src", src);
+                }
+                var getImgElSrc = function($imgEl) {
+                    return $imgEl.find("img").attr("src");
+                }
+//                var $imgEl  = $("<a href='' data-lightbox='" + (Date.now()) + "'><img src=''></a>");
+                var $imgEl  = $("<a href=''><img src=''></a>");
+                
+                // no route image? show/return nothing..
+                var currentValue = colData;
+                if(!currentValue || currentValue == '-1' || currentValue == "fuckyou.gif" || currentValue == "dummy.png") {
+//					alert("NO VALUE FOUND!!! >" + currentValue + "<");
+/*
+					currentValue = imgFolderURL + "/dummy123.png";
+					setImgElSrc($imgEl, currentValue); 
+                    $imgEl.find("img").css({
+                        width: "50px"
+                        ,border: "1px solid red"
+                    });
+*/
+					$imgEl.attr("woifal", 1);
+					return $imgEl[0].outerHTML
+				} else {
+					
+//					if(rowData["_id"] == "570eb22c2e3f1bd41a31257e" || rowData["_id"] == "570c01d189854303005bc6f7") {
+//						alert("REAL >" + rowData["_id"] + "<>" + typeof(currentValue) + "< >" + currentValue + "< >" + JSON.stringify(currentValue) + "<");
+						if(typeof(currentValue) == "string" && currentValue.indexOf("woifal") == -1) {
+							setImgElSrc($imgEl, currentValue); 
+							$imgEl.attr("woifal", 1);
+//							alert("YES, first time. returning >" + $imgEl[0].outerHTML + "<");
+
+							$imgEl.find("img").css({
+								"width": "80px"
+								,"border-radius": "3px"
+								,"border": "1px solid #999"
+							});
+								return $imgEl[0].outerHTML
+						} else {
+//							alert("NO, not first time. returning >" + currentValue + "<");
+							return currentValue;
+						}
+//					}
+				}
+				return "XX";
+                //return $imgEl[0].outerHTML;
+            }
+
+			,editElement : {
+                create: function(colName, currentValue, $thead, currentFieldConfig, rowData) {
+
+                    /*
+                    var setImgElSrc = function($imgEl, src) {
+                        $imgEl.attr("href", src);
+                        $imgEl.find("img").attr("src", src);
+                    }
+                    var getImgElSrc = function($imgEl) {
+                        return $imgEl.find("img").attr("src");
+                    }
+                    
+                    var $imgEl  = $("<a href='' data-lightbox='" + (Date.now()) + "'><img src=''></a>");
+                    // no route image? show/return nothing..
+                    if(!currentValue || currentValue == '-1' || currentValue == "fuckyou.gif" || currentValue == "dummy.png") {
+                        setImgElSrc($imgEl, imgFolderURL + "/dummy.png"); 
+                        $imgEl.find("img").css({
+                            width: "50px"
+                            ,border: "1px solid red"
+                        });
+                    } else {
+                        setImgElSrc($imgEl, currentValue); 
+                        $imgEl.find("img").css({
+                            width: "50px"
+                            ,border: "1px solid blue"
+                        });
+                    
+                    }
+                    
+                    
+                    var $uploadFileInput = $("<input type='file' id='imgURL_hiddenFileInput' style='display: none;'>");
+                    var $deleteButton = $("<button id='deleteImgButton'>Delete image</button>");
+                    $deleteButton.off("click").on("click", function(e) {
+                        setImgElSrc($imgEl, imgFolderURL + "/dummy.png"); 
+                    });
+                    var $uploadButton = $("<button id='uploadImgButton'>Upload image</button>");
+                    $uploadButton.off("click").on("click", function(e) {
+                        $uploadFileInput.trigger("click");
+                    });
+                    $uploadFileInput.off("change").on("change", function(e) {
+                        //alert("file changed");
+                        var file = this.files[0];
+                        // display local image
+                        clLib.images.desktopSuccessHandler(   
+                            file
+                            ,function(imgURI) {
+                                alert("YES, previewing img as >" + imgURI + "<");
+                                setImgElSrc($imgEl, imgURI); 
+                            }
+                        );
+                        // start upload to AWS
+                        clLib.images.uploadImage(
+                            window["tmpImgObj"]
+                            ,function(resultObj) {
+                                // display uploaded image
+                                setImgElSrc($imgEl, imgURI);
+                                //alert("previewed new img..");
+                            }
+                            ,function(e) {
+                                alert("UPLOAD ERROR >" + e + "<");
+                            }
+                        );
+
+                    });
+
+					*/
+                    
+                    var $editElDiv = $("<div>");
+/*
+                    $editElDiv.append($uploadFileInput);
+                    $editElDiv.append($imgEl);
+                    $editElDiv.append("<br>");
+                    $editElDiv.append($uploadButton);
+                    $editElDiv.append("<br>");
+                    $editElDiv.append($deleteButton);
+*/
+                    return $editElDiv;
+				}
+				,serialize : function($editElement) {
+                    var val = $editElement.find("img").attr("src");
+					alert("saving imgurl of >" + $editElement.find("img").attr("src") + "<");
+                    return val || "";
+				}
+			}		
+
+            
+		}));        
+
+		
 		routeLogConfig.add(new FieldConfig({
 			fieldName : "Area"
 			,displayName: "Area"
@@ -581,7 +733,9 @@ clLib.webFieldConfig = {
 			fieldName : "DateISO"
 			,visible: true
 			,displayName: "Date"
-			,renderFunc : function(x) { return clLib.ISOStrToDate(x); }
+			,renderFunc : function(x, rowData) { 
+					return clLib.ISOStrToDate(x); 
+			}
             ,validate: function(fieldData) {
                 //alert("validating DateISO field for >" + fieldData + "<");
                 if(!fieldData) {
@@ -615,7 +769,7 @@ clLib.webFieldConfig = {
 					$el.append($input);
 					$input.datepicker({
 						showOn: "button",
-						buttonImage: "/KURT/files/views/assets/image/calendar.gif",
+						buttonImage: imgFolderURL + "/calendar.gif",
 						buttonImageOnly: true,
 						dateFormat: "yy-mm-dd"
 						//buttonText: "Select date"
@@ -1039,7 +1193,6 @@ clLib.webFieldConfig = {
 			,visible: false
 		}));
 
-		
 		
 		clLib.webFieldConfig["_routeLogConfig"] = routeLogConfig;
 

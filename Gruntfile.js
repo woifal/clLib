@@ -58,7 +58,7 @@ grunt.initConfig({
 							,"clLib.REST.clLibServerURI" : "http://cllibserver.herokuapp.com"
                             ,DEBUG_OUTPUT: "false"
 							,ENABLE_DEBUG_VISIBILITY: "hidden" 
-
+							,WEB_IMG_FOLDER_URL: "/KURT/files/views/assets/image"
 						}
 					// Task-specific options go here.
 					},
@@ -83,7 +83,7 @@ grunt.initConfig({
 							,"clLib.REST.clLibServerURI" : "http://localhost:1983"
                             ,DEBUG_OUTPUT: "true"
 							,ENABLE_DEBUG_VISIBILITY: "visible" 
-
+							,WEB_IMG_FOLDER_URL: "http://localhost:8082/files/views/assets/image"
 						}
 					// Task-specific options go here.
 					},
