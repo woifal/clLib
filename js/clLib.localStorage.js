@@ -18,6 +18,7 @@ clLib.localStorage ={};
 //
 var storageCache = {};
 
+clLib.localStorage.lastModField = "_updatedAt";
 
 
 clLib.localStorage.indexExists = function(storageName, indexName) {
@@ -295,7 +296,7 @@ clLib.localStorage.getLastRefreshDate = function (storageName) {
 
 clLib.localStorage.setLastRefreshDate = function (storageName) {
     //alert("seeting last refresh of " + storageName + " to " + tojson(new Date()));
-    clLib.localStorage.setItem(storageName + "_createdAt", tojson(new Date()));
+    clLib.localStorage.setItem(storageName + "_createdAt", Date.now());
 };
 
 
@@ -373,20 +374,34 @@ Array.prototype.sortBy = function(sortBy, descSortFlag) {
 	}
 };
 
-clLib.localStorage.syncAllUp = function(entity, storageName) {
-	console.log("syncing up all entities for >" + entity + "< in >" + storageName + "<");
+clLib.localStorage.syncAllUp = function(entity, storageName, successFunc, errorFunc) {
+	clLib.console.log("syncing up all entities for >" + entity + "< in >" + storageName + "<");
 	var storage = clLib.localStorage.getStorageItems("UNSYNCED_" + storageName);
-	console.log("currently unsynced items >" + JSON.stringify(storage) + "<");
-	$.each(storage[entity], function(dummyId) {
+	clLib.console.log("currently unsynced items >" + JSON.stringify(storage) + "<");
+	var toEvaluate = new Array();
+    $.each(storage[entity], function(dummyId) {
 		var entityInstance = storage[entity][dummyId];
-		//alert("call syncup for >" + dummyId + "< bzw. >" + JSON.stringify(entityInstance) + "<");
+		console.log("call syncup for >" + dummyId + "< bzw. >" + JSON.stringify(entityInstance) + "<");
 
-		clLib.localStorage.syncUp(entity, entityInstance, storageName);
+        var newFunc = function(successFunc2, errorFunc2) {
+//                    console.log("do nothing, run next func in chain..");
+            return clLib.localStorage.syncUp(entity, entityInstance, storageName, successFunc2, errorFunc2);
+        }
+        toEvaluate.push(newFunc);
+        
 	});
+    
+    return clLib.executeChainedFuncs(toEvaluate, function(resultObj) {
+        console.log("fuCK YOUUUUUUUUUUUUUU was fine, SAVED!");
+        return successFunc(resultObj);
+    }, function(e) {
+        clLib.alert("!!!!!!!!!! ERROR while saving  >" + e+ "<");
+        return errorFunc();
+    });
+        
 }
 
-
-clLib.localStorage.syncUp = function(entity, entityInstance, storageName) {
+clLib.localStorage.syncUp = function(entity, entityInstance, storageName, successFunc, errorFunc) {
 	var entityStorage = clLib.localStorage.getStorageItems(storageName);
 	entityStorage = entityStorage[entity];
 	
@@ -394,10 +409,10 @@ clLib.localStorage.syncUp = function(entity, entityInstance, storageName) {
 	unsyncedStorage = unsyncedStorage[entity];
 	
 	
-	console.log("syncing entity (" + entityInstance["deleted"] + ")" + JSON.stringify(entityInstance));
+	clLib.console.log("syncing entity (" + entityInstance["deleted"] + ")" + JSON.stringify(entityInstance));
 	if(entityInstance["deleted"] == 1) {
-//		alert("unsynced items:  >" + JSON.stringify(unsyncedStorage) + "<");
-//		alert(">" + dummyId + "< in storagecache? >" + JSON.stringify(entityStorage[dummyId]) + "<");
+//		console.log("unsynced items:  >" + JSON.stringify(unsyncedStorage) + "<");
+//		console.log(">" + dummyId + "< in storagecache? >" + JSON.stringify(entityStorage[dummyId]) + "<");
 
 		var dummyId = entityInstance["_id"];
 		if(entityInstance["localOnly"]) {
@@ -405,7 +420,7 @@ clLib.localStorage.syncUp = function(entity, entityInstance, storageName) {
 			// delete from unsynced entries..
 			clLib.localStorage.removeStorageItem("UNSYNCED_" + storageName, entity, dummyId);
 
-			alert("route was local only, so just delete from UNSYNCED_ storage..");
+			console.log("route was local only, so just delete from UNSYNCED_ storage..");
             //
             // ???????????????????????????
             //
@@ -441,54 +456,138 @@ clLib.localStorage.syncUp = function(entity, entityInstance, storageName) {
 			}
 			);
 		}
+        return successFunc();
 	}
 	else {
 		var dummyId = entityInstance["_id"];
 
-		//alert("2unsynced items:  >" + JSON.stringify(unsyncedStorage) + "<");
-		//alert("2>" + dummyId + "< in storagecache? >" + JSON.stringify(entityStorage[dummyId]) + "<");
+		console.log("2unsynced items:  >" + JSON.stringify(unsyncedStorage) + "<");
+		console.log("2>" + dummyId + "< in storagecache? >" + JSON.stringify(entityStorage[dummyId]) + "<");
 
 		delete(entityInstance["_id"]);
 		entityInstance["localOnly"] = 0;
 		var realInstance;
 
 
-		console.log("storing entity " + JSON.stringify(entityInstance));
-        clLib.REST.storeEntity(entity, entityInstance
-		,function(realInstance) {
-			clLib.loggi("synced realInstance >" + JSON.stringify(realInstance) + "<");
-			entityInstance["_id"] = realInstance["_id"];	
+		clLib.console.log("storing entity " + JSON.stringify(entityInstance));
+        
+        var toEvaluate = [];
+        clLib.console.error("ENITYINTANCE IS >" + JSON.stringify(entityInstance) + "<");
+        $.each(entityInstance, function(field, value) {
+            //util.error("field >" + field + "< value >" + typeof(value) + "< = >" + JSON.stringify(value) + "<");
+            if(value instanceof Object) {
+                var newFunc = function(successFunc, errorFunc) {
+    /*
+                    console.log("value for >" + field + "< is >" + value + "<");
+                    console.log("JSON value is >" + JSON.stringify(value) + "<");
+                    
+                    var uploadObj = new clLib.uploadObj(value);
 
-			clLib.loggi("synced UP >" + dummyId + "<, new id is (" + typeof(realInstance) + ")>" + realInstance["_id"] + "<, dummyId was >" + dummyId + "<");
-			// delete dummy id
-			clLib.localStorage.removeStorageItem(storageName, entity, dummyId);
-			// delete from unsynced entries..
-			clLib.localStorage.removeStorageItem("UNSYNCED_" + storageName, entity, dummyId);
+                    var funcName = uploadObj.getFuncName();
+                    console.log("FUNCNAME IS >" + funcName + "<");
 
-			// store real id
-			clLib.localStorage.addStorageItem(storageName, entity, entityInstance);
-		}
-		,function(e) {
-			var errorMsg = e.message;
-			var errorCode = "N/A";
-			if(e.message && JSON.parse(e.message)["responseText"]) {
-				errorCode = JSON.parse(JSON.parse(e.message)["responseText"])["code"];
-				errorMsg = JSON.parse(JSON.parse(e.message)["responseText"])["description"];
-			}
-			if(errorCode == "DBSC002") {
-				clLib.sessionToken = null;
-			}
-			
-			clLib.loggi("could not sync item due to:" + e.name + " + (" + e.message + ")");
-		}
-		);
+                    var args = uploadObj.getArgs();
+                    console.log("args is >" + JSON.stringify(args) + "<");
+
+                    var argStr = JSON.stringify(args); //makeArgStr(args);
+                    console.log("argStr(before JSON) is >" + JSON.stringify(args) + "<");
+                    console.log("argStr is >" + argStr + "<");
+    */
+/*                    var blaFunc = function(url) {
+                        console.log("XXXXXXXXXXX URL >" + url + "< XXXXXXXXXX");
+                    };
+*/
+    /*
+                    clLib.images.uploadImage({
+                        "fileName":"1450387587904__7.jpg"
+                        ,"contentType":"image/jpeg"
+                        ,"dataFileObj": window["tmpImgObj"]
+                        //,"dataURI": 
+                    }, 
+                    blaFunc);
+    */              
+                    util.error("starting upload..");
+                    //
+                    // call no-callback version of uploadImage..
+                    //
+                    clLib.images.uploadImage(window["tmpImgObj"]); //, successFunc, errorFunc);
+                    util.error("finsihed  upload..");
+                    util.error("setting field value for >" + field + "< to >" + window["tmpImgObj"]["fileName"] + "<");
+                    entityInstance[field] = clLib.images.amazonAWSURL + "/" + window["tmpImgObj"]["fileName"];
+    //                var evalStr = funcName +"(" + argStr + ",blaFunc)";
+    //                console.log("evalStr is >" + evalStr + "<");
+    //                var evalResult = eval(evalStr);
+    //                console.log("evalResult is >" + evalResult + "<");
+    //                entityInstance["field"] = eval(evalStr);
+                    return successFunc();
+                };
+                toEvaluate.push(newFunc);
+            }
+            else {
+                var newFunc = function(successFunc, errorFunc) {
+//                    console.log("do nothing, run next func in chain..");
+                    return successFunc();
+                }
+                toEvaluate.push(newFunc);
+                
+            }
+        });
+
+        var storeEntityHandler = function(successFunc, errorFunc) {
+            clLib.console.error("about to store entity >" + JSON.stringify(entityInstance) + "<");
+            clLib.loggi("about to store entity >" + JSON.stringify(entityInstance) + "<");
+            return clLib.REST.storeEntity(entity, entityInstance
+            ,function(realInstance) {
+                clLib.loggi("synced realInstance >" + JSON.stringify(realInstance) + "<");
+                entityInstance["_id"] = realInstance["_id"];	
+
+                clLib.loggi("synced UP >" + dummyId + "<, new id is (" + typeof(realInstance) + ")>" + realInstance["_id"] + "<, dummyId was >" + dummyId + "<");
+                // delete dummy id
+                clLib.localStorage.removeStorageItem(storageName, entity, dummyId);
+                // delete from unsynced entries..
+                clLib.localStorage.removeStorageItem("UNSYNCED_" + storageName, entity, dummyId);
+
+                // store real id
+                clLib.localStorage.addStorageItem(storageName, entity, entityInstance);
+                return successFunc(entityInstance);
+            }
+            ,function(e) {
+                var errorMsg = e.message;
+                var errorCode = "N/A";
+                if(e.message && JSON.parse(e.message)["responseText"]) {
+                    errorCode = JSON.parse(JSON.parse(e.message)["responseText"])["code"];
+                    errorMsg = JSON.parse(JSON.parse(e.message)["responseText"])["description"];
+                }
+                if(errorCode == "DBSC002") {
+                    clLib.sessionToken = null;
+                }
+                
+                clLib.loggi("could not sync item due to:" + e.name + " + (" + e.message + ")");
+                return errorFunc();
+            }
+            );
+        };
+        
+        return clLib.executeChainedFuncs(toEvaluate, function() {
+            clLib.loggi("everything was fine, SAVED!");
+            return storeEntityHandler(successFunc, errorFunc);
+        }, function(e) {
+            alert("!!!!!!!!!! ERROR while retrieving >" + e+ "<");
+            return errorFunc(e);
+        });
+        
+
+        
+
 	}
 }
 
 
 
-clLib.localStorage.addInstance = function(entity, entityInstance, storageName) {
-    console.log("addinstance >" + entity + "< >" + JSON.stringify(entityInstance) + "<");
+
+    
+clLib.localStorage.addInstance = function(entity, entityInstance, storageName, successFunc, errorFunc) {
+    clLib.console.log("addinstance >" + entity + "< >" + JSON.stringify(entityInstance) + "<");
     var storage = clLib.localStorage.getStorageItems(storageName);
 	
 	var dummyId = "DUMMY" + new Date().getTime();
@@ -500,10 +599,10 @@ clLib.localStorage.addInstance = function(entity, entityInstance, storageName) {
 
 	clLib.localStorage.addStorageItem("UNSYNCED_" + storageName, entity, entityInstance);
 	
-	clLib.loggedInCheck(
+	return clLib.loggedInCheck(
 	function() {
 		clLib.loggi("online, syncing UP!!!");
-		clLib.localStorage.syncAllUp(entity, storageName);
+		return clLib.localStorage.syncAllUp(entity, storageName, successFunc, errorFunc);
 	}
 	, function(e) {
 		clLib.loggi("offline, saving for later sync UP..");
@@ -512,7 +611,7 @@ clLib.localStorage.addInstance = function(entity, entityInstance, storageName) {
 }
 
 clLib.localStorage.removeInstance = function(entity, entityId, storageName) {
-    //alert("removeinstance called!" + entity + "," + entityId + "," + storageName);
+    console.log("removeinstance called!" + entity + "," + entityId + "," + storageName);
     
 
 	var entityInstance = {};

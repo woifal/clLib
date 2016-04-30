@@ -192,6 +192,7 @@ clLib.UI.autoLoad = {
 			, "colourPopup"
 			, "characterSelect"
 			, "routeLogContainer"
+            , "routeImg"
 		]
 	}
 	,newRouteLog_reduced : {
@@ -207,6 +208,7 @@ clLib.UI.autoLoad = {
 			, "colourPopup"
 			, "characterSelect"
 			, "routeLogContainer"
+            , "routeImg"
 		]
 	}
 	,gradeConversion : {
@@ -298,8 +300,8 @@ clLib.UI.elementsToReset = {
 		"ratingSelect",
 		"searchRouteResults",
 		"searchRoute",
-		"routeLogContainer"/*,
-		"characterSelect"*/
+		"routeLogContainer",
+        "routeImg"
 	]
 	,areaSearch: [
 		"searchArea"
@@ -317,6 +319,7 @@ clLib.UI.elementsToReset = {
 		"searchRoute",
 		"routeLogContainer"/*,
 		"characterSelect"*/
+        ,"routeImg"
 	]
 	, startScreen : [
 		"currentScore"
@@ -408,6 +411,7 @@ clLib.UI.pageElements = {
 			, "currentUserPref"
 			, "currentDate"
 			, "routeLogContainer"
+            , "routeImg"
 		]
 	}
 	,areaSearch: {
@@ -437,6 +441,7 @@ clLib.UI.pageElements = {
 			, "currentUserPref"
 			, "currentDate"
 			, "routeLogContainer"
+            , "routeImg"
 		]
 	}
 	,startScreen: {
@@ -1209,6 +1214,51 @@ clLib.UI.elements = {
 				,"colourPopup" : {}
 			}
 		}
+	},
+    "routeImg" : {
+		"dbField" : "imgURL"
+        ,"refreshHandler": function ($this) {
+			console.log("refreshing routeImg - setting to undefined.");
+            window["tmpImgObj"] = null;
+        }
+        ,"customVal": function() {
+
+            if(!window["tmpImgObj"]) {
+                clLib.loggi("no image to upload..");
+                return -1;
+            }
+            else {
+                clLib.alert("Yes, something to upload...>" + JSON.stringify(window["tmpImgObj"]) + "<");
+            }
+            var tmpImgObj = window["tmpImgObj"];
+            var uploadObj = new clLib.uploadObj({
+                func: "clLib.images.uploadImage"
+                ,params: tmpImgObj
+                /*{
+                    fileName: tmpImgObj["fileName"]
+                    ,contentType: tmpImgObj["contentType"]
+                    ,dataURI: tmpImgObj["dataURI"]
+                }*/
+            });
+            clLib.alert("FUCKNAME IS >" + uploadObj.getFuncName() + "<");
+            clLib.alert("UPLOADOBJ IS >" + uploadObj + "<");
+            clLib.alert("UPLOADOBJ(JSON) IS >" + JSON.stringify(uploadObj)+ "<");
+//
+//          var uploadSuccessHandler = function(imgURL) {
+//              alert("image saved at >" + imgURL + "<");
+//          };
+//          var uploadErrorHandler = function(error) {
+//              alert("img upload error >" + JSON.stringify(error) + "<");
+//          };
+//
+//
+//
+//                    ,uploadSuccessHandler
+//                    ,uploadErrorHandler
+
+            return uploadObj;
+		}    
+
 	},
 	"colourPopup": {
 		"dbField" : "Colour"

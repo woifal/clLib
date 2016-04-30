@@ -7,25 +7,9 @@ try {
     util = console;
 }
 
-var numbConsole=true;
+var numbConsole= @@DEBUG_OUTPUT;
 
-if(numbConsole) {
-    try {
-        console = {
-            log: function(txt) {
-            }
-            ,info: function(text) {
-            }
-            ,error: function(text) {
-            }
-        };
-    } catch(e) {
-        console.log("could not override console...wtf..");
-    }
-}
- 
- 
- function ClInfo(message, infoType) {
+function ClInfo(message, infoType) {
 	this.message = message;
 	this.infoType = infoType || 'info';
 }
@@ -44,6 +28,46 @@ var profiledFnCall = function(iterations, aFunc) {
 
 //(function(){
 var clLib = {};
+if(numbConsole) {
+	try {
+		console = {
+			log: function(txt) {
+			}
+			,info: function(text) {
+			}
+			,error: function(text) {
+			}
+		};
+		window.alert = function(text) {};
+	} catch(e) {
+		console.log("could not override console...wtf..");
+	}
+}
+
+
+clLib.console = {
+	log: function(txt) {
+		if(!numbConsole) {
+			console.log(txt);
+		}
+	}
+	,info: function(txt) {
+		if(!numbConsole) {
+			console.info(txt);
+		}
+	}
+	,error: function(txt) {
+		if(!numbConsole) {
+			console.error(txt);
+		}
+	}
+	,alert: function(txt) {
+		if(!numbConsole) {
+			alert(txt);
+		}
+	}
+	
+}
 clLib.UI = {};
 
 clLib.lastGeoDate = null;
@@ -750,7 +774,9 @@ clLib.alert = function (text, html) {
         $.mobile.loading('hide');
     }, 10000);
     */
-    alert(":) " + text);
+    if(!numbConsole) {
+		alert(":) " + text);
+	}
 };
 
 
@@ -900,26 +926,56 @@ clLib.setLocalDefaults = function() {
 
 
 clLib.wasOnlineCheck = function (successFunc, errorFunc) {
-	//alert("last refresh:" + clLib.localStorage.getLastRefreshDate("defaultStorage"));
+	console.log("last refresh:" + clLib.localStorage.getLastRefreshDate("defaultStorage"));
 	// data from previous refresh found?
-    if (clLib.localStorage.getLastRefreshDate("defaultStorage")) {
-        console.log("was refresh already at >" + clLib.localStorage.getLastRefreshDate("defaultStorage") + "<");
-        return successFunc();
-    }
     
-    // Set default values for preferences..
-    clLib.setLocalDefaults();
+    console.log("getting lastmod from localStorage..");
+    return clLib.REST.getMax(
+        "RouteLog"
+        ,clLib.localStorage.lastModField
+        ,{username: clLib.getUserInfo()["username"]}
+        ,function(resultObj) {
+            clLib.alert("LAST REFRESH WAS AT >" + clLib.localStorage.getLastRefreshDate("defaultStorage") + "<, last mod (server) was at >" + JSON.stringify(resultObj) + "<");
+            if(!clLib.localStorage.getLastRefreshDate("defaultStorage")) {
+                clLib.alert("NO last refresh found - need to refresh ALL DATA..");
+
+                // Set default values for preferences..
+                clLib.setLocalDefaults();
+           
+                // Get ALL route logs..
+                return clLib.localStorage.refreshAllData(
+                    function() {
+                        clLib.alert("refreshed!");
+                        return successFunc();
+                    }
+                    ,function() {
+                        clLib.alert("not refreshed!");
+                        return errorFunc();
+                    }
+                );
+            }
+            else if (clLib.localStorage.getLastRefreshDate("defaultStorage") < JSON.stringify(resultObj["RouteLog"])) {
+                clLib.alert("NOT up to date (" + clLib.localStorage.getLastRefreshDate("defaultStorage") + " < " + JSON.stringify(resultObj["RouteLog"]) + "< - need to refresh..");
+                return clLib.localStorage.refreshAllData(
+                    function() {
+                        clLib.alert("refreshed!");
+                        return successFunc();
+                    }
+                    ,function() {
+                        clLib.alert("not refreshed!");
+                        return errorFunc();
+                    }
+                );
+            }
+            else {
+                clLib.alert("UP to date - nothing to refresh in terms of route data..");
+                return successFunc();
+            }
+        }
+        ,errorFunc
+    );
+
     
-	return clLib.localStorage.refreshAllData(
-		function() {
-			//alert("refreshed!");
-			return successFunc();
-		}
-		,function() {
-			//alert("not refreshed!");
-			return errorFunc();
-		}
-	);
 /*	
     if (!clLib.localStorage.refreshAllData(
 		function() {
@@ -931,11 +987,12 @@ clLib.wasOnlineCheck = function (successFunc, errorFunc) {
 			return errorFunc();
 		}
 	)) {
-		//alert("You need to go online once to get initial Route(Log) data!");
+		clLib.alert("You need to go online once to get initial Route(Log) data!");
 		clLib.PAGES.changeTo("clLib_startScreen.html");
 	}
 */
 };
+
 
 //
 // Polyfill for "String.endsWith()" function
@@ -1258,6 +1315,14 @@ clLib.removeNullArrElements = function(object) {
 
 
 
+clLib.inPhoneGap = function() {
+                console.log("checking for phonegap..");
+                var resCode = window.device;
+                console.log("resCode is >" + resCode + "<");
+                return resCode;
+//                return false;
+            }
+
 
 clLib.foo = "blerl";
 //exports.clLib = clLib;
@@ -1265,6 +1330,68 @@ try {
     global.clLib = clLib;
 } catch(e) {
 }
+
+clLib.uploadObj = function (options) {
+  $.extend(this, options);
+}
+
+clLib.uploadObj.prototype = {
+    getArgs: function() {
+        return this.params;
+    }
+    ,getFuncName: function() {
+        clLib.alert("getFuncName called");
+        clLib.alert(JSON.stringify(this));
+        return this.func;
+    }
+}
+
+
+
+
+
+
+
+clLib.executeChainedFuncs = function(funcArray, successFunc, errorFunc, contextStr) {
+	var idx = -1;
+	return clLib.executeChainedFunc(funcArray, idx, successFunc, errorFunc, contextStr);
+};
+clLib.executeChainedFunc = function(funcArray, idx, successFunc, errorFunc, contextStr) {
+	idx++;
+	clLib.console.log("at idx >" + idx + "< out of >" + funcArray.length + "<");
+    clLib.console.log("page >" + contextStr + "<, idx = " + idx); // POPO
+
+	var curFunc = funcArray[idx];
+	
+	clLib.console.log("typeof successFunc is " + typeof(successFunc));
+	// Reached end of chain..
+	if(!curFunc) {
+        clLib.loggi("end of chain!");
+        return successFunc({"a": "b"});
+	}
+	
+    
+    
+	// Call next function in chain..
+	return curFunc(function(exitFlag) {
+        clLib.console.log("executing next chained func? " + exitFlag);
+		if(typeof(exitFlag) !== 'undefined' && exitFlag == true) {
+            clLib.console.log("No!");
+            return successFunc({"b" : "x"});
+        } else {
+            clLib.console.log("Yes!");
+            console.log("executing next function in chain at >" + idx + "<");
+            return clLib.executeChainedFunc(
+                funcArray, idx, 
+                successFunc, errorFunc
+                ,contextStr
+            );
+        }
+	},
+	errorFunc
+	);
+};
+
 
 
 
