@@ -268,7 +268,7 @@ input.ui-input-text, textarea.ui-input-text {
 
 
 .clButton.clFullWidth {
-	width: 100%;
+	width: 100% !important;
     margin: 0 auto;
 	border-radius: 0px;
 	abackground: red; /*#C3cbd6;*/
@@ -1277,4 +1277,17 @@ div.clButton.clSmall.clInline {
 
 .clScoreLabel {
     padding: 7px 0px !important;
+}
+
+.routeLog_previewImg {
+    max-width: 200px;
+    max-height: 200px;
+    width: 70%; 
+    border-radius: 10px;
+	border: 4px solid #CCCCCC;
+}
+
+
+.clImgLoading {
+    background-image: url("../files/views/assets/image/imgLoading.gif");
 }

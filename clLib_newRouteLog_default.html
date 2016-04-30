@@ -87,7 +87,7 @@
 
 					
 				<!-- Tick types... -->
-				<div style="border: 0px solid green; text-align: center">
+				<div style="text-align: center">
 					<fieldset 
 						style="text-align: center"
 						id="newRouteLog_default_tickType"
@@ -109,6 +109,35 @@
 				</div>
 				
 
+                <div style="clear:both"></div>
+                <div>
+                    <input type="file" data-role="none" id="newRouteLog_default_hiddenFileInput" style="display: none;">
+				    <div id="newRouteLog_default_routeImgContainer" style="display:none; width:100%; padding-top: 6px;">
+                        <img id="newRouteLog_default_routeImg" class="routeLog_previewImg"/>
+                    </div>
+                </div>
+                <div style="clear:both"></div>
+                <div id="newRouteLog_default_getPictureButton" class="clButton clSmall clInline clFullWidth">
+					<div>
+					<a>
+						<div>
+							<img src="files/views/assets/image/img_22_22/button_camera_white.png"></img>
+						</div>
+					</a>
+						<span style="width: auto;">Add pic</span>
+					</div>
+				</div>
+                <div id="newRouteLog_default_removePictureButton" class="clButton clSmall clInline" style="display:none;">
+					<div>
+					<a>
+						<div>
+							<img src="files/views/assets/image/img_22_22/button_minus_white.png"></img>
+						</div>
+					</a>
+						<span style="width: auto;">Remove pic</span>
+					</div>
+				</div>
+
 
 				<div style="clear:both"></div>
 				
@@ -125,7 +154,6 @@
 						<span style="width: auto;">More..</span>
 					</div>
 				</div>
-		
 
 				<a id="newRouteLog_default_extraButton_a" style="display: none" data-rel="popup" href="#newRouteLog_default_extraPopup">b</a>
 				<div id="newRouteLog_default_extraPopup" data-history="false" data-overlay-theme="a" data-role="popup" data-dismissible="false" class="clExtra" >
