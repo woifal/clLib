@@ -326,11 +326,6 @@ auth.prototype.validateUser = function(userObj, callbackFunc, errorFunc, addOpti
         var userDetails = resultObj[0];
         util.log("Found user >" + JSON.stringify(resultObj) + "<"); 
     
-        // User not found=
-        if(!userDetails) {
-            return errorFunc("User not found>" + JSON.stringify(userObj) + "<");
-        }
-        else {
             util.log("found user..");
             // user was authenticated on client(google, facebook, ...)? 
             // save sessionToken to verify against in subsequent request..
@@ -344,17 +339,49 @@ auth.prototype.validateUser = function(userObj, callbackFunc, errorFunc, addOpti
                     newUserObj["_id"] = newUserObj["id"];
                     newUserObj = $.extend(newUserObj, userObj);
                     util.log("\n\n\n\n COMBINED USEROBJ >" + JSON.stringify(newUserObj) + "<\n\n\n\n ");
-                    return authHandler.addUser(
-                        newUserObj
-                        ,callbackFunc
+                        
+                    //2DO: insert new google/facebook user infor to database..
+                    // NEW user
+                    if(!userDetails) {
+                        util.log("User not found...try to create new user...");
+                        delete(newUserObj["_id"]);
+                        // verify user.
+                        DBHandler.insertEntity({
+                            entity : clLib.server.usersCollectionName, 
+                            values : userObj
+                        },
+                        // upon success...
+                        function(userObj) { 
+                            return authHandler.addUser(
+                                userObj
+                                ,callbackFunc
+                                ,errorFunc
+                            );
+                        }
                         ,errorFunc
-                    );
+                        );
+                        //return errorFunc("User not found>" + JSON.stringify(userObj) + "<");
+                    }
+                    // known user..
+                    else {
+                        return authHandler.addUser(
+                            newUserObj
+                            ,callbackFunc
+                            ,errorFunc
+                        );
+                    }
                 }
                 , errorFunc
                 );
             }
             // username/pwd kurtl authentication
             else {
+                // User not found => error, because user should have been created using kurtl "signup" process
+                if(!userDetails) {
+                    util.log("User not found...try to create new user...");
+                    return errorFunc("User not found>" + JSON.stringify(userObj) + "<");
+                }
+                
                 return authHandler.verifyPassword(userDetails, userObj, function(newUserObj) {
                     newUserObj["sessionToken"] = newUserObj["sessionToken"];
                     var hashedPassword = newUserObj["password"];
@@ -373,7 +400,6 @@ auth.prototype.validateUser = function(userObj, callbackFunc, errorFunc, addOpti
                 , errorFunc
                 );
             }
-        }
     }
     ,errorFunc
     );
