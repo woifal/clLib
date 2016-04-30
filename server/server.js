@@ -1,7 +1,7 @@
 var util = require("util");
-
+    
 var mongo = require('mongoskin');
-var BSON = mongo.BSONPure;
+var BSON = require('bson').BSONPure
 
 
 var numbConsole=false;
@@ -378,7 +378,6 @@ server.get('/requestVerification', function(req, res) {
 		
         // ALL usernames should be lower case!!
         req.params["username"] = req.params["username"].toLowerCase();
-
         
         // verify user.
 		DBHandler.getEntities({
@@ -408,7 +407,8 @@ server.get('/requestVerification', function(req, res) {
 			},
 			function(resultObj) {
 				util.log("Resultobj " + JSON.stringify(resultObj));
-				util.log("Token >" + verificationToken + "< stored at >" + resultObj["_updatedAt"] + "<");
+
+                util.log("Token >" + verificationToken + "< stored at >" + DBHandler.defaults["lastModField"] + "<");
 				
 				userDetails["verificationToken"] = verificationToken;
 				// send token to user..
@@ -531,7 +531,7 @@ server.get('/db/:entityName',
 		function(resultObj) { 
 			// upon success...
 			var entityDetails = resultObj[0];
-            util.log("c2 Found entity(" + entityName + ")>" + fooFunc(entityDetails) + "<"); 
+            util.log("c2 Found entity(" + entityName + ")>" + JSON.stringify(entityDetails) + "<"); 
 			
             util.log("b requireResult? >" + 
                 (
@@ -600,6 +600,50 @@ server.get('/db/distinct/:entityName/:fieldName',
 	}
 
 });
+
+server.get('/db/max/:entityName/:fieldName', 
+		//authHandler.requiredAuthentication, 
+		function(req, res) 
+{
+    util.log("\n\n\n\n\n\n\n\n\n\n\n\nMAXIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII CALLED!!!\n\n\n\n\n\n\n\n\n\n\n");
+	var errHandler = function(errorObj) {
+		util.log("############\n############\n############\nERROR :> " + errorObj + "<");
+		return clLib.server.defaults.errorFunc(errorObj, res);
+	}
+	
+	try {
+		util.log("2getting max >" + req.params.fieldName + "< for >" + req.params.entityName + "< of user  >" + req.params.userName + "<");
+		var entityName = req.params.entityName;
+		var whereObj = JSON.parse(req.params.where || "{}");
+        var fieldName = req.params.fieldName;
+		// verify user.
+		DBHandler.getMax({
+			entity : entityName
+			,field: fieldName
+			,where : whereObj
+		},
+		function(distinctValues) { 
+			// upon success...
+			util.log("Found entity(" + entityName + ", " + fieldName + ")>" + JSON.stringify(distinctValues) + "<"); 
+			
+			// User not found=
+			if(!distinctValues) {
+				res.send(500, JSON.stringify({
+				result: "Entity(" + entityName + "," + fieldName + ") not found: >" + JSON.stringify(req.params["where"]) + "<"}));
+				return;
+			}
+            util.log("sending response...");
+			res.send(JSON.stringify(distinctValues));
+
+		}
+		, errHandler
+		);
+	} catch(e) {
+		errHandler(new Error("UNHANDLED SERVER ERROR "  + e.name + " IS " + e.message + " !!!"));
+	}
+
+});
+
 
 
 server.put('/db/:entityName/:entityId', 
@@ -1183,6 +1227,19 @@ server.get("/logUsers", function (req, res) {
         } catch(e) {
 		errHandler(new Error("UNHANDLED SERVER ERROR "  + e.name + " IS " + e.message + " !!!"));
 	}
+});
+
+
+server.put("/upload", function(reg, res) {
+    var body = req.rawBody;
+    var base64Data = body.replace(/^data:image\/png;base64,/,"");
+    var binaryData = new Buffer(base64Data, 'base64').toString('binary');
+    
+    
+    
+    require("fs").writeFile("foo.png", binaryData, "binary", function(err) {
+        console.log("ERROR >" + err + "<"); // writes out file without error, but it's not a valid image
+    });
 });
 
 server.get("/pushUsers", function (req, res) {

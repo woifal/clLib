@@ -3,7 +3,8 @@
 
 
 var mongo = require('mongoskin');
-var BSON = mongo.BSONPure;
+var BSON = require('bson').BSONPure
+
 
 var util = require("util");
 var async = require("async");
@@ -21,7 +22,17 @@ mongolab.prototype.setAdminDBSession = function(adminDBSession) {
 
 var clLib = {};
 clLib.mongolab = {};
-clLib.mongolab.mongoURI = "mongodb://clAdmin:blerl1la@ds053438.mongolab.com:53438/climbinglog";
+
+var mongodbUser = "@@mongodbUser";
+var mongodbPwd = "@@mongodbPwd";
+var mongodbHost = "@@mongodbHost";
+var mongodbPort = "@@mongodbPort";
+var mongodbDBName= "@@mongodbDBName";
+
+clLib.mongolab.mongoURI = "mongodb://" + mongodbUser + ":" + mongodbPwd + "@" + mongodbHost + ":" + mongodbPort + "/" + mongodbDBName;
+
+util.log("MONGO URI IS>" + clLib.mongolab.mongoURI + "<");
+
 clLib.mongolab.conn = mongo.db(clLib.mongolab.mongoURI, {safe: true});
 
 //clLib.mongolab.conn.collection("Users").ensureIndex( { "username": 1 }, { unique: true } );
@@ -127,6 +138,65 @@ mongolab.prototype.getEntities = function(options, callbackFunc, errorFunc) {
 	}
 };
 
+
+
+
+mongolab.prototype.getMax = function(options, callbackFunc, errorFunc) {
+	util.log("getting max value for entities >"+ JSON.stringify(options) + "<");
+	var resultObj = {};
+	var entityName = options["entity"];
+	var fieldName = options["field"];
+	var whereObj = options["where"];
+	
+	if(!errorFunc) errorFunc = this.defaults["errorFunc"];
+	
+	var db = clLib.mongolab.conn;
+	
+	util.log("getting max >" + fieldName + "< >" + entityName + "< with where >" + JSON.stringify(whereObj) + "<...");
+
+    var sortObj = {};
+    sortObj[fieldName] = -1;
+    util.log("whereObj is >" + JSON.stringify(whereObj) + "<");
+    util.log("sortObj is >" + JSON.stringify(sortObj) + "<");
+    //whereObj = JSON.parse(whereObj);
+    
+    try {
+    db.collection(entityName).find(whereObj, null, {sort: sortObj, limit: 1}).toArray(function(err, items) {
+		util.log(JSON.stringify("err: " + JSON.stringify(err)));
+		//util.log(JSON.stringify("items: " + JSON.stringify(items)));
+		if (JSON.stringify(err) != "{}" && JSON.stringify(err) != "null") {
+			util.log("ERROR:" + JSON.stringify(err));	
+			resultObj["error"] = JSON.stringify(err);
+			return errorFunc(resultObj);
+		}
+		if(options["requireResult"] && (!items || items.length == 0)) {
+			err = "no items found";
+			resultObj["error"] = JSON.stringify(err);
+			return errorFunc(resultObj);
+		}
+		
+		util.log("mongo results received.." + JSON.stringify(items.length));
+		util.log("2mongo results received.." + JSON.stringify(items));
+		
+		if(callbackFunc) {
+			util.log("Calling callback function, result OK(" + JSON.stringify(items.length) + ")!");
+			// 2016-04-10: take care of users with NO routelogs YET
+			if(items.length == 0) {
+				return callbackFunc("111");
+			}
+
+			return callbackFunc(items[0][fieldName]);
+		}
+	});
+    } catch(e) {
+		util.log("Exception caught: " + e + "(" + JSON.stringify(e) + ")");
+		return errorFunc(e);
+	}
+
+};
+
+
+
 mongolab.prototype.getDistinct = function(options, callbackFunc, errorFunc) {
 	util.log("getting distinct entitites >"+ JSON.stringify(options) + "<");
 	var resultObj = {};
@@ -175,7 +245,11 @@ mongolab.prototype.insertEntity = function(options, callbackFunc, errorFunc) {
 	
 	var db = mongo.db(clLib.mongolab.mongoURI, {safe: true});
 
+    entityValues[this.defaults["lastModField"]] = Date.now();
+    
 	util.log("inserting into " + entityName + "");
+	util.log("inserting values " + JSON.stringify(entityValues) + "");
+	util.log("inserting value keys " + JSON.stringify(Object.keys(entityValues)) + "");
 	var aCollection = db.collection(entityName);
 	return aCollection.insert(entityValues, function(err) {
 		if (JSON.stringify(err) != "{}" && JSON.stringify(err) != "null") {
@@ -203,12 +277,13 @@ mongolab.prototype.updateEntity = function(options, callbackFunc, errorFunc) {
 	util.log("updating entity >"+ JSON.stringify(options) + "<");
 	var resultObj = {};
 	var entityName = options["entity"];
-	var entityId = options["id"];
+	var entityId = options["_id"];
 	if(typeof(entityId) == "string") {
-		entityId = new BSON.ObjectID(options["id"]);
+		entityId = new BSON.ObjectID(options["_id"]);
 	}
 
 	var entityData = options["data"];
+    entityData[this.defaults["lastModField"]] = Date.now();
 	
 	if(!errorFunc) errorFunc = this.defaults["errorFunc"];
 	
@@ -218,6 +293,7 @@ mongolab.prototype.updateEntity = function(options, callbackFunc, errorFunc) {
 	// only update fields mentioned in entityData..
 	var updateObj = {"$set": entityData};
 
+    
 	util.log("1updating " + entityName + " with id " + entityId + " and values >" + JSON.stringify(updateObj) + "<");
 	try {
 		db.collection(entityName).update({"_id" : entityId}, updateObj, {safe: true}, function(err, rowCount) {
@@ -246,6 +322,7 @@ mongolab.prototype.defaults = {
 		util.log("standard errorFunc: " + JSON.stringify(resultObj));
 //		responseStream.send(500, new Error(JSON.stringify(resultObj)));
 	}
+    ,"lastModField": "_updatedAt"
 };
 
 
