@@ -9,6 +9,7 @@
     ,"apn": "1.7.3"
     ,"node-gcm": "0.9.15"
     ,"googleapis": "2.0.2"
+    ,"mongoskin": "2.x"
   },
     "engines": {
     "node": "0.10.x",
