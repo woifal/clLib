@@ -169,6 +169,9 @@ clLib.PAGES.handlers = {
 	        clLib.UI.byId$("feedbackButton", pageId).die("click").live("click", function () {
 	            clLib.PAGES.changeTo("clLib_feedback.html");
 	        });
+	        clLib.UI.byId$("switchDebugButton", pageId).die("click").live("click", function () {
+	            numbConsole = !numbConsole;
+	        });
 	        clLib.UI.byId$("refreshAllButton", pageId).die("click").live("click", function () {
 				clLib.localStorage.refreshAllData(
 				function(warnings) {
@@ -312,6 +315,7 @@ clLib.PAGES.handlers = {
 	                clLib.UI.save({additionalData: { dbEntity: "feedback" }}, function() {
 						alert("feedback sent!");
 						clLib.UI.resetUIelements();
+						clLib.PAGES.changeTo("clLib_startScreen.html");						
 					});
 	            }, {text: "Sending feedback.."});
 	        });
@@ -373,6 +377,31 @@ clLib.PAGES.handlers = {
 			});
 			
 			
+/*			
+                $("#cameraOptions").val(JSON.stringify({'targetWidth': '250px', 'targetHeight': '250px'}));
+                        
+			$("#startScreen_cameraButton").die("click").click(function() {
+                var cameraOptions = { 
+                    quality: 100
+                    //destinationType: Camera.DestinationType.FILE_URI 
+                    ,'targetWidth': '250px'
+                    ,'targetHeight': '250px'
+                };
+                var addOptions = JSON.parse($("#cameraOptions").val());
+                cameraOptions = $.extend(cameraOptions, addOptions);
+                clLib.alert(JSON.stringify(cameraOptions));   
+                navigator.camera.getPicture(onSuccess, onFail, cameraOptions);
+
+                function onSuccess(imageURI) {
+                    var image = document.getElementById('myImage');
+                    image.src = imageURI;
+                }
+
+                function onFail(message) {
+                    clLib.alert('Failed because: ' + message);
+                }
+			});
+*/	
 			$("#startScreen_statsButton").die("click").click(function () {
 				clLib.UI.execWithMsg(function() {
 					clLib.PAGES.changeTo("clLib_stats.html");
@@ -452,6 +481,41 @@ clLib.PAGES.handlers = {
 	        $("#newRouteLog_default_layoutSelect").val(localStorage.getItem("currentLayout"));
 	        $("#newRouteLog_default_layoutSelect").selectmenu("refresh");
 
+
+            $("#newRouteLog_default_removePictureButton").die("click").click(function() {
+                clLib.UI.byId$("removePictureButton").hide();
+                clLib.UI.byId$("getPictureButton").addClass("clFullWidth");
+                clLib.UI.byId$("routeImg").attr("src", "");
+                clLib.UI.byId$("routeImgContainer").hide();
+                window["tmpImgObj"] = null;
+            });
+            
+
+            $("#newRouteLog_default_getPictureButton").die("click").click(function() {
+                if(clLib.inPhoneGap()) {
+                    //var addOptions = JSON.parse($("#cameraOptions").val());
+                    //cameraOptions = $.extend(cameraOptions, addOptions);
+                    alert(JSON.stringify(cameraOptions));   
+                    navigator.camera.getPicture(
+                        clLib.images.phonegapSuccessHandler
+                        ,clLib.images.uploadErrorHandler
+                        ,clLib.images.getCameraOptions()
+                    );
+                }
+                else {
+                    clLib.alert("desktop clicked...");
+                    var hiddenFileInput = $("#newRouteLog_default_hiddenFileInput");
+                    hiddenFileInput.off("change").on("change", function(e) {
+                        clLib.alert("file changed");
+                        var file = this.files[0];
+                        return clLib.images.desktopSuccessHandler(   
+                            file
+                        );
+                    });
+                    hiddenFileInput.trigger("click");
+                }
+            });
+            
             $("#newRouteLog_default_colourSelect-button").on("click", function(e) {
                 e.preventDefault();
                 e.stopPropagation();
@@ -500,11 +564,24 @@ clLib.PAGES.handlers = {
                 clLib.UI.execWithMsg(function() {
                     clLib.loggi("before saving..");
 	                clLib.UI.save({}, function() {
-                        clLib.loggi("saving..");
-						// clear UI elements's content
-						clLib.UI.resetUIelements();
-						// scroll to top
-						$.mobile.silentScroll(0);
+                        clLib.loggi("saved!..");
+						
+                        alert("check for updated routes....");
+                        return clLib.wasOnlineCheck(
+                            function(resultObj) {
+                                // clear UI elements's content
+                                clLib.UI.resetUIelements();
+                                clLib.loggi("UI elements reset!");
+                                // scroll to top
+                                $.mobile.silentScroll(0);
+                                
+                                return 1;
+                            }
+                            ,function(e) {
+                                return errorFunc(e);
+                            }
+                        );
+
 					}
                     ,errorFunc
                     );
@@ -549,6 +626,40 @@ clLib.PAGES.handlers = {
 	        $("#newRouteLog_reduced_layoutSelect").val(localStorage.getItem("currentLayout"));
 	        $("#newRouteLog_reduced_layoutSelect").selectmenu("refresh");
 
+            $("#newRouteLog_reduced_removePictureButton").die("click").click(function() {
+                clLib.UI.byId$("removePictureButton").hide();
+                clLib.UI.byId$("getPictureButton").addClass("clFullWidth");
+                clLib.UI.byId$("routeImg").attr("src", "");
+                clLib.UI.byId$("routeImgContainer").hide();
+                window["tmpImgObj"] = null;
+            });
+            
+
+            $("#newRouteLog_reduced_getPictureButton").die("click").click(function() {
+                if(clLib.inPhoneGap()) {
+                    //var addOptions = JSON.parse($("#cameraOptions").val());
+                    //cameraOptions = $.extend(cameraOptions, addOptions);
+                    alert(JSON.stringify(cameraOptions));   
+                    navigator.camera.getPicture(
+                        clLib.images.phonegapSuccessHandler
+                        ,clLib.images.uploadErrorHandler
+                        ,clLib.images.getCameraOptions()
+                    );
+                }
+                else {
+                    clLib.alert("desktop clicked...");
+                    var hiddenFileInput = $("#newRouteLog_default_hiddenFileInput");
+                    hiddenFileInput.off("change").on("change", function(e) {
+                        clLib.alert("file changed");
+                        var file = this.files[0];
+                        return clLib.images.desktopSuccessHandler(   
+                            file
+                        );
+                    });
+                    hiddenFileInput.trigger("click");
+                }
+            });
+            
             $("#newRouteLog_reduced_colourSelect-button").on("click", function(e) {
                 e.preventDefault();
                 e.stopPropagation();
@@ -853,7 +964,7 @@ clLib.PAGES.handlers = {
 //                return false;
             }
             clLib.detectChildURLChange = function(childRef, callbackFunc) {
-                if(inPhoneGap()) {
+                if(clLib.inPhoneGap()) {
                     clLib.loggi("yes phonegap!!", "20150429");
                     return childRef.addEventListener('loadstart', callbackFunc);
                 }
@@ -913,7 +1024,8 @@ clLib.PAGES.handlers = {
                 var appEntryURL = "";
                 var host = location.protocol+'//'+location.hostname+(location.port ? ':'+location.port: '');
                 console.log(">" + location.protocol+'< //>'+location.hostname+ '<>' + (location.port ? ':'+location.port: '') + '<');
-                if(inPhoneGap()) {
+                if(clLib.inPhoneGap()) {
+
                     appEntryURL = "http://www.kurt-climbing.com/dist/authenticated.html";
                 }
                 else {
@@ -1151,6 +1263,7 @@ clLib.PAGES.changeTo = function(newURL, urlData, event, timeoutMillis) {
                 }, 
                 function(e) { 
 					alert("clLib.changeTo(" + newURL + " @" + pageId + "." + eventName + ") => error: " + e + "!!" + "(" + JSON.stringify(e) + ")"); 
+					alert("erro stack >" + e.stack + "<");
 					return false;
 				}
                 ,pageId + "." + eventName// for debugging: add page name for current prerequisite functions

@@ -1390,7 +1390,7 @@ clLib.UI.save = function (options, successFunc, errorFunc) {
         return;	
     }
 
-    saveHandler(options, successFunc, errorFunc);
+    return saveHandler(options, successFunc, errorFunc);
 }
 
 
@@ -1451,6 +1451,7 @@ clLib.UI.RESTSaveHandler = function (options, successFunc, errorFunc) {
         } else {
             //alert("setting >" + dbField + "< to >" +clLib.UI.getVal(elementName) +  "<");
             saveObj[dbField] = clLib.UI.getVal(elementName);
+            //alert("got for >" + dbField + "< a value >" + JSON.stringify(saveObj[dbField]) + "<");
         }
     });
     
@@ -1464,9 +1465,7 @@ clLib.UI.RESTSaveHandler = function (options, successFunc, errorFunc) {
 	if(options["additionalData"] && options["additionalData"]["dbEntity"]) {
 		dbEntity = options["additionalData"]["dbEntity"];
 	}
-    clLib.localStorage.addInstance(dbEntity, saveObj, "defaultStorage");
-    
-    return successFunc(saveObj);
+    return clLib.localStorage.addInstance(dbEntity, saveObj, "defaultStorage", successFunc, errorFunc);
 }
 
 
@@ -2122,6 +2121,16 @@ clLib.UI.collapsible.formatRouteLogRow = function(dataRow) {
 					formatFunc : clLib.UI.ratingToStars
 					,title : "_NONE_"
 				}
+                ,"imgURL" : {
+                    title: function(imgURL) {
+                        if(imgURL && imgURL != '-1') {
+                            return "Route Image:<br>";
+                        } else {
+                            return "";
+                        }
+                    }
+                    ,formatFunc: clLib.UI.getImg
+                }
 
 			}
 		}
@@ -2200,8 +2209,13 @@ clLib.UI.collapsible.formatRouteLogRow = function(dataRow) {
 		) {
 			if(keyFunc["title"] != '_NONE_') {
 				if(keyFunc["title"] != "") {
-					title = keyFunc["title"] + ": ";
-				}
+                    if(typeof(keyFunc["title"]) == "function") {
+                        title = keyFunc["title"](dataRow[keyName]);
+                    }
+                    else {
+                        title = keyFunc["title"] + ": ";
+                    }
+                }
 			}
 			else {
 				title = "&nbsp;";
@@ -2260,6 +2274,15 @@ clLib.UI.collapsible.formatRouteLogRow = function(dataRow) {
 	
 	return $collapsibleItem;
 
+};
+
+
+clLib.UI.getImg = function(imgURL) {
+    if(imgURL && imgURL != "-1") {
+        var imgHTML = '<img class="clImgLoading" style="width:200px;" asdfalt="' + imgURL + '" src="' + imgURL + '"/>';
+        clLib.alert("returning >" + imgHTML + "<");
+        return $(imgHTML);
+    };
 };
 
 

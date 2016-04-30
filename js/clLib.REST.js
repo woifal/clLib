@@ -60,8 +60,8 @@ clLib.REST.appery.dateStrToISOString = function(apperyDateStr) {
 //
 clLib.REST.appery.postAJAXprocessing = function(AJAXResult) {
 	var colsToRemap ={
-		"_createdAt": clLib.REST.appery.dateStrToISOString,
-		"_updatedAt": clLib.REST.appery.dateStrToISOString
+//		"_createdAt": clLib.REST.appery.dateStrToISOString,
+//		"_updatedAt": clLib.REST.appery.dateStrToISOString
 	};
 	console.log("before:" + JSON.stringify(AJAXResult));
 	$.each(AJAXResult, function(index, value) {
@@ -79,8 +79,8 @@ clLib.REST.clNode.postAJAXprocessing = function(AJAXResult) {
 		AJAXResult = JSON.parse(AJAXResult);
 	}
 	var colsToRemap ={
-		"_createdAt": clLib.REST.appery.dateStrToISOString,
-		"_updatedAt": clLib.REST.appery.dateStrToISOString
+//		"_createdAt": clLib.REST.appery.dateStrToISOString,
+//		"_updatedAt": clLib.REST.appery.dateStrToISOString
 	};
 	console.log("before:" + JSON.stringify(AJAXResult));
 	if(AJAXResult instanceof Array) {
@@ -342,6 +342,25 @@ clLib.REST.requestVerification = function(userInstance, successFunc, errorFunc) 
 	clLib.REST.execAJAXRequest(reqOptions, successFunc, errorFunc);
 };
 
+clLib.REST.getMax = function(entityName, fieldName, whereObj, successFunc, errorFunc, additionalParams) {
+	var uri = clLib.REST.baseCollectionsURI + "max/" + entityName + "/" + fieldName;
+
+	clLib.REST.executeRetrieve(uri, 'GET', whereObj, 
+	function(AJAXResult) {
+		var returnObj = {};
+		clLib.console.log("result first " + JSON.stringify(AJAXResult));
+		clLib.console.log("postfunc for >" + clLib.REST.baseURI + "< is >" + clLib.REST.postAJAXprocessing[clLib.REST.baseURI] + "(" + clLib.REST.postAJAXprocessing + ")<");
+		AJAXResult = clLib.REST.postAJAXprocessing[clLib.REST.baseURI](AJAXResult);
+		returnObj[entityName] = AJAXResult;
+		clLib.loggi("return type "+ typeof(AJAXResult));
+		
+		//clLib.loggi("returning(getEntities) " + JSON.stringify(returnObj));
+		successFunc(returnObj);
+	}
+	, errorFunc
+	,additionalParams
+	);
+}
 clLib.REST.requestStatsNew = function(options, successFunc, errorFunc) {
     var reqOptions = {};
     if(options["where"]) {
