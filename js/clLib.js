@@ -7,7 +7,9 @@ try {
     util = console;
 }
 
-var numbConsole= @@DEBUG_OUTPUT;
+
+localStorage.setItem("debugOutput", @@DEBUG_OUTPUT);
+alert("set debugoutput to >" + localStorage.getItem("debugOutput") + "<");
 
 function ClInfo(message, infoType) {
 	this.message = message;
@@ -28,7 +30,7 @@ var profiledFnCall = function(iterations, aFunc) {
 
 //(function(){
 var clLib = {};
-if(numbConsole) {
+if(!localStorage.getItem("debugOutput") == "true") {
 	try {
 		console = {
 			log: function(txt) {
@@ -47,22 +49,22 @@ if(numbConsole) {
 
 clLib.console = {
 	log: function(txt) {
-		if(!numbConsole) {
+		if(localStorage.getItem("debugOutput") == "true") {
 			console.log(txt);
 		}
 	}
 	,info: function(txt) {
-		if(!numbConsole) {
+		if(localStorage.getItem("debugOutput") == "true") {
 			console.info(txt);
 		}
 	}
 	,error: function(txt) {
-		if(!numbConsole) {
+		if(localStorage.getItem("debugOutput") == "true") {
 			console.error(txt);
 		}
 	}
 	,alert: function(txt) {
-		if(!numbConsole) {
+		if(localStorage.getItem("debugOutput") == "true") {
 			alert(txt);
 		}
 	}
@@ -774,7 +776,7 @@ clLib.alert = function (text, html) {
         $.mobile.loading('hide');
     }, 10000);
     */
-    if(!numbConsole) {
+    if(localStorage.getItem("debugOutput") == "true") {
 		alert(":) " + text);
 	}
 };
