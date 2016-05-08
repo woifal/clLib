@@ -24,9 +24,18 @@
 				</li>
 				<li><a id="@@pageName_feedbackButton" href="#">Feedback</a></li>
 				
-				<li style='visibility: @@ENABLE_DEBUG_VISIBILITY'><a id="@@pageName_switchDebugButton" href="#">switch debug on/off</a></li>
-				
 				<li data-icon="minus" data-mini="true"><a href="#my-header" data-icon="gear" data-rel="close">Close panel</a></li>
-				<li><span style="font-size: 0.7em">Version: @@NOWW</span></li>
+
+				<li style='visibility: @@ENABLE_DEBUG_VISIBILITY'>
+					Debug?
+					<select id="@@pageName_debugMenuSwitch" name="debugMenuSwitch" 
+							data-inline="false" data-mini="false"
+							data-role="flipswitch"
+					>
+						<option value="false">no</option>
+						<option value="true">yes</option>
+					</select>
+				</li>
+				<li><span style="font-size: 0.7em">Build: @@VERSION for @@ENV (@@NOWW)</span></li>
 			</ul>
 		</div>

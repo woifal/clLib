@@ -169,9 +169,6 @@ clLib.PAGES.handlers = {
 	        clLib.UI.byId$("feedbackButton", pageId).die("click").live("click", function () {
 	            clLib.PAGES.changeTo("clLib_feedback.html");
 	        });
-	        clLib.UI.byId$("switchDebugButton", pageId).die("click").live("click", function () {
-	            numbConsole = !numbConsole;
-	        });
 	        clLib.UI.byId$("refreshAllButton", pageId).die("click").live("click", function () {
 				clLib.localStorage.refreshAllData(
 				function(warnings) {

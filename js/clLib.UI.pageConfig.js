@@ -172,10 +172,12 @@ clLib.UI.autoLoad = {
 		default: [
 			"displayName"
 			, "defaultLayoutMenuSwitch"
+			, "debugMenuSwitch"
 		]
 		,reduced: [
 			"displayName"
 			, "defaultLayoutMenuSwitch"
+			, "debugMenuSwitch"
 		]
 	} 
 	,newRouteLog_default : {
@@ -375,10 +377,12 @@ clLib.UI.pageElements = {
 		default: [
 			"displayName"
 			, "defaultLayoutMenuSwitch"
+			, "debugMenuSwitch"
 		]
 		,reduced: [
 			"displayName"
 			, "defaultLayoutMenuSwitch"
+			, "debugMenuSwitch"
 		]
 	}, 
 	gradeConversion : {
@@ -746,6 +750,10 @@ clLib.UI.elements = {
 	,"defaultLayoutMenuSwitch": $.extend({}, clLib.UI.elementConfig.localVarSaveImmediately, {
 		"dbField": "username"
 		,"localVar" : "defaultLayout"
+    } )
+	,"debugMenuSwitch": $.extend({}, clLib.UI.elementConfig.localVarSaveImmediately, {
+		"dbField": "username"
+		,"localVar" : "debugOutput"
     } )
 	, "defaultGradeSystem" : {
 		"localVarField" : "defaultGradeSystem"

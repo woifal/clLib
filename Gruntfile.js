@@ -6,10 +6,12 @@ grunt.initConfig({
 					options: {
 						flatten: true
 						,globals: {
-							NOWW: "xxxxx"
+							VERSION: "V2.0"
+							,NOWW: new Date().toISOString()
+							,ENV: "LOCAL"
 							,"clLib.REST.baseURI" : "http://localhost:1983/db"
 							,"clLib.REST.clLibServerURI" : "http://localhost:1983"
-                            ,DEBUG_OUTPUT: "false"
+                            ,DEBUG_OUTPUT: true 
 							,ENABLE_DEBUG_VISIBILITY: "visible" 
 						}
 					// Task-specific options go here.
@@ -26,14 +28,16 @@ grunt.initConfig({
 					]
 
 				}
-				app_dev: {
+				,app_dev: {
 					options: {
 						flatten: true
 						,globals: {
-							NOWW: "xxxxx"
+							VERSION: "V2.0"
+							,NOWW: new Date().toISOString()
+							,ENV: "DEV"
 							,"clLib.REST.baseURI" : "http://cllibserverdev.herokuapp.com/db"
 							,"clLib.REST.clLibServerURI" : "http://cllibserverdev.herokuapp.com"
-                            ,DEBUG_OUTPUT: "false"
+                            ,DEBUG_OUTPUT: false
 							,ENABLE_DEBUG_VISIBILITY: "visible" 
 						}
 					// Task-specific options go here.
@@ -54,10 +58,12 @@ grunt.initConfig({
 					options: {
 						flatten: true
 						,globals: {
-							NOWW: new Date().toISOString()
+							VERSION: "V2.0"
+							,NOWW: new Date().toISOString()
+							,ENV: "PROD"
 							,"clLib.REST.baseURI" : "http://cllibserver.herokuapp.com/db"
 							,"clLib.REST.clLibServerURI" : "http://cllibserver.herokuapp.com"
-                            ,DEBUG_OUTPUT: "false"
+							,DEBUG_OUTPUT: false
 							,ENABLE_DEBUG_VISIBILITY: "hidden" 
 						}
 					// Task-specific options go here.
@@ -77,10 +83,12 @@ grunt.initConfig({
 					options: {
 						flatten: true
 						,globals: {
-							NOWW: new Date().toISOString()
+							VERSION: "V2.0"
+							,NOWW: new Date().toISOString()
+							,ENV: "PROD"
 							,"clLib.REST.baseURI" : "http://cllibserver.herokuapp.com/db"
 							,"clLib.REST.clLibServerURI" : "http://cllibserver.herokuapp.com"
-                            ,DEBUG_OUTPUT: "false"
+                            ,DEBUG_OUTPUT: false
 							,ENABLE_DEBUG_VISIBILITY: "hidden" 
 							,WEB_IMG_FOLDER_URL: "/KURT/files/views/assets/image"
 						}
@@ -102,10 +110,12 @@ grunt.initConfig({
 					options: {
 						flatten: true
 						,globals: {
-							NOWW: new Date().toISOString()
+							VERSION: "V2.0"
+							,NOWW: new Date().toISOString()
+							,ENV: "LOCAL"
 							,"clLib.REST.baseURI" : "http://localhost:1983/db"
 							,"clLib.REST.clLibServerURI" : "http://localhost:1983"
-                            ,DEBUG_OUTPUT: "true"
+                            ,DEBUG_OUTPUT: true
 							,ENABLE_DEBUG_VISIBILITY: "visible" 
 							,WEB_IMG_FOLDER_URL: "http://localhost:8082/files/views/assets/image"
 						}
@@ -127,10 +137,12 @@ grunt.initConfig({
 					options: {
 						flatten: true
 						,globals: {
-							NOWW: new Date().toISOString()
+							VERSION: "V2.0"
+							,NOWW: new Date().toISOString()
+							,ENV: "DEV"
 							,"clLib.REST.baseURI" : "http://cllibserverdev.herokuapp.com/db"
 							,"clLib.REST.clLibServerURI" : "http://cllibserverdev.herokuapp.com"
-                            ,DEBUG_OUTPUT: "true"
+                            ,DEBUG_OUTPUT: true
 							,ENABLE_DEBUG_VISIBILITY: "visible" 
 							,WEB_IMG_FOLDER_URL: "http://localhost:8082/files/views/assets/image"
 						}
@@ -151,10 +163,12 @@ grunt.initConfig({
 					options: {
 						flatten: true
 						,globals: {
-							NOWW: "xxxxx"
+							VERSION: "V2.0"
+							,NOWW: new Date().toISOString()
+							,ENV: "DEV"
 							,"clLib.REST.baseURI" : "http://localhost:1983/db"
 							,"clLib.REST.clLibServerURI" : "http://localhost:1983"
-                            ,DEBUG_OUTPUT: "false"
+                            ,DEBUG_OUTPUT: true
 							,mongodbUser :  "clAdmin"
 							,mongodbPwd  : "blerl1la"
 							,mongodbHost : "ds023520.mlab.com"
@@ -181,10 +195,12 @@ grunt.initConfig({
 					options: {
 						flatten: true
 						,globals: {
-							NOWW: "xxxxx"
+							VERSION: "V2.0"
+							,NOWW: new Date().toISOString()
+							,ENV: "LOCAL"
 							,"clLib.REST.baseURI" : "http://localhost:1983/db"
 							,"clLib.REST.clLibServerURI" : "http://localhost:1983"
-                            ,DEBUG_OUTPUT: "false"
+                            ,DEBUG_OUTPUT: true
 							,mongodbUser :  "clAdmin"
 							,mongodbPwd  : "blerl1la"
 							,mongodbHost : "ds023520.mlab.com"
@@ -210,10 +226,12 @@ grunt.initConfig({
 					options: {
 						flatten: true
 						,globals: {
-							NOWW: "xxxxx"
+							VERSION: "V2.0"
+							,NOWW: new Date().toISOString()
+							,ENV: "PROD"
 							,"clLib.REST.baseURI" : "http://localhost:1983/db"
 							,"clLib.REST.clLibServerURI" : "http://localhost:1983"
-                            ,DEBUG_OUTPUT: "true"
+                            ,DEBUG_OUTPUT: false
 							,mongodbUser :  "clAdmin"
 							,mongodbPwd  : "blerl1la"
 							,mongodbHost : "ds053438.mongolab.com"
@@ -266,7 +284,7 @@ grunt.initConfig({
 						
 					]
 				}
-				app_local: {
+				,app_local: {
 					expand: true,
 					//flatten: true,
 					files: [
@@ -542,7 +560,7 @@ grunt.initConfig({
 				  }, // includes files in path
 				]
 			  }
-			  app_local: {
+			  ,app_local: {
 				options: {
 				  archive: 'dist/app/archive.zip'
 				},
