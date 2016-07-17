@@ -489,10 +489,13 @@ clLib.PAGES.handlers = {
             
 
             $("#newRouteLog_default_getPictureButton").die("click").click(function() {
+				alert("1yes, get picture..");
+                clLib.alert("2yes, get picture..");
                 if(clLib.inPhoneGap()) {
+					clLib.alert("yes, in phonegap..");
                     //var addOptions = JSON.parse($("#cameraOptions").val());
                     //cameraOptions = $.extend(cameraOptions, addOptions);
-                    alert(JSON.stringify(cameraOptions));   
+                    clLib.alert(JSON.stringify(clLib.images.getCameraOptions()));   
                     navigator.camera.getPicture(
                         clLib.images.phonegapSuccessHandler
                         ,clLib.images.uploadErrorHandler

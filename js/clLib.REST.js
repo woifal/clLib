@@ -109,6 +109,7 @@ clLib.REST.postAJAXprocessing = {
 	,"https://api.appery.io/rest/1/db" : clLib.REST.appery.postAJAXprocessing
 	,"http://localhost:1983/db" : clLib.REST.clNode.postAJAXprocessing
 	,"http://cllibserver.herokuapp.com/db" : clLib.REST.clNode.postAJAXprocessing
+	,"http://cllibserverdev.herokuapp.com/db" : clLib.REST.clNode.postAJAXprocessing
 };
 
 /*

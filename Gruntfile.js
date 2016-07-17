@@ -616,7 +616,7 @@ grunt.initConfig({
     grunt.loadNpmTasks('grunt-contrib-compress');	
     
     // 4. Where we tell Grunt what to do when we type "grunt" into the terminal.
-    grunt.registerTask('appdev', ['includereplace:app_dev', 'copy:app_dev']);
+    grunt.registerTask('appdev', ['includereplace:app_dev', 'copy:app_dev', 'compress:app_dev']);
     grunt.registerTask('applocal', ['includereplace:app_local', 'copy:app_local']);
     grunt.registerTask('appprod', ['includereplace:app_prod', 'copy:app_prod', 'compress:app_prod']);
     grunt.registerTask('webprod', ['includereplace:web_prod', 'copy:web_prod']);

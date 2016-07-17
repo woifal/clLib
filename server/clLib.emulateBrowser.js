@@ -11,10 +11,10 @@ var alert = function(txt) {
 }
 window.alert = alert;
 
-console.log("FAKING localstorage...");
+console.log("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nFAKING localstorage...\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
 var localStorage = {
 	items: {}
-	,getItem(itemName) {
+	,getItem: function(itemName) {
 		if(itemName in this.items) {
 			return this.items[itemName];
 		}
@@ -22,7 +22,7 @@ var localStorage = {
 			return "";
 		}
 	}
-	,setItem(itemName, itemValue) {
+	,setItem: function(itemName, itemValue) {
 		this.items[itemName] = itemValue;
 	}
 }

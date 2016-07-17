@@ -1284,10 +1284,10 @@ clLib.removeNullArrElements = function(object) {
 
 
 clLib.inPhoneGap = function() {
-                console.log("checking for phonegap..");
+                clLib.alert("checking for phonegap..");
                 var resCode = window.device;
-                console.log("resCode is >" + resCode + "<");
-                return resCode;
+                clLib.alert("resCode is >" + JSON.stringify(resCode) + "<");
+                return resCode === undefined;
 //                return false;
             }
 
