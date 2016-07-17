@@ -23,7 +23,7 @@ clLib.webSocketClient = {
             console.log("already connected!");
         }
         
-        util.log("io.socket connecting..");
+        console.log("io.socket connecting..");
         var userInfoObj = clLib.getUserInfo();
         if(!userInfoObj["_id"]) {
             clLib.loggi("not logged in, not connection websocket for now..", "20150429");
