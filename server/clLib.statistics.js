@@ -612,17 +612,3 @@ clStats.prototype.localHourPortion = function(ISODateStr) {
 	return localDateStr.substring(11, 13);
 };
 
-var $ = {};
-$.each = function(object, callback) {
-	var objKeys = Object.keys(object);
-	var i;
-	for(i = 0; i < objKeys.length; i++) {
-		callback(objKeys[i], object[objKeys[i]]);
-	}
-};
-
-try {
-    global.$ = $;
-} catch(e) {
-}
-
