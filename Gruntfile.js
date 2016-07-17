@@ -452,7 +452,11 @@ grunt.initConfig({
 							flatten: true
                             ,expand: true
 							,src: [
-								"dist/tmp/server/js/clLib.js", "dist/tmp/server/js/clLib.gradeConfig.js", "!dist/tmp/server/js/_web"
+								"dist/tmp/server/js/clLib.emulateBrowser.js", 
+								"dist/tmp/server/js/clLib.js", 
+								"dist/tmp/server/js/clLib.logging.js", 
+								"dist/tmp/server/js/clLib.gradeConfig.js", 
+								"!dist/tmp/server/js/_web"
 							]
 							,dest:"dist/server" 
                         }
@@ -487,7 +491,11 @@ grunt.initConfig({
 							flatten: true
                             ,expand: true
 							,src: [
-								"dist/tmp/server/js/clLib.js", "dist/tmp/server/js/clLib.gradeConfig.js", "!dist/tmp/server/js/_web"
+								"dist/tmp/server/js/clLib.emulateBrowser.js", 
+								"dist/tmp/server/js/clLib.js", 
+								"dist/tmp/server/js/clLib.logging.js", 
+								"dist/tmp/server/js/clLib.gradeConfig.js", 
+								"!dist/tmp/server/js/_web"
 							]
 							,dest:"dist/server" 
                         }
@@ -522,7 +530,11 @@ grunt.initConfig({
 							flatten: true
                             ,expand: true
 							,src: [
-								"dist/tmp/server/js/clLib.js", "dist/tmp/server/js/clLib.gradeConfig.js", "!dist/tmp/server/js/_web"
+								"dist/tmp/server/js/clLib.emulateBrowser.js", 
+								"dist/tmp/server/js/clLib.js", 
+								"dist/tmp/server/js/clLib.logging.js", 
+								"dist/tmp/server/js/clLib.gradeConfig.js", 
+								"!dist/tmp/server/js/_web"
 							]
 							,dest:"dist/server" 
                         }
