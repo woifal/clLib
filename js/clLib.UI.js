@@ -2084,7 +2084,7 @@ clLib.UI.ratingToStars = function(ratingScore) {
 
 clLib.UI.collapsible = {};
 clLib.UI.collapsible.formatRouteLogRow = function(dataRow) {
-    clLib.loggi("formatting row: >" + JSON.stringify(dataRow["Grade"]) + "<");
+    clLib.alert("formatting row: >" + JSON.stringify(dataRow) + "<");
 	var dataFormat = {
 		header: {
 			/*"GradeSystem" : null*/
@@ -2124,7 +2124,7 @@ clLib.UI.collapsible.formatRouteLogRow = function(dataRow) {
                 ,"imgURL" : {
                     title: function(imgURL) {
                         if(imgURL && imgURL != '-1') {
-                            return "Route Image:<br>";
+                            return "Route Image(" + imgURL + "):<br>";
                         } else {
                             return "";
                         }
