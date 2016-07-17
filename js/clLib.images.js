@@ -1,30 +1,32 @@
 "use strict";
 clLib.images = {};
 
-/*
 AWS.config.update({
-    "accessKeyId": "AKIAJ7GUMJYATJ6PPIZA" 
-    ,"secretAccessKey": "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"
+    "accessKeyId": "AKIAII3D7XAKRMUIXB2A" 
+    ,"secretAccessKey": "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"
     ,"region": "us-west-2"
 });
 clLib.images.bucketName = 'cl.foobucket';
-*/
+
 clLib.images = $.extend(clLib.images
     ,{
     init: function() {
         // Setup AWS authentification..
         AWS.config.update({
-            "accessKeyId": "AKIAJ7GUMJYATJ6PPIZA" 
-            ,"secretAccessKey": "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"
+            "accessKeyId": "AKIAII3D7XAKRMUIXB2A" 
+            ,"secretAccessKey": "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"
             ,"region": "us-west-2"
         });
         clLib.images.bucketName = 'cl.foobucket';
 		clLib.images.amazonAWSURL = "https://d3gpzvq0gqbk39.cloudfront.net";
+		clLib.images.amazonAWSURL = "https://s3-us-west-2.amazonaws.com/cl.foobucket";
+		
 
     }
     ,uploadImage: function(imgOptions, successFunc, errorFunc) {
-        util.error("saving impOptions of >" + imgOptions + "<");
-        util.error("saving jsoned impOptions of >" + JSON.stringify(imgOptions) + "<");
+        this.init();
+		clLib.alert("saving impOptions of >" + imgOptions + "<");
+        console.error("saving jsoned impOptions of >" + JSON.stringify(imgOptions) + "<");
         //return true;
         /*
             imgOptions = 
@@ -101,10 +103,10 @@ window.resolveLocalFileSystemURL(fileUrl, function (fileEntry) {
         //alert("uploading..>" + JSON.stringify(params) + "<");
         
         bucket.upload(params, function (err, data) {
-            //alert("img upload result >" + err + "< data >" + JSON.stringify(data) + "<");
-            //if(err) {
-            //    return errorFunc("Error while uploading image data >" + err + "<");
-            //}
+            clLib.alert("img upload result >" + err + "< data >" + JSON.stringify(data) + "<");
+            if(err) {
+                return errorFunc("Error while uploading image data >" + err + "<");
+            }
             
             var imgURL = clLib.images.amazonAWSURL + "/" + imgOptions["fileName"];
             //alert("saved image at >" + imgURL + "<");
