@@ -1,15 +1,7 @@
 "use strict";
 
-var util;
-try {
-    util = require("util");
-} catch(e) {
-    util = console;
-}
+var clLib = {};
 
-
-localStorage.setItem("debugOutput", @@DEBUG_OUTPUT);
-alert("set debugoutput to >" + localStorage.getItem("debugOutput") + "<");
 
 function ClInfo(message, infoType) {
 	this.message = message;
@@ -28,24 +20,7 @@ var profiledFnCall = function(iterations, aFunc) {
 	return totalDuration / iterations;
 };
 
-//(function(){
-var clLib = {};
-if(!localStorage.getItem("debugOutput") == "true") {
-	try {
-		console = {
-			log: function(txt) {
-			}
-			,info: function(text) {
-			}
-			,error: function(text) {
-			}
-		};
-		window.alert = function(text) {};
-	} catch(e) {
-		console.log("could not override console...wtf..");
-	}
-}
-
+localStorage.setItem("debugOutput", @@DEBUG_OUTPUT);
 
 clLib.console = {
 	log: function(txt) {
@@ -63,13 +38,19 @@ clLib.console = {
 			console.error(txt);
 		}
 	}
-	,alert: function(txt) {
-		if(localStorage.getItem("debugOutput") == "true") {
-			alert(txt);
+}
+
+clLib.alert = function(txt) {
+	if(localStorage.getItem("debugOutput") == "true") {
+		if(typeof(alert) !== 'undefined') {
+			alert(txt);	
 		}
 	}
-	
 }
+clLib.alert("set debugoutput to >" + localStorage.getItem("debugOutput") + "<");
+
+
+
 clLib.UI = {};
 
 clLib.lastGeoDate = null;
@@ -764,22 +745,7 @@ clLib.loggi = function(text, priority) {
 	}
 };
 
-clLib.alert = function (text, html) {
-    /*
-    $.mobile.loading('show', {
-        text: text,
-        textVisible: true,
-        //theme: 'z',
-        html: html
-    });
-    setTimeout(function () {
-        $.mobile.loading('hide');
-    }, 10000);
-    */
-    if(localStorage.getItem("debugOutput") == "true") {
-		alert(":) " + text);
-	}
-};
+
 
 
 clLib.login = function(successFunc, errorFunc) {
@@ -1197,7 +1163,7 @@ Array.prototype.sortByKey = function(sortKey, descSortFlag) {
 };
 
 Array.prototype.sortByFunction = function(sortFunction, descSortFlag) {
-	util.log("yes, sorting by function " + typeof(sortFunction));
+	console.log("yes, sorting by function " + typeof(sortFunction));
     this.sort(function(a, b) {
 		var sortResult = 
 			sortFunction(a) < sortFunction(b) ? -1 : 1;
@@ -1210,10 +1176,10 @@ Array.prototype.sortByFunction = function(sortFunction, descSortFlag) {
 
 Array.prototype.sortBy = function(sortBy, descSortFlag) {
 	var sortFunc;
-	util.log("sortBy " + JSON.stringify(sortBy));
+	console.log("sortBy " + JSON.stringify(sortBy));
 
 	if(clLib.isFunction(sortBy)) {
-		util.log("JSON.stringify " + typeof(sortBy));
+		console.log("JSON.stringify " + typeof(sortBy));
 		return this.sortByFunction(sortBy, descSortFlag);	
 	} else {
 		return this.sortByKey(sortBy, descSortFlag);
@@ -1269,7 +1235,7 @@ clLib.isObject = function(foo) {
 };
 clLib.removeNullArrElements = function(object) {
     var clEach = function(object, callback) {
-        util.log("eaching >" + JSON.stringify(object) + "<");
+        console.log("eaching >" + JSON.stringify(object) + "<");
         if(isObject(object)) {
             var objKeys = Object.keys(object);
             var i;
