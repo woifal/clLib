@@ -474,7 +474,7 @@ clLib.localStorage.syncUp = function(entity, entityInstance, storageName, succes
         var toEvaluate = [];
         clLib.console.error("ENITYINTANCE IS >" + JSON.stringify(entityInstance) + "<");
         $.each(entityInstance, function(field, value) {
-            //util.error("field >" + field + "< value >" + typeof(value) + "< = >" + JSON.stringify(value) + "<");
+            //console.error("field >" + field + "< value >" + typeof(value) + "< = >" + JSON.stringify(value) + "<");
             if(value instanceof Object) {
                 var newFunc = function(successFunc, errorFunc) {
     /*
@@ -506,13 +506,13 @@ clLib.localStorage.syncUp = function(entity, entityInstance, storageName, succes
                     }, 
                     blaFunc);
     */              
-                    util.error("starting upload..");
+                    console.error("starting upload..");
                     //
                     // call no-callback version of uploadImage..
                     //
                     clLib.images.uploadImage(window["tmpImgObj"]); //, successFunc, errorFunc);
-                    util.error("finsihed  upload..");
-                    util.error("setting field value for >" + field + "< to >" + window["tmpImgObj"]["fileName"] + "<");
+                    console.error("finsihed  upload..");
+                    console.error("setting field value for >" + field + "< to >" + window["tmpImgObj"]["fileName"] + "<");
                     entityInstance[field] = clLib.images.amazonAWSURL + "/" + window["tmpImgObj"]["fileName"];
     //                var evalStr = funcName +"(" + argStr + ",blaFunc)";
     //                console.log("evalStr is >" + evalStr + "<");
