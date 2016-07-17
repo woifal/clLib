@@ -1,4 +1,7 @@
 var util = require("util");
+
+// provide "util" package in included .js files..
+global.util = util;
     
 var mongo = require('mongoskin');
 var BSON = require('bson').BSONPure
@@ -36,7 +39,10 @@ if(numbConsole) {
 * Object shared in global scope is "clLib".
 *
 */
+// provide browser-like env(for client js files reused in this server code)
+require("./clLib.emulateBrowser");
 require("./clLib");
+require("./clLib.logging");
 require("./clLib.gradeConfig");
 
 util.log("\n\n>>>>>>" + JSON.stringify(clLib.gradeConfig) + "<<<<<<<<<\n\n\n\n");
